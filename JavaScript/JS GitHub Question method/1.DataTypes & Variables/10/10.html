@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Iterables - for...of vs for...in</title>
+</head>
+
+<body>
+
+<h1>JavaScript Iterables</h1>
+<p>
+This webpage explains <b>Iterables</b>, examples, <b>for...of vs for...in</b>,
+and interview-ready notes with simple code.
+</p>
+
+<hr>
+
+<h2>1️⃣ Iterable Definition (Interview-ready)</h2>
+
+<p><b>Answer (English – 1 line):</b><br>
+An iterable is an object that can be looped using <b>for...of</b>.
+</p>
+
+<p><b>Tamil Meaning:</b><br>
+for...of loop use பண்ணி iterate பண்ண முடியுற object-க்கு <b>iterable</b>ன்னு சொல்றோம்.
+</p>
+
+<p><b>Examples:</b><br>
+Array, String, Set, Map
+</p>
+
+<hr>
+
+<h2>2️⃣ Iterable Examples</h2>
+
+<h3>✅ Array (Iterable)</h3>
+
+<pre>
+const arr = [10, 20, 30];
+
+for (let val of arr) {
+  console.log(val);
+}
+</pre>
+
+<p><b>Output:</b><br>
+10<br>20<br>30
+</p>
+
+<p><b>Explain:</b>  
+Array values-ஐ for...of loop iterate பண்ணுது.
+</p>
+
+<hr>
+
+<h3>✅ String (Iterable)</h3>
+
+<pre>
+const name = "Gowtham";
+
+for (let char of name) {
+  console.log(char);
+}
+</pre>
+
+<p><b>Output:</b><br>
+G o w t h a m
+</p>
+
+<p><b>Explain:</b>  
+String-ல ஒவ்வொரு character-யும் iterable.
+</p>
+
+<hr>
+
+<h3>✅ Set (Iterable)</h3>
+
+<pre>
+const set = new Set([1, 2, 3]);
+
+for (let val of set) {
+  console.log(val);
+}
+</pre>
+
+<p><b>Output:</b><br>
+1<br>2<br>3
+</p>
+
+<p><b>Explain:</b>  
+Set unique values-ஐ iterate பண்ணுது.
+</p>
+
+<hr>
+
+<h3>✅ Map (Iterable)</h3>
+
+<pre>
+const map = new Map([
+  ["name", "Gowtham"],
+  ["age", 22]
+]);
+
+for (let [key, value] of map) {
+  console.log(key, value);
+}
+</pre>
+
+<p><b>Output:</b><br>
+name Gowtham<br>
+age 22
+</p>
+
+<p><b>Explain:</b>  
+Map key–value pairs-ஐ iterate பண்ணுது.
+</p>
+
+<hr>
+
+<h3>❌ Object (Not Iterable)</h3>
+
+<pre>
+const obj = { a: 1, b: 2 };
+
+for (let val of obj) {
+  console.log(val); // Error
+}
+</pre>
+
+<p><b>Interview Point:</b><br>
+Normal JavaScript objects are <b>not iterable</b>.
+</p>
+
+<hr>
+
+<h2>🎯 Interview One-Line (Safe Answer)</h2>
+
+<p>
+Arrays, strings, sets, and maps are iterable and can be looped using for...of.
+</p>
+
+<hr>
+
+<h2>3️⃣ for...of vs for...in</h2>
+
+<table border="1" cellpadding="8">
+  <tr>
+    <th>Feature</th>
+    <th>for...of</th>
+    <th>for...in</th>
+  </tr>
+  <tr>
+    <td>Iterates</td>
+    <td>Values</td>
+    <td>Keys / Indexes</td>
+  </tr>
+  <tr>
+    <td>Used for</td>
+    <td>Iterables</td>
+    <td>Objects</td>
+  </tr>
+  <tr>
+    <td>Examples</td>
+    <td>Array, String, Set, Map</td>
+    <td>Normal Object</td>
+  </tr>
+</table>
+
+<hr>
+
+<h3>Array Example</h3>
+
+<p><b>for...of (values)</b></p>
+<pre>
+const arr = [10, 20, 30];
+
+for (let val of arr) {
+  console.log(val);
+}
+</pre>
+
+<p><b>Output:</b> 10 20 30</p>
+
+<p><b>for...in (indexes)</b></p>
+<pre>
+const arr = [10, 20, 30];
+
+for (let index in arr) {
+  console.log(index);
+}
+</pre>
+
+<p><b>Output:</b> 0 1 2</p>
+
+<p>
+<b>Explain:</b><br>
+for...of → values<br>
+for...in → keys / indexes
+</p>
+
+<hr>
+
+<h3>Object Example</h3>
+
+<pre>
+const obj = { name: "Gowtham", age: 22 };
+
+for (let key in obj) {
+  console.log(key, obj[key]);
+}
+</pre>
+
+<p><b>Output:</b><br>
+name Gowtham<br>
+age 22
+</p>
+
+<p>
+<b>Note:</b> for...of cannot be used on normal objects.
+</p>
+
+<hr>
+
+<h2>🎯 One-liner Interview Answer</h2>
+
+<p>
+for...of iterates values of iterables, while for...in iterates keys of objects.
+</p>
+
+<hr>
+
+<h2>4️⃣ Small Combined Code Example</h2>
+
+<pre>
+// Array
+const arr = [1, 2, 3];
+for (let val of arr) console.log(val);
+
+// String
+const name = "Gowtham";
+for (let char of name) console.log(char);
+
+// Set
+const set = new Set([10, 20, 30]);
+for (let val of set) console.log(val);
+
+// Map
+const map = new Map([
+  ["name", "Gowtham"],
+  ["age", 22]
+]);
+for (let [key, value] of map) {
+  console.log(key, value);
+}
+</pre>
+
+<hr>
+
+<h2>🎯 Final Interview Summary (One Line)</h2>
+
+<p>
+Arrays, strings, sets, and maps are iterables and can be looped using for...of.
+</p>
+
+<hr>
+
+<h3>END</h3>
+
+</body>
+</html>

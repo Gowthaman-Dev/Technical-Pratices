@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Difference Between var, let, and const</title>
+</head>
+<body>
+
+<h1>Explain the Difference Between var, let, and const</h1>
+
+<h2>Answer</h2>
+<p>
+    <b>var</b>, <b>let</b>, and <b>const</b> are JavaScript keywords used to declare variables.
+    They mainly differ in scope, reassignment/redeclaration, and hoisting behavior.
+</p>
+
+<h2>1. Scope</h2>
+<ul>
+    <li><b>var</b> is function-scoped (or global if declared outside a function).</li>
+    <li><b>let</b> and <b>const</b> are block-scoped, meaning they are limited to <b>{ }</b>.</li>
+</ul>
+
+<h2>2. Reassignment and Redeclaration</h2>
+<ul>
+    <li><b>var</b> → Can be reassigned and redeclared.</li>
+    <li><b>let</b> → Can be reassigned, but cannot be redeclared in the same scope.</li>
+    <li><b>const</b> → Cannot be reassigned or redeclared.</li>
+</ul>
+
+<p>
+    <b>Note:</b> For objects and arrays declared with <b>const</b>, their properties can still be modified.
+</p>
+
+<h2>3. Hoisting and Temporal Dead Zone (TDZ)</h2>
+<ul>
+    <li>
+        <b>var</b> → Hoisted and initialized with <b>undefined</b>, so it can be accessed before declaration.
+    </li>
+    <li>
+        <b>let</b> and <b>const</b> → Hoisted but not initialized and remain in the
+        <b>Temporal Dead Zone (TDZ)</b> until declared.
+        Accessing them early causes a <b>ReferenceError</b>.
+    </li>
+</ul>
+
+<h2>When to Use Which</h2>
+<ul>
+    <li><b>const</b> (default choice): Use when the variable should not be reassigned.</li>
+    <li><b>let</b>: Use when reassignment is required, such as loop counters.</li>
+    <li>
+        <b>var</b>: Avoid in modern JavaScript because function scoping and hoisting can cause bugs;
+        use only for legacy code.
+    </li>
+</ul>
+
+<h2>🎯 One-Line Interview Summary</h2>
+<p>
+    <b>
+        var is function-scoped and hoisted with undefined,
+        while let and const are block-scoped, hoisted into the TDZ,
+        and are safer for modern JavaScript.
+    </b>
+</p>
+
+</body>
+</html>

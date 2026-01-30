@@ -1,0 +1,40 @@
+"what-are-the-differences-between-variables-created-using-let-var-or-const"
+
+The main differences between variables created with var, let, and const in JavaScript lie in their scope, hoisting behavior, and whether they can be reassigned or re-declared.  
+
+| Feature | var | let | const |
+|---------|-----|-----|-------|
+| Scope | Function/Global scoped | Block scoped | Block scoped |
+| Reassignment | Yes | Yes | No (for the variable reference) |
+| Re-declaration | Yes | No | No |
+| Hoisting | Hoisted and initialized with undefined | Hoisted but not initialized | Hoisted but not initialized |
+| Temporal Dead Zone | No | Yes | Yes |
+
+
+Detailed Differences 
+
+• Scope: 
+
+	•  var is function-scoped or globally-scoped. This means a variable declared inside a block (like an if statement or for loop) with var is accessible outside that block if it's within the same function or global scope, which can lead to unexpected behavior. 
+	•  let and const are block-scoped. They are only accessible within the specific block (the curly braces {}) where they are defined, which makes code more predictable
+
+• Reassignment: 
+
+	•  var and let variables can have their values changed after they are declared
+	•  const variables cannot be reassigned after their initial value is set. However, if a const variable holds an object or an array, the properties or elements of that object/array can still be modified (mutated), but the variable itself cannot be pointed to a new object or array entirely
+
+• Re-declaration: 
+
+	•  var allows you to re-declare the same variable within the same scope without an error, which can cause accidental overwriting of values. 
+	•  let and const do not allow re-declaration within the same scope, throwing a SyntaxError and preventing potential bugs. 
+
+• Hoisting and Temporal Dead Zone (TDZ): 
+
+	• Hoisting is the JavaScript behavior where variable and function declarations are moved to the top of their scope during the compilation phase. 
+	• var declarations are hoisted to the top of their scope and automatically initialized with the value undefined. This means you can access a var variable before it's explicitly declared in the code, and you will get undefined instead of an error. 
+	• let and const are also hoisted, but they are not initialized. Attempting to access them before the declaration line results in a ReferenceError because they are in a "Temporal Dead Zone" (TDZ) until the declaration is processed
+
+Modern Best Practices
+In modern JavaScript, it is generally recommended to avoid var due to its confusing scoping rules and potential for bugs. 
+Use const by default for any value that should not change.
+Use let only when you know the variable's value will need to be reassigned later (e.g., in a for loop counter).  

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Convert String to Number in JavaScript</title>
+</head>
+<body>
+
+<h1>How Do You Convert a String to a Number in JavaScript?</h1>
+
+<p>
+    In JavaScript, a string can be converted to a number using
+    <b>Number()</b>, <b>parseInt()</b>, <b>parseFloat()</b>, or the
+    <b>unary plus (+)</b> operator.
+</p>
+
+<hr>
+
+<h2>Common Ways to Convert</h2>
+
+<h3>1. Number()</h3>
+<ul>
+    <li>Converts the entire string to a number</li>
+    <li>Returns <b>NaN</b> if the string is not fully numeric</li>
+</ul>
+
+<pre>
+Number("123");     // 123
+Number("123.45");  // 123.45
+Number("123px");   // NaN
+</pre>
+
+<h3>2. Unary Plus (+)</h3>
+<ul>
+    <li>Works the same way as <b>Number()</b></li>
+    <li>Short and fast syntax</li>
+</ul>
+
+<pre>
++"42";    // 42
++"42px";  // NaN
+</pre>
+
+<h3>3. parseInt()</h3>
+<ul>
+    <li>Extracts an integer from the beginning of the string</li>
+    <li>Stops parsing when it encounters a non-numeric character</li>
+</ul>
+
+<pre>
+parseInt("100");     // 100
+parseInt("100.5");   // 100
+parseInt("100px");   // 100
+</pre>
+
+<h3>4. parseFloat()</h3>
+<ul>
+    <li>Extracts a number including decimal values</li>
+    <li>Stops parsing at the first invalid character</li>
+</ul>
+
+<pre>
+parseFloat("99.99");   // 99.99
+parseFloat("99.99px"); // 99.99
+</pre>
+
+<hr>
+
+<h2>Key Differences (Quick Comparison)</h2>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Method</th>
+        <th>Supports Decimals</th>
+        <th>Requires Full Numeric String</th>
+        <th>Common Use</th>
+    </tr>
+    <tr>
+        <td>Number()</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>Clean numeric strings</td>
+    </tr>
+    <tr>
+        <td>Unary +</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>Short syntax</td>
+    </tr>
+    <tr>
+        <td>parseInt()</td>
+        <td>❌</td>
+        <td>❌</td>
+        <td>Integers, values with units</td>
+    </tr>
+    <tr>
+        <td>parseFloat()</td>
+        <td>✅</td>
+        <td>❌</td>
+        <td>Decimal values with units</td>
+    </tr>
+</table>
+
+<hr>
+
+<h2>🎯 One-Line Interview Answer</h2>
+<p>
+    <b>
+        A string can be converted to a number using Number(), parseInt(),
+        parseFloat(), or the unary plus operator, depending on whether the
+        string is fully numeric or contains extra characters.
+    </b>
+</p>
+
+<hr>
+
+<h2>✅ Best Practice</h2>
+<ul>
+    <li>Use <b>Number()</b> or <b>+</b> for clean numeric strings</li>
+    <li>Use <b>parseInt()</b> or <b>parseFloat()</b> when dealing with values like <b>"20px"</b></li>
+</ul>
+
+</body>
+</html>

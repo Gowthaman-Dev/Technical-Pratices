@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+
+    // 1️⃣ Creating an Object
+    const person = {
+      firstname: "rocky",
+      lastname: "gowtham",
+      age: 21,
+      isAlive: true,
+
+      // nested object
+      parent: {
+        father: "appa",
+        mother: "amma"
+      },
+
+      // 2️⃣ Object Method (ES6 shorthand)
+      fullname() {
+        return `${this.firstname} ${this.lastname}`;
+      },
+
+      // 5️⃣ Getter (Accessor Property)
+      favNumber: [3, 7, 9],
+      get favNumbercount() {
+        return this.favNumber.length;
+      }
+    };
+
+    
+
+    // 3️⃣ Accessing Object Data
+    console.log(person.fullname());        // method call
+    console.log(person.parent.father);     // nested object access
+
+    // 4️⃣ Object Merging (Object.assign)
+    const personMethod = {
+      greet() {
+        return "Hello!";
+      }
+    };
+    Object.assign(person, personMethod);
+    console.log(person.greet());
+
+    // 6️⃣ Object Cloning (Shallow Copy)
+    const personCopy = Object.assign({}, person);
+    personCopy.firstname = "gowtham";
+    personCopy.parent.father = "dad";
+
+    console.log(person.firstname);        // rocky
+    console.log(person.parent.father);    // dad (shallow copy)
+
+    // 7️⃣ Spread Operator with Objects
+    const spreadPerson = { ...person, ...personMethod };
+    console.log(spreadPerson.fullname());
+
+    // 8️⃣ Deleting an Object Property
+    delete person.age;
+    console.log(person.age); // undefined
+
+    // 9️⃣ ES6 Object Property Shorthand
+    function getFullName(firstName, lastName) {
+      return { 
+               firstName, 
+               lastName 
+              };
+    }
+    const user = getFullName("rocky", "gowtham");
+    console.log(user);
+
+    // 🔟 Adding Properties Dynamically
+    person.favColorss = "podu";
+    console.log(person.favColorss);
+
+    // 1️⃣1️⃣ Object Method with Calculation (DOB example)
+    const obj2 = {
+      age: 25,
+      DOB() {
+        return new Date().getFullYear() - this.age;
+      }
+    };
+
+    console.log(obj2.DOB()); // calculates birth year
+
+  </script>
+
+
+
+</body>
+
+</html>

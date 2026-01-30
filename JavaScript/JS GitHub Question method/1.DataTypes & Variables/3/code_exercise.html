@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+       // Safe check for undeclared variable:
+
+if (typeof undeclaredVar === "undefined") {
+  console.log("Variable is undeclared or undefined");
+}
+
+
+//Output:Variable is undeclared or undefined
+
+
+//Why it works:
+
+//Normally:console.log(undeclaredVar); // ❌ ReferenceError
+
+
+//Safe:console.log(typeof undeclaredVar); // ✅ "undefined"
+
+
+/* Tamil explanation:
+நீங்கள் ஒரு variable declare செய்யவில்லை என்றாலும், typeof பயன்படுத்தி அதன் existence-ஐ 
+பாதுகாப்பாக check செய்யலாம்.நேரடியாக access பண்ணினால் ReferenceError வரும். */
+    </script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>break and continue Statements in JavaScript</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #1e3a8a;
+      text-align: center;
+    }
+
+    h2 {
+      color: #2563eb;
+      border-bottom: 2px solid #dbeafe;
+      padding-bottom: 4px;
+    }
+
+    h3 {
+      color: #1e40af;
+      margin-top: 15px;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    pre {
+      background-color: #e0e7ff;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #cbd5e1;
+      margin: 20px 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #e0e7ff;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    b {
+      color: #1e3a8a;
+    }
+
+    code {
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Purpose of break and continue Statements</h1>
+
+<p>
+<b>Interview Question:</b><br>
+What is the purpose of the <b>break</b> and <b>continue</b> statements?
+</p>
+
+<hr>
+
+<h2>1️⃣ break statement</h2>
+
+<p><b>Purpose:</b><br>
+Immediately exits the <b>current loop entirely</b>, no matter where the loop is.
+</p>
+
+<p><b>Use case:</b><br>
+When you want to stop looping once a condition is met.
+</p>
+
+<h3>Example:</h3>
+
+<pre>
+for (let i = 0; i < 5; i++) {
+  if (i === 3) {
+    break; // stops the loop completely
+  }
+  console.log(i);
+}
+</pre>
+
+<p><b>Output:</b><br>
+0<br>
+1<br>
+2
+</p>
+
+<p><b>Explanation:</b><br>
+As soon as <code>i</code> becomes 3, the <b>break</b> statement exits the loop.
+</p>
+
+<p><b>Tamil:</b><br>
+break வந்தா, loop முழுசா நிறுத்திடும்.
+</p>
+
+<hr>
+
+<h2>2️⃣ continue statement</h2>
+
+<p><b>Purpose:</b><br>
+Skips the <b>current iteration</b> of the loop and moves to the next iteration.
+</p>
+
+<p><b>Use case:</b><br>
+When you want to ignore certain iterations but continue looping.
+</p>
+
+<h3>Example:</h3>
+
+<pre>
+for (let i = 0; i < 5; i++) {
+  if (i === 3) {
+    continue; // skips this iteration
+  }
+  console.log(i);
+}
+</pre>
+
+<p><b>Output:</b><br>
+0<br>
+1<br>
+2<br>
+4
+</p>
+
+<p><b>Explanation:</b><br>
+When <code>i</code> is 3, <code>console.log(i)</code> is skipped,
+but the loop continues with <code>i = 4</code>.
+</p>
+
+<p><b>Tamil:</b><br>
+continue வந்தா, அந்த iteration மட்டும் skip ஆகும்.
+Loop next iteration-க்கு போயிடும்.
+</p>
+
+<hr>
+
+<h2>🔍 break vs continue (Quick Comparison)</h2>
+
+<table>
+  <tr>
+    <th>Statement</th>
+    <th>What it does</th>
+  </tr>
+  <tr>
+    <td>break</td>
+    <td>Exits the loop completely</td>
+  </tr>
+  <tr>
+    <td>continue</td>
+    <td>Skips current iteration, continues loop</td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>🎯 Interview Tip</h2>
+
+<p>
+<b>Break</b> → exits the loop entirely.<br>
+<b>Continue</b> → skips one iteration and moves to the next.
+</p>
+
+<h3>🧠 Real-World Analogy</h3>
+
+<ul>
+  <li><b>Break:</b> “Stop the whole process now.”</li>
+  <li><b>Continue:</b> “Skip this step, but keep going.”</li>
+</ul>
+
+<hr>
+
+<h2>✅ One-Line Interview Answer</h2>
+
+<p>
+The break statement stops the loop completely, while the continue statement
+skips the current iteration and continues with the next one.
+</p>
+
+<hr>
+
+<h3>END</h3>
+
+</body>
+</html>

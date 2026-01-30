@@ -1,0 +1,28 @@
+What is the spread operator and how is it used?
+
+
+English:
+“The spread operator in JavaScript is written as three dots (...) and is used to expand elements of an array or object into individual values.
+It is commonly used to copy arrays or objects, merge multiple arrays or objects, and pass array elements as arguments to functions.
+It helps write cleaner and more readable code compared to traditional methods.”
+
+🟡 If interviewer asks “Can you give an example?”
+
+Give ONE short example only:
+
+const arr = [1, 2, 3];
+const copy = [...arr];
+
+🟡 If interviewer asks “What about functions?”
+
+Say one line:
+
+“It can be used to pass array values as individual arguments to a function.”
+
+
+What is the Spread Operator?
+
+The spread operator (...) in JavaScript allows you to expand iterable elements (arrays, strings, objects) into individual elements.
+It’s used for copying, merging, and passing arguments easily.
+
+

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+
+        //JavaScript Map Object
+
+        const food = [
+            { id: 1, title: 'sambar', like: 'veg', title: 'New sambar' },  // <- i write one more title so its overwrite that  
+            { id: 2, title: 'biriyani', like: 'non-veg' },               //They introduced a Map object to solve this problem correctly.
+            { id: 3, title: 'rasam', like: 'veg' }
+        ]
+
+        console.log(food[0].title);
+
+
+        //Pushing value to map
+
+        //Map 
+        //map used for unique key maintain 
+
+        const megi = new Map()
+        megi.set('water', '1.2liter')       //value push panna set
+        megi.set('msalas', 1)
+        megi.set('salt', "1 spon")
+        megi.set('chilly', '1 spoon')
+        // megi.set({},'empty obj')
+        // megi.set(function(){},'empty function')  // any datatypes format is support 
+        // megi.set(NaN,'not a number')
+
+        console.log(megi);   // The data comes in a key–value pair format.
+
+
+
+        //How to get values from Map object
+
+        console.log(megi.get('water')); //output  //1.2liter
+
+
+        //This method directly calls and works on arrays.
+        const mymap = new Map([
+            [1, 'one'],
+            [2, 'two']
+        ])
+
+        console.log(mymap.get(2));
+
+
+
+        //How to access map size
+
+        console.log(megi.size);  //To get the size of a Map, this is the syntax
+
+
+        //Map.has()
+
+        console.log('This is has', megi.has('water'));   // has() checks the key. If the key is not there, it returns false
+
+
+        //Map.clear()
+
+        //    megi.clear()   //if you want to clear map data use this Clear()
+
+
+
+        // Map.entries()
+        console.log(megi.entries());
+
+        for (let useThis of megi.entries()) {
+            console.log(useThis);           // [key, value]
+            // console.log(useThis[0]);     // key
+            // console.log(useThis[0], useThis[1]); // key, value
+        }
+
+        // Destructuring is also supported
+        for (let [keyName, valueName] of megi.entries()) {
+            console.log(keyName, valueName);
+        }
+
+        // forEach usage
+        megi.forEach((ingredient,value) => {
+            console.log('forEach', ingredient,value);
+        });
+
+
+
+
+        //Map.values()
+
+        //i want keys only 
+        console.log(megi.keys());
+        // i want values only
+        console.log(megi.values());
+
+
+
+        //Map.delete()
+        megi.delete('salt')
+        // if you want to delete key use this 
+
+
+
+        const examplemap = new Map()
+        examplemap.set({}, 'Empty Object')
+
+        console.log(examplemap);
+
+        //Weakmap
+
+        const emptyobj = {}
+        const myweakmap = new WeakMap()
+
+        myweakmap.set(emptyobj, 'gowtham')
+
+        console.log(myweakmap.get(emptyobj));
+
+
+
+    </script>
+</body>
+
+</html>

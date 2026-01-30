@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Number Conversion & isNaN()</title>
+</head>
+
+<body>
+
+<h1>JavaScript Number Conversion & isNaN()</h1>
+<p>
+This page explains <b>parseInt()</b>, <b>parseFloat()</b>, <b>Number()</b>  
+and how <b>isNaN()</b> helps avoid calculation errors.
+</p>
+
+<hr>
+
+<h2>1. String to Number Conversion</h2>
+
+<h3>Example 1: Numeric String</h3>
+
+<pre>
+let values = "123.45";
+
+parseInt(values);   // 123
+parseFloat(values); // 123.45
+Number(values);     // 123.45
+</pre>
+
+<p><b>Explanation:</b></p>
+<ul>
+  <li><b>parseInt()</b> → integer part only</li>
+  <li><b>parseFloat()</b> → decimal allowed</li>
+  <li><b>Number()</b> → converts full string to number</li>
+</ul>
+
+<hr>
+
+<h3>Example 2: String with characters</h3>
+
+<pre>
+let value = "100px";
+
+parseInt(value);   // 100
+parseFloat(value); // 100
+Number(value);     // NaN
+</pre>
+
+<p><b>Why Number() fails?</b></p>
+<p>
+Number() requires the string to be <b>fully numeric</b>.  
+"100px" contains characters → conversion fails → NaN.
+</p>
+
+<hr>
+
+<h2>2. What is NaN?</h2>
+
+<p>
+<b>NaN</b> means <b>Not a Number</b>.  
+It appears when a numeric conversion fails.
+</p>
+
+<hr>
+
+<h2>3. Why isNaN() is Important?</h2>
+
+<p>
+We use <b>isNaN()</b> to check whether a value is a valid number
+before using it in calculations.
+</p>
+
+<hr>
+
+<h3>Example 3: Conversion Failure Check</h3>
+
+<pre>
+let value1 = Number("abc");
+
+if (isNaN(value1)) {
+  console.log("Conversion failed");
+} else {
+  console.log("Conversion successful");
+}
+</pre>
+
+<p><b>Output:</b> Conversion failed</p>
+
+<hr>
+
+<h3>Example 4: Safe Calculation (Real Use Case)</h3>
+
+<pre>
+let inputs = "100px";
+let numbers = Number(inputs);
+
+if (isNaN(numbers)) {
+  console.log("Invalid number");
+} else {
+  console.log(numbers + 20);
+}
+</pre>
+
+<p><b>Output:</b> Invalid number</p>
+
+<p>
+👉 Without <b>isNaN()</b>, calculation would break.  
+👉 This avoids wrong results.
+</p>
+
+<hr>
+
+<h3>Example 5: Valid Number</h3>
+
+<pre>
+let input = "50";
+let number = Number(input);
+
+if (isNaN(number)) {
+  console.log("Invalid");
+} else {
+  console.log(number + 10);
+}
+</pre>
+
+<p><b>Output:</b> 60</p>
+
+<hr>
+
+<h2>4. Quick Comparison Table</h2>
+
+<table border="1" cellpadding="8">
+  <tr>
+    <th>Method</th>
+    <th>Behavior</th>
+  </tr>
+  <tr>
+    <td>parseInt()</td>
+    <td>Extracts integer, ignores characters</td>
+  </tr>
+  <tr>
+    <td>parseFloat()</td>
+    <td>Extracts decimal number</td>
+  </tr>
+  <tr>
+    <td>Number()</td>
+    <td>Strict conversion (fails if not fully numeric)</td>
+  </tr>
+  <tr>
+    <td>isNaN()</td>
+    <td>Checks if value is NOT a valid number</td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>Interview Punchlines (Must Remember)</h2>
+
+<ul>
+  <li>parseInt and parseFloat can extract numbers from strings.</li>
+  <li>Number() is strict and fails if string contains characters.</li>
+  <li>isNaN() prevents invalid calculations.</li>
+</ul>
+
+<p><b>One-line interview answer:</b><br>
+“We use isNaN() to validate number conversions and prevent invalid calculations.”
+</p>
+
+<hr>
+
+<h3>END</h3>
+
+</body>
+</html>

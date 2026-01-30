@@ -1,0 +1,261 @@
+<script>
+    //1.Traverse an array
+
+    // const traverse = [10,20,30,40,50,60]
+
+    // for(let i =0; i<traverse.length; i++){
+    //     console.log(traverse[i]);
+
+    // }
+
+    //---------------------------------------------------------------------------------------------------------------------------------------
+
+    //2.Find sum of all elements
+
+    // const arr = [10, 20, 30, 40, 50];
+
+    // let sum = 0
+    // for (let i = 0; i < arr.length; i++) {
+    //     sum = sum + arr[i]
+    // }
+    // console.log(sum);
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+
+    //3.Find max element;
+
+    // const arr = [10,20,5,12,53,923,2122,1];
+
+    // let max = arr[0]
+
+    // for(let i=0;i<arr.length;i++){
+    //        if(arr[i]>max){
+    //         max = arr[i]
+    //        }
+
+    // }
+    // console.log("This is a Maximum",max);
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //4.Find min element;
+
+    // const finmin = [10,12,1,2,3,23,2,4,5,43,42323122,23232,1];
+
+    // let min = finmin[0];
+
+    // for(let i=0;i<finmin.length;i++){
+    //     if(finmin[i]<min){
+    //         min = finmin[i]
+    //     }
+    // }
+
+    // console.log('This is a Mininmum',min);
+
+
+
+    //----------------------------------------------------------------------------------------------------------------------------
+
+
+    //5.Count even & odd numbers
+
+    // const arr = [1,2,1,3,4,2,4,5,6,6,7,7,8,8,8,8,44,21,54,65,76,87,98,90,2];
+
+    // let even = 0;
+
+    // let odd = 0;
+
+    // for(let i=0;i<arr.length;i++){
+    //     if(arr[i]%2===0){
+    //         console.log('Even Number',arr[i])
+    //         even++
+
+    //     }else{
+    //         console.log('Odd Number',arr[i]);
+    //         odd++
+
+    //     }
+    // }
+    // console.log(`This is a Even Number ${even}`);
+    // console.log(`This is a Odd Number ${odd}`);
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //6.Reverse an array
+
+    // const reverse = [10,20,30,40,50];
+
+    // for(let i = reverse.length-1;i>=0;i--){
+    //     console.log(reverse[i]);
+
+    // }
+
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //7.Copy one array to another
+
+    // const arr = [10,32,1,32,54,321];
+    // const arrcopy = [];                 //  const arrcopy = [...arr];
+
+    // for(let i =0 ; i<arr.length;i++){
+    //     arrcopy.push(arr[i])
+    // }
+    // console.log(arrcopy);
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //8.Check if array is sorted
+
+    // let arr = [10,20,30,40,50,60];
+    // let sorted = true ;
+
+    // for(let i=0 ; i<arr.length ; i++){
+    //     if(arr[i]>arr[i+1]){
+    //        sorted = false
+    //        break
+    //     }
+    // }
+    // console.log(sorted?"Order is Sorted":"Order is Not Shorted");
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //9.Find second largest
+
+    // let arr = [90,10,63];
+
+    // let largest = -Infinity
+    // let secondlargest = -Infinity
+
+    // for(let i = 0 ; i<arr.length;i++){
+    //     if(arr[i]>largest){
+    //         secondlargest = largest
+    //         largest = arr[i]
+    //     }else if(arr[i]>secondlargest && arr[i] !=largest){
+    //         secondlargest = arr[i]
+    //     }
+    // }
+
+    // console.log("This is Largest Number :",largest);
+    // console.log("This is Second Largest Number :",secondlargest);
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //10.Find second smallest
+
+    // const arr = [20, 12, 2, 32, 43, 55, 98];
+    // let smallest = Infinity
+    // let secondsmallest = Infinity
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     if (arr[i] < smallest) {
+    //         secondsmallest = smallest
+    //         smallest = arr[i]
+    //     } else if (arr[i] < secondsmallest && arr[i] != smallest) {
+    //         secondsmallest = arr[i]
+    //     }
+    // }
+    // console.log("This is a Smallest Values :", smallest);
+    // console.log("This is a Second Smallest Values :", secondsmallest);
+
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //11.Remove first element;
+
+
+    // const arr = [10,20,30,40,50,60];
+    // const newarr = [];
+
+    // for(let i =1 ; i<arr.length;i++){
+    //     newarr.push(arr[i])
+    // }
+    // console.log("ReMove The First Element Of An Array",newarr);
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //12.Insert element at given index;
+
+    // let arr = [10,20,30,40,50];
+    // let index = 2;
+    // let value = 23
+    // let newarray = [];
+
+    // for(let i = 0 ; i<arr.length;i++){
+    //     if(index === i){
+    //         newarray.push(value)
+    //     }
+    //     newarray.push(arr[i])
+    // }
+    // console.log(newarray);
+
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //13.Delete element at given index ;
+
+    // const arr = [10, 20, 30, 40, 50, 53, 72];
+    // const deleteindex = 1
+    // const onemoredelete = 0
+    // const threeindexdelete = 4
+    // const newarrays = [];
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     if (i !== deleteindex && i !== onemoredelete && i !== threeindexdelete) {
+    //         newarrays.push(arr[i])
+    //     }
+
+    // }
+    // console.log(`This is a Delete Element`, newarrays);
+
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //14.Count positive / negative
+
+    // const arr = [10,21,32,-12,11,-82,-62,-45,92,98,86,12,23,84,-1,-4,-9,-6,-5,-1,-2,-0,1]
+    // let positive = 0;
+    // let negative = 0;
+
+    // for(let i = 0; i<arr.length ; i++){
+    //     if(arr[i] > 0){
+    //         positive++
+    //     }else if(arr[i] < 0){
+    //         negative++
+    //     }
+    // }
+    // console.log("This is a Positive Number:",positive);
+    // console.log("This is a Negative Number:",negative);
+    
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //15.Find average of array;
+
+    // const arr = [10,20,30,40];
+    // let sum = 0; 
+
+    // for(let i = 0 ; i<arr.length;i++){
+    //     sum = sum + arr[i]
+    // }
+
+    // let average = sum / arr.length
+
+    // console.log("I Find My Avarage Arrays :",average);
+    
+
+    
+</script>

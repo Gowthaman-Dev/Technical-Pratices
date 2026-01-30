@@ -1,0 +1,177 @@
+React Day 1 Task
+
+
+1.What is the difference between a normal HTML webpage and a React webpage?
+
+i)HTML Webpage (Traditional Way)
+
+     ->The webpage is static and less interactive
+
+     ->Page refresh happens for most updates
+
+     ->Code structure becomes big & hard to manage when project grows
+
+     ->No component system (same UI repeated manually)
+
+ii)React Webpage (Modern Way)
+
+     ->React creates dynamic & interactive UI
+
+     ->No page refresh—updates happen using virtual DOM
+
+     ->Code is reusable using components
+ 
+     ->Faster rendering & better performance
+
+     ->Suitable for single-page applications (SPA)
+
+
+English:
+“HTML webpages are static and reload-based, but React webpages are dynamic, fast, reusable, and built using components with virtual DOM.”
+
+Tamil:
+“HTML webpage static-a irukum, reload pannina thaan update varum. React webpage dynamic-a irukum, fast-a work pannum, component reuse panni build pannuvanga, refresh theva illa.”
+
+
+
+
+
+2.What is the difference between React and Angular?
+
+
+->React
+
+React is a JavaScript library for building UI using components. It uses virtual DOM, supports one-way data binding, offers high flexibility, and we can choose our own packages like routing, state management, etc.
+
+
+Tamil Explanation
+
+React is JS UI library. Idhu very flexible, component based, virtual DOM use pannum, so speed & performance nalla irukum. Neenga ungala venumnaana library-ah choose pannalam.
+
+
+->Angular
+
+
+Angular is a complete framework built using TypeScript. It has two-way data binding, in-built features (routing, forms, http), and follows strong structure but has a steeper learning curve.
+
+
+Tamil Explanation
+
+
+Angular one full framework, ellame in-built ah kudukkum (routing, http, forms). Two-way data binding irukum and TypeScript mandatory. Learning konjam hard ana full structure irukum.
+
+
+
+
+3: What is TypeScript?
+
+
+TypeScript is a superset of JavaScript that adds static typing and compiles into normal JavaScript. It helps catch errors during development and makes code more predictable and maintainable.
+
+Tamil Explanation
+
+TypeScript nu solradhu JavaScript-oda upgraded version or super-set.
+Adhu la type system irukum (string, number, boolean etc.) so run-time error varadha development time-la kandu pudikka help pannum.
+Finally, TypeScript JavaScript-aa convert aagi browser-la run aagum
+
+
+
+
+4.in web development process why node is coming ?
+
+
+Node.js is used in web development because it allows JavaScript to run on the server-side, not just in the browser. It enables fast, scalable, real-time applications, handles multiple requests efficiently using non-blocking I/O, and provides access to npm, which offers thousands of useful packages for development.
+
+Tamil Explanation
+
+Node.js JavaScript-a server side-la run panna use aagum.
+Before Node.js, JS browser la mattum run aach.
+Node vandhadhunaala front-end + back-end rendu me JavaScript-la develop panlaam.
+Adhu mela Node.js fast, scalable, asynchronous (non-blocking) so multiple users requests handle panna romba suited.
+
+
+
+
+
+5.which one come first node or angular or react ? 
+
+
+Node.js came first in 2009, AngularJS came next in 2010, and React was released later in 2013.
+
+Tamil Explanation
+
+Mudhal la vandhadhu Node.js (2009) — JavaScript-a server side la run panna use pannanga.
+
+Next Angular (2010) — Full framework for building SPA applications.
+
+Last la React (2013) — UI library for fast rendering using Virtual DOM
+
+
+
+
+
+6. CRA AND VITE LA iruka files and folder kulam enna artham ?
+
+
+📁1️.node_modules
+
+இதில் project-க்கு தேவையான all dependencies, libraries, packages எல்லாம் இருக்கும்.
+
+Example: React, React-DOM, testing libraries, babel, webpack etc.
+
+இது very large folder, அதனாலே இப்போ தானே download ஆகும்; GitHub-லா upload பண்ணாதீங்க (.gitignore protects it).
+
+Tamil Meaning:
+
+இந்த folder-ல react project run ஆக தேவையான எல்லா software files-களும் இருக்கும்.
+
+📁 2️.public
+
+Browser-ல் load ஆகும் static files இருக்கும் folder.
+
+இதுல mostly index.html தான் important.
+
+Logo, favicons, images also put here if needed.
+
+Tamil Meaning:
+
+User-க்கு directly காட்டுற main HTML file இங்க இருக்கும்.
+
+📁 3️.src (source code folder)
+
+Most important folder!
+உங்க complete React components, CSS, logic, API calls எல்லாம் இங்க எழுதுவோம்.
+
+இதுக்குள்ள இருக்கும் default files:
+
+File	                       Meaning
+App.js         	         Main component file (UI starts here)
+index.js	             Entry point of React, App.js render here
+App.css     	         Component styling
+index.css	             Global styling
+reportWebVitals.js	     Performance analysis (optional)
+setupTests.js	         Testing setup
+
+Tamil Meaning:
+
+React-oda main coding வேலை நடைபெறுற இடம்.
+
+📁 4️.package.json
+
+React project-oda settings + version + dependency list இருக்கும்.
+
+Commands like npm start, npm build also defined here.
+
+Tamil Meaning:
+
+இந்த file project-க்கு தேவையான software list மற்றும் project details store பண்ணி வைச்சிருக்கும்.
+
+📁 5️.gitignore
+
+GitHub-க்கு push பண்ணும்போது avoid வேண்டிய folders/files இங்கே list பண்ணிருப்போம்.
+
+Example: node_modules push ஆகாது.
+
+📁 6️.README.md
+
+Project-oda documentation & instructions.

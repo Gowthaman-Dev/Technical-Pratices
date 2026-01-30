@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+    <script>
+        //Object Destructuring
+
+        const person = {
+            firstname: "rocky",
+            lastname: "gowtham",
+            mylover:'Jerlin Monisha',
+            age: 21,
+            parent: {
+                father: "appa",
+                mother: "amma"
+            },
+            isalive: true,
+            fullname() {
+                return `${this.firstname} ${this.lastname}`;
+            }
+        };
+
+       // console.log(person.firstname,person.lastname);   
+       //ippudi pannurathu ku pathila 
+    
+              //ippudi pannalam
+        const {firstname,lastname} = person    
+        console.log(firstname,lastname);
+        
+
+        //assign defalut value
+         
+        const {age,favcolor ='red'} = person    // mela object la favcolor example blue nu iruntha athuthan varum anga yathuvum illathathu naalathan inga work aguthu
+        console.log(age,favcolor);
+        
+
+
+        // changing defalut value 
+        // syntax ; const {oldname:newname,properties} = object
+        const {mylover:mypondatti}= person
+        console.log(mypondatti);
+        
+
+
+        //destructuring without defining
+
+        let favnum1 , favnum2
+          ({favnum1,favnum2,...othervalue}={     // ithula ... 3doit vacha balance iruk value yellam vangalam 
+            favnum1: '2',
+            favnum2:'232',
+            favnum3:'32',
+            favnum4:'43',
+            favnum22:'23'
+          })
+          console.log(favnum1,favnum2,othervalue);
+
+         // const {...remaing} = person
+         // console.log(remaing);
+
+
+
+         //object destructuring in function 
+
+        /*  function displayuser(persondetails){
+            console.log(`My name is ${persondetails.fullname()} And My Age Is ${persondetails.age} Then My Uyire Is My Pondatti ${persondetails.mylover}`); */
+            
+            //ithuku pathila ippudiyum podalam 
+             function displayuser({firstname,lastname,age,mylover:mypondatti}){   //rename pannaum na 
+            console.log(`My name is ${firstname} ${lastname} And My Age Is ${age} Then My Uyire Is My Pondatti ${mypondatti}`);
+            
+         }
+         displayuser(person)
+          
+          
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+Topic Name:
+
+Key Points: 
+
+Code Example:
+
+Predict Output:
+
+Explain Why:
+
+Name the Concept: 
+
+Optional Notes:
+
+
+
+1.what is javascript ?
+
+2.variables ?
+
+3.keywords ?
+
+4.declaration phase (memory creation phases) ?
+
+5.execution phase ?
+
+6.upper , camel , pascel , snake case ?
+
+7.type of using js in web application ?
+
+     i)internal 
+
+     ii)external
+
+8.access phase :
+
+   printing sataement ? example:console.log()
+
+
+9.let and var without initialization give undefined, but const must be initialized or it throws a SyntaxError. ? why ?
+
+
+
+10.exection phase 
+
+   i)initialization part 
+   ii)variable keyword , variable name = data 
+
+
+11.what are all data we have in js 
+
+       i) primitive datatypes
+       ii) non-primitive datatypes
+       iii) reference type
+       iv) reference type store 
+
+
+
+12.An array of objects is still an object in JavaScript because arrays are implemented as objects internally?
+
+
+13.what is 
+
+    i)    array
+    ii)   array of object 
+    iii)  object  
+    iv)   function
+
+
+
+14.operators ?
+
+Arithmetic (கணக்கு):   + - * / % **
+
+Assignment:              = += -= *= /=
+
+Comparison:              == === != !== > < >= <=
+
+Logical:                 && || !
+
+Unary:                   ++ -- typeof
+
+Ternary:                 ? :
+
+
+
+
+15.ES6 (ECMAScript 2015) Introduced 2 Main Operators
+
+       i)Spread Operator (…)->Used to expand arrays/objects.
+       ii)Rest Operator (…)->Used in function parameters to collect remaining values.   
+
+
+
+
+
+
+
+
+

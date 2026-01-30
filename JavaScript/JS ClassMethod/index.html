@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript Interview Questions & Answers</title>
+</head>
+
+<body>
+
+<h1>JavaScript Interview Questions & Answers</h1>
+<hr>
+
+<h2>1. What is JavaScript?</h2>
+
+<p><b>Answer:</b><br>
+JavaScript is a high-level, interpreted programming language used to make web pages interactive.
+</p>
+
+<h3>One Line Definition</h3>
+<p>
+JavaScript (JS) is a high-level programming language mainly used for interactive web applications.
+</p>
+
+<h3>Difference between JS and Other Languages</h3>
+<ul>
+  <li>JavaScript runs mostly in the browser (client-side).</li>
+  <li>It is loosely typed.</li>
+  <li>Supports event-driven and functional programming.</li>
+</ul>
+
+<hr>
+
+<h2>2. Variables</h2>
+
+<h3>Difference between var, let, const</h3>
+
+<table border="1">
+<tr>
+  <th>Keyword</th>
+  <th>Scope</th>
+  <th>Reassign</th>
+  <th>Redeclare</th>
+</tr>
+<tr>
+  <td>var</td>
+  <td>Function</td>
+  <td>Yes</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>let</td>
+  <td>Block</td>
+  <td>Yes</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>const</td>
+  <td>Block</td>
+  <td>No</td>
+  <td>No</td>
+</tr>
+</table>
+
+<h3>Can you reassign a const variable?</h3>
+<p>
+No. But object/array values inside const can be modified.
+</p>
+
+<pre>
+const arr = [1,2,3];
+arr.push(4); // Works
+</pre>
+
+<hr>
+
+<h2>3. Keywords</h2>
+
+<h3>Some Reserved Keywords</h3>
+<p>
+break, case, catch, class, const, continue, for, function, if, let, return, switch, this, try, typeof, var, while
+</p>
+
+<h3>Can we use keywords as variable names?</h3>
+<p>
+No. Keywords are reserved.
+</p>
+
+<pre>
+var let = 10; // Error
+</pre>
+
+<h3>Rules for Variable Names</h3>
+<ul>
+  <li>Can contain letters, digits, _ and $</li>
+  <li>Cannot start with digit</li>
+  <li>Cannot use keywords</li>
+  <li>Case-sensitive</li>
+</ul>
+
+<hr>
+
+<h2>4. Declaration Phase (Memory Creation)</h2>
+
+<p>
+Before execution, JS engine allocates memory for variables and functions.
+</p>
+
+<ul>
+  <li>var → initialized with undefined</li>
+  <li>let & const → created but not initialized</li>
+</ul>
+
+<h3>Hoisting</h3>
+
+<pre>
+console.log(a); // undefined
+var a = 5;
+
+console.log(b); // ReferenceError
+let b = 10;
+</pre>
+
+<hr>
+
+<h2>5. Execution Phase</h2>
+
+<p>
+Code runs line by line and values are assigned.
+</p>
+
+<table border="1">
+<tr>
+  <th>Declaration Phase</th>
+  <th>Execution Phase</th>
+</tr>
+<tr>
+  <td>Memory allocation</td>
+  <td>Value assignment</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>6. Naming Conventions</h2>
+
+<ul>
+  <li><b>UPPER CASE:</b> TOTAL_COUNT</li>
+  <li><b>Camel Case:</b> userName</li>
+  <li><b>Pascal Case:</b> UserProfile</li>
+  <li><b>Snake Case:</b> user_name</li>
+</ul>
+
+<hr>
+
+<h2>7. Using JS in Web Application</h2>
+
+<table border="1">
+<tr>
+  <th>Internal JS</th>
+  <th>External JS</th>
+</tr>
+<tr>
+  <td>Inside HTML</td>
+  <td>Separate .js file</td>
+</tr>
+<tr>
+  <td>Not reusable</td>
+  <td>Reusable</td>
+</tr>
+<tr>
+  <td>Slower</td>
+  <td>Better performance</td>
+</tr>
+</table>
+
+<p><b>Best:</b> External JavaScript</p>
+
+<hr>
+
+<h2>8. Printing Statements</h2>
+
+<ul>
+  <li>console.log()</li>
+  <li>alert()</li>
+  <li>document.write()</li>
+</ul>
+
+<hr>
+
+<h2>9. let & var vs const</h2>
+
+<p>
+let and var without value → undefined
+</p>
+
+<p>
+const without value → Error
+</p>
+
+<hr>
+
+<h2>10. Memory Allocation vs Assignment</h2>
+
+<table border="1">
+<tr>
+  <th>Memory Allocation</th>
+  <th>Assignment</th>
+</tr>
+<tr>
+  <td>Reserves space</td>
+  <td>Stores value</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>11. Data Types</h2>
+
+<h3>Primitive Types</h3>
+<p>
+Number, String, Boolean, Undefined, Null, BigInt, Symbol
+</p>
+
+<h3>Non-Primitive Types</h3>
+<p>
+Object, Array, Function
+</p>
+
+<p>
+Primitive → Stack memory<br>
+Reference → Heap memory (address in stack)
+</p>
+
+<hr>
+
+<h2>12. Array of Objects</h2>
+
+<p>
+typeof array → "object"
+</p>
+
+<p>
+Check array:
+</p>
+
+<pre>
+Array.isArray(arr);
+</pre>
+
+<hr>
+
+<h2>13. JS Data Structures</h2>
+
+<pre>
+let arr = [1,2,3];
+
+let obj = { name: "Gowtham" };
+
+let students = [
+  { name: "A" },
+  { name: "B" }
+];
+
+function greet() {
+  console.log("Hello");
+}
+</pre>
+
+<hr>
+
+<h2>14. Operators</h2>
+
+<ul>
+  <li>Arithmetic</li>
+  <li>Comparison</li>
+  <li>Logical</li>
+  <li>Assignment</li>
+  <li>Unary</li>
+  <li>Ternary</li>
+</ul>
+
+<pre>
+a + b
+a === b
+a && b
+a += 1
+++a
+age > 18 ? "Yes" : "No"
+</pre>
+
+<hr>
+
+<h2>15. ES6 Operators</h2>
+
+<h3>Spread Operator</h3>
+
+<pre>
+let a = [1,2];
+let b = [...a,3];
+</pre>
+
+<h3>Rest Operator</h3>
+
+<pre>
+function add(...nums){
+  return nums.reduce((s,n)=>s+n,0);
+}
+</pre>
+
+<hr>
+
+<h2>Interview Winning Line</h2>
+
+<p>
+<b>
+JavaScript is a loosely typed, interpreted language with hoisting and execution phases.
+</b>
+</p>
+
+<hr>
+
+<h3>END</h3>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Object to be destructured
+        const person = {
+            firstname: "rocky",
+            lastname: "gowtham",
+            mylover: 'Jerlin Monisha',
+            age: 21,
+            parent: {
+                father: "appa",
+                mother: "amma"
+            },
+            isalive: true,
+            fullname() {
+                return `${this.firstname} ${this.lastname}`;
+            }
+        };
+
+        // Basic Destructuring: Extracting properties into variables with the same name
+        // console.log(person.firstname,person.lastname); // Traditional way
+        const {firstname, lastname} = person;
+        console.log(firstname, lastname);
+
+        // Assigning Default Values: 'favcolor' will be 'red' because the property does not exist in 'person'
+        const {age, favcolor = 'red'} = person;
+        // If 'favcolor' existed in the object (e.g., favcolor: 'blue'), that value would be used instead
+        console.log(age, favcolor);
+
+        // Renaming Properties: Assigning an object property to a new variable name
+        // Syntax: const { oldPropertyName: newVariableName } = object
+        const {mylover: mypondatti} = person;
+        console.log(mypondatti);
+
+        // Destructuring without declaration: Useful when variables are already declared
+        let favnum1, favnum2;
+        // The parentheses are required when destructuring without declaration to avoid syntax errors
+        ({favnum1, favnum2, ...othervalue} = { // Using the rest syntax (...) to capture the remaining properties
+            favnum1: '2',
+            favnum2: '232',
+            favnum3: '32',
+            favnum4: '43',
+            favnum22: '23'
+        });
+        console.log(favnum1, favnum2, othervalue);
+
+        // Object Destructuring in Function Parameters: simplifies accessing properties within a function
+        /* Traditional function syntax:
+        function displayuser(persondetails){
+            console.log(`My name is ${persondetails.fullname()} And My Age Is ${persondetails.age} Then My Uyire Is My Pondatti ${persondetails.mylover}`);
+        }
+        */
+        // Destructured function syntax, also demonstrating renaming 'mylover' to 'mypondatti'
+        function displayuser({firstname, lastname, age, mylover: mypondatti}) {
+            console.log(`My name is ${firstname} ${lastname} And My Age Is ${age} Then My Uyire Is My Pondatti ${mypondatti}`);
+        }
+
+        displayuser(person);
+    </script>
+</body>
+</html>
+

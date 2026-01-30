@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript Concepts (Complete Tamil)</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; background: #f5f5f5; }
+    h1, h2, h3 { color: #333; }
+    pre { background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    table { border-collapse: collapse; margin: 10px 0; width: 100%; }
+    table, th, td { border: 1px solid #333; padding: 5px 10px; }
+    ul { margin: 5px 0 15px 20px; }
+    hr { margin: 30px 0; }
+    .note { color: #d9534f; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h1>JavaScript Concepts (Complete Tamil)</h1>
+
+<hr>
+<h2>✅ 1. Set na enna?</h2>
+<p>Set என்பது JavaScript-ல இருக்குற ஒரு data structure.</p>
+<ul>
+  <li>👉 Unique values மட்டும் store பண்ணும்</li>
+  <li>👉 Duplicate values automatically remove பண்ணும்</li>
+</ul>
+<pre>
+const set = new Set([1, 2, 2, 3]);
+console.log(set); // {1, 2, 3}
+</pre>
+
+<h3>🔁 Set yen iterable?</h3>
+<pre>
+for (let val of set) {
+  console.log(val);
+}
+</pre>
+<p>Output:</p>
+<pre>
+1
+2
+3
+</pre>
+<p>👉 Set உள்ள values-ஐ order-ஆ iterate பண்ணும்.</p>
+
+<h3>🤔 Set yen use pannrom?</h3>
+<ul>
+  <li>Duplicate values avoid பண்ண automatically</li>
+  <li>Fast lookup: set.has(2)</li>
+  <li>Cleaner code: [...new Set([1,2,2,3])]</li>
+  <li>Iteration easy: for...of, spread, destructuring</li>
+</ul>
+
+<h3>🧠 Set vs Array</h3>
+<table>
+<tr><th>Set</th><th>Array</th></tr>
+<tr><td>Unique values only</td><td>Duplicates allowed</td></tr>
+<tr><td>No index</td><td>Index exists</td></tr>
+<tr><td>Fast lookup</td><td>Slower lookup</td></tr>
+<tr><td>Iterable</td><td>Iterable</td></tr>
+</table>
+
+<p><b>Fresher Interview One-liner:</b> Set is a built-in JavaScript object used to store unique values, and it is iterable, so we can loop through its values using for...of.</p>
+
+<hr>
+<h2>✅ 2. for...in na enna?</h2>
+<p>for...in loop 👉 object-ல இருக்குற keys (properties)-ஐ loop பண்ண use பண்ணுறோம்</p>
+<pre>
+const user = { name: "Ram", age: 25 };
+
+for (let key in user) {
+  console.log(key, user[key]);
+}
+</pre>
+<p>Output:</p>
+<pre>
+name Ram
+age 25
+</pre>
+
+<p class="note">❌ Array values loop பண்ண for...in use பண்ண கூடாது. for...of use பண்ண வேண்டும்.</p>
+
+<hr>
+<h2>✅ 3. Object inside Set – Example</h2>
+<pre>
+const user1 = { name: "Ram" };
+const user2 = { name: "Ram" };
+
+const mySet = new Set();
+mySet.add(user1);
+mySet.add(user2);
+
+console.log(mySet);
+</pre>
+<p>Output explanation: memory reference different → Set-ல் 2 objects store ஆகும்</p>
+
+<pre>
+for (let val of mySet) {
+  console.log(val.name);
+}
+</pre>
+<p>Output:</p>
+<pre>
+Ram
+Ram
+</pre>
+
+<p>Important: Same object reference add பண்ணினா duplicate avoid ஆகும்:</p>
+<pre>
+const obj = { a: 1 };
+const s = new Set();
+s.add(obj);
+s.add(obj);
+console.log(s.size); // 1
+</pre>
+
+<p><b>Interview One-liner:</b> Set can store objects, but uniqueness is based on reference, not on object content.</p>
+
+<hr>
+<h2>✅ 4. Map with Object / Array value</h2>
+
+<h3>Option 1: value as Object</h3>
+<pre>
+let map = new Map([
+  ['name', { value: 'gowtham', extra: 'as' }],
+  ['age', { value: 22, extra: 'as' }]
+]);
+
+for (let [key, val] of map) {
+  console.log(key, val.value, val.extra);
+}
+</pre>
+<p>Output:</p>
+<pre>
+name gowtham as
+age 22 as
+</pre>
+
+<h3>Option 2: value as Array</h3>
+<pre>
+let map = new Map([
+  ['name', ['gowtham', 'as']],
+  ['age', [22, 'as']]
+]);
+
+for (let [key, [value, asd]] of map) {
+  console.log(key, value, asd);
+}
+</pre>
+<p>Output:</p>
+<pre>
+name gowtham as
+age 22 as
+</pre>
+
+<p><b>Interview One-liner:</b> A Map stores data as key–value pairs only. If we need more data, we store it inside the value as an object or array.</p>
+
+<hr>
+<h2>✅ 5. Looping objects inside Array</h2>
+
+<h3>for...of loop (Recommended)</h3>
+<pre>
+let obj = {name:'gowtham',age:21};
+let obj1 = {name:'moni',age:26};
+
+for(let objs of [obj,obj1]){
+    console.log(objs.name, objs.age);
+}
+</pre>
+<p>Output:</p>
+<pre>
+gowtham 21
+moni 26
+</pre>
+
+<h3>forEach loop</h3>
+<pre>
+[obj, obj1].forEach(o => {
+    console.log(o.name, o.age);
+});
+</pre>
+<p>Output:</p>
+<pre>
+gowtham 21
+moni 26
+</pre>
+
+<hr>
+<p><b>Tip:</b> இதெல்லாம் முழுமையாக cover பண்ணினா fresher interview-க்கு **Set, Map, for...in, for...of, Object inside Set** topic perfect.</p>
+
+</body>
+</html>

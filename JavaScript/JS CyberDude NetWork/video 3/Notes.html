@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript Object Destructuring – Interview Practice Notes</title>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #1f6feb;
+      margin-top: 30px;
+    }
+
+    p {
+      font-size: 16px;
+    }
+
+    pre {
+      background-color: #1e1e1e;
+      color: #dcdcdc;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 14px;
+    }
+
+    strong {
+      color: #000;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 30px 0;
+    }
+
+    p:last-of-type {
+      background-color: #e8f4ff;
+      padding: 15px;
+      border-left: 5px solid #1f6feb;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>JavaScript Object Destructuring – Interview Practice Notes (Simple English)</h1>
+
+<p>
+Object destructuring in JavaScript is a useful feature that allows us to extract properties from an object and store them in variables.
+It makes the code cleaner and easier to read compared to accessing properties one by one.
+</p>
+
+<hr>
+
+<h2>1. Basic Destructuring</h2>
+
+<p>
+We can extract object properties into variables using the same property names.
+</p>
+
+<p><strong>Syntax:</strong></p>
+<pre>
+const { property1, property2 } = objectName;
+</pre>
+
+<p><strong>Example:</strong></p>
+<pre>
+const person = { firstname: "rocky", lastname: "gowtham" };
+const { firstname, lastname } = person;
+
+console.log(firstname, lastname); // rocky gowtham
+</pre>
+
+<p>
+👉 This avoids writing person.firstname and person.lastname repeatedly.
+</p>
+
+<hr>
+
+<h2>2. Assigning Default Values</h2>
+
+<p>
+If a property does not exist in the object, we can give a default value.
+This helps to avoid undefined.
+</p>
+
+<p><strong>Syntax:</strong></p>
+<pre>
+const { propertyName = defaultValue } = objectName;
+</pre>
+
+<p><strong>Example:</strong></p>
+<pre>
+const { age, favcolor = "red" } = person;
+console.log(age, favcolor); // 21 red
+</pre>
+
+<p>
+👉 If favcolor exists in the object, that value will be used instead of "red".
+</p>
+
+<hr>
+
+<h2>3. Renaming Properties (Aliasing)</h2>
+
+<p>
+We can rename a property while destructuring.
+</p>
+
+<p><strong>Syntax:</strong></p>
+<pre>
+const { oldPropertyName: newVariableName } = objectName;
+</pre>
+
+<p><strong>Example:</strong></p>
+<pre>
+const { mylover: mypondatti } = person;
+console.log(mypondatti); // Jerlin Monisha
+</pre>
+
+<p>
+👉 This is useful to avoid name conflicts or to use clearer variable names.
+</p>
+
+<hr>
+
+<h2>4. Destructuring without Declaration</h2>
+
+<p>
+If variables are already declared, we can still use destructuring.
+In this case, we must wrap the statement in parentheses ().
+</p>
+
+<p><strong>Syntax:</strong></p>
+<pre>
+let var1, var2;
+({ var1, var2 } = objectName);
+</pre>
+
+<p><strong>Example:</strong></p>
+<pre>
+let favnum1, favnum2;
+
+({ favnum1, favnum2, ...othervalue } = {
+  favnum1: "2",
+  favnum2: "232",
+  favnum3: "32",
+  favnum4: "43",
+  favnum22: "23"
+});
+
+console.log(favnum1, favnum2, othervalue);
+</pre>
+
+<p>
+👉 Parentheses are required so JavaScript does not treat {} as a block.
+</p>
+
+<hr>
+
+<h2>5. Using the Rest Syntax (...)</h2>
+
+<p>
+The rest syntax collects all remaining properties into a new object.
+</p>
+
+<p><strong>Syntax:</strong></p>
+<pre>
+const { prop1, ...restOfProperties } = objectName;
+</pre>
+
+<p>
+othervalue contains favnum3, favnum4, and favnum22.
+</p>
+
+<p>
+👉 This is useful when we want some values separately and the rest as an object.
+</p>
+
+<hr>
+
+<h2>6. Destructuring in Function Parameters</h2>
+
+<p>
+We can destructure an object directly inside a function’s parameter list.
+This makes the function code cleaner and easier to understand.
+</p>
+
+<p><strong>Syntax:</strong></p>
+<pre>
+function functionName({ property1, property2 }) { }
+</pre>
+
+<p><strong>Example:</strong></p>
+<pre>
+function displayuser({ firstname, lastname, age, mylover: mypondatti }) {
+  console.log(
+    `My name is ${firstname} ${lastname} And My Age Is ${age} Then My Uyire Is My Pondatti ${mypondatti}`
+  );
+}
+
+displayuser(person);
+</pre>
+
+<hr>
+
+<h2>✅ Final Interview Practice Line (Say this confidently)</h2>
+
+<p>
+Object destructuring in JavaScript helps extract properties from objects, assign default values, rename variables, collect remaining properties, and simplify function parameters, making the code clean and readable.
+</p>
+
+</body>
+</html>

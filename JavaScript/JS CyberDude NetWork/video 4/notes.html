@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript Arrays – Interview Notes</title>
+
+  <!-- Simple CSS for better readability -->
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f8f9fa;
+      color: #222;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: #1e88e5;
+      margin-top: 30px;
+    }
+
+    h3 {
+      color: #444;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    pre {
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    hr {
+      border: none;
+      height: 1px;
+      background-color: #ccc;
+      margin: 30px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background-color: #fff;
+    }
+
+    th {
+      background-color: #1e88e5;
+      color: #fff;
+      text-align: left;
+      padding: 10px;
+    }
+
+    td {
+      padding: 10px;
+      vertical-align: top;
+    }
+
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+
+    strong {
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+<h1>JavaScript Arrays – Interview Notes (With Simple Explanation)</h1>
+
+<h2>What is an Array?</h2>
+
+<p>
+Arrays in JavaScript are used to store multiple values in a single variable.<br>
+An array can store different data types, such as numbers, strings, objects, and even other arrays (multi-dimensional arrays).
+</p>
+
+<p><strong>Interview line:</strong></p>
+<p>
+An array allows storing and managing multiple values under one variable name.
+</p>
+
+<hr>
+
+<h2>1. Declaring Arrays</h2>
+
+<p>There are two main ways to create arrays in JavaScript.</p>
+
+<h3>1️⃣ Array Constructor (Old Method)</h3>
+
+<pre>
+const freetime = new Array('Mobile using', 'Playing Game');
+</pre>
+
+<p>This is the older way of creating arrays.</p>
+<p>It works, but it is not recommended in modern JavaScript.</p>
+
+<h3>2️⃣ Array Literal Syntax (Preferred)</h3>
+
+<pre>
+const freetimes = ['Mobile using', 'Playing Game', 'RRR', 'KGF'];
+</pre>
+
+<p>This is the most commonly used and recommended method.</p>
+<p>It is simpler and more readable.</p>
+
+<p><strong>Interview line:</strong></p>
+<p>
+Array literal syntax is preferred over the Array constructor.
+</p>
+
+<hr>
+
+<h2>2. Accessing Array Values</h2>
+
+<p>
+Array values are accessed using index numbers.<br>
+Indexes always start from 0.
+</p>
+
+<pre>
+const freetimes = ['Mobile using', 'Playing Game', 'RRR', 'KGF'];
+
+console.log(freetimes[0]); // 'Mobile using'
+console.log(freetimes[3]); // 'KGF'
+</pre>
+
+<p>Index 0 → first element</p>
+<p>Index 3 → fourth element</p>
+
+<p><strong>Interview line:</strong></p>
+<p>
+JavaScript arrays use zero-based indexing.
+</p>
+
+<hr>
+
+<h2>3. Arrays of Objects</h2>
+
+<p>
+Arrays often store objects, especially when handling data from APIs or databases.<br>
+Arrays often store collections of objects, which is common when working with data (e.g., from an API): .
+</p>
+
+<pre>
+const foods = [
+  { id: 1, title: 'Chicken Biriyani', dietary: 'non-veg' },
+  { id: 2, title: 'Veg Biriyani', dietary: 'veg' },
+  { id: 3, title: 'Sambar', dietary: 'veg' }
+];
+</pre>
+
+<p><strong>Accessing an object using index</strong></p>
+
+<pre>
+console.log(foods[1]);
+</pre>
+
+<p>This returns the second object in the array.</p>
+
+<p><strong>Accessing a property inside the object</strong></p>
+
+<pre>
+console.log(foods[1].title); // 'Veg Biriyani'
+</pre>
+
+<p><strong>Interview line:</strong></p>
+<p>
+Arrays of objects are commonly used to store structured data like API responses.
+</p>
+
+<hr>
+
+<h2>4. Iterating Through Arrays (Loops)</h2>
+
+<table>
+  <tr>
+    <th>Loop Type</th>
+    <th>Explanation (Simple English)</th>
+    <th>Syntax Example</th>
+  </tr>
+  <tr>
+    <td>for loop</td>
+    <td>
+      Traditional loop that uses an index number. We manually control the start,
+      end, and increment. Useful when we need full control over iteration.
+    </td>
+    <td>
+      for(let i = 0; i &lt; foods.length; i++) { console.log(foods[i].title); }
+    </td>
+  </tr>
+  <tr>
+    <td>for...in loop</td>
+    <td>
+      Iterates over the indexes (keys) of the array. Index is used to access the value.
+      Mostly used for objects, but can also be used with arrays.
+    </td>
+    <td>
+      for (let index in foods) { console.log(foods[index].title); }
+    </td>
+  </tr>
+  <tr>
+    <td>for...of loop</td>
+    <td>
+      Iterates over the values (elements) directly. No need to use index.
+      Cleaner and more readable.
+    </td>
+    <td>
+      for (let fooditem of foods) { console.log(fooditem.title); }
+    </td>
+  </tr>
+  <tr>
+    <td>forEach()</td>
+    <td>
+      A built-in array method used for iteration. Commonly used to display data in UI.
+      Executes a function for each array element.
+    </td>
+    <td>
+      foods.forEach(food => console.log(food.title))
+    </td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>5. Multi-dimensional Arrays</h2>
+
+<p><strong>Explanation (Simple English):</strong></p>
+<p>
+A multi-dimensional array is an array that contains other arrays inside it.<br>
+It is used to store data in rows and columns like a table or matrix.
+</p>
+
+<p><strong>Example:</strong></p>
+
+<pre>
+const matrix = [
+  [11, 12, 13],
+  [21, 22, 23],
+  [31, 32, 33],
+  [41, [53, 43, 23], 43]
+];
+
+console.log(matrix);
+</pre>
+
+<p>👉 Here, matrix is a multi-dimensional array because it has arrays inside another array.</p>
+<p>👉 One value ([53, 43, 23]) is nested even deeper.</p>
+
+<h3>Flattening Multi-dimensional Arrays</h3>
+
+<p><strong>Explanation (Simple English):</strong></p>
+<p>
+The .flat() method is used to convert a multi-dimensional array into a single array.<br>
+We can control how deep the array should be flattened using a number.
+</p>
+
+<table>
+  <tr>
+    <th>Method</th>
+    <th>Description</th>
+    <th>Output (for above example)</th>
+  </tr>
+  <tr>
+    <td>matrix.flat()</td>
+    <td>Flattens only one level by default</td>
+    <td>[11, 12, 13, 21, 22, 23, 31, 32, 33, 41, [53, 43, 23], 43]</td>
+  </tr>
+  <tr>
+    <td>matrix.flat(2)</td>
+    <td>Flattens up to 2 levels (or use Infinity for full flatten)</td>
+    <td>[11, 12, 13, 21, 22, 23, 31, 32, 33, 41, 53, 43, 23, 43]</td>
+  </tr>
+</table>
+
+<p>👉 If nested array depth is more, increase the flat value.</p>
+
+<p><strong>✅ Interview Line</strong></p>
+
+<p><strong>English:</strong><br>
+Multi-dimensional arrays store arrays inside arrays, and the flat() method is used to convert them into a single array.
+</p>
+
+<p><strong>Tamil (easy remember):</strong><br>
+Multi-dimensional array-na array-kulla array irukum; atha single array-a maatha flat() use pannuvom.
+</p>
+
+<hr>
+
+<h2>6. Example: Displaying Data on a Web Page</h2>
+
+<p><strong>Explanation (Simple English):</strong></p>
+<p>
+We can display array data on a web page by looping through the array and adding HTML dynamically using JavaScript.
+</p>
+
+<p><strong>Example Code:</strong></p>
+
+<pre>
+const resultElement = document.getElementById('result');
+
+foods.forEach(fooddisplay => {
+  resultElement.innerHTML += '&lt;li&gt;' + fooddisplay.title + '&lt;/li&gt;';
+});
+</pre>
+
+<p>👉 forEach() loops through each item in the array</p>
+<p>👉 innerHTML is used to add &lt;li&gt; elements dynamically</p>
+<p>👉 Commonly used for showing data in UI</p>
+
+<p><strong>✅ Interview Line</strong></p>
+
+<p>
+JavaScript arrays can be looped using forEach() to dynamically display data in the web page.
+</p>
+
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Problems with Global Variables - JavaScript</title>
+</head>
+
+<body>
+
+<h1>Problems with Global Variables in JavaScript</h1>
+<hr>
+
+<h2>2. Hard-to-Debug Issues</h2>
+
+<p>
+Global variables are difficult to debug because <b>any function can modify them</b>.
+When the output is wrong, it is hard to identify which part of the code caused the issue.
+</p>
+
+<h3>❌ Problematic Example (Hard to Debug)</h3>
+
+<pre>
+var count = 0; // global variable
+
+function increment() {
+  count++;
+}
+
+function reset() {
+  count = 0;
+}
+
+function logCount() {
+  console.log("Count:", count);
+}
+
+increment();   // count = 1
+increment();   // count = 2
+reset();       // ❗ value reset unexpectedly
+logCount();    // Output: Count: 0
+</pre>
+
+<h4>🤯 Why this is hard to debug?</h4>
+<ul>
+  <li>count is global</li>
+  <li>Any function can modify it</li>
+  <li>reset() silently changes the value</li>
+  <li>Hard to trace where the bug came from</li>
+</ul>
+
+<hr>
+
+<h2>3. Security Risks</h2>
+
+<p>
+Sensitive data stored in global scope can be accessed or modified
+by any script, including malicious or third-party scripts.
+</p>
+
+<h3>❌ Insecure Example (Global Sensitive Data)</h3>
+
+<pre>
+var authToken = "ABC123SECRET"; // global sensitive data
+
+function makeRequest() {
+  console.log("Using token:", authToken);
+}
+
+// malicious or third-party script
+function stealToken() {
+  console.log("Stolen token:", authToken);
+}
+
+stealToken(); // ❗ security risk
+</pre>
+
+<h4>🚨 Why this is a security risk?</h4>
+<ul>
+  <li>authToken is global</li>
+  <li>Any script can read or modify it</li>
+  <li>Malicious scripts can steal sensitive data</li>
+</ul>
+
+<h3>✅ Safer Approach (Encapsulation)</h3>
+
+<pre>
+function secureAuth() {
+  const authToken = "ABC123SECRET"; // private variable
+
+  return {
+    makeRequest() {
+      console.log("Using token:", authToken);
+    }
+  };
+}
+
+const auth = secureAuth();
+auth.makeRequest();
+
+// auth.authToken ❌ not accessible
+</pre>
+
+<p><b>Interview Punchline:</b><br>
+Storing sensitive data in global scope increases security risks because it can be accessed by any script.
+</p>
+
+<hr>
+
+<h2>4. Memory Leaks (Concept)</h2>
+
+<p>
+Global variables hold memory even when they are no longer needed.
+If closures or event handlers reference global data, garbage collection cannot free memory.
+</p>
+
+<p><b>Interview Punchline:</b><br>
+Global variables or unintended references can cause memory leaks because they prevent garbage collection.
+</p>
+
+<hr>
+
+<h2>5. Reduced Modularity</h2>
+
+<p>
+<b>Modularity</b> means dividing a program into small, independent modules.
+Using global variables tightly couples different parts of the code.
+</p>
+
+<h3>❌ Unsafe Example (Reduced Modularity)</h3>
+
+<pre>
+var userData = { name: "Gowtham", age: 22 }; // global
+
+function greetUser() {
+  console.log("Hello " + userData.name);
+}
+
+function updateAge(newAge) {
+  userData.age = newAge;
+}
+
+greetUser();
+updateAge(23);
+console.log(userData.age);
+</pre>
+
+<h4>Problem:</h4>
+<ul>
+  <li>Functions depend directly on global variable</li>
+  <li>Modules are not independent</li>
+  <li>Testing and reuse are difficult</li>
+</ul>
+
+<h3>✅ Safe / Modular Version</h3>
+
+<pre>
+function greetUser(user) {
+  console.log("Hello " + user.name);
+}
+
+function updateAge(user, newAge) {
+  return { ...user, age: newAge };
+}
+
+let user = { name: "Gowtham", age: 22 };
+greetUser(user);
+user = updateAge(user, 23);
+console.log(user.age);
+</pre>
+
+<h4>Why Safe?</h4>
+<ul>
+  <li>No global variables</li>
+  <li>Functions accept input and return output</li>
+  <li>Reusable, testable, maintainable</li>
+</ul>
+
+<hr>
+
+<h2>Reduced Modularity – UI Example</h2>
+
+<h3>❌ Unsafe Version (Global Variable)</h3>
+
+<pre>
+let count = 0;
+
+function increment() {
+  count++;
+}
+
+function decrement() {
+  count--;
+}
+</pre>
+
+<p>
+All logic depends on global <b>count</b>.
+As application grows, maintenance becomes difficult.
+</p>
+
+<h3>✅ Safe / Modular Version (Closure)</h3>
+
+<pre>
+const CounterModule = (function() {
+  let count = 0;
+
+  function updateDisplay() {
+    console.log(count);
+  }
+
+  return {
+    increment() {
+      count++;
+      updateDisplay();
+    },
+    decrement() {
+      count--;
+      updateDisplay();
+    },
+    getCount() {
+      return count;
+    }
+  };
+})();
+</pre>
+
+<h4>Benefits:</h4>
+<ul>
+  <li>count is private</li>
+  <li>No global pollution</li>
+  <li>Multiple counters possible</li>
+  <li>Easy to test and maintain</li>
+</ul>
+
+<hr>
+
+<h2>Final Interview Summary (Must Memorize)</h2>
+
+<ul>
+  <li>Global variables make debugging difficult</li>
+  <li>They increase security risks</li>
+  <li>They can cause memory leaks</li>
+  <li>They reduce modularity and maintainability</li>
+</ul>
+
+<p><b>One-Line Interview Answer:</b><br>
+Global variables should be avoided because they cause debugging issues, security risks, memory leaks, and reduce modularity.
+</p>
+
+<hr>
+
+<h3>END OF NOTES</h3>
+
+</body>
+</html>

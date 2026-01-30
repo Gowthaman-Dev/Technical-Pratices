@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <ol id="result"></ol>
+
+    <script>
+        //arrays  old method
+         const freetime = new Array('Moblie using', 'Playing Game')  // this is array constructor //constructor naa yappavum new nu podanum 
+         console.log(freetime);
+
+         // Array can hold multiple values of different datatypes 
+         //ithu mattam pannalam
+         
+         //Array Literal Syntax
+         const freetimes = ['Moblie using', 'Playing Game','RRR','KGF']
+        
+
+         //Accessing array values   
+          console.log(freetimes);
+          console.log(freetimes[3]); //one value access pannanum naa //itha loop pannanum na forloop vachi pannalam
+
+
+          //Array of Object 
+
+          const foods = [
+           {id:1, title:'Chicken Biriyani', dietary:'non-veg'} ,
+           {id:2, title:'Veg Biriyani', dietary:'veg'} ,
+           {id:3, title:'Sambar', dietary:'veg'} 
+          ]
+
+          //Accessing value
+          console.log(foods);
+          console.log(foods[1]);  //ithulam menuvala panram ithalam dynamic ka for loop la podum pothu automattic ka panra mari vaikalam 
+          console.log(foods[1].title );
+          
+          //Displaying array in webpage using for loops
+          document.getElementById('result').innerHTML =foods[1].title
+          
+          //forloop
+
+          for(let i = 0 ;i<foods.length;i++){
+               //console.log(foods[i]);    //yellam varum
+               console.log(foods[i].title);   // vulla iruka value mattum varum 
+          }
+
+           // for in loop 
+
+          for (let fooditem in foods){
+           // console.log(fooditem);
+           //console.log(foods[fooditem]);
+           console.log(foods[fooditem].title);
+          }
+
+          //for of loop
+          // ithula innum simple la vangalam 
+
+          for(let fooditems of foods){
+            //console.log(fooditems);   // direct ta vanthuruchi 
+            console.log('For of',fooditems.title);  // ithu mattam thaniya yedukanum na ippudiyum yedukalam         
+          }
+          
+
+          // ForEach la kuda pannalam
+          foods.forEach(food =>console.log(food))
+          foods.forEach(food =>console.log('ForEach',food.title))  // ithu mattam foreach la kuda pannalam 
+           // ithu mattam different ways la arrays la iruka value la display la show panna vaikalam
+
+           foods.forEach(fooddisplay => {
+            document.getElementById('result').innerHTML += '<li>'+ fooddisplay.title  + '</li>' 
+           })
+            
+
+
+
+
+           // Multi-dimensional Arrays
+           const matix = [
+            [11,12,13],
+            [21,22,23],
+            [31,32,33],
+            [41,[53,43,23],43]    //ithayum veliya yedukanum naa flat(2) nu podanum 
+           ]
+           console.log(matix);
+           console.log(matix.flat());  // itha poda ithalam yeduthudu veliya podurum
+           console.log(matix.flat(2));
+            
+
+
+
+           
+           
+    </script>
+</body>
+
+</html>

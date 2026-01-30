@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Null, Array, Object Check in JavaScript</title>
+</head>
+<body>
+
+<h1>Checking null, Array, and Object in JavaScript</h1>
+
+<h2>1️⃣ Checking <code>null</code></h2>
+
+<pre>
+&lt;script&gt;
+let value = null;
+
+if (value === null) {
+  console.log("Value is null");
+}
+&lt;/script&gt;
+</pre>
+
+<p><b>Output:</b></p>
+<pre>
+Value is null
+</pre>
+
+<hr>
+
+<h2>2️⃣ Checking Array using <code>Array.isArray()</code></h2>
+
+<pre>
+&lt;script&gt;
+let numbers = [1, 2, 3];
+let name = "Rocky";
+
+if (Array.isArray(numbers)) {
+  console.log("numbers is an array");
+}
+
+if (!Array.isArray(name)) {
+  console.log("name is not an array");
+}
+&lt;/script&gt;
+</pre>
+
+<p><b>Output:</b></p>
+<pre>
+numbers is an array
+name is not an array
+</pre>
+
+<hr>
+
+<h2>3️⃣ Problem with <code>typeof</code></h2>
+
+<pre>
+&lt;script&gt;
+let a = null;
+let b = [1, 2, 3];
+let c = { name: "Rocky" };
+
+console.log(typeof a); // object (❌ misleading)
+console.log(typeof b); // object (❌ misleading)
+console.log(typeof c); // object
+&lt;/script&gt;
+</pre>
+
+<p><b>Output:</b></p>
+<pre>
+object
+object
+object
+</pre>
+
+<hr>
+
+<h2>4️⃣ Correct Way to Identify Each Type</h2>
+
+<pre>
+&lt;script&gt;
+console.log(a === null); // true
+console.log(Array.isArray(b)); // true
+console.log(
+  typeof c === "object" && c !== null && !Array.isArray(c)
+); // true
+&lt;/script&gt;
+</pre>
+
+<p><b>Output:</b></p>
+<pre>
+true
+true
+true
+</pre>
+
+<hr>
+
+<h2>🟢 Tamil Explanation</h2>
+
+<ul>
+    <li><b>null</b> check பண்ண strict equality (=== null) பயன்படுத்த வேண்டும்</li>
+    <li><b>Array</b> check பண்ண <code>Array.isArray()</code> மட்டுமே correct</li>
+    <li><b>typeof</b> null & array இரண்டுக்கும் <code>object</code>ன்னு காட்டும் (confusing)</li>
+    <li>Object check பண்ண: null இல்லாதது, array இல்லாதது confirm பண்ண வேண்டும்</li>
+</ul>
+
+<hr>
+
+<h2>🎯 One-Line Interview Answer</h2>
+
+<p><b>
+Use <code>value === null</code> to check null, <code>Array.isArray()</code> for arrays,
+and combine checks to safely identify objects.
+</b></p>
+
+</body>
+</html>

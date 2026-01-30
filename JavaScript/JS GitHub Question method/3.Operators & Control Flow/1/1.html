@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>== vs === in JavaScript</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    h2 {
+      color: #0b5ed7;
+      margin-top: 25px;
+    }
+
+    p {
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .example {
+      background: #f1f1f1;
+      padding: 10px;
+      border-left: 4px solid #0b5ed7;
+      font-family: monospace;
+      margin: 10px 0;
+    }
+
+    .recommended {
+      background: #e7f5ff;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    .interview {
+      background: #d1e7dd;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Difference Between == and ===</h1>
+
+    <h2>== (Double Equals – Loose Equality)</h2>
+    <p>
+      <b>==</b> compares only the values.  
+      JavaScript automatically converts data types before comparison.
+    </p>
+
+    <div class="example">
+      5 == '5'  → true <br>
+      ('5' is converted to number 5)
+    </div>
+
+    <h2>=== (Triple Equals – Strict Equality)</h2>
+    <p>
+      <b>===</b> compares both value and data type.  
+      It does NOT perform type conversion.
+    </p>
+
+    <div class="example">
+      5 === '5' → false <br>
+      (Number ≠ String)
+    </div>
+
+    <div class="recommended">
+      <h2>Which One Should We Use?</h2>
+      <p>
+        In JavaScript, <b>===</b> is recommended because it avoids unexpected bugs
+        caused by automatic type conversion.
+      </p>
+      <p>
+        <b>==</b> should be used only when type conversion is intentionally needed.
+      </p>
+    </div>
+
+    <div class="interview">
+      ⭐ One-line Interview Answer: <br>
+      “== checks only value with type coercion, while === checks both value and type
+      without type coercion.”
+    </div>
+  </div>
+</body>
+</html>
+

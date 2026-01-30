@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hoisting: Function Declarations vs Function Expressions</title>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f8fafc;
+      color: #1f2937;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h2 {
+      color: #1e40af;
+      border-left: 5px solid #1e40af;
+      padding-left: 10px;
+      margin-top: 30px;
+    }
+
+    h3 {
+      color: #374151;
+      margin-top: 15px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background-color: #ffffff;
+    }
+
+    th {
+      background-color: #e0e7ff;
+      color: #1e3a8a;
+    }
+
+    th, td {
+      border: 1px solid #c7d2fe;
+      padding: 10px;
+      text-align: left;
+    }
+
+    pre {
+      background-color: #111827;
+      color: #e5e7eb;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    code {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    hr {
+      border: none;
+      height: 1px;
+      background-color: #d1d5db;
+      margin: 30px 0;
+    }
+
+    .success {
+      color: #15803d;
+      font-weight: bold;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>How Does Hoisting Affect Function Declarations and Function Expressions?</h2>
+
+<p>
+In JavaScript, hoisting affects function declarations and function expressions differently due to how memory is allocated during the compilation (memory creation) phase.
+</p>
+
+<h2>1. Function Declarations</h2>
+<p>
+Function declarations are fully hoisted, meaning both the function name and its body are moved to the top of their scope.
+</p>
+<p>
+Because the entire function is stored in memory before execution begins, it can be called anywhere within its scope, even before it appears in the source code.
+</p>
+
+<h3>Example</h3>
+<pre><code>sayHello();
+
+function sayHello() {
+  console.log("Hello");
+}</code></pre>
+
+<p class="success">✅ This works without error.</p>
+
+<h3>Explanation</h3>
+<p>
+During the memory creation phase, JavaScript allocates memory for the entire
+<strong>sayHello</strong> function, making it available before execution starts.
+</p>
+
+<hr>
+
+<h2>2. Function Expressions</h2>
+<p>
+Function expressions are not fully hoisted because they depend on variable assignment.
+</p>
+<p>
+Only the variable declaration is hoisted, not the function value assigned to it.
+</p>
+<p>
+The behavior depends on the keyword used to declare the variable.
+</p>
+
+<h3>a) Function Expression with var</h3>
+<pre><code>sayHi();
+
+var sayHi = function () {
+  console.log("Hi");
+};</code></pre>
+
+<p class="error">❌ TypeError: sayHi is not a function</p>
+
+<h3>Explanation</h3>
+<ul>
+  <li><strong>var sayHi</strong> is hoisted and initialized with <strong>undefined</strong></li>
+  <li>The function assignment happens during execution</li>
+  <li>Calling <strong>sayHi()</strong> before assignment fails because <strong>sayHi</strong> is undefined</li>
+</ul>
+
+<h3>b) Function Expression with let or const</h3>
+<pre><code>sayHey();
+
+let sayHey = function () {
+  console.log("Hey");
+};</code></pre>
+
+<p class="error">❌ ReferenceError</p>
+
+<h3>Explanation</h3>
+<ul>
+  <li>The variable is hoisted but remains in the <strong>Temporal Dead Zone (TDZ)</strong></li>
+  <li>Accessing it before initialization causes a <strong>ReferenceError</strong></li>
+  <li>The same behavior applies to <strong>const</strong></li>
+</ul>
+
+<hr>
+
+<h2>Summary of Differences</h2>
+
+<table>
+  <tr>
+    <th>Feature</th>
+    <th>Function Declaration</th>
+    <th>Function Expression</th>
+  </tr>
+  <tr>
+    <td>Hoisting behavior</td>
+    <td>Fully hoisted (name and body)</td>
+    <td>Only variable declaration is hoisted</td>
+  </tr>
+  <tr>
+    <td>Can be called before definition</td>
+    <td>✅ Yes</td>
+    <td>❌ No</td>
+  </tr>
+  <tr>
+    <td>Error type (if called early)</td>
+    <td>None</td>
+    <td>TypeError (var) / ReferenceError (let/const)</td>
+  </tr>
+  <tr>
+    <td>Syntax</td>
+    <td><code>function fn() {}</code></td>
+    <td><code>const fn = function() {}</code></td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>Short Interview Answer</h2>
+<p>
+Function declarations are fully hoisted and can be invoked before their definition,
+while function expressions are not fully hoisted because only the variable declaration
+is hoisted, not the function assignment.
+</p>
+
+</body>
+</html>

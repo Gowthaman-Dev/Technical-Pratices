@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Iterating Over Arrays and Objects in JavaScript</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #1e3a8a;
+      text-align: center;
+    }
+
+    h2 {
+      color: #2563eb;
+      border-bottom: 2px solid #dbeafe;
+      padding-bottom: 4px;
+    }
+
+    h3 {
+      color: #1e40af;
+      margin-top: 15px;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    pre {
+      background-color: #e0e7ff;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #cbd5e1;
+      margin: 20px 0;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    b {
+      color: #1e3a8a;
+    }
+
+    code {
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Iterating Over Arrays & Objects (JavaScript)</h1>
+
+<p>
+<b>Interview Question:</b><br>
+"What language constructs do you use for iterating over object properties and array items?"
+</p>
+
+<p>
+இந்தக் கேள்வி, programming-ல <b>array-ல உள்ள items</b> மற்றும்
+<b>object-ல உள்ள properties (key–value)</b>-ஐ எப்படி loop பண்ணுவோம்
+என்று கேட்கிறது.
+</p>
+
+<hr>
+
+<h2>1️⃣ Iterating Over Array Items</h2>
+
+<h3>(a) for...of loop (Recommended)</h3>
+
+<p>
+✔ Modern & clean<br>
+✔ Direct-ஆ values கிடைக்கும்<br>
+✔ break / continue support
+</p>
+
+<pre>
+const array = [1, 2, 3];
+
+for (const element of array) {
+  console.log(element);
+}
+</pre>
+
+<p><b>Output:</b> 1 2 3</p>
+
+<hr>
+
+<h3>(b) forEach() method</h3>
+
+<p>
+✔ Functional style<br>
+❌ break / continue இல்லை
+</p>
+
+<pre>
+const array = [1, 2, 3];
+
+array.forEach((element, index) => {
+  console.log(element + " is at index " + index);
+});
+</pre>
+
+<p><b>Output:</b><br>
+1 is at index 0<br>
+2 is at index 1<br>
+3 is at index 2
+</p>
+
+<hr>
+
+<h3>(c) Traditional for loop</h3>
+
+<p>
+✔ Full control over index<br>
+✔ break / continue support
+</p>
+
+<pre>
+const array = [1, 2, 3];
+
+for (let i = 0; i < array.length; i++) {
+  console.log(array[i]);
+}
+</pre>
+
+<hr>
+
+<h3>(d) Other Array Methods</h3>
+
+<p>
+<b>map()</b> → transform data<br>
+<b>filter()</b> → select data<br>
+<b>reduce()</b> → aggregate data
+</p>
+
+<pre>
+const numbers = [1, 2, 3, 4];
+
+const doubled = numbers.map(n => n * 2);
+console.log(doubled);
+</pre>
+
+<hr>
+
+<h2>2️⃣ Iterating Over Object Properties</h2>
+
+<h3>(a) for...in loop</h3>
+
+<p>
+✔ Iterates over keys<br>
+⚠ Includes inherited properties<br>
+✔ Use <b>Object.hasOwn()</b> for safety
+</p>
+
+<pre>
+const obj = { a: 1, b: 2 };
+
+for (const key in obj) {
+  if (Object.hasOwn(obj, key)) {
+    console.log(key + ": " + obj[key]);
+  }
+}
+</pre>
+
+<p><b>Output:</b><br>
+a: 1<br>
+b: 2
+</p>
+
+<hr>
+
+<h3>(b) Object.keys(), Object.values(), Object.entries()</h3>
+
+<p>
+✔ Modern approach<br>
+✔ Object → Array → iterate with for...of
+</p>
+
+<pre>
+// Object.keys()
+for (const key of Object.keys(obj)) {
+  console.log(key + ": " + obj[key]);
+}
+
+// Object.entries()
+for (const [key, value] of Object.entries(obj)) {
+  console.log(key + ": " + value);
+}
+</pre>
+
+<hr>
+
+<h2>🧠 Quick Summary</h2>
+
+<ul>
+  <li><b>Arrays:</b> for, for...of, forEach, map / filter / reduce</li>
+  <li><b>Objects:</b> for...in (with hasOwn check), Object.keys / values / entries</li>
+</ul>
+
+<hr>
+
+<h2>🎯 One-Line Interview Answer</h2>
+
+<p>
+To iterate arrays, we use for, for...of, or array methods like forEach,
+and for objects we use for...in with hasOwn check or Object.keys,
+values, and entries.
+</p>
+
+<hr>
+
+<h3>✅ END</h3>
+
+</body>
+</html>

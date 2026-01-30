@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SQL Notes - DDL, Database, Constraints</title>
+</head>
+
+<body>
+
+<h1>SQL & MySQL Complete Notes</h1>
+<hr>
+
+<h2>1. DDL (Data Definition Language)</h2>
+
+<p>
+DDL commands are used to create, change and delete
+<strong>database and table structure</strong>.
+</p>
+
+<p>
+DDL focuses only on structure, not on data.
+</p>
+
+<p><strong>English Sentence:</strong><br>
+DDL commands are used to define and modify the structure of a database.
+</p>
+
+<h3>DDL Commands</h3>
+
+<table border="1">
+<tr>
+  <th>Command</th>
+  <th>Meaning</th>
+</tr>
+<tr>
+  <td>CREATE</td>
+  <td>Database / Table create</td>
+</tr>
+<tr>
+  <td>ALTER</td>
+  <td>Change structure</td>
+</tr>
+<tr>
+  <td>DROP</td>
+  <td>Delete database / table permanently</td>
+</tr>
+<tr>
+  <td>TRUNCATE</td>
+  <td>Delete all data, structure remains</td>
+</tr>
+<tr>
+  <td>RENAME</td>
+  <td>Rename table</td>
+</tr>
+<tr>
+  <td>COMMENT</td>
+  <td>Add description</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>2. Client – Server Database Architecture</h2>
+
+<p>
+MySQL Server stores data centrally.
+MySQL Workbench is a client tool.
+</p>
+
+<p><strong>English Sentence:</strong><br>
+The server stores the database centrally, and MySQL Workbench acts as the client.
+</p>
+
+<table border="1">
+<tr>
+  <th>Component</th>
+  <th>Role</th>
+</tr>
+<tr>
+  <td>Server</td>
+  <td>Stores database</td>
+</tr>
+<tr>
+  <td>Client (Workbench)</td>
+  <td>Access server data</td>
+</tr>
+<tr>
+  <td>IP / Host</td>
+  <td>Server address</td>
+</tr>
+</table>
+
+<p>
+<strong>Important:</strong><br>
+Workbench connects only to its own server unless connected to another server.
+</p>
+
+<hr>
+
+<h2>3. Database & Workbench Relationship</h2>
+
+<p>
+MySQL Workbench is a GUI tool.
+It cannot store data.
+</p>
+
+<p><strong>English Sentence:</strong><br>
+MySQL Workbench is just a client tool to manage databases stored in MySQL Server.
+</p>
+
+<table border="1">
+<tr>
+  <th>Level</th>
+  <th>Example</th>
+</tr>
+<tr>
+  <td>Server</td>
+  <td>MySQL Engine</td>
+</tr>
+<tr>
+  <td>Database</td>
+  <td>school</td>
+</tr>
+<tr>
+  <td>Table</td>
+  <td>students</td>
+</tr>
+<tr>
+  <td>Row</td>
+  <td>Ram, 10th</td>
+</tr>
+<tr>
+  <td>Column</td>
+  <td>name, class</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>4. What is a Database?</h2>
+
+<p>
+A database is a collection of tables
+used to store data in rows and columns.
+</p>
+
+<p><strong>One Line:</strong><br>
+Database = Collection of Tables
+</p>
+
+<h3>Hierarchy</h3>
+
+<pre>
+MySQL Server
+   ↓
+Database
+   ↓
+Tables
+   ↓
+Rows
+   ↓
+Columns
+</pre>
+
+<table border="1">
+<tr>
+  <th>Element</th>
+  <th>DDL</th>
+  <th>DML</th>
+</tr>
+<tr>
+  <td>Database</td>
+  <td>✔</td>
+  <td>✖</td>
+</tr>
+<tr>
+  <td>Table</td>
+  <td>✔</td>
+  <td>✖</td>
+</tr>
+<tr>
+  <td>Column</td>
+  <td>✔</td>
+  <td>✖</td>
+</tr>
+<tr>
+  <td>Row</td>
+  <td>✖</td>
+  <td>✔</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>5. Default Delimiter</h2>
+
+<p>
+Default SQL delimiter is <strong>;</strong>
+</p>
+
+<hr>
+
+<h2>6. MySQL Data Types</h2>
+
+<h3>Number Types</h3>
+<ul>
+  <li>INT</li>
+  <li>BIGINT</li>
+  <li>FLOAT</li>
+  <li>DOUBLE</li>
+  <li>DECIMAL</li>
+</ul>
+
+<h3>Text Types</h3>
+<ul>
+  <li>VARCHAR</li>
+  <li>CHAR</li>
+  <li>TEXT</li>
+</ul>
+
+<h3>Date & Time</h3>
+<ul>
+  <li>DATE</li>
+  <li>TIME</li>
+  <li>DATETIME</li>
+  <li>TIMESTAMP</li>
+</ul>
+
+<p><strong>Tip:</strong><br>
+Phone number → use VARCHAR, not INT
+</p>
+
+<hr>
+
+<h2>7. SQL Constraints</h2>
+
+<p>
+Constraints are rules applied to table columns
+to control valid data.
+</p>
+
+<table border="1">
+<tr>
+  <th>Constraint</th>
+  <th>Use</th>
+</tr>
+<tr>
+  <td>PRIMARY KEY</td>
+  <td>Unique + Not Null</td>
+</tr>
+<tr>
+  <td>FOREIGN KEY</td>
+  <td>Connect tables</td>
+</tr>
+<tr>
+  <td>NOT NULL</td>
+  <td>Value must be given</td>
+</tr>
+<tr>
+  <td>UNIQUE</td>
+  <td>No duplicate</td>
+</tr>
+<tr>
+  <td>CHECK</td>
+  <td>Condition</td>
+</tr>
+<tr>
+  <td>DEFAULT</td>
+  <td>Auto value</td>
+</tr>
+<tr>
+  <td>AUTO_INCREMENT</td>
+  <td>Auto numbering</td>
+</tr>
+</table>
+
+<hr>
+
+<h2>8. Why ID & Primary Key are Important?</h2>
+
+<ul>
+  <li>Name can duplicate</li>
+  <li>Name can change</li>
+  <li>ID never changes</li>
+</ul>
+
+<p>
+Primary key is system identification.
+</p>
+
+<p>
+ID gaps are acceptable and correct.
+</p>
+
+<hr>
+
+<h2>9. Interview Winning Sentence</h2>
+
+<p>
+<strong>
+SQL is a relational database, so every table must have
+a relationship using Primary Key and Foreign Key.
+</strong>
+</p>
+
+<hr>
+
+<h3>END OF NOTES</h3>
+
+</body>
+</html>

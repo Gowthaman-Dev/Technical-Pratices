@@ -1,0 +1,703 @@
+
+JavaScript Interview Questions (from your 15 topics)
+
+1. What is JavaScript?
+
+i)Define JS in one line.
+
+ii)Difference between JS and other programming languages.
+
+2. Variables
+
+i)Difference between var, let, const.
+
+ii)Can you reassign a const variable?
+
+3. Keywords
+
+i)Name some reserved keywords in JS.
+
+ii)Can we use keywords as variable names?
+
+iii)Key Rules for JS Variable Names
+
+4. Declaration Phase (Memory Creation)
+
+i)What happens in the declaration phase?
+
+ii)Explain hoisting with var and let.
+
+5. Execution Phase
+
+i)What happens in execution phase?
+
+ii)Difference between declaration and execution phase.
+
+6. Naming Conventions
+
+i)Explain Upper Case, Camel Case, Pascal Case, Snake Case with examples.
+
+7. Using JS in Web Application
+
+i)Difference between internal and external JS.
+
+ii)Which is better for performance: internal or external?
+
+8. Access Phase / Printing Statement
+
+i)How to print values in JS?
+
+ii)Example: console.log(), alert(), document.write().
+
+9. Let and Var without Initialization vs Const
+
+i)Why let and var without value give undefined?
+
+ii)Why const without initialization throws error?
+
+10. Execution Phase (Initialization Part)
+
+i)Explain how variables get values during execution phase.
+
+ii)Difference between memory allocation and assignment.
+
+11. Data Types
+
+i)Name all primitive data types.
+
+ii)Name non-primitive data types.
+
+iii)What is reference type?
+
+iv)How reference type is stored?
+
+12. Array of Objects
+
+i)Why typeof arrayOfObjects is object?
+
+ii)How to check if a variable is an array?
+
+13. JS Data Structures
+
+i)What is an array? Give example.
+
+ii)What is an object? Example.
+
+iii)What is an array of objects? Example.
+
+iv)What is a function? Example.
+
+14. Operators
+
+i)Name different types of operators in JS.
+
+ii)Give example of arithmetic, logical, comparison, assignment, unary, ternary operators.
+
+15. ES6 Operators (Spread & Rest)
+
+i)Difference between spread and rest operators.
+
+ii)Give example of spread operator with array.
+
+iii)Give example of rest operator with function parameters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+answer ;
+
+
+1. What is JavaScript?
+
+JavaScript is a high-level programming language that is widely use to create interactive effects within web browsers. A high-level programming language is a human-understandable language. it is commonly used for developing both web and mobile applications.
+
+
+i)Define JS in one line ?
+
+JavaScript (JS) is a high-level, interpreted programming language mainly used to make web pages interactive.
+
+
+ii)Difference between JS and other programming languages?	
+
+ JavaScript mostly runs in browsers, so it works on the client-side. Other languages like Java or C usually run on servers and need to be compiled first.
+
+JS is loosely typed, which means you can change a variable’s type while the program is running.
+
+Also, JS supports event-driven and functional programming, so it’s flexible. Some other languages are strictly object-oriented, so everything has to be inside objects.
+
+*Event-driven = Code runs only when an event happens.
+*functional programming =Code focuses on using functions to process data.
+*Strictly object-oriented programming (OOP) =	Everything must belong to a class or object.
+
+
+
+
+
+2.=>variables ?
+
+i)Difference between var, let, const.?
+
+*var → function scope, reassign & redeclare செய்யலாம், hoisting-ஆகும்.
+
+*let → block scope, reassign செய்யலாம், redeclare செய்ய முடியாது.
+
+*const → block scope, reassign முடியாது, redeclare முடியாது.
+
+
+ii)Can you reassign a const variable?
+
+Can you reassign a const variable?
+No, const variables cannot be reassigned after their initial assignment. However, if the const holds an object or array, its properties/elements can be changed.
+
+expamle:    
+const arr = [1,2,3];
+arr.push(4); // ✅ Works, array content changes
+
+
+
+
+
+3.=>Keywords ?
+
+i)Name some reserved keywords in JS.?
+
+*Keywords are words that JavaScript has reserved for its language syntax. You cannot use these as variable names.
+
+*Common Reserved Keywords:
+break, case, catch, class, const, continue, debugger, default, delete, do,
+else, export, extends, finally, for, function, if, import, in, instanceof,
+let, new, return, super, switch, this, throw, try, typeof, var, void, while, with, yield
+
+*Tip: ES6+ added let, const, class, super, import, export, yield etc.
+
+
+
+ii)Can we use keywords as variable names?
+
+❌ No!
+
+*Keywords are reserved by JS.
+
+*Using them as variable names will throw a syntax error.
+
+Example:
+
+var let = 10;    // ❌ SyntaxError
+var for = 20;    // ❌ SyntaxError
+var myVar = 30;  // ✅ Correct
+
+
+
+iii)Key Rules for JS Variable Names
+
+*Can contain letters, digits, _, $
+
+*Cannot start with a digit
+
+*Cannot use reserved keywords
+
+*Case-sensitive (myVar ≠ MyVar)
+
+
+
+4.=> Declaration Phase (Memory Creation)
+
+
+i)What happens in the declaration phase?
+
+*JS engine creates memory space for variables and functions before executing code.
+
+*Variables declared with var are initialized with undefined, let and const are not initialized yet.
+
+*Functions are fully stored in memory and can be called before their definition.
+
+*JavaScript-ல் code run ஆகுமுன், engine variables மற்றும் functions-ஐ memory-ல் reserve பண்ணும் phase.
+
+*இதையே Declaration Phase / Memory Creation Phase என்று சொல்லுறோம்.
+
+
+
+ii)What happens in this phase?
+
+Variables (var, let, const) are created in memory.
+
+Functions (function myFunc(){}) are stored in memory.
+
+Values are initialized differently depending on var/let/const.
+
+
+
+
+
+ii)Explain hoisting with var and let.
+
+Hoisting:
+
+var → moved to top, value is undefined.
+
+let/const → moved to top but cannot use before declaration (ReferenceError).
+
+Example:
+
+console.log(a); // undefined
+var a = 5;
+
+console.log(b); // ReferenceError
+let b = 10;
+
+
+
+
+
+5.=>Execution Phase
+
+i)What happens in execution phase?
+
+*In the execution phase, the JavaScript engine actually runs the code line by line.
+
+*Variables are assigned values and functions are executed.
+
+*Declaration phase: var a memory create aaguthu.
+
+*Execution phase: a = 5 assign aaguthu, console.log run aaguthu.
+
+
+ii)Difference between declaration and execution phase.
+
+
+| Aspect      | Declaration Phase                                 | Execution Phase                                                         |
+| ----------- | ------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Purpose** | Memory allocate pannuthu variables & functions-ku | Code-a run pannuthu, values assign pannuthu, functions execute pannuthu |
+| **When**    | Engine **hoists** declarations first              | **After hoisting**, code line by line execute aaguthu                   |
+| **Example** | `var x; function foo(){}` memory create           | `x = 10; foo();` actual assignment & function call happens              |
+
+
+*Declaration Phase: Memory prepare pannuthu, code run panna ready.
+
+*Execution Phase: Code-a line by line run pannuthu, values assign pannuthu, functions execute pannuthu.
+
+
+
+
+
+
+
+6.=> Naming Conventions
+
+i)Explain Upper Case, Camel Case, Pascal Case, Snake Case with examples.
+
+
+*Upper Case = CONSTANTS
+
+*Camel Case = variable & function-First word small, next word capital. Variables & function-ku use pannuvom.
+
+*Pascal Case = Class Name - Every word starts with capital letter. Mostly used for class names.
+
+*Snake Case = underscores between words -Words separated by underscore _. Usually used in constants sometimes or old style. 
+
+
+
+
+
+
+7.=>Using JS in Web Application
+
+i)Difference between internal and external JS.
+
+*Internal JavaScript;
+
+Meaning: JS code is written inside the HTML file using <script> tag.
+
+
+*External JavaScript
+
+Meaning: JS code is in a separate .js file and HTML-le <script src="file.js"></script> use pannuvom.
+
+
+| Feature         | Internal JS         | External JS               |
+| --------------- | ------------------- | ------------------------- |
+| Location        | Inside HTML         | Separate `.js` file       |
+| Reusability     | No                  | Yes, multiple pages       |
+| Load Time       | Page load increases | Can cache, faster overall |
+| Maintainability | Hard                | Easy                      |
+| Best for        | Small scripts       | Big projects              |
+
+
+
+
+i)Which is better for performance: internal or external?
+
+
+✅ External JS is better
+
+*Browser can cache external JS, reducing page load on next visit.
+
+*Keeps HTML clean & maintainable.
+
+
+
+
+
+8.=>Access Phase / Printing Statement
+
+i)How to print values in JS?
+
+JavaScript-la data or messages print panna 3 main ways irukku:
+
+ii)Example: console.log(), alert(), document.write().
+
+1. console.log()
+
+Meaning: Browser console-la output show pannum.
+
+Use: Debugging or checking values.
+
+2. alert()
+
+Meaning: Popup box-la message show pannum.
+
+Use: User-ku immediate message kaamikka.
+
+3. document.write()
+
+Meaning: HTML page-le direct output add pannum.
+
+Use: Simple testing, rarely use in real apps.
+
+
+
+
+
+
+9.=>Let and Var without Initialization vs Const
+
+i)Why let and var without value give undefined?
+
+{var a;
+let b;
+
+console.log(a); // undefined
+console.log(b); // undefined}
+
+Reason:
+
+*Declaration phase-la memory create aaguthu.
+
+*Execution phase-la value assign illa → default-a undefined assign aaguthu.
+
+
+ii)Why const without initialization throws error?
+
+Reason:
+
+*const-ku value must be assigned immediately.
+
+*const-la memory create panna value illa-na error throw aagum.
+
+
+
+
+
+
+10.=> Execution Phase (Initialization Part)
+
+i)Explain how variables get values during execution phase.
+
+Example:
+
+var a;      // Declaration Phase: memory created, a = undefined
+a = 10;     // Execution Phase: value assigned
+console.log(a); // 10
+
+
+Explanation:
+
+*Declaration Phase: var a; → memory reserved, value = undefined
+
+*Execution Phase: a = 10; → memory-le value assign pannuthu
+
+
+
+ii)Difference between memory allocation and assignment.
+
+| Term              | Meaning                                             | Example                                     |
+| ----------------- | --------------------------------------------------- | ------------------------------------------- |
+| Memory Allocation | JS engine **reserve space in memory** for variable  | `var x;` → memory reserved, value undefined |
+| Assignment        | JS engine **store actual value** in reserved memory | `x = 5;` → memory-le 5 assign aaguthu       |
+
+
+*Memory Allocation = memory ready
+
+*Assignment = memory-le value store
+
+
+
+
+11. Data Types
+
+i)Name all primitive data types.
+
+*Definition: Immutable, stored directly in stack memory.
+
+*Primitive Types in JS:
+
+*Number → 123, 3.14
+
+*String → "Hello"
+
+*Boolean → true / false
+
+*Undefined → variable declared but no value
+
+*Null → empty or intentionally no value
+
+*BigInt → very large integers (9007199254740991n)
+
+*Symbol → unique identifier
+
+Tamil Shortcut:
+
+*Primitive = small, direct value, stack memory-le store
+
+
+
+ii)Name non-primitive data types.
+
+*Definition: Stored in heap memory, variable stores reference/address of actual value.
+
+Types:
+
+*Object → {name: "Gowtham"}
+
+*Array → [1,2,3]
+
+*Function → function add(a,b){ return a+b }
+
+*Date, RegExp, etc.
+
+Tamil Shortcut:
+
+*Reference Type = object/array/function, memory-le actual value store illa, variable only address store pannuthu.
+
+
+
+iii)What is reference type?
+
+*A variable that stores the address of the actual value in memory, not the value itself.
+
+Tamil:
+
+*Variable-ku value illa, value irukkura memory address store pannuthu.
+
+
+
+iv)How reference type is stored?
+
+let arr = [1,2,3];
+arr → stack memory-le address store
+
+[1,2,3] → heap memory-le actual array store
+
+Tamil:
+
+*Variable stack memory-le store, actual object/array function heap memory-le store aaguthu.
+
+
+| Type      | Stored In               | Example                 |
+| --------- | ----------------------- | ----------------------- |
+| Primitive | Stack                   | number, string, boolean |
+| Reference | Heap (address in stack) | object, array, function |
+
+
+*"Primitive types store actual value in stack, reference types store address in stack but actual value is in heap."
+
+
+12. Array of Objects
+
+i)Why typeof arrayOfObjects is object?
+
+*In JavaScript, arrays are built on top of objects.
+*So when you use typeof on an array or array of objects, JavaScript returns:
+
+typeof []        // "object"
+typeof [{}, {}]  // "object"
+
+
+*Because internally, an array is just a special kind of object.
+
+Tamil:
+
+*JavaScript-la array itself object-oda special type.
+So typeof array na JS always "object" return pannum.
+
+
+
+ii)How to check if a variable is an array?
+
+*Array.isArray(variable)
+
+
+let arr = [1, 2, 3];
+console.log(Array.isArray(arr)); // true
+
+
+
+English:
+
+*Safest and recommended way to check if something is an array.
+
+Tamil:
+
+*Ithu than best method — correct-a array ah nu check pannum.
+
+
+
+
+
+13. JS Data Structures
+
+i)What is an array? Give example.?
+
+*An array is a list of values stored in a single variable.
+Values can be numbers, strings, objects, or mixed.
+
+*Example:
+let fruits = ["apple", "banana", "mango"];
+
+
+
+ii)What is an object? Example.
+
+*An object stores data in key–value pairs.
+
+*Example:
+let user = {
+  name: "Gowtham",
+  age: 25,
+  city: "Chennai"
+};
+
+
+iii)What is an array of objects? Example.
+
+*An array that contains multiple objects.
+Used to store a list of structured records.
+
+(Example: student list, product list, etc.)
+
+*Example:
+let students = [
+  { name: "Gowtham", age: 25 },
+  { name: "Arun", age: 22 },
+  { name: "Divya", age: 23 }
+];
+
+
+
+iv)What is a function? Example.
+
+*A function is a block of code that performs a task and can be reused.
+
+*function greet() {
+  console.log("Hello!");
+}
+greet();
+
+
+
+*Array: "Array is a list of values."
+
+*Object: "Object stores data in key–value pairs."
+
+*Array of Objects: "Array containing multiple objects."
+
+*Function: "Function is reusable code that performs a task."
+
+
+
+
+14. Operators
+
+i)Name different types of operators in JS.
+
+*Arithmetic Operators
+
+*Comparison (Relational) Operators
+
+*Logical Operators
+
+*Assignment Operators
+
+*Unary Operators
+
+*Ternary (Conditional) Operator
+
+*String Operators (optional for interview)
+
+*Bitwise Operators (rarely asked)
+
+
+
+i)Arithmetic: “Math operations (+, -, *, /).”
+
+ii)Comparison: “Compare two values (==, ===, >).”
+
+iii)Logical: “Combine conditions (&&, ||, !).”
+
+iv)Assignment: “Assign or update values (=, +=).”
+
+v)Unary: “Single value operators (++ , --, typeof).”
+
+vi)Ternary: “Short if-else (condition ? value1 : value2).”
+
+vii)Give example of arithmetic, logical, comparison, assignment, unary, ternary operators.
+
+
+
+
+
+15. ES6 Operators (Spread & Rest)
+
+i)Difference between spread and rest operators.
+
+*Spread → Expands values
+
+*Rest → Collects values
+
+
+ii)Give example of spread operator with array.
+
+*Used to expand array elements.
+Tamil: Array-oda values-a velila spread pannum.
+Example:
+let arr1 = [1, 2, 3];
+let arr2 = [...arr1, 4, 5];
+
+console.log(arr2); // [1, 2, 3, 4, 5]
+
+iii)Give example of rest operator with function parameters.
+
+*Used to collect multiple arguments into an array.
+Tamil: Function-ku varra extra values ellam orae array-la collect pannum.
+Example:
+function add(...numbers) {
+  return numbers.reduce((sum, num) => sum + num, 0);
+}
+
+console.log(add(10, 20, 30)); // 60

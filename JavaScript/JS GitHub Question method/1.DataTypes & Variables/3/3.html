@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>null vs undefined vs undeclared in JavaScript</title>
+</head>
+<body>
+
+<h1>What is the Difference Between null, undefined, and undeclared in JavaScript?</h1>
+
+<h2>Core Difference (Easy to Remember)</h2>
+<p>
+    The difference lies in <b>why the value is missing</b>:
+</p>
+<ul>
+    <li><b>null</b> → intentional absence (set by developer)</li>
+    <li><b>undefined</b> → uninitialized (set by JavaScript)</li>
+    <li><b>undeclared</b> → variable does not exist in the current scope</li>
+</ul>
+
+<hr>
+
+<h2>1. null</h2>
+<ul>
+    <li>Represents an intentional empty value</li>
+    <li>Must be explicitly assigned by the developer</li>
+    <li>Commonly used to reset or clear a variable</li>
+</ul>
+
+<pre>
+let a = null;
+
+typeof a; // "object" (historical JavaScript bug)
+</pre>
+
+<hr>
+
+<h2>2. undefined</h2>
+<ul>
+    <li>Assigned automatically by JavaScript</li>
+    <li>Means a variable is declared but not assigned a value</li>
+</ul>
+
+<pre>
+let b;
+
+typeof b; // "undefined"
+</pre>
+
+<hr>
+
+<h2>3. Undeclared Variable</h2>
+<ul>
+    <li>Variable has not been declared using var, let, or const</li>
+    <li>Accessing it directly causes a ReferenceError</li>
+</ul>
+
+<pre>
+console.log(x); // ReferenceError (if x is undeclared)
+</pre>
+
+<hr>
+
+<h2>How to Check Each State Safely</h2>
+
+<h3>✅ Check for null</h3>
+<pre>
+if (a === null) {
+  console.log("a is null");
+}
+</pre>
+
+<h3>✅ Check for undefined</h3>
+<pre>
+if (b === undefined) {
+  console.log("b is undefined");
+}
+</pre>
+
+<h3>✅ Check for both null or undefined</h3>
+<pre>
+if (b == null) {
+  console.log("b is null or undefined");
+}
+</pre>
+
+<p>
+    ✔️ <b>null == undefined</b> is true
+</p>
+
+<h3>✅ Check for an Undeclared Variable (Safe Way)</h3>
+<pre>
+if (typeof undeclaredVar === "undefined") {
+  console.log("Variable is undeclared or undefined");
+}
+</pre>
+
+<p>
+    ⚠️ <b>Important:</b> Directly accessing an undeclared variable always throws
+    a <b>ReferenceError</b>, except when using <b>typeof</b>.
+</p>
+
+<hr>
+
+<h2>Comparison Table (Quick Revision)</h2>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Aspect</th>
+        <th>null</th>
+        <th>undefined</th>
+        <th>undeclared</th>
+    </tr>
+    <tr>
+        <td>Meaning</td>
+        <td>Intentional empty value</td>
+        <td>Not initialized</td>
+        <td>Not declared</td>
+    </tr>
+    <tr>
+        <td>Assigned by</td>
+        <td>Developer</td>
+        <td>JavaScript</td>
+        <td>Nobody</td>
+    </tr>
+    <tr>
+        <td>typeof result</td>
+        <td>"object"</td>
+        <td>"undefined"</td>
+        <td>"undefined"</td>
+    </tr>
+    <tr>
+        <td>Access safe?</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>❌ No (except typeof)</td>
+    </tr>
+</table>
+
+<hr>
+
+<h2>🎯 One-Line Interview Answer</h2>
+<p>
+    <b>
+        null is an intentional empty value, undefined means a variable is declared
+        but not initialized, and an undeclared variable does not exist in the
+        current scope and causes a ReferenceError when accessed.
+    </b>
+</p>
+
+<hr>
+
+<h2>✅ Best Practice</h2>
+<ul>
+    <li>Always declare variables</li>
+    <li>Use <b>null</b> for intentional empty values</li>
+    <li>Let JavaScript handle <b>undefined</b></li>
+</ul>
+
+</body>
+</html>

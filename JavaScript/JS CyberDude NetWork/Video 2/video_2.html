@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript Objects – Complete Explanation</title>
+
+    <!-- Simple CSS (only for readability) -->
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        h2 {
+            color: #1e88e5;
+            margin-top: 30px;
+        }
+
+        h3 {
+            color: #388e3c;
+        }
+
+        pre {
+            background-color: #eee;
+            padding: 12px;
+            border-left: 4px solid #1e88e5;
+            overflow-x: auto;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        hr {
+            margin: 30px 0;
+            border: none;
+            border-top: 1px solid #ccc;
+        }
+
+        b {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<h1>JavaScript Objects – Complete Explanation (Interview Ready)</h1>
+
+<hr>
+
+<h2>1️⃣ Creating an Object</h2>
+
+<p><b>Code:</b></p>
+<pre>
+const person = {
+  firstname: "rocky",
+  lastname: "gowtham",
+  age: 21,
+  parent: {
+    father: "appa",
+    mother: "amma"
+  },
+  isalive: true
+};
+</pre>
+
+<p><b>Explanation:</b></p>
+<ul>
+  <li><b>person</b> is an object.</li>
+  <li><b>firstname, lastname, age, isalive</b> are properties.</li>
+  <li><b>parent</b> is a nested object.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+An object is a collection of key–value pairs and it can contain nested objects.
+</p>
+
+<hr>
+
+<h2>2️⃣ Object Method (Function inside Object)</h2>
+
+<pre>
+fullname() {
+  return `${this.firstname} ${this.lastname}`;
+}
+</pre>
+
+<ul>
+  <li>A function inside an object is called a <b>method</b>.</li>
+  <li><b>this</b> refers to the current object.</li>
+  <li>This is <b>ES6 shorthand method syntax</b>.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+A function defined inside an object is called a method, and <b>this</b> refers to the current object.
+</p>
+
+<hr>
+
+<h2>3️⃣ Accessing Object Data</h2>
+
+<pre>
+person.fullname();
+person.parent.father;
+</pre>
+
+<ul>
+  <li><b>person.fullname()</b> calls the method.</li>
+  <li><b>person.parent.father</b> accesses nested object data.</li>
+</ul>
+
+<hr>
+
+<h2>4️⃣ Object Merging (Object.assign)</h2>
+
+<pre>
+Object.assign(person, personmethod);
+</pre>
+
+<ul>
+  <li>Merges properties from one object to another.</li>
+  <li>Target object gets modified.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+Object.assign is used to merge properties from one object into another object.
+</p>
+
+<hr>
+
+<h2>5️⃣ Getter (Accessor Property)</h2>
+
+<pre>
+get favNumbercount() {
+  return this.favNumber.length;
+}
+</pre>
+
+<pre>
+person.favNumbercount;
+</pre>
+
+<ul>
+  <li>Getter allows access like a property.</li>
+  <li>No parentheses <b>()</b> required.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+Getters allow methods to be accessed like properties.
+</p>
+
+<hr>
+
+<h2>6️⃣ Object Cloning (Shallow Copy)</h2>
+
+<pre>
+const objCopied = Object.assign({}, person);
+</pre>
+
+<ul>
+  <li>Creates a <b>shallow copy</b>.</li>
+  <li>Primitive values are copied.</li>
+  <li>Nested objects share the same reference.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+Object.assign({}, obj) creates a shallow copy of an object.
+</p>
+
+<hr>
+
+<h2>7️⃣ Spread Operator with Objects</h2>
+
+<pre>
+const spread = { ...person, ...personmethod };
+</pre>
+
+<ul>
+  <li>Spreads object properties.</li>
+  <li>Modern alternative to Object.assign.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+The spread operator is a modern way to merge objects.
+</p>
+
+<hr>
+
+<h2>8️⃣ Deleting an Object Property</h2>
+
+<pre>
+delete person.age;
+</pre>
+
+<ul>
+  <li>Removes a property permanently.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+The delete operator removes a property from an object.
+</p>
+
+<hr>
+
+<h2>9️⃣ ES6 Object Property Shorthand</h2>
+
+<pre>
+function getFullName(firstName, lastName) {
+  return {
+    firstName,
+    lastName
+  };
+}
+</pre>
+
+<ul>
+  <li>Key and variable name are same.</li>
+  <li>ES6 allows shorthand syntax.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+ES6 allows object property shorthand when key and value names are the same.
+</p>
+
+<hr>
+
+<h2>🔟 Adding Properties Dynamically</h2>
+
+<pre>
+person.favColorss = "podu";
+</pre>
+
+<ul>
+  <li>Objects are dynamic.</li>
+  <li>Properties can be added anytime.</li>
+</ul>
+
+<p><b>Interview line:</b><br>
+JavaScript objects are dynamic and properties can be added or removed at runtime.
+</p>
+
+<hr>
+
+<h2>🎯 Final Interview Summary</h2>
+
+<ul>
+  <li>Object = collection of key–value pairs</li>
+  <li>Method = function inside object</li>
+  <li><b>this</b> → current object</li>
+  <li>Object.assign → merge / shallow clone</li>
+  <li>Spread operator → modern merge</li>
+  <li>Getter → access like property</li>
+  <li>delete → remove property</li>
+  <li>Objects are mutable and dynamic</li>
+</ul>
+
+<hr>
+
+<h3>✅ This page uses ONLY HTML (No CSS, No JS execution)</h3>
+
+</body>
+</html>

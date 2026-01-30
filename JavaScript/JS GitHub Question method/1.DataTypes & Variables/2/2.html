@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Check Data Type in JavaScript</title>
+</head>
+<body>
+
+<h1>How Do You Check the Data Type of a Variable in JavaScript?</h1>
+
+<h2>Answer</h2>
+<p>
+    In JavaScript, you can check the data type of a variable using the
+    <b>typeof</b> operator.
+</p>
+
+<h2>Syntax</h2>
+<p>
+    <b>typeof variable;</b>
+</p>
+
+<h2>JavaScript Data Types Overview</h2>
+<p>
+    JavaScript is a <b>dynamically typed language</b>, meaning a variable can hold
+    different data types at different times.
+</p>
+
+<h2>1. Primitive Data Types</h2>
+<p>
+    Primitive types store single, immutable values and are stored by value.
+</p>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Example</th>
+    </tr>
+    <tr>
+        <td>String</td>
+        <td>Textual data</td>
+        <td>let name = "Gowtham";</td>
+    </tr>
+    <tr>
+        <td>Number</td>
+        <td>Integers & decimals (includes NaN, Infinity)</td>
+        <td>let age = 25;</td>
+    </tr>
+    <tr>
+        <td>Boolean</td>
+        <td>Logical value</td>
+        <td>let isLoggedIn = true;</td>
+    </tr>
+    <tr>
+        <td>Undefined</td>
+        <td>Declared but not assigned</td>
+        <td>let user;</td>
+    </tr>
+    <tr>
+        <td>Null</td>
+        <td>Intentional absence of value</td>
+        <td>let data = null;</td>
+    </tr>
+    <tr>
+        <td>Symbol</td>
+        <td>Unique identifier (ES6)</td>
+        <td>let id = Symbol("id");</td>
+    </tr>
+    <tr>
+        <td>BigInt</td>
+        <td>Large integers (ES2020)</td>
+        <td>let num = 123n;</td>
+    </tr>
+</table>
+
+<h2>2. Non-Primitive (Reference) Data Types</h2>
+<p>
+    Non-primitive types are mutable and stored by reference.
+</p>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Type</th>
+        <th>Example</th>
+    </tr>
+    <tr>
+        <td>Object</td>
+        <td>{ name: "Gowtham" }</td>
+    </tr>
+    <tr>
+        <td>Array</td>
+        <td>[1, 2, 3]</td>
+    </tr>
+    <tr>
+        <td>Function</td>
+        <td>function test() {}</td>
+    </tr>
+    <tr>
+        <td>Built-ins</td>
+        <td>Date, Map, Set, RegExp</td>
+    </tr>
+</table>
+
+<h2>Using typeof Operator</h2>
+<pre>
+typeof "Hello";      // "string"
+typeof 25;           // "number"
+typeof true;         // "boolean"
+typeof undefined;    // "undefined"
+typeof Symbol();     // "symbol"
+typeof 123n;         // "bigint"
+typeof {};           // "object"
+typeof [];           // "object"
+typeof function(){}; // "function"
+</pre>
+
+<h2>⚠️ Important Interview Point</h2>
+<p>
+    <b>typeof null;</b> → "object"
+</p>
+<p>
+    This is a known historical bug in JavaScript.
+</p>
+
+<h3>Proper Checks</h3>
+<p>
+    To properly check <b>null</b>:
+</p>
+<pre>
+value === null;
+</pre>
+
+<p>
+    To check <b>arrays</b>:
+</p>
+<pre>
+Array.isArray(value);
+</pre>
+
+<h2>🎯 One-Line Interview Answer</h2>
+<p>
+    <b>
+        You can check the data type of a variable in JavaScript using the typeof
+        operator, but special cases like null and arrays need additional checks.
+    </b>
+</p>
+
+</body>
+</html>
+

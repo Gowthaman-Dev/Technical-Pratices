@@ -1,0 +1,22 @@
+"how-do-you-convert-a-string-to-a-number-in-javascript"?
+
+
+“In JavaScript, a string can be converted to a number using Number(), parseInt(), parseFloat(), or the unary plus operator.
+Number() and + try to convert the entire string and return NaN if it’s not a valid number.
+parseInt() and parseFloat() parse the number from the beginning of the string and stop when they hit a non-numeric character.
+I usually use Number() for clean numeric strings and parseInt() or parseFloat() when the string contains units like px.”
+
+
+“What’s the difference?”
+
+“parseInt() returns an integer, parseFloat() supports decimals, and Number() supports full numeric conversion.”
+
+🔹 Meaning (Simple Explanation)
+
+parseInt() returns only the integer (whole number) part.
+parseFloat() returns the number with decimal values.
+Number() converts the entire string into a number.
+
+
+parseInt() gives only the whole number, parseFloat() keeps decimals, and Number() converts the entire value only if the string is completely numeric.
+

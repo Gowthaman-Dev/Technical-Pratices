@@ -1,0 +1,22 @@
+What are template literals and how are they used?
+
+English:
+“Template literals are a JavaScript ES6 feature used to create strings using backticks instead of quotes.
+They allow string interpolation using ${} to embed variables or expressions directly inside a string.
+They also support multi-line strings without using \n, which makes the code cleaner and more readable compared to string concatenation.”
+
+
+🟡 If interviewer asks “How do you use them?”
+
+const name = "Alice";
+console.log(`Hello, ${name}`);
+
+
+🟡 If interviewer asks “Any advanced feature?”
+
+Say only one line:
+
+“Template literals also support tagged templates, which allow a function to process the string.”
+
+(No need to explain unless asked.)
+

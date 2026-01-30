@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spread Operator in JavaScript</title>
+</head>
+<body>
+
+<h1>What Is the Spread Operator and How Is It Used?</h1>
+
+<h2>Answer</h2>
+<p>
+    The <b>spread operator (...)</b> is a JavaScript feature that allows you to
+    expand elements of an <b>array</b>, <b>object</b>, or other <b>iterables</b>
+    into individual values.
+</p>
+
+<p>
+    It is commonly used to <b>copy</b> arrays or objects,
+    <b>merge</b> multiple arrays or objects, and
+    <b>pass array elements as arguments</b> to functions,
+    making code cleaner and more readable.
+</p>
+
+<hr>
+
+<h2>Example (If Asked)</h2>
+
+<pre>
+const arr = [1, 2, 3];
+const copy = [...arr];
+</pre>
+
+<p>
+    ✔️ Creates a <b>shallow copy</b> of the array.
+</p>
+
+<hr>
+
+<h2>Using Spread with Objects</h2>
+
+<pre>
+const user = { name: "Alice" };
+const newUser = { ...user, age: 25 };
+</pre>
+
+<hr>
+
+<h2>Using Spread with Functions</h2>
+<p>
+    The spread operator can be used to pass array values as
+    individual arguments to a function.
+</p>
+
+<pre>
+Math.max(...[1, 5, 3]); // 5
+</pre>
+
+<hr>
+
+<h2>🎯 One-Line Interview Summary</h2>
+<p>
+    <b>
+        The spread operator expands arrays or objects into individual elements
+        and is commonly used for copying, merging, and passing arguments.
+    </b>
+</p>
+
+<hr>
+
+<h2>💡 Interview Tip</h2>
+<p>
+    Mention the <b>definition</b>, give <b>one example</b>, and stop.
+    Explain more only if the interviewer asks.
+</p>
+
+</body>
+</html>

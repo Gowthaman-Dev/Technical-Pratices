@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ES6 Set Object in JavaScript – Complete Explanation</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffffff;
+      color: #111827;
+      padding: 30px;
+      line-height: 1.7;
+    }
+
+    h1 {
+      color: #0369a1;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #15803d;
+      margin-top: 30px;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    pre {
+      background-color: #f1f5f9;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      color: #020617;
+      margin: 15px 0;
+    }
+
+    code {
+      color: #92400e;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .highlight {
+      color: #b45309;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>ES6 Set Object in JavaScript – Complete Explanation</h1>
+
+<p>
+This example demonstrates how the JavaScript Set object works when used with an array, how it handles duplicate values, how objects behave inside a Set, and how different Set methods work.
+</p>
+
+<h2>1️⃣ HTML Structure Overview</h2>
+
+<pre>
+&lt;h1&gt;ES 6 Set Object In Arrays&lt;/h1&gt;
+&lt;div id="result"&gt;&lt;/div&gt;
+</pre>
+
+<p>The HTML part is simple.</p>
+<p>The main logic happens inside the &lt;script&gt; tag.</p>
+<p>The div#result is present but not used yet.</p>
+
+<h2>2️⃣ Creating an Array with Duplicate Values</h2>
+
+<pre>
+const dailyscheduls = [
+    'wake up',
+    'excercies ',
+    'breakfast',
+    'work',
+    'lunch',
+    'work',
+    'dinner',
+    'work',
+    'sleep'
+]
+console.log(dailyscheduls);
+</pre>
+
+<p>What happens here?</p>
+
+<ul>
+  <li>dailyscheduls is a normal JavaScript array.</li>
+  <li>Arrays allow duplicate values.</li>
+  <li>The string "work" appears three times.</li>
+  <li>console.log(dailyscheduls) prints the full array with duplicates.</li>
+</ul>
+
+<h2>3️⃣ Why We Need a Set</h2>
+
+<p>A Set is a special JavaScript object that:</p>
+
+<ul>
+  <li>Stores only unique values</li>
+  <li>Automatically removes duplicates</li>
+  <li>Maintains insertion order</li>
+  <li>Can store any data type (string, number, object, function, etc.)</li>
+</ul>
+
+<h2>4️⃣ Creating a Set from an Array</h2>
+
+<pre>
+const dailtset = new Set(dailyscheduls)
+</pre>
+
+<p>What happens internally?</p>
+
+<ul>
+  <li>JavaScript reads each element from the array one by one</li>
+  <li>If the value already exists → it is ignored</li>
+  <li>If the value is new → it is added</li>
+</ul>
+
+<p>Result:</p>
+
+<ul>
+  <li>"work" appears only once</li>
+  <li>All other values remain</li>
+</ul>
+
+<p>This is why Sets are commonly used to remove duplicates from arrays.</p>
+
+<h2>5️⃣ Adding New Values to the Set</h2>
+
+<pre>
+dailtset.add('play')
+</pre>
+
+<ul>
+  <li>.add() inserts a new value into the Set</li>
+  <li>If the value already exists, nothing happens</li>
+  <li>"play" is added successfully because it is unique</li>
+</ul>
+
+<h2>6️⃣ Adding an Object to the Set</h2>
+
+<pre>
+const obj = { 'meeting': ['friends'] }
+dailtset.add(obj)
+</pre>
+
+<p>Important concept: Reference types</p>
+
+<ul>
+  <li>Objects are stored in memory by reference</li>
+  <li>Even if two objects look the same, they are not equal unless they share the same reference</li>
+</ul>
+
+<p>The Set now contains:</p>
+
+<ul>
+  <li>Strings (primitive values)</li>
+  <li>One object (obj)</li>
+</ul>
+
+<h2>7️⃣ Checking Values Using .has()</h2>
+
+<pre>
+console.log(dailtset.has('play'));
+</pre>
+
+<ul>
+  <li>.has() checks whether a value exists in the Set</li>
+  <li>Returns a boolean</li>
+  <li>true → value exists</li>
+  <li>false → value does not exist</li>
+</ul>
+
+<p>Since "play" was added, the output is:</p>
+
+<p class="highlight">true</p>
+
+<h2>8️⃣ Set Iteration Methods</h2>
+
+<p>🔹 .entries()</p>
+
+<pre>
+console.log(dailtset.entries());
+</pre>
+
+<p>Returns an iterator</p>
+<p>Each entry is [value, value]</p>
+<p>This is done to maintain compatibility with Maps</p>
+
+<p>Example:</p>
+
+<pre>
+["wake up", "wake up"]
+</pre>
+
+<p>🔹 .keys()</p>
+
+<pre>
+console.log(dailtset.keys());
+</pre>
+
+<p>Returns an iterator of values</p>
+<p>In a Set, keys and values are the same</p>
+
+<p>🔹 .values()</p>
+
+<pre>
+console.log(dailtset.values());
+</pre>
+
+<p>Returns an iterator of all values</p>
+<p>Most commonly used method to loop through a Set</p>
+
+<h2>9️⃣ Deleting an Object – Common Mistake</h2>
+
+<pre>
+dailtset.delete({'meeting':['friends']})
+</pre>
+
+<p>Why this does NOT work?</p>
+
+<ul>
+  <li>This creates a new object</li>
+  <li>JavaScript compares objects by reference, not by structure</li>
+  <li>The Set does not recognize this as the same object</li>
+</ul>
+
+<p>Result:</p>
+
+<p class="highlight">false (nothing is deleted)</p>
+
+<h2>🔟 Correct Way to Delete an Object</h2>
+
+<pre>
+dailtset.delete(obj)
+</pre>
+
+<p>Why this works?</p>
+
+<ul>
+  <li>The exact same object reference is used</li>
+  <li>The Set can identify and remove it successfully</li>
+</ul>
+
+<h2>🔟 After Delete Output</h2>
+
+<pre>
+console.log('after delete', dailtset);
+</pre>
+
+<ul>
+  <li>The object { meeting: ['friends'] } is removed</li>
+  <li>All string values remain intact</li>
+</ul>
+
+<h2>✅ Key Takeaways (Interview Ready)</h2>
+
+<ul>
+  <li>Set stores only unique values</li>
+  <li>Creating a Set from an array removes duplicates automatically</li>
+  <li>.add() inserts values</li>
+  <li>.has() checks existence</li>
+  <li>.entries(), .keys(), .values() return iterators</li>
+  <li>Objects in Sets are compared by reference</li>
+  <li>To delete an object, you must use the same variable reference</li>
+</ul>
+
+<h2>💡 When to Use Set</h2>
+
+<ul>
+  <li>Remove duplicate values from arrays</li>
+  <li>Store unique items</li>
+  <li>Fast lookup compared to arrays</li>
+  <li>Data validation scenarios</li>
+</ul>
+
+</div>
+
+</body>
+</html>

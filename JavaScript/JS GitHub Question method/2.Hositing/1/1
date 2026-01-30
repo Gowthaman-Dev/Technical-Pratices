@@ -1,0 +1,23 @@
+Explain Hoisting
+
+Definition:
+Hoisting is JavaScript’s behavior where variable and function declarations are moved to the top of their scope during the memory creation phase, before code execution.
+
+*JavaScript runs code in two phases:
+
+i)Memory Creation Phase – declarations are stored in memory
+
+ii)Execution Phase – code is executed line by line
+
+
+*Key Points to Remember
+
+i)Hoisting happens during the memory phase
+
+ii)var → hoisted and initialized as undefined
+
+iii)let / const → hoisted but in TDZ
+
+iv)Function declarations → fully hoisted
+
+v)Function expressions → not fully hoisted

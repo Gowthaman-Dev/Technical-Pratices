@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript Map – Interview Notes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    h2 {
+      color: #34495e;
+      margin-top: 30px;
+    }
+
+    pre {
+      background: #1e1e1e;
+      color: #dcdcdc;
+      padding: 15px;
+      overflow-x: auto;
+      border-radius: 6px;
+    }
+
+    .section {
+      background: #ffffff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .label {
+      font-weight: bold;
+      color: #000;
+      margin-top: 10px;
+    }
+
+    .english {
+      background: #eef6ff;
+      padding: 10px;
+      border-left: 4px solid #3498db;
+      margin-top: 8px;
+    }
+
+    .tamil {
+      background: #fdf2e9;
+      padding: 10px;
+      border-left: 4px solid #e67e22;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>JavaScript Map – Interview Notes</h1>
+
+<div class="section">
+  <h2>1️⃣ Object overwrite issue (why Map needed)</h2>
+  <pre>
+const food = [
+  { id: 1, title: 'sambar', like: 'veg', title: 'New sambar' }
+]
+console.log(food[0].title);
+  </pre>
+
+  <div class="tamil">
+    ஒரே object-ல same key (title) two times எழுதினா,<br>
+    last value தான் retain ஆகும் → earlier value overwrite ஆகிடும்.
+  </div>
+
+  <div class="english">
+    In objects, duplicate keys get overwritten by the last value.
+  </div>
+
+  👉 Id / key uniqueness maintain பண்ணணும்னா Map is better.
+</div>
+
+<div class="section">
+  <h2>2️⃣ Creating & pushing values into Map</h2>
+  <pre>
+const megi = new Map()
+megi.set('water', '1.2liter')
+megi.set('masalas', 1)
+megi.set('salt', '1 spoon')
+megi.set('chilly', '1 spoon')
+  </pre>
+
+  <div class="tamil">
+    set(key, value) → Map-ல data add பண்ண<br>
+    Map unique keys maintain பண்ணும்<br>
+    Any datatype key-ஆ use பண்ணலாம் (object, function, NaN)
+  </div>
+
+  <div class="english">
+    Map is used to store data in key–value pairs with unique keys.
+  </div>
+</div>
+
+<div class="section">
+  <h2>3️⃣ Getting value from Map</h2>
+  <pre>
+console.log(megi.get('water')); // 1.2liter
+  </pre>
+
+  <div class="tamil">
+    get() → key pass பண்ணி value retrieve பண்ணலாம்.
+  </div>
+
+  <div class="english">
+    The get() method retrieves a value using its key.
+  </div>
+</div>
+
+<div class="section">
+  <h2>4️⃣ Map constructor with array (important point)</h2>
+  <pre>
+const mymap = new Map([
+  [1,'one'],
+  [2,'two']
+])
+console.log(mymap.get(2));
+  </pre>
+
+  <div class="tamil">
+    இது array of arrays format.<br>
+    Map constructor-க்கு direct-ஆ array pass பண்ணலாம்.
+  </div>
+
+  <div class="english">
+    The Map constructor accepts an array of key–value pairs.
+  </div>
+</div>
+
+<div class="section">
+  <h2>5️⃣ Map size</h2>
+  <pre>
+console.log(megi.size);
+  </pre>
+
+  <div class="tamil">
+    Map-ல total entries count பண்ண size use பண்ணலாம்.
+  </div>
+
+  <div class="english">
+    The size property returns the number of entries in a Map.
+  </div>
+</div>
+
+<div class="section">
+  <h2>6️⃣ Map.has()</h2>
+  <pre>
+console.log(megi.has('water'));
+  </pre>
+
+  <div class="tamil">
+    Key exist ஆகுதா இல்லையா check பண்ணும்.<br>
+    Output → true / false
+  </div>
+
+  <div class="english">
+    has() checks whether a key exists in the Map.
+  </div>
+</div>
+
+<div class="section">
+  <h2>7️⃣ Map.entries() + loop + destructuring</h2>
+  <pre>
+for (let usethis of megi.entries()) {
+  console.log(usethis);
+}
+
+for ([keyname, valuename] of megi.entries()) {
+  console.log(keyname, valuename);
+}
+  </pre>
+
+  <div class="tamil">
+    entries() → [key, value] pairs<br>
+    Destructuring support பண்ணும்
+  </div>
+
+  <div class="english">
+    Map.entries() returns key–value pairs and supports destructuring.
+  </div>
+</div>
+
+<div class="section">
+  <h2>8️⃣ forEach in Map</h2>
+  <pre>
+megi.forEach(ingredient => {
+  console.log(ingredient);
+})
+  </pre>
+
+  <div class="tamil">
+    Map-க்கும் forEach() support இருக்கு (array மாதிரி).
+  </div>
+
+  <div class="english">
+    Map also supports the forEach method.
+  </div>
+</div>
+
+<div class="section">
+  <h2>9️⃣ keys() & values()</h2>
+  <pre>
+console.log(megi.keys());
+console.log(megi.values());
+  </pre>
+
+  <div class="tamil">
+    keys() → keys only<br>
+    values() → values only
+  </div>
+
+  <div class="english">
+    keys() returns all keys and values() returns all values.
+  </div>
+</div>
+
+<div class="section">
+  <h2>🔟 delete() & clear()</h2>
+  <pre>
+megi.delete('salt');
+// megi.clear()
+  </pre>
+
+  <div class="tamil">
+    delete(key) → specific key remove<br>
+    clear() → full Map clear
+  </div>
+
+  <div class="english">
+    delete() removes a specific entry, and clear() removes all entries.
+  </div>
+</div>
+
+<div class="section">
+  <h2>1️⃣1️⃣ Object as key (VERY IMPORTANT)</h2>
+  <pre>
+const examplemap = new Map()
+examplemap.set({}, 'Empty Object')
+console.log(examplemap);
+  </pre>
+
+  <div class="tamil">
+    Map-ல object-ஐ key-ஆ use பண்ண முடியும்.<br>
+    Normal object-ல இது possible இல்லை.
+  </div>
+
+  <div class="english">
+    Map allows objects to be used as keys.
+  </div>
+</div>
+
+<div class="section">
+  <h2>1️⃣2️⃣ WeakMap (basic idea)</h2>
+  <pre>
+const emptyobj = {}
+const myweakmap = new WeakMap()
+myweakmap.set(emptyobj,'gowtham')
+console.log(myweakmap.get(emptyobj));
+  </pre>
+
+  <div class="tamil">
+    WeakMap-ல only objects key-ஆ use பண்ண முடியும்<br>
+    Garbage collection automatic-ஆ handle ஆகும்
+  </div>
+
+  <div class="english">
+    WeakMap stores object keys and supports automatic garbage collection.
+  </div>
+</div>
+
+<div class="section">
+  <h2>✅ Interview final one-liner</h2>
+  <div class="english">
+    Map is preferred when we need unique keys, key–value pairs, and non-string keys like objects or functions.
+  </div>
+</div>
+
+</body>
+</html>

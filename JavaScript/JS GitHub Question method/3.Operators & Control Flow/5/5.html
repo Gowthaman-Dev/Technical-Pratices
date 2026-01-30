@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Accessing Index During Array Iteration in JavaScript</title>
+
+  <!-- CSS ONLY (No content changes) -->
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: #1e88e5;
+      margin-top: 30px;
+    }
+
+    h3 {
+      color: #444;
+      margin-top: 15px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    pre {
+      background-color: #1e1e1e;
+      color: #eaeaea;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 14px;
+    }
+
+    code {
+      color: #ffcc80;
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    hr {
+      border: none;
+      height: 1px;
+      background-color: #ddd;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>how-do-you-access-the-index-of-an-element-in-an-array-during-iteration in js?</h1>
+
+<h2>Accessing the Index During Iteration in JavaScript</h2>
+
+<p>
+In JavaScript, you can access the index of an element during iteration using several methods.
+The most common ones are the <strong>forEach()</strong> method,
+the <strong>for...of</strong> loop combined with <strong>entries()</strong>,
+and the traditional <strong>for</strong> loop.
+</p>
+
+<hr>
+
+<h2>1. Using forEach()</h2>
+
+<p>
+The <strong>forEach()</strong> method is a common way to iterate over arrays
+and provides the index as the second argument to its callback function.
+</p>
+
+<pre>
+const arr = [1, 2, 3];
+
+arr.forEach((value, index) => {
+  console.log(index, value);
+});
+</pre>
+
+<h3>Pros:</h3>
+<ul>
+  <li>Very readable and declarative syntax</li>
+  <li>Widely supported</li>
+</ul>
+
+<h3>Cons:</h3>
+<ul>
+  <li>You cannot use break or continue to exit the loop early</li>
+</ul>
+
+<hr>
+
+<h2>2. Using for...of with entries()</h2>
+
+<p>
+The <strong>for...of</strong> loop iterates directly over values.
+To access the index, you can combine it with the <strong>entries()</strong> method,
+which returns an iterator of <code>[index, value]</code> pairs.
+</p>
+
+<pre>
+const arr = [1, 2, 3];
+
+for (const [index, value] of arr.entries()) {
+  console.log(index, value);
+}
+</pre>
+
+<h3>Pros:</h3>
+<ul>
+  <li>Clean, modern syntax</li>
+  <li>Allows the use of break and continue</li>
+</ul>
+
+<h3>Cons:</h3>
+<ul>
+  <li>Can be slightly slower than a traditional for loop in performance-critical cases</li>
+</ul>
+
+<hr>
+
+<h2>3. Using a Traditional for Loop</h2>
+
+<p>
+A traditional <strong>for</strong> loop provides explicit control over the index,
+making it ideal when you need maximum control, performance, or early exits.
+</p>
+
+<pre>
+const arr = [1, 2, 3];
+
+for (let i = 0; i < arr.length; i++) {
+  console.log(i, arr[i]);
+}
+</pre>
+
+<h3>Pros:</h3>
+<ul>
+  <li>Full control over index</li>
+  <li>High performance</li>
+  <li>Supports break and continue</li>
+</ul>
+
+<h3>Cons:</h3>
+<ul>
+  <li>More verbose</li>
+  <li>Slightly more prone to off-by-one errors</li>
+</ul>
+
+<hr>
+
+<h2>Interview One-Line Summary ✅</h2>
+
+<p>
+To access indexes during iteration, I use <strong>forEach</strong> for readability,
+<strong>for...of</strong> with <strong>entries()</strong> for modern syntax with control flow,
+and a <strong>traditional for loop</strong> when I need performance or full control.
+</p>
+
+</body>
+</html>

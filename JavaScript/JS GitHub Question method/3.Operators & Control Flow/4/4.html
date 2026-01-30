@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ternary Operator in JavaScript</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* General styles */
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    h2, h3 {
+      color: #34495e;
+      margin-top: 25px;
+    }
+
+    hr {
+      border: 0;
+      height: 1px;
+      background: #ccc;
+      margin: 20px 0;
+    }
+
+    pre {
+      background-color: #f0f0f0;
+      padding: 15px;
+      border-left: 4px solid #3498db;
+      overflow-x: auto;
+      border-radius: 5px;
+    }
+
+    code {
+      background-color: #eaeaea;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+
+    p, li {
+      margin: 10px 0;
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    /* Highlight interview notes */
+    b {
+      color: #e74c3c;
+    }
+
+    /* Output box styling */
+    .output {
+      background-color: #dff0d8;
+      padding: 10px;
+      border-left: 4px solid #27ae60;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Ternary Operator (?:) in JavaScript</h1>
+
+<p>
+<b>Interview Question:</b><br>
+What is the ternary operator and how is it used?
+</p>
+
+<hr>
+
+<h2>1️⃣ Definition</h2>
+
+<p>
+<b>English (Interview-ready):</b><br>
+The ternary operator is a shorthand way of writing an if-else statement in a single line.
+It is called ternary because it takes three operands: a condition, a value if true,
+and a value if false.
+</p>
+
+<p>
+<b>Tamil:</b><br>
+if-else statement-ஐ ஒரே line-ல எழுத use பண்ணுற operator-தான் ternary operator.
+இதுல 3 parts இருக்கு: condition, true value, false value.
+</p>
+
+<hr>
+
+<h2>2️⃣ Syntax</h2>
+
+<pre>
+condition ? valueIfTrue : valueIfFalse;
+</pre>
+
+<hr>
+
+<h2>3️⃣ Simple Example</h2>
+
+<pre>
+let age = 18;
+
+let canVote = (age >= 18)
+  ? "Yes, can vote"
+  : "No, too young";
+
+console.log(canVote);
+</pre>
+
+<div class="output"><b>Output:</b> Yes, can vote</div>
+
+<hr>
+
+<h3>🗣️ How to Explain This in an Interview</h3>
+
+<ul>
+  <li>First, check the condition: <code>age >= 18</code></li>
+  <li>If true → <code>"Yes, can vote"</code> is assigned</li>
+  <li>If false → <code>"No, too young"</code> is assigned</li>
+</ul>
+
+<p>
+<b>Summary:</b><br>
+Instead of writing a multi-line if-else, we can do the same logic in one line
+using the ternary operator.
+</p>
+
+<hr>
+
+<h2>4️⃣ Another Simple Example</h2>
+
+<pre>
+let age = 20;
+let drink = age >= 18 ? "Wine" : "Juice";
+console.log(drink);
+</pre>
+
+<div class="output"><b>Output:</b> Wine</div>
+
+<p>
+<b>Explanation:</b><br>
+If age is 18 or above, drink becomes "Wine".
+Otherwise, it becomes "Juice".
+</p>
+
+<hr>
+
+<h2>5️⃣ Optional Advanced Note (Nested Ternary)</h2>
+
+<p>
+You can nest ternary operators, but it reduces readability.
+</p>
+
+<pre>
+let age = 20;
+
+let message = (age < 18)
+  ? "Too young"
+  : (age < 60 ? "Adult" : "Senior");
+
+console.log(message);
+</pre>
+
+<div class="output"><b>Output:</b> Adult</div>
+
+<p>
+<b>Explanation:</b><br>
+First condition (age &lt; 18) is checked.<br>
+If false, second condition (age &lt; 60) is checked.
+</p>
+
+<hr>
+
+<h2>6️⃣ When to Use Ternary Operator</h2>
+
+<ul>
+  <li>Assigning values based on a condition</li>
+  <li>Short return statements in functions</li>
+  <li>Simple one-line decisions</li>
+</ul>
+
+<hr>
+
+<h2>7️⃣ Best Practices</h2>
+
+<ul>
+  <li>✔ Use ternary for simple conditions</li>
+  <li>❌ Avoid deep nesting (readability suffers)</li>
+  <li>✔ Use if-else for complex logic</li>
+</ul>
+
+<hr>
+
+<h2>🎯 One-Line Interview Answer</h2>
+
+<p>
+The ternary operator is a concise way to choose between two values
+based on a condition in a single line.
+</p>
+
+<hr>
+
+<h3>✅ END</h3>
+
+</body>
+</html>

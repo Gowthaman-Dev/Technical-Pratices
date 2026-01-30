@@ -1,0 +1,178 @@
+    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vocabulary and Code Examples</title>
+</head>
+<body>
+
+<h1>7. Vocabulary and Code Examples</h1>
+
+<hr>
+
+<h2>1. “instead”</h2>
+
+<p><b>Tamil meaning:</b> 👉 அதற்கு பதிலாக</p>
+<p><b>Pronunciation:</b> 👉 இன்ஸ்டெட் (in-stead)</p>
+
+<p><b>Simple Tamil explanation:</b><br>
+👉 ஒரு விஷயத்தை செய்யாமல், வேறு ஒன்றை அதற்கு மாற்றாக செய்வது.
+</p>
+
+<p><b>Example:</b><br>
+👉 Use backticks instead of quotes.<br>
+👉 quotes-க்கு பதிலாக backticks பயன்படுத்தவும்.
+</p>
+
+<p><b>One English sentence:</b><br>
+👉 Instead means in place of something else.
+</p>
+
+<hr>
+
+<h2>2. “interpolation”</h2>
+
+<p><b>Tamil meaning:</b> 👉 இடைச்செருகல் / மதிப்பை இடையில் சேர்த்தல்</p>
+<p><b>Pronunciation:</b> 👉 இன்டர்பொலேஷன் (in-ter-po-la-tion)</p>
+
+<p><b>Simple Tamil explanation (JavaScript context):</b><br>
+👉 String-க்குள்ளே variable அல்லது expression-ஐ நேரடியாக ${ } மூலம் சேர்ப்பதை interpolation என்போம்.
+</p>
+
+<p><b>Example:</b></p>
+
+<pre>
+let name = "Gowtham";
+console.log(`Hello ${name}`); // Hello Gowtham
+</pre>
+
+<p><b>One English sentence:</b><br>
+👉 Interpolation means inserting variables or expressions directly inside a string.
+</p>
+
+<hr>
+
+<h2>3. “embed”</h2>
+
+<p><b>Tamil meaning:</b> 👉 உட்பொதித்தல் / உள்ளே சேர்த்தல்</p>
+<p><b>Pronunciation:</b> 👉 எம்பெட் (em-bed)</p>
+
+<p><b>Simple Tamil explanation:</b><br>
+👉 ஒரு விஷயத்தை மற்றொன்றின் உள்ளே நேரடியாக சேர்த்து வைப்பது.
+</p>
+
+<p><b>Example (programming):</b><br>
+👉 Embed a value inside a string.<br>
+👉 string-க்குள்ளே value-ஐ சேர்த்தல்.
+</p>
+
+<p><b>One English sentence:</b><br>
+👉 Embed means to insert something directly into another thing.
+</p>
+
+<hr>
+
+<h2>4. “than”</h2>
+
+<p><b>Tamil meaning:</b> 👉 ஐவிட / ஒப்பிடும்போது</p>
+<p><b>Pronunciation:</b> 👉 தான் (than)</p>
+
+<p><b>Simple Tamil explanation:</b><br>
+👉 இரண்டு விஷயங்களை ஒப்பிட்டு கூறும்போது பயன்படுத்தப்படும் சொல்.
+</p>
+
+<p><b>Example:</b><br>
+👉 10 is greater than 5.<br>
+👉 10, 5-ஐவிட பெரியது.
+</p>
+
+<p><b>One English sentence:</b><br>
+👉 Than is used to compare two things.
+</p>
+
+<hr>
+
+<h2>5. “concatenation”</h2>
+
+<p><b>Tamil meaning:</b> 👉 இணைப்பு / ஒன்றாகச் சேர்ந்தல்</p>
+<p><b>Pronunciation:</b> 👉 கான்காட்டெனேஷன் (con-cat-e-na-tion)</p>
+
+<p><b>Simple Tamil explanation (programming context):</b><br>
+👉 இரண்டு அல்லது அதற்கும் மேலான strings-ஐ ஒன்று சேர்த்து ஒரு string ஆக்குவது concatenation.
+</p>
+
+<p><b>Example:</b></p>
+
+<pre>
+let a = "Hello";
+let b = "World";
+let result = a + " " + b;  // "Hello World"
+</pre>
+
+<p><b>One English sentence:</b><br>
+👉 Concatenation means joining strings together to form a single string.
+</p>
+
+<hr>
+
+<h2>6. Code Examples (Template Literals)</h2>
+
+<pre>
+let name = "Rocky";
+let age = 23;
+
+// Using template literals
+let message = `My name is ${name} and I am ${age} years old`;
+
+console.log(message);
+
+// Output:
+// My name is Rocky and I am 23 years old
+</pre>
+
+<h3>✅ Multi-line String Example</h3>
+
+<pre>
+let text = `Hello,
+Welcome to JavaScript!`;
+
+console.log(text);
+</pre>
+
+<p>
+Template literals are used to create readable strings in JavaScript
+using backticks and allow inserting variables with ${ }.
+</p>
+
+<hr>
+
+<h3>Avoiding + (Concatenation)</h3>
+
+<pre>
+const firstName = "Rocky";
+const lastName = "Rocks";
+
+// Without template literals (using +)
+const fullName1 = firstName + " " + lastName;
+console.log(fullName1); // Rocky Rocks
+
+// With template literals (no + needed)
+const fullName2 = `${firstName} ${lastName}`;
+console.log(fullName2); // Rocky Rocks
+</pre>
+
+<p><b>Tamil explanation:</b><br>
+Template literals (${ }) use பண்ணினால் + operator-ஐ avoid பண்ணி,
+clean & readable string combine பண்ணலாம்.
+</p>
+
+<hr>
+
+<h2>🎯 Interview Tip</h2>
+<p>
+Vocabulary meaning → simple explanation → one example → stop.
+</p>
+
+</body>
+</html>

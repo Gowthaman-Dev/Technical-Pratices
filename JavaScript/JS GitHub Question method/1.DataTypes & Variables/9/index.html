@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spread Operator – Complete Notes</title>
+</head>
+<body>
+
+<h1>Spread Operator (...) – Complete Explanation</h1>
+
+<p>
+The <b>spread operator (...)</b> expands elements of an iterable
+(array, string, set, map) into individual values.
+</p>
+
+<hr>
+
+<h2>1️⃣ Spread with Arrays</h2>
+
+<pre>
+const fruits = ['apple', 'banana'];
+const moreFruits = ['cherry'];
+
+// Copying an array
+const fruitsCopy = [...fruits];
+console.log(fruitsCopy); // ['apple', 'banana']
+
+// Merging arrays
+const allFruits = [...fruits, 'date', ...moreFruits];
+console.log(allFruits); // ['apple', 'banana', 'date', 'cherry']
+</pre>
+
+<hr>
+
+<h2>2️⃣ Copying an Array (Reference Proof)</h2>
+
+<pre>
+const original = [1, 2, 3];
+const copy = [...original];
+
+console.log(copy);               // [1, 2, 3]
+console.log(copy === original);  // false (different reference)
+</pre>
+
+<hr>
+
+<h2>3️⃣ Adding Elements to an Array</h2>
+
+<pre>
+const fruits = ["apple", "banana"];
+const newFruits = ["mango", ...fruits, "orange"];
+
+console.log(newFruits);
+// ["mango", "apple", "banana", "orange"]
+</pre>
+
+<hr>
+
+<h2>4️⃣ Spread with Objects (ES2018+)</h2>
+
+<pre>
+const user = { name: 'Alice', age: 30 };
+
+// Copying object
+const userCopy = { ...user };
+console.log(userCopy);
+
+// Updating / merging
+const updatedUser = { ...user, age: 31, city: 'NY' };
+console.log(updatedUser);
+</pre>
+
+<hr>
+
+<h2>5️⃣ Spread with Function Arguments</h2>
+
+<pre>
+function greet(name, greeting) {
+  console.log(`${greeting}, ${name}!`);
+}
+
+const person = ['Bob', 'Hello'];
+greet(...person); // Hello, Bob!
+</pre>
+
+<p>
+Instead of <b>apply()</b>, spread lets you pass array values
+as separate arguments.
+</p>
+
+<hr>
+
+<h2>6️⃣ Passing Arrays to Functions</h2>
+
+<pre>
+function sum(a, b, c) {
+  return a + b + c;
+}
+
+const nums = [10, 20, 30];
+console.log(sum(...nums)); // 60
+</pre>
+
+<hr>
+
+<h2>7️⃣ Using Spread with Math Functions</h2>
+
+<pre>
+const nums = [5, 10, 3, 8];
+
+const max = Math.max(...nums);
+console.log(max); // 10
+
+const min = Math.min(...nums);
+console.log(min); // 3
+</pre>
+
+<hr>
+
+<h2>8️⃣ Spread with Iterables</h2>
+
+<h3>Array</h3>
+<pre>
+const arr = [1, 2, 3];
+console.log(...arr); // 1 2 3
+</pre>
+
+<h3>String</h3>
+<pre>
+const str = "Hello";
+console.log(...str); // H e l l o
+
+const chars = [...str];
+console.log(chars); // ["H","e","l","l","o"]
+</pre>
+
+<h3>Set</h3>
+<pre>
+const mySet = new Set([10, 20, 30]);
+const arrFromSet = [...mySet];
+console.log(arrFromSet); // [10, 20, 30]
+</pre>
+
+<h3>Map</h3>
+<pre>
+const myMap = new Map([
+  ["a", 1],
+  ["b", 2]
+]);
+
+const mapEntries = [...myMap];
+console.log(mapEntries);
+// [["a",1], ["b",2]]
+</pre>
+
+<hr>
+
+<h2>9️⃣ Important: Spread vs Rest</h2>
+
+<pre>
+// Spread → expands values
+const arr = [1, 2, 3];
+console.log(...arr); // 1 2 3
+
+// Rest → collects values
+function sum(...numbers) {
+  return numbers.reduce((a, b) => a + b, 0);
+}
+console.log(sum(1, 2, 3)); // 6
+</pre>
+
+<hr>
+
+<h2>🟢 Tamil Explanation</h2>
+
+<p>
+Spread operator <b>(...)</b>-ஐ arrays, objects, strings, sets-ல் பயன்படுத்தி:
+</p>
+<ul>
+    <li>Copy செய்யலாம்</li>
+    <li>Merge செய்யலாம்</li>
+    <li>Function arguments-க்கு expand செய்யலாம்</li>
+    <li>Iterable values-ஐ தனித்தனியாக பெறலாம்</li>
+</ul>
+
+<hr>
+
+<h2>🎯 One-Line Interview Answer (English)</h2>
+
+<p>
+<b>
+The spread operator (...) expands iterables into individual values,
+allowing easy copying, merging, and passing arguments to functions.
+</b>
+</p>
+
+<hr>
+
+<h2>💡 Interview Tip</h2>
+
+<p>
+Definition → one example → stop.  
+Explain more only if the interviewer asks.
+</p>
+
+</body>
+</html>

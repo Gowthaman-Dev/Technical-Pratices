@@ -1,0 +1,58 @@
+DataTypes and Variables:Vocabilaries;
+
+
+“differing mainly in” → முக்கியமாக வேறுபடுகின்றது
+
+constant reference ->const creates a constant reference, meaning the variable cannot be reassigned, but the contents of objects or arrays can be modified.
+
+accessed early → முன்பே பயன்படுத்தினால்
+
+causing → ஏற்படுத்தும்
+
+ReferenceError → JavaScript error
+
+English: This mistake is causing an error.
+
+Tamil: இந்த தவறு ஒரு error-ஐ ஏற்படுத்துகிறது.
+
+various → பல்வேறு, விதவிதமான, பல வகையான
+
+reference -> A reference means pointing to the same memory location.
+
+Infinity and -Infinity represent values beyond numeric limits, and NaN represents an invalid numeric result.
+
+
+entity → தனித்த அடையாளம் கொண்ட ஒன்று
+Boolean represents a logical entity with only two values: true and false.
+
+
+“has been” is used to describe something that started in the past and is still relevant now.
+
+
+
+
+3. 
+
+
+deliberately-திட்டமிட்டு-நோக்கத்தோடு
+
+deliberately ignored the message. -அவன் திட்டமிட்டு அந்த message-ஐ ignore பண்ணான்.
+
+The value is deliberately set to null.-அந்த value நோக்கத்தோடு null-ஆ set பண்ணப்பட்டது.
+let a = null; // deliberately set
+
+intentional absence-திட்டமிட்டு இல்லாம வைத்திருப்பது
+
+
+explicitly → தெளிவாக
+English: You must explicitly assign a value to a variable.
+Tamil: Variable-க்கு value-ஐ தெளிவாக / தனிப்பட்ட முறையில் assign பண்ணவேண்டும்.
+
+
+| Code Order                | Strict Mode      | Non-Strict Mode                    | Notes                                    |
+| ------------------------- | ---------------- | ---------------------------------- | ---------------------------------------- |
+| `console.log(x); x = 10;` | ❌ ReferenceError | ❌ ReferenceError (first log fails) | Access before assignment fails           |
+| `x = 10; console.log(x);` | ❌ ReferenceError | ✅ Prints 10                        | First assignment creates global variable |
+
+
+

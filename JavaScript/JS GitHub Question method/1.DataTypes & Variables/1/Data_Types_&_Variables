@@ -1,0 +1,170 @@
+"Data Types & Variables":
+
+{ "Explain the difference between var let and const"
+
+Var,Let , and Const are JavaScript keywords for variable declaration, differing mainly in scope, reassignment, and hoisting; var is function-scoped, can be redeclared/reassigned, and hoisted with undefined ; let is block-scoped, reassigned but not redeclared, and hoisted to the Temporal Dead Zone (TDZ); const is block-scoped, cannot be reassigned or redeclared (but properties of objects/arrays can change), and also hoisted to the TDZ, making let and const safer and preferred for modern JS.
+
+Key Differences :
+
+• Scope: 
+
+	• var : Function-scoped (or global). 
+	• let,const : Block-scoped (limited to ). 
+
+• Reassignment/Redeclaration: 
+
+	• var: Can be reassigned & redeclared. 
+	• let: Can be reassigned, but not redeclared in the same scope. 
+	•const: Cannot be reassigned or redeclared (constant reference). 
+
+• Hoisting & TDZ: 
+
+	• var: Hoisted and initialized to , accessible before declaration (no TDZ). 
+	• let,const : Hoisted but not initialized, entering the Temporal Dead Zone (TDZ) until declaration, causing a reference error if accessed early. 
+
+When to Use Which 
+
+• const(Default): Use for variables that won't be reassigned, promoting immutability and clarity. 
+• let: Use when you need to reassign a variable (e.g., loop counters, temporary values). 
+• var(Avoid): Generally avoid, as its function scope and hoisting can lead to bugs; use only for legacy code if necessary.
+
+}
+
+
+
+
+
+{"How-do-you-check-the-data-type-of-a-variable"
+
+	
+	JavaScript has eight data types, which are categorized into two groups: primitive and non-primitive (reference) types. JavaScript is a dynamically typed language, meaning a variable can hold different data types at different times.  
+Primitive Data Types 
+Primitive types represent single, immutable values and are stored by value. There are seven primitive data types: 
+
+• String: Represents textual data enclosed in single quotes (''), double quotes (""), or backticks (``). 
+
+	• Example:  let name ="Gowtham"
+
+• Number: Represents both integer and floating-point numbers. It also includes special numeric values like Infinity,-Infinity , and NAN(Not-a-Number). 
+
+	• Example: let age = 25; or let price = 99.99;
+
+• Boolean: Represents a logical entity and can only have two values: true or false. It is commonly used for conditional logic. 
+
+	• Example: let isLoggedIn = true;
+
+• Undefined: A variable that has been declared but not assigned a value is automatically assigned the value undefined. It is a type of its own, with the single value undefined 
+
+	• Example: let user;
+
+• Null: Represents the intentional absence of any object value. It is a standalone type that has a single value, null 
+
+	• Example: let data = null;  
+
+• Symbol: Introduced in ECMAScript 2015 (ES6), it is a unique and immutable primitive value used as an identifier for object properties to avoid naming conflicts.
+
+	• Example: let id = Symbol("id"); 
+
+• BigInt: Introduced in ECMAScript 2020 (ES2020), this data type is used for integer numbers of arbitrary length that exceed the safe integer limit of the Number type (±(2⁵³-1)).
+
+	• Example: let bigNumber = 12345678901234567890n
+
+Non-Primitive Data Type 
+Non-primitive (or reference) data types are mutable and are used to store collections of data and more complex entities. They are stored by reference. There is one non-primitive data type: 
+
+• Object: The fundamental building block for more complex data structures. Everything else that is not a primitive is an object, including arrays and functions.
+
+	• Arrays: A special type of object used to store an ordered collection of values with numerical indices. 
+	• Functions: Callable objects that represent a block of reusable code. 
+	• Other built-in objects: Date, RegExp, Map, Set, etc.. 
+
+You can check the type of a variable using the typeof operator, such as typeof myVariable. Note that typeof null returns "object", which is a historical bug in JavaScript
+}
+
+
+
+3.
+{    "whats-the-difference-between-a-variable-that-is-null-undefined-or-undeclared-how-would-you-go-about-checking-for-any-of-these-states"
+
+
+In JavaScript, the key difference lies in why a value is absent: null is an intentional absence of an object value, undefined is an automatic value for an uninitialized state, and an undeclared variable has not been created in the current scope at all. 
+
+=>Differences between null, undefined, and undeclared (Point-wise)
+
+{
+
+Aspect: Meaning;
+
+null: Intentional absence of a value (usually an object).
+
+undefined: A variable has been declared but not assigned a value.
+
+Undeclared: The variable has not been declared using var, let, or const in the current scope.
+}
+
+{
+Aspect: Type (using typeof)
+
+null: Returns "object" (a historical quirk/bug).
+
+undefined: Returns "undefined".
+
+Undeclared: Accessing it throws a ReferenceError.
+}
+
+{
+Aspect: Assignment
+
+null: Must be explicitly assigned by a developer (let x = null;).
+
+undefined: Automatically assigned by JavaScript.
+
+Undeclared: Not assigned; attempting to assign or access it without declaration (outside of non-strict mode assignment) throws an error.
+}
+
+
+How to Check for These States 
+Here is how you would check for each state in your code: 
+
+
+• Checking for null: Use the strict equality operator (===) to check specifically for null.
+let a = null;
+if (a === null) {
+  console.log("a is strictly null"); // This will run
+}
+
+
+• Checking for undefined (or null): 
+
+	• Strict check for only undefined: Use the strict equality operator (===). This is safe since undefined has been a non-writable property of the global object since ES5. 
+	let b;
+if (b === undefined) {
+  console.log("b is strictly undefined"); // This will run
+}
+
+	• Loose check for either null or undefined: The loose equality operator (==) works well for this, as null == undefined evaluates to true due to type coercion
+	if (b == null) {
+  console.log("b is null or undefined"); // This will run for both cases
+}
+ 
+
+• Checking for an undeclared variable: This is the trickiest because directly accessing an undeclared variable (in any context other than the typeof operator) will throw a ReferenceError and halt script execution.
+     •The only safe way to check if a variable has been declared at all is to use the typeof operator,    as it handles the non-existent variable gracefully by returning the string "undefined" 
+     try {
+  if (typeof undeclaredVar === 'undefined') {
+    console.log("undeclaredVar is undeclared or undefined"); // This will run
+  }
+} catch (e) {
+  // This catch block will never be hit using typeof for an undeclared variable
+}
+
+// Attempting to access directly would throw an error:
+// if (undeclaredVar === undefined) { ... } // ReferenceError!
+
+
+Best Practice: Always declare your variables to avoid  issues. Use  to explicitly signify an empty value and rely on  for uninitialized states handled automatically by the language. [4, 12, 13, 14]  
+
+
+
+
+}

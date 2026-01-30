@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Difference in Hoisting: var vs let vs const</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9fafb;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h2 {
+      color: #1e40af;
+      border-left: 5px solid #1e40af;
+      padding-left: 10px;
+      margin-top: 30px;
+    }
+
+    h3 {
+      color: #374151;
+      margin-top: 15px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      background: #fff;
+    }
+
+    th {
+      background-color: #e0e7ff;
+      color: #1e3a8a;
+    }
+
+    th, td {
+      border: 1px solid #c7d2fe;
+      padding: 10px;
+      text-align: left;
+    }
+
+    pre {
+      background-color: #111827;
+      color: #e5e7eb;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+
+    code {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    hr {
+      border: none;
+      height: 1px;
+      background-color: #d1d5db;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Explain the Difference in Hoisting Between var, let, and const</h2>
+
+<p>
+In JavaScript, all variable declarations (<strong>var</strong>, <strong>let</strong>, and <strong>const</strong>) are hoisted to the top of their scope.
+</p>
+<p>
+The key difference lies in how they are initialized and accessed before declaration, especially with respect to the
+<strong>Temporal Dead Zone (TDZ)</strong>.
+</p>
+
+<h2>Comparison Table</h2>
+
+<table>
+  <tr>
+    <th>Feature</th>
+    <th>var</th>
+    <th>let</th>
+    <th>const</th>
+  </tr>
+  <tr>
+    <td>Hoisting behavior</td>
+    <td>Hoisted and initialized with <code>undefined</code></td>
+    <td>Hoisted but not initialized</td>
+    <td>Hoisted but not initialized</td>
+  </tr>
+  <tr>
+    <td>Access before declaration</td>
+    <td>Accessible (<code>undefined</code>)</td>
+    <td>ReferenceError (TDZ)</td>
+    <td>ReferenceError (TDZ)</td>
+  </tr>
+  <tr>
+    <td>Scope</td>
+    <td>Function / Global scope</td>
+    <td>Block scope</td>
+    <td>Block scope</td>
+  </tr>
+  <tr>
+    <td>Reassignment</td>
+    <td>Allowed</td>
+    <td>Allowed</td>
+    <td>❌ Not allowed</td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>1. var Hoisting</h2>
+
+<p>
+Variables declared with <strong>var</strong> are hoisted to the top of their function or global scope and are automatically initialized with
+<strong>undefined</strong>.
+</p>
+
+<p>
+This allows the variable to be accessed before its declaration, but its value will be undefined until the assignment runs.
+</p>
+
+<h3>Example</h3>
+<pre><code>console.log(a); // undefined
+var a = 10;
+console.log(a); // 10</code></pre>
+
+<h3>Explanation</h3>
+<p>
+The declaration <strong>var a</strong> is hoisted and initialized with <strong>undefined</strong> during the memory creation phase.
+</p>
+
+<hr>
+
+<h2>2. let Hoisting</h2>
+
+<p>
+Variables declared with <strong>let</strong> are hoisted but not initialized.
+</p>
+
+<p>
+They remain in the <strong>Temporal Dead Zone (TDZ)</strong> from the start of the block until the declaration line is executed.
+</p>
+
+<p>
+Accessing them before declaration causes a <strong>ReferenceError</strong>.
+</p>
+
+<h3>Example</h3>
+<pre><code>console.log(b); // ReferenceError
+let b = 20;
+console.log(b); // 20</code></pre>
+
+<hr>
+
+<h2>3. const Hoisting</h2>
+
+<p>
+<strong>const</strong> behaves the same as <strong>let</strong> in terms of hoisting and TDZ.
+</p>
+
+<p>
+It is hoisted but not initialized, and accessing it before declaration throws a <strong>ReferenceError</strong>.
+</p>
+
+<h3>Additionally</h3>
+<ul>
+  <li>const must be initialized at declaration</li>
+  <li>const cannot be reassigned</li>
+</ul>
+
+<h3>Example</h3>
+<pre><code>console.log(c); // ReferenceError
+const c = 30;
+console.log(c); // 30</code></pre>
+
+<hr>
+
+<h2>Interview Summary (Short Answer)</h2>
+
+<p>
+All variables in JavaScript are hoisted, but <strong>var</strong> is initialized with <strong>undefined</strong>, while
+<strong>let</strong> and <strong>const</strong> remain in the <strong>Temporal Dead Zone</strong> until declared.
+</p>
+
+<h2>Best Practice</h2>
+<ul>
+  <li>Use <strong>const</strong> by default</li>
+  <li>Use <strong>let</strong> if reassignment is needed</li>
+  <li>Avoid <strong>var</strong> due to function scoping and unexpected hoisting behavior</li>
+</ul>
+
+</body>
+</html>

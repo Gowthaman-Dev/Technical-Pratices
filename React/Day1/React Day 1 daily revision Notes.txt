@@ -1,0 +1,441 @@
+React day 1 notes
+
+
+1. ⇒ What is React?
+First of all, React is a JavaScript library, not a framework. It was developed by Facebook (now called Meta) to build user interfaces (UI), especially for single-page (SPA) applications. It is mainly used to build reusable UI. React is component-based architecture(ஆர்கிடெக்ச்சர்)”, so we can maintain multiple dynamic processes inside a single component. React is a declarative, component-based frontend library for building fast, dynamic, and scalable web applications.
+
+*React-ல ஒரு பெரிய UI-யை சின்ன சின்ன reusable pieces-ஆ break பண்ணி எழுதுற structure தான் component-based architecture.
+
+*Declarative - React-ல நீங்க UI எப்படி இருக்கணும் என்று சொல்றீங்க.
+React அதை எப்படி update பண்ணணும் என்பதை automatic-ஆ handle பண்ணும்.
+
+
+*Component-Based
+
+UI-யை சின்ன சின்ன reusable components-ஆ divide பண்ணி build பண்ணுவாங்க.
+
+➡️ Tamil:
+ஒரே பெரிய UI-யை சிறு சிறு pieces (components) ஆகப் பிரிச்சு உருவாக்குற method.
+
+
+*Frontend Library
+
+React browserல வேலை செய்யும் UI parts-ஐ build பண்ணதுக்கான library.
+
+
+*Fast
+
+Virtual DOM, efficient rendering காரணமாக React super fast.
+
+
+*Dynamic
+
+State & props change ஆனா UI உடனே update ஆகும்.
+
+➡️ Tamil:
+UI live-ஆ change ஆகும் (counter, forms, buttons, API data).
+
+
+
+*Scalable
+
+Small app இருந்தாலும் later big app-ஆ வளர்த்துக்க முடியும்.
+Architecture clean-ஆ இருக்கும்.
+
+
+
+
+2. ⇒ Why React?
+React is fast and efficient because it uses the virtual DOM for quick updates, and it avoids reloading the whole page. The app is divided into reusable components. With its one-way data flow, debugging and data tracking become easier.
+
+
+*One-way data flow என்றால்:
+
+React-ல data parent → child direction-ல மட்டும் போகும்.
+Child → parent direct-ஆ data push பண்ண முடியாது (callback மூலம் மட்டும்தான்).
+
+இதனால் என்ன advantage?
+
+Data எங்கிருந்து எங்கு போகுது என்று track பண்ணுறது நேராகும், confusion குறையும்.
+எந்த component-ல data change ஆயிருக்கு என்று கண்டுபிடிக்க easy.
+அதனால் debugging சுலபம்.
+
+*One-way data flow makes it easier to trace where data comes from, so debugging becomes simpler
+
+
+
+
+3.=>declarative?
+
+Declarative means you only tell what to render, not how to render. React automatically handles the DOM updates. React also has strong community support, a huge ecosystem with packages, libraries, and developer tools.
+
+
+*Strong community support
+
+React-ஐ பயன்படுத்துற developer-கள் உலகத்துல நிறைய பேர் இருக்காங்க.
+அதனால்:
+
+Errors வந்தா Google-ல answer கிடைக்கும்
+
+YouTube-ல React tutorials நிறைய
+
+GitHub-ல React projects நிறைய
+
+Doubts க்கு help கிடைக்கும்
+
+Regular updates வரும்
+
+அதாவது, React-க்கு பெரிய support group இருக்குது.
+
+
+
+*Huge ecosystem
+
+React-க்கு சுற்றிலும்
+நிறைய tools, packages, libraries உருவாக்கப்பட்டிருக்கின்றன.
+இந்த ecosystem React-ஐ powerful ஆக்குது.
+
+
+
+*Examples of ecosystem tools
+
+
+🔹 Packages
+
+
+
+axios - ஆக்ஸியோஸ்”👉 API calls செய்ய உதவும்-(Used to make HTTP requests.)
+
+react-router-ரியாக்ட் ரவுட்டர்”👉 Pages/Routes உருவாக்க உதவும்.(Helps in navigation between pages.)
+
+redux-Redux-“ரிடக்ஸ்”👉 பெரிய apps-ல state managementக்கு.- (Used for global state management.)
+
+zustand - சுஷ்டாண்ட்”👉 Lightweight & simple state management.-(A simple and fast state management library.)
+
+formik - ஃபார்மிக்”👉 Forms handle செய்ய easiest way -(Helps manage forms and validation.)
+
+
+
+
+🔹 UI Libraries
+
+
+
+Material UI - மடீரியல் யூ-ஐ”👉 Google Material Design components. -(A collection of beautiful UI components.)
+
+Chakra UI - “சக்ரா யூ-ஐ”👉 Simple, customizable UI components.- (Easy-to-style component library.)
+
+Ant Design - ஆன்ட் டிசைன்”👉 Enterprise-level UI components -(Professional UI library for dashboards.)
+
+Tailwind (commonly used with React) - “டெயில்விண்ட் சீ.எஸ்.எஸ்”👉 Utility-first CSS framework.-(A styling tool used widely with React.)
+
+
+
+🔹 Developer Tools
+
+
+
+React DevTools - “ரியாக்ட் டெவ்-டூல்ஸ்”👉 Components inspect & debug செய்ய -(Helps debug React components.)
+
+ESLint - “இ.எஸ்.லிண்ட்”👉 Code clean & error-free ஆக்குறது.-(Used for code quality checking.)
+
+Vite - “வீட்” 👉 Super fast development server.-(A blazing-fast build tool.)
+
+Webpack - “வெப்-பேக்”👉 Bundler  files அனைத்தையும் combine பண்ணும். - (Bundles JS, CSS, images into one output.)
+
+Next.js (React framework) - “நெக்ஸ்ட் ஜெ.எஸ்”👉 React framework, SEO-friendly apps க்கு perfect - (A full-stack framework built on React.)
+
+
+
+
+
+4.=>Cross-platform availability?
+
+
+*"Cross(க்ராஸ்)-platform availability" (அல்லது "Cross-platform support") என்றால் ஒரே technology / skill / codebase-ஐ use பண்ணி வெவ்வேறு platforms-க்கான applications உருவாக்க முடியும் என்பதுதான்.
+
+*Cross-platform availability means
+a technology or framework can be used to develop applications that run on multiple device platforms, such as:
+
+Web Browsers (React.js)
+
+Android Mobile (React Native)
+
+iOS Mobile (React Native)
+
+Desktop (using Electron, React Native Windows/Mac)
+
+
+*Cross-platform availabilityன்னா என்ன?
+ஒரே technology-யை use பண்ணி பல platforms-க்கான (Web, Android, iOS) apps develop பண்ண முடியும்.
+
+
+5.=>
+
+
+
+1️.What is Stateful Code?
+
+“Stateful code is code that stores data (state) and automatically updates the UI whenever that state changes.”
+
+Stateful code என்பது data time-க்கு time மாறி, UI update ஆகும் code.
+React-ல் state manage பண்ணினால்தான் UI dynamic-ஆ இருக்கும்.
+
+English: Code that depends on changing data (state) and re-renders UI accordingly.
+
+Stateful code என்றால்:
+👉 ஒரு program-ல data (state) time-க்கு time மாறும்.
+👉 அந்த data மாறுறதைக் கொண்டு UI மாற்றம் (update/re-render) நடக்கும்.
+👉 அதனால் UI dynamic ஆக இருக்கும்.
+
+அதாவது, state இருக்குற code தான் stateful code.
+
+✅ English (One simple sentence)
+
+“Stateful code is code where the UI changes whenever the underlying data (state) changes.
+
+Stateful code =
+👉 நம்ம data (value) மாறுறப்போ
+👉 UI-யும் தானாக மாறுற code.
+
+🔥 Example (கண்டிப்பாக புரியும்)
+
+Counter value 0 இருந்து 1 ஆக மாறுது.
+
+அந்த number UI-லவும் update ஆகுது.
+
+இப்படி data change → UI change என்றால் அது stateful code.
+
+❗ மிகச் சின்ன definition
+
+“மாறுற data-ஐ அடிப்படையாக வைத்து UI update ஆகுற code.”
+
+
+
+
+
+2️.Unidirectional (Downward) Data Flow?
+
+“Unidirectional data flow means data moves only from parent components to child components, making the application predictable and easier to debug.”
+
+React-ல் data parent component-இருந்து child component-க்கு மட்டும் போகும்; reverse direction இல்ல.
+இது application-ஐ predictable, easy-to-debug ஆக்கிறது.
+
+English: Data flows only from parent to child, not vice-versa.
+
+
+
+
+
+3️.What is Side Effect?
+
+UI rendering logic-க்கு வெளியில நடைபெறும் operations, example: API calls, timers, localStorage.
+React-ல் side effects-ஐ useEffect() மூலம் handle பண்ணுவோம்.
+
+English: Actions that happen outside the normal UI rendering process.
+
+
+“A side effect is any operation that occurs outside the normal UI rendering process, such as API calls, subscriptions, timers, or accessing browser storage.”
+
+✅ Tamil + Meaning (Short & Clear)
+
+“UI render ஆகுறதுக்குப் புறம்பா நடக்கும் actions—API calls, timer, localStorage access—இவை எல்லாம் side effects.”
+
+
+“In React, side effects are handled using the useEffect hook, which allows us to run external operations after the component renders.”
+
+✅ Tamil + Simple Meaning
+
+“React-ல் component render ஆன பிறகு நடக்க வேண்டிய வெளிப்புற operations (side effects) எல்லாம் useEffect() மூலம் handle பண்ணலாம்.”
+
+
+
+6.=>jsx-javascript XML- 
+what is javascript XML ?
+
+javascript XML is the syntax extension for javascript that allows writing html inside js - js kulla html la insert pannikalam appudi panna athu jsx
+
+
+XML nu yen solluranga naa ? html la kind of rules and regulation laa kedai yaathu but XML la iruku athu maari react la js kulla html use pannalum some restistion iruku so XML maari restistion irukathu naala jsx nu vachanga
+
+
+*interview definition (English)
+
+"JSX is a JavaScript syntax extension that allows us to write HTML-like UI code inside JavaScript, and it follows XML-like strict rules."
+
+
+
+
+7.=>babel compliler ?
+
+babel compliler is javascript compliler that convert morden js  es6+ jsx into older js es5 intha es5 vatha browser understand pannum
+
+
+*Not all browser understand modern syntax and code athu mattam jsx saayum understand pannikathu
+
+*so athanalaathan intha bebel transalte into compertable code
+
+*so ithanaalathan js la html use pannalum ithu automatic ka browser ku atha mattam mathi kuduthurum so jsx la code irunthalum browser ku puriyura maathi understand panni vachirum ithan babel compliler vela
+
+
+
+Interviewer: Why do we use Babel in React?
+You:
+
+Because browsers can't understand modern ES6+ and JSX directly.
+Babel converts them into ES5, which all browsers can run safely.
+
+
+ 
+
+9.=>v8 engine ?
+
+v8 engine is google open sources javascript engine use in chrome and node js - chrome and node js rendulayum use aagum - it's take js code compilse into Machine Code for fast execution
+
+*babel compliler naa morden code ta old code da convert panni browser ku puriyura mari mathum
+
+*v8 engine js code ta compiles into Machine code da maathum for fast execution ku 
+
+*ippo yappudi react kuda intha v8 engine connect agum naa react is build on pure js *pure js use panni react build pannuranga the browser uses the v8 engine to run the js Efficiently so all your react jsx babel ku poogum  babel js ku puriyura maari maathum antha js v8 engine ku poogum v8 engine execute in it showing in the ui 
+
+
+
+*What is V8 Engine? (Interview Answer)
+
+English (professional & short):
+
+*V8 is Google’s open-source high-performance JavaScript engine used in Chrome and Node.js. It takes JavaScript code and compiles it into machine code to run faster.
+
+
+*Why do we need V8 Engine?
+
+Because JavaScript is not directly understandable by the computer CPU, so V8 converts (compiles/JIT) it into machine code for fast performance, especially for large-scale apps (like React, Node, Chrome browser apps).
+
+
+
+
+10.=>Environment setup :
+
+=> CRA - React 3+ - basic and minimal project - web pack - bundle
+
+*simple project panna
+*bundle create panna web pack time yaduthukum ,romba time agum ,ithu single page appilication naala 
+
+*ithu web pack method la run aguthu
+
+*ithan original React
+
+
+i)Webpack — Definition (Simple English)
+
+Webpack is a module bundler that takes multiple files (JS, CSS, images, etc.) from your project and bundles them into a single optimized output file so browsers can load your app faster
+
+உதாரணம்:
+நீங்க 50 files use பண்ணுறீங்க project-ல — browser ஒன்னொன்னா load பண்ணா time அதிகம்.
+Webpack எல்லா files-யும் ஒரே main bundle.js மாதிரி pack பண்ணி கொடுக்கும் → loading speed fast.
+
+
+❌ simple project panna
+✔ Simple React project create panna use agum
+
+❌ bundle create panna web pack time yaduthukum ,romba time agum
+✔ Webpack bundling takes more time, especially during development & build
+
+❌ ithu single page appilication naala
+✔ Because React is an SPA (Single Page Application), it bundles everything together
+
+❌ ithu web pack method la run aguthu
+✔ CRA internally runs using Webpack
+
+❌ ithan original React
+✔ CRA was the default/official recommended way to start a React project earlier
+
+
+ii)npm - node package manager
+
+*node package manager kulla node package manager install pannu kura mattam artham
+
+*node package manager podu package install pannana ennoda package software la onnu vilum sikolan la antha sikolan la create agum ennoda folder layum create agum
+
+=>npx -node package eXecute
+
+*node package eXecute pannu perticular folder ku mattum
+
+*npx use panna antha folder la mattum create agum
+
+*npx CRA ku mattum tha use pannanum
+
+*npx create-react-app(CRA)  ,  projectname
+    (1041,42)=romba neeram run agum
+
+*(1044)=npm start (1045)
+
+ctrl+c kudutha stop agirum (1047)
+
+
+=>NPM (Node Package Manager)
+
+Use: Install & manage packages
+Tamil:
+
+npm na packages install panna, update panna, delete panna use aagura package manager
+
+Install panna appo node_modules folder la save aagum
+
+Project-la permanently use panra packages-ku npm use panrom
+
+
+=>NPX (Node Package eXecute)
+
+Use: Execute/run packages without installing
+Tamil:
+
+npx na install pannama direct-a run pannura tool
+
+Temporary-a execute pannum → local storage waste agathu
+
+Mostly CLI tools or one-time commands run panna use pannuvom
+
+
+iii)What is Vite?
+
+Vite is a fast, modern frontend build tool used to create and develop React, Vue, and other modern JavaScript frameworks. It provides super-fast development and improved performance compared to older tools like Webpack.
+
+
+➡ English one-liner:
+"Vite is a modern, lightning-fast build tool for frontend apps."
+
+➡ Tamil meaning:
+Vite nu sollurathu oru modern & super-fast build tool, frontend project create pannarthukum, develop pannarthukum use panra tool.
+
+
+
+
+1. Very Fast  -> Uses ESBuild & native browser modules for instant start -> Project immediately load agum, Webpack madhiri slow illa.
+
+
+2. Lightweight -> Minimal configuration -> Setup simpla & easy.
+
+
+3. Hot Reload Super Fast -> HMR – updates instantly without full reload -> Code update panna page full reload agathu.
+
+
+4. Better Production Build -> Uses Rollup for optimized output -> Final bundle size small & speed high.
+
+
+5. Framework Support -> Works for React, Vue, Svelte, etc. -> Multiple frameworks support.
+
+
+=> VITE - React 4+ - Big and efficiant and packages for app creation. - ES build - rollup
+
+*ithu time romba kammi ,fast ta pannalam
+
+*ithu react illa react kulla  react vachi react ku mela run agura oru method * itha React+VITE nu solluvanga
+
+*cmd-command
+i)npm create vite@latest projectname (1048)
+
+(49,50)-> ithu fast ta agiruchi 
+(51)-> react + vite nu vanthu irukum
+(53)->ctrl+c stop process
+

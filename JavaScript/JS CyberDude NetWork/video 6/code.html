@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h1>ES 6 Set Object In Arrays</h1>
+
+    <div id="result"></div>
+
+    <script>
+                //JavaScript Set Object
+
+    const dailyscheduls = [
+        'wake up',
+        'excercies ',
+        'breakfast',
+        'work',
+        'lunch',
+        'work',
+        'dinner',
+        'work',
+        'sleep'
+    ]
+    console.log(dailyscheduls);
+    //"work" is three times is there
+    //itha control panna set
+
+            
+
+              //add set()
+    const obj = {'meeting':['friends','one','two']}
+    const dailtset = new Set(dailyscheduls) //unique ka irukum work oru time only come
+    dailtset.add('play')
+    //dailtset.add(function(){}) // its also use
+    
+    //dailtset.add({'meeting':['friends']})
+    dailtset.add(obj)
+
+    console.log(dailtset);
+     
+
+
+    //              //set method
+
+    //  console.log( dailtset.has('play'));
+
+    //              //set entries()
+    //  console.log(dailtset.entries());
+    //  console.log(dailtset.keys());
+    //  console.log(dailtset.values());
+
+
+    //           //set delete()
+    //  dailtset.delete({'meeting':['friends']})   //itha delate panna mudiyathu so decalre panni variable name ma podanum then its work 
+     
+    //  dailtset.delete(obj) // now its works 
+    //  console.log('after delete',dailtset);   
+     
+        
+   
+
+</script>
+    
+</body>
+</html>

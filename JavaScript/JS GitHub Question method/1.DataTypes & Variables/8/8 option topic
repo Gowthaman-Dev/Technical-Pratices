@@ -1,0 +1,6 @@
+explain-the-concept-of-tagged-templates. ?
+
+
+🔹 Simple Fresher Answer if Asked
+
+“Tagged templates allow a function to process template literals so we can format, escape, or manipulate the values before creating the final string.”

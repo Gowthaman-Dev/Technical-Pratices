@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS Operators & Control Flow Notes</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+        h2 { color: #2c3e50; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+        code { color: #e74c3c; }
+        section { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <h1>JavaScript Operators & Control Flow - Notes</h1>
+
+    <section>
+        <h2>1. Difference Between == and ===</h2>
+        <p><strong>==</strong> checks value equality (type conversion allowed).<br>
+           <strong>===</strong> checks value + type equality (strict equality).</p>
+        <pre><code>
+console.log(5 == '5');  // true
+console.log(5 === '5'); // false
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>2. Iterating Over Arrays and Objects</h2>
+        <p>Use <code>for...of</code> for arrays and <code>for...in</code> for objects.</p>
+        <pre><code>
+// Array
+const arr = [10, 20, 30];
+for (const val of arr) console.log(val);
+
+// Object
+const obj = {a:1, b:2};
+for (const key in obj) console.log(key, obj[key]);
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>3. Break & Continue</h2>
+        <p><strong>break:</strong> exit loop, <strong>continue:</strong> skip current iteration.</p>
+        <pre><code>
+for(let i=0; i<5; i++) {
+  if(i===3) break;
+  if(i===1) continue;
+  console.log(i);
+}
+// Output: 0,2
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>4. Ternary Operator</h2>
+        <p>Shorthand for if-else: <code>condition ? valueIfTrue : valueIfFalse</code></p>
+        <pre><code>
+const age = 18;
+const status = age >= 18 ? 'Adult' : 'Minor';
+console.log(status); // Adult
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>5. Accessing Array Index During Iteration</h2>
+        <pre><code>
+const arr = ['a','b','c'];
+arr.forEach((val, index) => {
+  console.log(index, val);
+});
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>6. Switch Statement</h2>
+        <pre><code>
+const day = 2;
+switch(day) {
+  case 1: console.log('Mon'); break;
+  case 2: console.log('Tue'); break;
+  default: console.log('Other'); 
+}
+// Output: Tue
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>7. Rest Parameters</h2>
+        <p>Collect multiple arguments into an array.</p>
+        <pre><code>
+function sum(...nums) {
+  return nums.reduce((a,b)=>a+b,0);
+}
+console.log(sum(1,2,3)); // 6
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>8. Spread Operator</h2>
+        <p>Expand array/object into individual elements.</p>
+        <pre><code>
+const arr1 = [1,2];
+const arr2 = [...arr1,3,4];
+console.log(arr2); // [1,2,3,4]
+        </code></pre>
+    </section>
+
+    <section>
+        <h2>9. Spread vs Rest</h2>
+        <p>
+            <strong>Rest:</strong> function args (...args)<br>
+            <strong>Spread:</strong> expand array/object into elements
+        </p>
+    </section>
+
+</body>
+</html>

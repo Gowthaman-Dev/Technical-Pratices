@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Avoiding Global Scope in JavaScript</title>
+</head>
+<body>
+
+<h1>Why Is It a Good Idea to Avoid Touching the Global Scope in a Website?</h1>
+
+<p>
+    In general, it is a good idea to avoid using the <b>global scope</b> because
+    global variables can be accessed and modified by any script.
+    This can lead to <b>bugs, conflicts, security risks, and poor maintainability</b>.
+    Keeping the global scope clean makes applications more
+    <b>predictable, secure, and scalable</b>.
+</p>
+
+<hr>
+
+<h2>Problems with Using the Global Scope</h2>
+
+<h3>1. Name Conflicts (Collisions)</h3>
+<p>
+    Different scripts or libraries may use the same variable name,
+    causing one script to overwrite another and create unexpected behavior.
+</p>
+
+<pre>
+// Script 1
+var userName = "Gowtham";
+
+// Script 2 (another library)
+var userName = "Alice"; // overwrites previous value
+</pre>
+
+<h3>2. Hard-to-Debug Issues</h3>
+<p>
+    Global variables can be changed from anywhere, making it difficult
+    to trace where bugs are coming from in large codebases.
+</p>
+
+<h3>3. Security Risks</h3>
+<p>
+    Sensitive global data can be easily accessed or modified by
+    malicious or third-party scripts.
+</p>
+
+<h3>4. Memory Leaks</h3>
+<p>
+    Unintended global references may prevent garbage collection,
+    especially when used with closures or event handlers.
+</p>
+
+<h3>5. Reduced Modularity</h3>
+<p>
+    Global variables tightly couple different parts of the application,
+    making code harder to reuse, test, and maintain.
+</p>
+
+<hr>
+
+<h2>Why Local Scope Is Better</h2>
+
+<p>Keeping variables inside functions or modules:</p>
+<ul>
+    <li>Creates isolated environments</li>
+    <li>Prevents accidental overwrites</li>
+    <li>Makes code predictable and reusable</li>
+    <li>Improves maintainability and stability</li>
+</ul>
+
+<hr>
+
+<h2>Best Practices to Avoid Global Scope Pollution</h2>
+
+<ul>
+    <li>Use <b>let</b> and <b>const</b> inside functions or blocks</li>
+    <li>Use <b>IIFEs</b> to create private scopes</li>
+    <li>Enable <b>"use strict"</b> to prevent accidental globals</li>
+    <li>Use <b>JavaScript modules (ES Modules)</b> for proper scoping</li>
+</ul>
+
+<pre>
+(function () {
+  const userName = "LibraryAlice";
+  console.log(userName);
+})();
+</pre>
+
+<hr>
+
+<h2>🎯 One-Line Interview Answer</h2>
+<p>
+    <b>
+        Avoiding the global scope prevents name collisions, security issues,
+        and hard-to-debug bugs, while promoting modular, predictable,
+        and maintainable code.
+    </b>
+</p>
+
+</body>
+</html>

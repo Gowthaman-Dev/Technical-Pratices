@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+     <h1>ES 6 Set Object In Arrays</h1>
+
+    <ol id="result"></ol>
+
+    <script>
+                //JavaScript Set Object
+
+     const dailtset = new Set(
+        [
+        'wake up',
+        'excercies ',
+        'breakfast',
+        'work',
+        'lunch',
+        'work',
+        'dinner',
+        'work',
+        'sleep'
+    ]
+     ) 
+    dailtset.add('play')
+
+     const resultol = document.querySelector("#result")
+
+     dailtset.forEach(scd => {
+        resultol.innerHTML += '<li>'+ scd + '</li>'
+     })
+
+    </script>
+</body>
+</html>

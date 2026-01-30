@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Differences Between var, let, and const</title>
+</head>
+<body>
+
+<h1>What Are the Differences Between Variables Created Using var, let, and const?</h1>
+
+<p>
+    The main differences between <b>var</b>, <b>let</b>, and <b>const</b> in JavaScript
+    are related to <b>scope</b>, <b>reassignment & redeclaration</b>, and
+    <b>hoisting behavior</b>.
+</p>
+
+<h2>Key Differences (Quick View)</h2>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Feature</th>
+        <th>var</th>
+        <th>let</th>
+        <th>const</th>
+    </tr>
+    <tr>
+        <td>Scope</td>
+        <td>Function / Global scoped</td>
+        <td>Block scoped</td>
+        <td>Block scoped</td>
+    </tr>
+    <tr>
+        <td>Reassignment</td>
+        <td>Yes</td>
+        <td>Yes</td>
+        <td>No (reference cannot change)</td>
+    </tr>
+    <tr>
+        <td>Redeclaration</td>
+        <td>Yes</td>
+        <td>No</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>Hoisting</td>
+        <td>Hoisted & initialized as undefined</td>
+        <td>Hoisted but not initialized</td>
+        <td>Hoisted but not initialized</td>
+    </tr>
+    <tr>
+        <td>Temporal Dead Zone</td>
+        <td>No</td>
+        <td>Yes</td>
+        <td>Yes</td>
+    </tr>
+</table>
+
+<hr>
+
+<h2>Detailed Explanation</h2>
+
+<h3>1. Scope</h3>
+<p>
+    <b>var</b> is function-scoped (or global).
+    A variable declared inside a block like <b>if</b> or <b>for</b> is still accessible
+    outside the block within the same function.
+</p>
+
+<p>
+    <b>let</b> and <b>const</b> are block-scoped, meaning they are only accessible
+    within <b>{ }</b>, which makes code more predictable and safer.
+</p>
+
+<h3>2. Reassignment</h3>
+<ul>
+    <li><b>var</b> and <b>let</b> allow reassignment.</li>
+    <li><b>const</b> does not allow reassignment.</li>
+</ul>
+
+<p>
+    Note: Objects and arrays declared with <b>const</b> can be mutated,
+    but the reference itself cannot change.
+</p>
+
+<h3>3. Redeclaration</h3>
+<ul>
+    <li><b>var</b> allows redeclaration in the same scope, which can lead to bugs.</li>
+    <li><b>let</b> and <b>const</b> do not allow redeclaration and throw a <b>SyntaxError</b>.</li>
+</ul>
+
+<h3>4. Hoisting and Temporal Dead Zone (TDZ)</h3>
+<p>
+    Hoisting moves declarations to the top during the compilation phase.
+</p>
+<ul>
+    <li>
+        <b>var</b> is hoisted and initialized with <b>undefined</b>,
+        so it can be accessed before declaration.
+    </li>
+    <li>
+        <b>let</b> and <b>const</b> are hoisted but not initialized and stay in the
+        <b>Temporal Dead Zone (TDZ)</b> until declared.
+        Accessing them early causes a <b>ReferenceError</b>.
+    </li>
+</ul>
+
+<hr>
+
+<h2>Modern Best Practices</h2>
+<ul>
+    <li>Avoid <b>var</b> in modern JavaScript.</li>
+    <li>Use <b>const</b> by default for values that do not change.</li>
+    <li>Use <b>let</b> only when reassignment is required (e.g., loop counters).</li>
+</ul>
+
+<hr>
+
+<h2>🎯 One-Line Interview Answer</h2>
+<p>
+    <b>
+        var is function-scoped and hoisted with undefined,
+        while let and const are block-scoped, hoisted into the TDZ,
+        and are safer choices for modern JavaScript.
+    </b>
+</p>
+
+</body>
+</html>

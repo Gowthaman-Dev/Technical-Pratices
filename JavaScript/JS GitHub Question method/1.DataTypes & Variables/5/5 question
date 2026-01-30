@@ -1,0 +1,20 @@
+"why-is-it-in-general-a-good-idea-to-leave-the-global-scope-of-a-website-as-is-and-never-touch-it"
+
+
+
+It's a good idea to avoid touching a website's global scope because global variables can be accessed and changed by any script, leading to hard-to-track bugs, conflicts (name clashes), security vulnerabilities, memory leaks, and reduced code portability, making it harder to maintain, scale, or integrate with other libraries. Keeping variables local (inside functions/modules) creates isolated environments, making code predictable, secure, and modular, thus improving overall stability and maintainability. 
+
+Key Risks of Using the Global Scope: 
+
+• Name Conflicts (Collisions): Different scripts might use the same variable name, overwriting each other and causing unexpected behavior. 
+• Security Issues: Malicious scripts can easily read or alter global data, creating serious security flaws. 
+• Memory Leaks: Unintended global references in closures or event handlers can prevent memory from being freed. 
+• Reduced Modularity: Code becomes tightly coupled; changing one part might break others unexpectedly. 
+• Debugging Nightmares: It's difficult to track where and when a global variable was changed, especially in large codebases.
+
+Best Practices to Avoid It 
+
+• Use Local Scopes: Declare variables with let or const inside functions or modules to keep them contained. 
+• Immediately Invoked Function Expressions (IIFEs): Wrap code in IIFEs to create private, local scopes. 
+• Strict Mode: Use "use strict"; to catch common coding errors, including accidental global variable creation. 
+• Modules: Use JavaScript modules (ES Modules) to manage dependencies and scope properly. 	

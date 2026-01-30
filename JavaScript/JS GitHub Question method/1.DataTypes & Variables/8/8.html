@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // Tag function
+function tag(strings, ...values) {
+  // strings = array of static string parts
+  // values = array of interpolated values
+  let result = '';
+
+  // Loop through strings and values
+  for (let i = 0; i < strings.length; i++) {
+    result += strings[i];          // Add static string part
+    if (i < values.length) {
+      // Example: convert value to uppercase
+      result += values[i].toUpperCase();
+    }
+  }
+
+  return result; // final string
+}
+
+// Variables
+const name = 'Rocky';
+const city = 'Chennai';
+
+// Using tagged template
+const sentence = tag`Hello ${name}, welcome to ${city}!`;
+
+console.log(sentence);
+
+    </script>
+</body>
+</html>
