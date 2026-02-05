@@ -19,7 +19,7 @@
     // console.log(arr);
 
 
-    //
+    //  Rotate array left by 1
 
     // const arr = [10, 20, 30, 40, 50, 60]
 
@@ -36,7 +36,31 @@
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    // 
+    // Rotate array by k positions
+
+
+
+    const rotate = (arr, k) => {
+        k = k % arr.length;
+
+        reverse(arr, 0, k - 1)
+
+        reverse(arr, k, arr.length - 1)
+        reverse(arr, 0, arr.length - 1)
+
+        console.log(arr)
+    }
+
+    const reverse = (arr, start, end) => {
+        while (start < end) {
+            [arr[start], arr[end]] = [arr[end], arr[start]];
+            start++;
+            end--;
+        }
+    }
+
+    rotate([1, 2, 3, 4, 5], 2)
+
 
 
 

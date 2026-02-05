@@ -1,0 +1,156 @@
+<script>
+
+    //1.Traverse a string
+
+    //Method :01 
+
+    // const string = "Hello Gowtham"
+    // for(let i = 0 ; i <string.length ; i++){
+    //    console.log(string[i]);
+
+    // }
+
+    //Method :02
+
+    // const string = "Jerlin Monisha"
+
+    // for (let moni of string){
+    //     console.log(moni);
+
+    // }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //2.Find length of string
+
+    // const findlength = "Monisha Gowtham"
+
+    // const countlength = findlength.length
+
+    // console.log("THIS IS A LENGTH",countlength);
+
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //3.Count vowels & consonants
+
+    //    let letter = "Hello Gowtham"
+
+    //    let vowel = 0 
+    //    let constant = 0 
+
+    //    let string = letter.toLowerCase()
+
+    //    for(let str of string){
+    //     if(str >= 'a' && str <= "z" ){
+    //         if("aeiou".includes(str)){
+    //             vowel++ 
+    //         }else{
+    //             constant++
+    //         }
+    //     }
+    // }
+
+    // console.log("This is a Vowel",vowel);
+    // console.log("This is a Constant", constant);
+
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //4.Count uppercase & lowercase letters
+
+    //     const string = "HelLo GoWthaM MoNiSha"
+
+    //     let uppercase = 0
+
+    //     let lowercase = 0
+
+    //     for (let i = 0; i < string.length; i++) {
+    //             if(string[i] >= "A" && string[i] <= "Z"){
+    //                 uppercase++     
+    //             }else if(string[i] >= "a" && string[i] <= "z"){
+    //                 lowercase++
+    //             }
+    //     }
+
+    //     console.log(`UpperCase ${uppercase}
+    // LowerCase ${lowercase}`);
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //5.Reverse a string
+
+    // const string = "Hello Gowtham "
+
+    // let reversed = ''
+
+    // for(let i = string.length -1 ; i >=0 ; i--){
+    //     reversed = reversed + string[i]
+    // }
+    // console.log(reversed);
+
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //6.Copy one string to another
+
+    // const str1 = "Hello Monisha"
+
+    // let str2 = ""
+
+    // for(let i = 0 ; i <str1.length ; i++){
+    //     str2 = str2 + str1[i]
+    // }
+    // console.log(str2)
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //7.Check if string is palindrome
+
+    // const str = "madam"
+
+    // let result = ""
+
+    // for (let i = str.length - 1; i >= 0; i--) {
+    //     result = result + str[i]
+    // }
+
+    // if (result === str) {
+    //     console.log("palindrome")
+    // } else {
+    //     console.log("Not palindrome")
+    // }
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //8.Find second most frequent character
+
+    let str = "aabbbcc";
+
+    let freq = {};
+
+    // Step 1: count frequency
+    for (let ch of str) {
+        freq[ch] = (freq[ch] || 0) + 1;
+    }
+
+    // Step 2: convert object to array
+    let arr = Object.entries(freq);
+
+    // Step 3: sort by count
+    arr.sort((a, b) => b[1] - a[1]);
+
+    // Step 4: second most frequent
+    console.log(arr[1][0]);
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+</script>
