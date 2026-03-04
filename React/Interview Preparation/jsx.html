@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSX – 360° Preparation</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h2 {
+    margin-top: 30px;
+    color: #222;
+}
+
+p {
+    line-height: 1.6;
+}
+
+ul {
+    margin-left: 20px;
+    line-height: 1.6;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+.highlight {
+    font-weight: bold;
+}
+
+.master-box {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f0f4ff;
+    border-left: 5px solid #4a6cf7;
+    border-radius: 8px;
+}
+
+code, pre {
+    background: #f4f4f4;
+    padding: 10px;
+    display: block;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>JSX – 360° Preparation</h1>
+
+<h2>1️⃣ Basic Definition Angle</h2>
+<p><span class="highlight">❓ What is JSX?</span></p>
+<p>JSX stands for JavaScript XML.</p>
+<p>It is a syntax extension that allows us to write HTML-like code inside JavaScript.</p>
+
+<p>Key Points:</p>
+<ul>
+<li>Used in React</li>
+<li>Looks like HTML</li>
+<li>Transpiled to React.createElement()</li>
+<li>Makes UI code readable</li>
+</ul>
+
+<h2>2️⃣ Why JSX Angle</h2>
+<p><span class="highlight">❓ Why do we use JSX?</span></p>
+<ul>
+<li>Makes UI code easier to read</li>
+<li>Combines HTML + JS in one place</li>
+<li>Improves developer productivity</li>
+<li>Better error handling</li>
+</ul>
+
+<h2>3️⃣ Technical Deep Angle</h2>
+<p><span class="highlight">❓ Is JSX valid JavaScript?</span></p>
+<p>No. Browsers do not understand JSX directly.</p>
+<p>It is converted into JavaScript using Babel.</p>
+
+<p>Example:</p>
+<p>JSX:</p>
+<pre>&lt;h1&gt;Hello&lt;/h1&gt;</pre>
+
+<p>Converted to:</p>
+<pre>React.createElement("h1", null, "Hello")</pre>
+
+<p>🔥 Interviewers love this answer.</p>
+
+<h2>4️⃣ JSX Syntax Rules Angle</h2>
+<p><span class="highlight">❓ What are JSX syntax rules?</span></p>
+
+<p>Important Rules:</p>
+<ul>
+<li>Must return single parent element</li>
+<li>Use className instead of class</li>
+<li>Use htmlFor instead of for</li>
+<li>Tags must be closed</li>
+<li>Use camelCase for attributes</li>
+</ul>
+
+<p>Example:</p>
+<pre>&lt;div className="box"&gt;
+   &lt;input type="text" /&gt;
+&lt;/div&gt;</pre>
+
+<h2>5️⃣ Expressions Inside JSX Angle</h2>
+<p><span class="highlight">❓ Can we use JavaScript inside JSX?</span></p>
+<p>Yes. We can use JavaScript expressions inside curly braces {}.</p>
+
+<p>Example:</p>
+<pre>
+const name = "Rocky";
+&lt;h1&gt;Hello {name}&lt;/h1&gt;
+</pre>
+
+<h2>6️⃣ What Can Be Written Inside {} ?</h2>
+
+<p>Allowed:</p>
+<ul>
+<li>Variables</li>
+<li>Math operations</li>
+<li>Function calls</li>
+<li>Ternary operators</li>
+</ul>
+
+<p>Example:</p>
+<pre>
+&lt;p&gt;{5 + 5}&lt;/p&gt;
+&lt;p&gt;{isLoggedIn ? "Welcome" : "Login"}&lt;/p&gt;
+</pre>
+
+<p>❌ Not Allowed:</p>
+<ul>
+<li>if statements</li>
+<li>for loops</li>
+</ul>
+
+<p>Instead use:</p>
+<ul>
+<li>Ternary operator</li>
+<li>map() function</li>
+</ul>
+
+<h2>7️⃣ Conditional Rendering Angle</h2>
+<p><span class="highlight">❓ How do you write condition in JSX?</span></p>
+
+<p>Use ternary:</p>
+<pre>{isAdmin ? &lt;AdminPanel /&gt; : &lt;UserPanel /&gt;}</pre>
+
+<p>Or logical AND:</p>
+<pre>{isLoggedIn && &lt;Dashboard /&gt;}</pre>
+
+<h2>8️⃣ Looping in JSX Angle</h2>
+<p><span class="highlight">❓ How to render list in JSX?</span></p>
+
+<p>Use map():</p>
+<pre>
+{users.map(user => (
+   &lt;p key={user.id}&gt;{user.name}&lt;/p&gt;
+))}
+</pre>
+
+<p>Important:</p>
+<p>Always use unique key prop.</p>
+
+<h2>9️⃣ Difference Between HTML and JSX</h2>
+
+<table>
+<tr>
+<th>HTML</th>
+<th>JSX</th>
+</tr>
+<tr>
+<td>class</td>
+<td>className</td>
+</tr>
+<tr>
+<td>for</td>
+<td>htmlFor</td>
+</tr>
+<tr>
+<td>Can return multiple root</td>
+<td>Must return single root</td>
+</tr>
+<tr>
+<td>Attribute names lowercase</td>
+<td>CamelCase</td>
+</tr>
+</table>
+
+<h2>🔟 Fragment Angle</h2>
+<p><span class="highlight">❓ What if I don’t want extra div?</span></p>
+
+<p>Use Fragment:</p>
+<pre>
+&lt;&gt;
+   &lt;h1&gt;Hello&lt;/h1&gt;
+   &lt;p&gt;World&lt;/p&gt;
+&lt;/&gt;
+</pre>
+
+<h2>1️⃣1️⃣ Real Interview Trap Question</h2>
+<p><span class="highlight">❓ Why can't we use if statement directly in JSX?</span></p>
+
+<p>Because JSX expects expressions, not statements.</p>
+<p>if is a statement, but ternary is an expression.</p>
+
+<p>🔥 High-level answer.</p>
+
+<div class="master-box">
+<h2>🎯 30-Second MASTER Answer</h2>
+
+<p>If interviewer says:</p>
+<p>Explain JSX.</p>
+
+<p>You say:</p>
+
+<p>
+JSX is a syntax extension in React that allows us to write HTML-like code inside JavaScript.
+It improves readability and developer productivity.
+JSX is not understood by browsers directly; it is transpiled to React.createElement using Babel.
+We can use JavaScript expressions inside JSX using curly braces.
+</p>
+
+<p>🔥 Clean. Structured. Professional.</p>
+</div>
+
+</div>
+
+</body>
+</html>

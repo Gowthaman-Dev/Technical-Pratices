@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Components 360° Preparation</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h2 {
+    margin-top: 30px;
+    color: #222;
+}
+
+p {
+    line-height: 1.6;
+}
+
+ul {
+    margin-left: 20px;
+    line-height: 1.6;
+}
+
+.highlight {
+    font-weight: bold;
+}
+
+.master-box {
+    margin-top: 40px;
+    padding: 20px;
+    background: #f0f4ff;
+    border-left: 5px solid #4a6cf7;
+    border-radius: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>⭐ REACT COMPONENTS – 360° PREPARATION</h1>
+
+<h2>1️⃣ Basic Definition Angle</h2>
+<p><span class="highlight">Q: What is a component in React?</span></p>
+<p>A component is a reusable and independent piece of UI in a React application.</p>
+
+<p>Key Points:</p>
+<ul>
+<li>Reusable</li>
+<li>Independent</li>
+<li>Returns JSX</li>
+<li>Building block of React</li>
+</ul>
+
+<h2>2️⃣ Types Angle</h2>
+<p><span class="highlight">Q: What are the types of components in React?</span></p>
+<p>There are two types of components:</p>
+<ul>
+<li>Functional Components</li>
+<li>Class Components</li>
+</ul>
+<p>👉 Modern React mainly uses Functional Components.</p>
+
+<h2>3️⃣ Functional Component Deep Angle</h2>
+<p><span class="highlight">Q: What is a Functional Component?</span></p>
+<p>A Functional Component is a JavaScript function that returns JSX and can use hooks to manage state and lifecycle.</p>
+
+<p>Features:</p>
+<ul>
+<li>Simple syntax</li>
+<li>Uses Hooks (useState, useEffect)</li>
+<li>No this keyword</li>
+<li>Easier to test</li>
+</ul>
+
+<h2>4️⃣ Why Components Angle</h2>
+<p><span class="highlight">Q: Why do we use components in React?</span></p>
+<ul>
+<li>Code reusability</li>
+<li>Better code organization</li>
+<li>Easy maintenance</li>
+<li>Separation of concerns</li>
+</ul>
+
+<h2>5️⃣ Component Reusability Angle</h2>
+<p><span class="highlight">Q: What is component reusability?</span></p>
+<p>Component reusability means creating a component once and using it multiple times with different data.</p>
+
+<p>Example Concept:</p>
+<ul>
+<li>Button component used for:</li>
+<li>Login</li>
+<li>Signup</li>
+<li>Submit</li>
+</ul>
+
+<h2>6️⃣ Props Angle</h2>
+<p><span class="highlight">Q: How do components communicate?</span></p>
+<p>Components communicate using Props.</p>
+
+<p>Important Points:</p>
+<ul>
+<li>Props are read-only</li>
+<li>Passed from parent to child</li>
+<li>Used to send data</li>
+</ul>
+
+<h2>7️⃣ State Angle</h2>
+<p><span class="highlight">Q: Can components have their own data?</span></p>
+<p>Yes.</p>
+<p>Components manage internal data using State.</p>
+<ul>
+<li>State is mutable</li>
+<li>Controlled using hooks like useState</li>
+</ul>
+
+<h2>8️⃣ Lifecycle Angle</h2>
+<p><span class="highlight">Q: Do components have lifecycle?</span></p>
+<p>Yes.</p>
+<p>In Functional components:</p>
+<ul>
+<li>Mount → useEffect</li>
+<li>Update → useEffect</li>
+<li>Unmount → Cleanup function</li>
+</ul>
+
+<h2>9️⃣ Smart vs Dumb Components</h2>
+<p><span class="highlight">Q: What is the difference between smart and presentational components?</span></p>
+<ul>
+<li>Smart Component → Has logic + state</li>
+<li>Presentational Component → Only UI</li>
+</ul>
+
+<h2>🔟 Performance Angle</h2>
+<p><span class="highlight">Q: How to optimize components?</span></p>
+<ul>
+<li>Use React.memo</li>
+<li>Use proper key in list</li>
+<li>Avoid unnecessary re-renders</li>
+</ul>
+
+<h2>1️⃣1️⃣ Interview Trap Questions</h2>
+<p><span class="highlight">❓ Why functional components are preferred over class components?</span></p>
+<p>Answer:</p>
+<ul>
+<li>Cleaner syntax</li>
+<li>Hooks support</li>
+<li>Less boilerplate</li>
+<li>Better performance optimization</li>
+</ul>
+
+<h2>1️⃣2️⃣ Real Company Level Question</h2>
+<p><span class="highlight">Q: How would you structure components in a large project?</span></p>
+<p>Answer:</p>
+<ul>
+<li>Separate folder for each component</li>
+<li>Keep reusable components in common folder</li>
+<li>Maintain clean file structure</li>
+<li>Use modular design</li>
+</ul>
+
+<div class="master-box">
+<h2>🎯 30 Second MASTER Answer (Ultimate Version)</h2>
+<p>If interviewer says:</p>
+<p>Explain components in React.</p>
+<p>You say:</p>
+<p>
+Components are reusable and independent UI building blocks in React.
+There are Functional and Class components, but modern React prefers Functional Components with Hooks.
+Components improve code reusability, maintainability, and separation of concerns.
+They communicate using props and manage internal data using state.
+</p>
+<p>🔥 Clean. Structured. Professional.</p>
+</div>
+
+</div>
+
+</body>
+</html>
