@@ -1,0 +1,873 @@
+=> express
+
+
+1️⃣ Server create panna easy
+
+Tamil:
+Express use பண்ணி Node.js-ல server create பண்ண easy ஆகும். HTTP request handle பண்ண simple methods கொடுக்குது.
+
+Interview sentence (English):
+👉 “Express is a Node.js framework used to easily create servers and handle HTTP requests.”
+
+2️⃣ Routing handle panna
+
+Tamil:
+Frontend இருந்து வரும் URL request-களை handle பண்ண routes create பண்ண Express use பண்ணுறோம்.
+
+Example:
+
+app.get("/users",(req,res)=>{
+  res.send("Users data")
+})
+
+Interview sentence:
+👉 “Express helps to manage routing like GET, POST, PUT and DELETE requests.”
+
+3️⃣ Middleware support
+
+Tamil:
+Express-ல middleware use பண்ணி request check பண்ணலாம்
+Example: authentication, logging, validation.
+
+Example:
+
+app.use(cors())
+
+Interview sentence:
+👉 “Express supports middleware to process requests before sending a response.”
+
+4️⃣ API create panna
+
+Tamil:
+MERN stack-ல backend API create பண்ண Express use பண்ணுறோம்.
+
+Example:
+
+app.post("/register",registerUser)
+
+Interview sentence:
+👉 “Express is commonly used to build RESTful APIs for web applications.”
+
+5️⃣ Fast and lightweight
+
+Tamil:
+Express lightweight framework அதனால் performance நல்லா இருக்கும்.
+
+Interview sentence:
+👉 “Express is a fast and lightweight framework for building backend applications.”
+
+6️⃣ Database connect panna easy
+
+Tamil:
+Express மூலம் MongoDB / MySQL database connect பண்ணி CRUD operations செய்யலாம்.
+
+Interview sentence:
+👉 “Express makes it easy to connect databases and perform CRUD operations.”
+
+✅ Short Interview Answer (Best one):
+
+👉 “Express is a lightweight Node.js framework used to create servers, manage routing, build REST APIs, and handle middleware for web applications.”
+
+
+
+
+---------------------------------------------------------------------------------------------------------
+
+
+=>MiddleWare
+
+
+
+
+1️⃣ Middleware என்றால் என்ன?
+
+Tamil Explanation:
+Middleware என்பது request மற்றும் response நடுவில் run ஆகும் function.
+
+Flow:
+
+Client Request → Middleware → Route → Response
+
+அதாவது
+Frontend இருந்து request வந்ததும் route க்கு போகும் முன் ஒரு function run ஆகும்.
+அதுதான் middleware.
+
+Interview Sentence (English):
+👉 “Middleware is a function that runs between the request and the response in an Express application.”
+
+2️⃣ Middleware எப்படி வேலை செய்கிறது?
+
+Example:
+
+app.use((req,res,next)=>{
+   console.log("Request received")
+   next()
+})
+
+Explanation:
+
+Part	Meaning
+req	client request data
+res	response send பண்ண
+next()	next function / route க்கு போக
+
+⚠️ next() call பண்ணலனா request stop ஆகும்
+
+Interview Sentence:
+👉 “Middleware functions have access to request, response, and the next function.”
+
+3️⃣ Middleware ஏன் use பண்ணுறோம்?
+
+Interview-ல இது important question.
+
+1. Authentication
+
+User login இருக்கானா check பண்ணலாம்.
+
+Example:
+
+const auth = (req,res,next)=>{
+   if(req.headers.token){
+      next()
+   }else{
+      res.send("Unauthorized")
+   }
+}
+
+👉 Dashboard route protect பண்ணலாம்.
+
+2. Logging
+
+Server-க்கு வரும் request track பண்ண.
+
+Example:
+
+app.use((req,res,next)=>{
+   console.log(req.method , req.url)
+   next()
+})
+3. Validation
+
+User send பண்ணுற data check பண்ணலாம்.
+
+Example:
+
+if(!req.body.email){
+   return res.send("Email required")
+}
+4. Security
+
+Unauthorized access block பண்ணலாம்.
+
+Example:
+
+JWT verification
+
+API key check
+
+4️⃣ Middleware types (Interview முக்கியம்)
+1️⃣ Application Middleware
+
+App முழுவதும் run ஆகும்.
+
+Example:
+
+app.use(cors())
+
+or
+
+app.use(express.json())
+2️⃣ Route Middleware
+
+ஒரு route மட்டும் run ஆகும்.
+
+Example:
+
+app.get("/dashboard",auth,(req,res)=>{
+   res.send("Welcome")
+})
+3️⃣ Third-party Middleware
+
+Express-க்கு வெளியே install பண்ணும் packages.
+
+Examples:
+
+Middleware	Use
+cors	frontend request allow
+multer	file upload
+morgan	request log
+
+Example:
+
+import cors from "cors"
+
+app.use(cors())
+4️⃣ Built-in Middleware
+
+Express already provide பண்ணும் middleware.
+
+Example:
+
+app.use(express.json())
+
+Use:
+
+JSON data read பண்ண.
+
+5️⃣ Middleware flow example
+
+Example:
+
+app.use((req,res,next)=>{
+   console.log("Middleware 1")
+   next()
+})
+
+app.use((req,res,next)=>{
+   console.log("Middleware 2")
+   next()
+})
+
+app.get("/",(req,res)=>{
+   res.send("Hello")
+})
+
+Output:
+
+Middleware 1
+Middleware 2
+Hello
+6️⃣ Real MERN example (Interview level)
+
+Example:
+
+const verifyUser = (req,res,next)=>{
+   const token = req.headers.authorization
+
+   if(!token){
+      return res.status(401).json({msg:"No token"})
+   }
+
+   next()
+}
+
+Use:
+
+app.get("/dashboard",verifyUser,(req,res)=>{
+   res.send("Dashboard data")
+})
+
+Explanation:
+
+👉 Login இல்லாத user dashboard access பண்ண முடியாது.
+
+7️⃣ Short Interview Answer
+
+👉 “Middleware in Express is a function that runs before the route handler. It is used for authentication, logging, validation, and modifying requests or responses.”
+
+
+----------------------------------------------------------------------------------------------------
+
+
+=>dotenv
+
+1️⃣ dotenv என்றால் என்ன?
+
+Tamil Explanation:
+dotenv என்பது .env file-ல இருக்கும் secret values-ஐ Node.js application-க்கு load பண்ண use பண்ணுற package.
+
+Example .env file:
+
+PORT=5000
+MONGO_URL=mongodb://localhost:27017/mydb
+JWT_SECRET=mysecretkey
+
+இந்த values-ஐ code-ல use பண்ணலாம்.
+
+console.log(process.env.PORT)
+
+Interview Sentence:
+👉 “Dotenv is used to load environment variables from a .env file into process.env.”
+
+2️⃣ dotenv ஏன் use பண்ணுறோம்?
+1️⃣ Security
+
+Password / secret keys code-ல directly எழுதக் கூடாது.
+
+❌ Bad practice
+
+const password = "123456"
+
+✅ Good practice
+
+DB_PASSWORD=123456
+process.env.DB_PASSWORD
+2️⃣ Configuration manage பண்ண
+
+Different environments இருக்கும்:
+
+Development
+
+Testing
+
+Production
+
+ஒவ்வொன்றுக்கும் values change பண்ணலாம்.
+
+Example:
+
+PORT=5000
+3️⃣ Code clean ஆக இருக்கும்
+
+Database URL போன்ற values code-ல clutter ஆகாது.
+
+Example:
+
+mongoose.connect(process.env.MONGO_URL)
+3️⃣ dotenv எப்படி use பண்ணுறது?
+Step 1 install
+npm install dotenv
+Step 2 import
+import dotenv from "dotenv"
+Step 3 config call
+dotenv.config()
+Full Example
+import express from "express"
+import dotenv from "dotenv"
+
+dotenv.config()
+
+const app = express()
+
+app.listen(process.env.PORT,()=>{
+  console.log("Server running")
+})
+4️⃣ dotenv எப்படி work ஆகுது?
+
+Flow:
+
+.env file
+     ↓
+dotenv.config()
+     ↓
+process.env
+     ↓
+Application use
+
+Example:
+
+PORT=5000
+console.log(process.env.PORT)
+
+Output:
+
+5000
+5️⃣ Interview important points
+
+1️⃣ .env file secrets store பண்ண use ஆகுது
+2️⃣ dotenv package அதை Node.js-க்கு load பண்ணுது
+3️⃣ values process.env மூலம் access பண்ணலாம்
+4️⃣ security improve ஆகும்
+5️⃣ configuration manage பண்ண easy
+
+6️⃣ Short Interview Answer
+
+👉 “Dotenv is a package used to load environment variables from a .env file into process.env in Node.js applications, which helps manage configuration and keep sensitive data secure.”
+
+💡 நீ இப்போ கேட்டது போல
+
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+
+
+
+---------------------------------------------------------------------------------------------------
+
+
+
+=>Cors
+
+
+1️⃣ CORS என்றால் என்ன?
+
+CORS = Cross-Origin Resource Sharing
+
+Tamil Explanation:
+ஒரு website / frontend ஒரு domain-ல இருந்து மற்றொரு domain server-க்கு request அனுப்பும்போது browser block பண்ணும்.
+அதை allow பண்ண CORS use பண்ணுறோம்.
+
+Example:
+
+Frontend:
+
+http://localhost:3000
+
+Backend:
+
+http://localhost:5000
+
+இது different origin.
+
+Browser normally block பண்ணும்.
+
+அதனால் backend-ல:
+
+import cors from "cors"
+app.use(cors())
+
+Interview Sentence (English):
+👉 “CORS is a security mechanism that allows or restricts resources requested from another domain.”
+
+2️⃣ Origin என்றால் என்ன?
+
+Origin = protocol + domain + port
+
+Example:
+
+URL	Origin
+http://localhost:3000
+	origin 1
+http://localhost:5000
+	origin 2
+
+இது different origin.
+
+அதனால் CORS problem வரும்.
+
+3️⃣ Browser ஏன் CORS block பண்ணுது?
+
+Security காரணம்.
+
+Example attack:
+
+evil.com
+
+இந்த site உன் bank API-க்கு request அனுப்பலாம்.
+
+அதை prevent பண்ண தான் browser same-origin policy use பண்ணுது.
+
+Interview Sentence:
+👉 “Browsers implement the Same-Origin Policy to prevent malicious websites from accessing resources from another domain.”
+
+4️⃣ CORS எப்படி solve பண்ணுறது?
+
+Backend server response-ல special headers send பண்ணும்.
+
+Example header:
+
+Access-Control-Allow-Origin: *
+
+இதன் meaning:
+
+👉 எந்த website இருந்தாலும் access செய்யலாம்.
+
+Express example:
+
+import cors from "cors"
+
+app.use(cors())
+5️⃣ Without CORS example
+
+Frontend code:
+
+axios.get("http://localhost:5000/users")
+
+Browser error:
+
+CORS policy blocked
+6️⃣ With CORS example
+
+Backend:
+
+import cors from "cors"
+
+app.use(cors())
+
+இப்போ request success ஆகும்.
+
+7️⃣ CORS configure பண்ணலாம்
+
+Specific domain allow பண்ணலாம்.
+
+Example:
+
+app.use(cors({
+ origin:"http://localhost:3000"
+}))
+
+Meaning:
+
+👉 இந்த frontend மட்டும் access பண்ணலாம்.
+
+8️⃣ CORS methods control
+
+Example:
+
+app.use(cors({
+ origin:"http://localhost:3000",
+ methods:["GET","POST","PUT","DELETE"]
+}))
+9️⃣ Real MERN stack example
+
+Frontend
+
+React → localhost:3000
+
+Backend
+
+Express → localhost:5000
+
+Frontend API call:
+
+axios.post("http://localhost:5000/register")
+
+இதுக்கு CORS இல்லனா error வரும்.
+
+அதனால் backend:
+
+app.use(cors())
+🔟 Interview Short Answer
+
+👉 “CORS stands for Cross-Origin Resource Sharing. It allows a server to specify which domains are permitted to access its resources.”
+
+⭐ Interview-ல கேட்கும் follow-up questions
+1️⃣ Same Origin Policy என்றால் என்ன?
+
+👉 Browser security rule
+👉 Same domain மட்டும் access
+
+2️⃣ Preflight request என்றால் என்ன?
+
+Browser first OPTIONS request send பண்ணும்
+permission check பண்ண.
+
+3️⃣ CORS எந்த side handle ஆகுது?
+
+👉 Backend server
+
+
+
+----------------------------------------------------------------------------------------------------
+
+
+
+
+=>👉 “In most Node.js applications we use Express to create the server and build APIs, Dotenv to manage environment variables securely, and CORS to allow frontend applications from different origins to access backend resources.”
+
+
+=>“app.use() is used to register middleware in an Express application. It tells the server to use that middleware function for incoming requests before reaching the route handler.”
+
+----------------------------------------------------------------------------------------------------
+
+
+app.use(express.jspn())
+
+
+1️⃣ express.json() என்றால் என்ன?
+
+Tamil Explanation:
+express.json() என்பது client இருந்து வரும் JSON data-ஐ read பண்ண Express-க்கு உதவும் middleware.
+
+Frontend JSON data அனுப்பும் போது அதை JavaScript object ஆக convert பண்ணி req.body-ல வைக்கிறது.
+
+Interview Sentence (English):
+👉 “express.json() is a built-in middleware used to parse incoming JSON requests and make the data available in req.body.”
+
+2️⃣ Why we use app.use(express.json())?
+
+Frontend (React / Postman) usually JSON format-ல data send பண்ணும்.
+
+Example request:
+
+{
+  "name": "Gowtham",
+  "email": "gowtham@gmail.com"
+}
+
+இந்த data-ஐ backend read பண்ண express.json() தேவை.
+
+3️⃣ Without express.json()
+
+Backend:
+
+import express from "express"
+
+const app = express()
+
+app.post("/register",(req,res)=>{
+ console.log(req.body)
+})
+
+Output:
+
+undefined
+
+ஏன்னா Express JSON data read பண்ண முடியாது.
+
+4️⃣ With express.json()
+import express from "express"
+
+const app = express()
+
+app.use(express.json())
+
+app.post("/register",(req,res)=>{
+ console.log(req.body)
+})
+
+Request:
+
+{
+ "name":"Gowtham"
+}
+
+Output:
+
+{ name: 'Gowtham' }
+5️⃣ How it works (Flow)
+
+Flow diagram:
+
+Client Request (JSON)
+        ↓
+express.json() middleware
+        ↓
+JSON → JavaScript Object convert
+        ↓
+req.body
+        ↓
+Route handler
+6️⃣ Real MERN example
+
+Frontend (React):
+
+axios.post("http://localhost:5000/register",{
+ name:"Gowtham",
+ email:"gowtham@gmail.com"
+})
+
+Backend (Express):
+
+app.use(express.json())
+
+app.post("/register",(req,res)=>{
+ const {name,email} = req.body
+ console.log(name,email)
+})
+
+Output:
+
+Gowtham gowtham@gmail.com
+7️⃣ Why app.use()?
+app.use(express.json())
+
+Meaning:
+
+👉 Express app இந்த middleware-ஐ எல்லா request-க்கும் use பண்ணும்.
+
+அதனால் எந்த route இருந்தாலும் JSON read ஆகும்.
+
+8️⃣ express.json() type
+
+Express-ல இது built-in middleware.
+
+Examples:
+
+Middleware	Use
+express.json()	JSON request parse
+express.urlencoded()	form data parse
+cors()	cross origin allow
+9️⃣ When it runs?
+
+express.json() run ஆகும்:
+
+✔ POST request
+✔ PUT request
+✔ PATCH request
+
+அதாவது body data இருக்கும் request-ல.
+
+🔟 Interview Short Answer
+
+👉 “express.json() is a built-in Express middleware that parses incoming JSON requests and makes the parsed data available in req.body for route handlers.”
+
+⭐ Interview follow-up question
+
+Often interviewer next கேட்பாங்க:
+
+req.body என்ன?
+
+👉 Client send பண்ணுற request body data.
+
+Example:
+
+const {name,email} = req.body
+
+
+
+----------------------------------------------------------------------------------------------------
+
+
+=>multer Middleware 
+
+
+1️⃣ Multer என்றால் என்ன?
+
+Tamil:
+Multer என்பது Node.js / Express-ல file upload handle பண்ண use பண்ணுற middleware.
+
+Example uploads:
+
+image upload
+
+profile photo
+
+documents
+
+videos
+
+Interview sentence (English):
+👉 “Multer is a middleware used for handling multipart/form-data, primarily used for uploading files in Node.js applications.”
+
+2️⃣ multer.diskStorage() என்றால் என்ன?
+
+multer.diskStorage() use பண்ணி uploaded file server-ல எந்த folder-ல save ஆகணும் மற்றும் filename எப்படி இருக்கணும் என்பதை customize பண்ணலாம்.
+
+அதாவது:
+
+Setting	Purpose
+destination	file save ஆகும் folder
+filename	file save ஆகும் name
+3️⃣ destination function
+destination: function (req, file, cb) {
+  cb(null, "uploads/")
+}
+
+Meaning:
+
+👉 uploaded file uploads folder-ல save ஆகும்
+
+Explanation:
+
+Parameter	Meaning
+req	request object
+file	uploaded file info
+cb	callback function
+
+cb(null, "uploads/")
+
+null → error இல்லை
+
+"uploads/" → save location
+
+Example folder:
+
+project
+ ├ uploads
+ │   └ image.png
+ └ server.js
+
+Interview sentence:
+👉 “The destination function specifies the folder where uploaded files will be stored.”
+
+4️⃣ filename function
+filename: function (req, file, cb) {
+  cb(null, Date.now() + "-" + file.originalname)
+}
+
+Purpose:
+uploaded file-க்கு unique name create பண்ண.
+
+Example:
+
+Original file:
+
+photo.png
+
+Saved file:
+
+171000123-photo.png
+
+Explanation:
+
+Part	Meaning
+Date.now()	unique timestamp
+file.originalname	original filename
+
+இதனால் duplicate file overwrite ஆகாது.
+
+Interview sentence:
+👉 “The filename function defines how the uploaded file should be named when stored on the server.”
+
+5️⃣ Full storage configuration
+const storage = multer.diskStorage({
+ destination: function (req,file,cb){
+   cb(null,"uploads/")
+ },
+
+ filename: function (req,file,cb){
+   cb(null, Date.now()+"-"+file.originalname)
+ }
+})
+
+Meaning:
+
+file uploads folder-ல save ஆகும்
+
+filename timestamp + originalname
+
+6️⃣ Multer middleware create
+const upload = multer({ storage })
+
+Meaning:
+
+👉 Multer-க்கு storage configuration pass பண்ணுறோம்.
+
+7️⃣ Route-ல use பண்ணுறது
+
+Example:
+
+app.post("/upload", upload.single("image"), (req,res)=>{
+ res.send("File uploaded")
+})
+
+Explanation:
+
+Part	Meaning
+upload.single("image")	single file upload
+image	input field name
+8️⃣ Frontend example
+<input type="file" name="image" />
+
+React example:
+
+const formData = new FormData()
+formData.append("image", file)
+9️⃣ Upload flow
+Frontend file upload
+        ↓
+Multer middleware
+        ↓
+diskStorage config
+        ↓
+file save in uploads folder
+        ↓
+file path in req.file
+
+Example:
+
+console.log(req.file)
+
+Output:
+
+uploads/171000123-photo.png
+🔟 Interview Short Answer
+
+👉 “multer.diskStorage() is used to configure how and where uploaded files should be stored on the server. It allows defining the destination folder and the filename format for uploaded files.”
+
+
+-----------------------------------------------------------------------------------------------
+
+
+=>
