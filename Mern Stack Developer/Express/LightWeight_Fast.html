@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express lightweight & fast · வகுப்பு</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #eef2f6;
+            font-family: 'Segoe UI', 'Nirmala UI', Roboto, system-ui, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            color: #1d2c3a;
+        }
+        .teaching-card {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 42px;
+            box-shadow: 0 30px 45px -20px #132434;
+            overflow: hidden;
+            border: 1px solid #c4d8ef;
+        }
+
+        /* ---------- header with first question ---------- */
+        .question-header {
+            background: #0c253b;
+            color: white;
+            padding: 2rem 2.8rem;
+            border-bottom: 8px solid #f4a261;
+        }
+        .question-header h2 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .question-header .q-num {
+            background: #f4a261;
+            padding: 0.2rem 1.4rem;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .question-header .ask {
+            font-size: 2rem;
+            font-weight: 500;
+        }
+        .student-answer {
+            background: #1d3e5e;
+            padding: 0.7rem 2rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            border-left: 10px solid #f4a261;
+        }
+        .teacher-then {
+            margin-top: 1.2rem;
+            font-size: 1.4rem;
+            color: #ffd9a3;
+        }
+
+        /* main content area */
+        .steps-area {
+            padding: 2.5rem 2.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.2rem;
+        }
+
+        /* step card */
+        .step {
+            background: #f9fdff;
+            border-radius: 36px;
+            padding: 1.8rem 2.2rem;
+            border: 1px solid #cde0f0;
+            box-shadow: 0 4px 10px rgba(0,30,50,0.03);
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 2rem;
+            font-weight: 650;
+            margin-bottom: 1.2rem;
+            border-bottom: 3px dashed #b8d1ec;
+            padding-bottom: 0.6rem;
+        }
+        .step-badge {
+            background: #0c2d4b;
+            color: white;
+            border-radius: 60px;
+            padding: 0.2rem 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .tamil-block {
+            background: #eef6ff;
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            margin: 0.8rem 0;
+            border-left: 8px solid #f4a261;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .english-note {
+            background: #e0ecfa;
+            color: #003057;
+            padding: 0.3rem 1.8rem;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: 500;
+            margin: 0.3rem 0 0.8rem 0;
+            border: 1px solid #aac3e2;
+        }
+
+        .code-display {
+            background: #0b1c2b;
+            color: #e2edff;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1.2rem 2rem;
+            border-radius: 30px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #2f5070;
+            margin: 1.2rem 0;
+            box-shadow: inset 0 0 10px #00000040;
+            font-size: 1rem;
+        }
+        .code-display .y { color: #ffe484; }
+        .code-display .g { color: #b9f5b0; }
+
+        /* real life vehicle example */
+        .vehicle-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem 3rem;
+            background: #e5f0fe;
+            border-radius: 50px;
+            padding: 1.8rem 2.5rem;
+            justify-content: center;
+            margin: 1.2rem 0;
+        }
+        .vehicle-item {
+            background: white;
+            border-radius: 40px;
+            padding: 1rem 2rem;
+            text-align: center;
+            min-width: 170px;
+            border: 2px solid #f4a261;
+        }
+        .vehicle-icon { font-size: 2.5rem; }
+        .vehicle-name { font-weight: 700; color: #003057; }
+        .vehicle-speed { background: #fce5cd; border-radius: 30px; padding: 0.2rem; margin-top: 5px; }
+
+        /* 3 points */
+        .points-three {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #eaf2fd;
+            border-radius: 40px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            justify-content: center;
+        }
+        .point-bubble {
+            background: #0c2d4b;
+            color: white;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        /* diagram */
+        .flow-diagram {
+            background: #0f2942;
+            color: white;
+            padding: 1.4rem 2rem;
+            border-radius: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px 30px;
+            margin: 1.5rem 0;
+            border: 2px solid #f4a261;
+        }
+        .flow-diagram span {
+            background: #1d3e60;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            font-size: 1.3rem;
+        }
+        .arrow-symbol {
+            font-size: 2rem;
+            color: #f7b977;
+        }
+
+        .demo-box {
+            background: #031e33;
+            color: #b3e4ff;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.4rem;
+            border: 2px solid #f4a261;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .packages-list {
+            background: #ecf3fb;
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            font-size: 1.3rem;
+        }
+
+        .interview-box {
+            background: #0c253b;
+            color: white;
+            padding: 1.4rem 2rem;
+            border-radius: 60px;
+            border: 2px solid gold;
+            font-size: 1.3rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #aec9e7;
+            margin: 1rem 0;
+        }
+
+        .footer-note {
+            background: #e4effb;
+            padding: 1rem 2.8rem;
+            color: #1e3f5c;
+            font-weight: 500;
+            border-top: 1px solid #aec9e5;
+        }
+    </style>
+</head>
+<body>
+<div class="teaching-card">
+    <!-- 1️⃣ First Question Ask -->
+    <div class="question-header">
+        <h2>
+            <span class="q-num">1️⃣</span>
+            <span class="ask">“Website slow ஆக இருந்தா users என்ன பண்ணுவாங்க?”</span>
+        </h2>
+        <div class="student-answer">👉 Students answer: Close பண்ணிடுவாங்க · வேற website போயிடுவாங்க</div>
+        <div class="teacher-then">👉 அப்போ சொல்லு: அதனால் backend fast-ஆ இருக்கணும். அதற்காக தான் developers Express use பண்ணுவாங்க.</div>
+    </div>
+
+    <div class="steps-area">
+        <!-- 2️⃣ Lightweight என்றால் என்ன? -->
+        <div class="step">
+            <div class="step-header"><span class="step-badge">2️⃣</span> Lightweight என்றால் என்ன?</div>
+            <div class="tamil-block">Lightweight = அதிக unnecessary features இல்லாமல் இருக்கும், simple framework, fast performance. Express-ல minimum code போதும் server create பண்ண.</div>
+            <div class="code-display">
+<span class="y">import</span> express <span class="y">from</span> <span class="g">"express"</span>
+
+<span class="g">const app</span> = express()
+
+app.get(<span class="g">"/"</span>, (req, res) => {
+  res.send(<span class="g">"Hello"</span>)
+})
+
+app.listen(5000)
+            </div>
+            <div class="tamil-block">👉 Few lines codeல server create பண்ண முடியும்.</div>
+        </div>
+
+        <!-- 3️⃣ Real Life Example (Vehicle) 🚗 -->
+        <div class="step">
+            <div class="step-header"><span class="step-badge">3️⃣</span> Real Life Example (Vehicle) 🚗</div>
+            <div class="vehicle-grid">
+                <div class="vehicle-item"><span class="vehicle-icon">🚛</span><div class="vehicle-name">Heavy truck</div><div class="vehicle-speed">Slow</div></div>
+                <div class="vehicle-item"><span class="vehicle-icon">🏍️</span><div class="vehicle-name">Bike</div><div class="vehicle-speed">Fast</div></div>
+            </div>
+            <div class="tamil-block">Heavy framework = slow &nbsp;&nbsp; Lightweight framework = fast &nbsp; Express bike மாதிரி lightweight.</div>
+        </div>
+
+        <!-- 4️⃣ Why Express Fast? -->
+        <div class="step">
+            <div class="step-header"><span class="step-badge">4️⃣</span> Why Express Fast? (3 points)</div>
+            <div class="points-three">
+                <span class="point-bubble">1️⃣ Minimal framework</span>
+                <span class="point-bubble">2️⃣ Node.js asynchronous</span>
+                <span class="point-bubble">3️⃣ Only required features</span>
+            </div>
+            <div class="tamil-block">Express built on top of Node.js — Node.js non-blocking architecture use பண்ணும் → fast performance.</div>
+        </div>
+
+        <!-- 5️⃣ Board Diagram -->
+        <div class="step">
+            <div class="step-header"><span class="step-badge">5️⃣</span> Board Diagram</div>
+            <div class="flow-diagram">
+                <span>Client Request</span>
+                <span class="arrow-symbol">⬇️</span>
+                <span>Express Server</span>
+                <span class="arrow-symbol">⬇️</span>
+                <span>Fast Response</span>
+            </div>
+            <div class="tamil-block">Board ல draw பண்ணு: Client Request → Express Server → Fast Response</div>
+        </div>
+
+        <!-- 6️⃣ Class Demo -->
+        <div class="step">
+            <div class="step-header"><span class="step-badge">6️⃣</span> Class Demo</div>
+            <div class="tamil-block">Server run பண்ணி browser open பண்ணு: <strong>http://localhost:5000</strong></div>
+            <div class="demo-box">👉 Students immediate response பார்க்க முடியும்.</div>
+            <div class="tamil-block">👉 Lightweight framework, fast request handling.</div>
+        </div>
+
+        <!-- 7️⃣ Practical Point (Students remember) -->
+        <div class="step">
+            <div class="step-header"><span class="step-badge">7️⃣</span> Practical Point</div>
+            <div class="tamil-block">Express-ல தேவையான packages மட்டும் add பண்ணலாம். Example: <code style="background:#d2e3fc; padding:0.2rem 1rem; border-radius:30px;">cors</code>, <code style="background:#d2e3fc; padding:0.2rem 1rem; border-radius:30px;">mongoose</code>. இதனால் application heavy ஆகாது.</div>
+        </div>
+
+        <!-- 🔥 One Interview Sentence -->
+        <div class="step">
+            <hr>
+            <div class="interview-box">
+                🔥 “Express.js is a fast and lightweight framework because it provides minimal features and allows developers to build applications quickly.”
+            </div>
+        </div>
+    </div>
+
+    <!-- footer no js, no word miss -->
+    <div class="footer-note">
+        ✅ html & css only · no js · lightweight & fast · express.js class structure · no word change
+    </div>
+</div>
+<!-- absolutely zero javascript -->
+</body>
+</html>

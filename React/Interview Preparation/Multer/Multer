@@ -1,7 +1,7 @@
 => express
 
 
-1️⃣ Server create panna easy
+1️.Server create panna easy
 
 Tamil:
 Express use பண்ணி Node.js-ல server create பண்ண easy ஆகும். HTTP request handle பண்ண simple methods கொடுக்குது.
@@ -9,7 +9,7 @@ Express use பண்ணி Node.js-ல server create பண்ண easy ஆக�
 Interview sentence (English):
 👉 “Express is a Node.js framework used to easily create servers and handle HTTP requests.”
 
-2️⃣ Routing handle panna
+2️.Routing handle panna
 
 Tamil:
 Frontend இருந்து வரும் URL request-களை handle பண்ண routes create பண்ண Express use பண்ணுறோம்.
@@ -23,7 +23,7 @@ app.get("/users",(req,res)=>{
 Interview sentence:
 👉 “Express helps to manage routing like GET, POST, PUT and DELETE requests.”
 
-3️⃣ Middleware support
+3️.Middleware support
 
 Tamil:
 Express-ல middleware use பண்ணி request check பண்ணலாம்
@@ -36,7 +36,7 @@ app.use(cors())
 Interview sentence:
 👉 “Express supports middleware to process requests before sending a response.”
 
-4️⃣ API create panna
+4️.API create panna
 
 Tamil:
 MERN stack-ல backend API create பண்ண Express use பண்ணுறோம்.
@@ -48,7 +48,7 @@ app.post("/register",registerUser)
 Interview sentence:
 👉 “Express is commonly used to build RESTful APIs for web applications.”
 
-5️⃣ Fast and lightweight
+5️.Fast and lightweight
 
 Tamil:
 Express lightweight framework அதனால் performance நல்லா இருக்கும்.
@@ -56,7 +56,7 @@ Express lightweight framework அதனால் performance நல்லா இ
 Interview sentence:
 👉 “Express is a fast and lightweight framework for building backend applications.”
 
-6️⃣ Database connect panna easy
+6️.Database connect panna easy
 
 Tamil:
 Express மூலம் MongoDB / MySQL database connect பண்ணி CRUD operations செய்யலாம்.

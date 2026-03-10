@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express.js · complete keywords · glossary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f7ff;
+            font-family: 'Segoe UI', 'Nirmala UI', Roboto, system-ui, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            color: #1d3246;
+        }
+
+        .glossary-express {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 48px;
+            box-shadow: 0 30px 60px -20px #153852;
+            overflow: hidden;
+            border: 1px solid #cde0f3;
+        }
+
+        .title-header {
+            background: #0c2b42;
+            color: white;
+            padding: 2rem 3rem;
+            border-bottom: 8px solid #3b9eff;
+        }
+
+        .title-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .title-header .express-badge {
+            background: #3b9eff;
+            padding: 0.3rem 2rem;
+            border-radius: 80px;
+            font-size: 2rem;
+        }
+
+        .sub-desc {
+            font-size: 1.4rem;
+            color: #c7e0ff;
+            margin-top: 0.5rem;
+        }
+
+        /* category grid */
+        .glossary-container {
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.8rem;
+        }
+
+        .category {
+            border-radius: 40px;
+            background: #f9fdff;
+            padding: 1.8rem 2.2rem;
+            border: 1px solid #c9dff5;
+            box-shadow: 0 8px 16px rgba(0,40,70,0.04);
+        }
+
+        .category h2 {
+            font-size: 2rem;
+            font-weight: 650;
+            margin-bottom: 1.5rem;
+            border-left: 12px solid #3b9eff;
+            padding-left: 1.5rem;
+            background: linear-gradient(to right, #f0f8ff, transparent);
+        }
+
+        .term-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem 1.2rem;
+            align-items: center;
+        }
+
+        .term-item {
+            background: #ecf3fc;
+            border-radius: 40px;
+            padding: 0.5rem 1.4rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #0b2e4a;
+            border: 1px solid #9fc3f0;
+            transition: all 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .term-item:hover {
+            background: #3b9eff;
+            color: white;
+            border-color: #0a5bb5;
+            transform: scale(1.02);
+        }
+
+        .term-highlight {
+            background: #ffeed9;
+            border: 2px solid #f7b731;
+            font-weight: 600;
+        }
+
+        .note-sep {
+            margin: 0.5rem 0 1rem 0;
+            color: #3e6a91;
+            font-size: 1rem;
+        }
+
+        .footer-glossary {
+            background: #e3f0fd;
+            padding: 1.5rem 3rem;
+            color: #1f4b73;
+            font-weight: 500;
+            border-top: 1px solid #bed4f0;
+            text-align: center;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #aec9ec;
+            margin: 0.5rem 0 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="glossary-express">
+    <div class="title-header">
+        <h1>
+            <span class="express-badge">⚡ Express.js</span>
+            <span>complete keyword glossary</span>
+        </h1>
+        <div class="sub-desc">all terms · routing · middleware · api · database · security · deployment</div>
+    </div>
+
+    <div class="glossary-container">
+        <!-- 1️⃣ CORE & SERVER related -->
+        <div class="category">
+            <h2>📌 Server · Framework · Backend</h2>
+            <div class="term-cloud">
+                <span class="term-item">Server</span>
+                <span class="term-item">Framework</span>
+                <span class="term-item">Backend</span>
+                <span class="term-item">Routing</span>
+                <span class="term-item">Route</span>
+                <span class="term-item">Router</span>
+                <span class="term-item">Controller</span>
+                <span class="term-item">Model</span>
+                <span class="term-item">Router Module</span>
+                <span class="term-item">Database</span>
+                <span class="term-item">Connection</span>
+                <span class="term-item">MongoDB</span>
+                <span class="term-item">MySQL</span>
+                <span class="term-item">Mongoose</span>
+                <span class="term-item">Query</span>
+                <span class="term-item">CRUD</span>
+                <span class="term-item">Create</span>
+                <span class="term-item">Read</span>
+                <span class="term-item">Update</span>
+                <span class="term-item">Delete</span>
+            </div>
+        </div>
+
+        <!-- 2️⃣ ROUTE parameters / query / body / parsers -->
+        <div class="category">
+            <h2>📍 Route · Parameters · Parsers</h2>
+            <div class="term-cloud">
+                <span class="term-item">Router</span>
+                <span class="term-item">Route Parameters</span>
+                <span class="term-item">Query Strings</span>
+                <span class="term-item">Body Parser</span>
+                <span class="term-item">JSON Parser</span>
+                <span class="term-item">URL Encoded</span>
+                <span class="term-item">req.body</span>
+                <span class="term-item">req.params</span>
+                <span class="term-item">req.query</span>
+                <span class="term-item">Request</span>
+                <span class="term-item">Response</span>
+                <span class="term-item">Request Headers</span>
+                <span class="term-item">Response Headers</span>
+                <span class="term-item">Status Codes</span>
+                <span class="term-item">Endpoint</span>
+                <span class="term-item">API</span>
+                <span class="term-item">REST API</span>
+            </div>
+        </div>
+
+        <!-- 3️⃣ HTTP METHODS & CRUD -->
+        <div class="category">
+            <h2>🌐 HTTP Methods · CRUD · Status</h2>
+            <div class="term-cloud">
+                <span class="term-item">HTTP</span>
+                <span class="term-item">HTTPS</span>
+                <span class="term-item">GET</span>
+                <span class="term-item">POST</span>
+                <span class="term-item">PUT</span>
+                <span class="term-item">DELETE</span>
+                <span class="term-item">PATCH</span>
+                <span class="term-item">Status Code</span>
+                <span class="term-item">Headers</span>
+                <span class="term-item">JSON</span>
+                <span class="term-item">CRUD</span>
+                <span class="term-item">Create</span>
+                <span class="term-item">Read</span>
+                <span class="term-item">Update</span>
+                <span class="term-item">Delete</span>
+            </div>
+        </div>
+
+        <!-- 4️⃣ MIDDLEWARE full spectrum -->
+        <div class="category">
+            <h2>⚙️ Middleware · Stack · Types</h2>
+            <div class="term-cloud">
+                <span class="term-item">Middleware</span>
+                <span class="term-item term-highlight">Middleware Stack</span>
+                <span class="term-item">Application Middleware</span>
+                <span class="term-item">Router Middleware</span>
+                <span class="term-item">Error Middleware</span>
+                <span class="term-item">Third-party Middleware</span>
+                <span class="term-item">Next Function</span>
+                <span class="term-item">Authentication Middleware</span>
+                <span class="term-item">Authorization Middleware</span>
+                <span class="term-item">Input Validation</span>
+                <span class="term-item">Logging</span>
+                <span class="term-item">Morgan</span>
+                <span class="term-item">Helmet</span>
+                <span class="term-item">CORS</span>
+                <span class="term-item">Rate Limiting</span>
+            </div>
+        </div>
+
+        <!-- 5️⃣ AUTH / SECURITY / COOKIES / JWT -->
+        <div class="category">
+            <h2>🔐 Authentication · Authorization · Security</h2>
+            <div class="term-cloud">
+                <span class="term-item">Authentication</span>
+                <span class="term-item">Authorization</span>
+                <span class="term-item">JWT</span>
+                <span class="term-item">Session</span>
+                <span class="term-item">Cookies</span>
+                <span class="term-item">Validation</span>
+                <span class="term-item">Helmet</span>
+                <span class="term-item">CORS</span>
+                <span class="term-item">Rate Limiting</span>
+                <span class="term-item">Environment Variables</span>
+                <span class="term-item">dotenv</span>
+                <span class="term-item">Configuration</span>
+            </div>
+        </div>
+
+        <!-- 6️⃣ TEMPLATE ENGINES / VIEWS / RENDERING -->
+        <div class="category">
+            <h2>🖼️ Template Engine · View · Rendering</h2>
+            <div class="term-cloud">
+                <span class="term-item">Template Engine</span>
+                <span class="term-item">View Engine</span>
+                <span class="term-item">Rendering</span>
+                <span class="term-item">EJS</span>
+                <span class="term-item">Pug</span>
+                <span class="term-item">Handlebars</span>
+            </div>
+        </div>
+
+        <!-- 7️⃣ ASYNC / PROMISE / CALLBACK -->
+        <div class="category">
+            <h2>⏳ Async · Promise · Callback</h2>
+            <div class="term-cloud">
+                <span class="term-item">Async/Await</span>
+                <span class="term-item">Promise</span>
+                <span class="term-item">Callback</span>
+                <span class="term-item">Next Function</span>
+            </div>
+        </div>
+
+        <!-- 8️⃣ STATIC FILES / UPLOADS / MULTER -->
+        <div class="category">
+            <h2>📁 Static · Upload · File handling</h2>
+            <div class="term-cloud">
+                <span class="term-item">Static Files</span>
+                <span class="term-item">File Upload</span>
+                <span class="term-item">Multer</span>
+            </div>
+        </div>
+
+        <!-- 9️⃣ CONFIG / ENV / DOTENV -->
+        <div class="category">
+            <h2>🔧 Environment · Config</h2>
+            <div class="term-cloud">
+                <span class="term-item">Environment Variables</span>
+                <span class="term-item">dotenv</span>
+                <span class="term-item">Configuration</span>
+            </div>
+        </div>
+
+        <!-- 🔟 SCALABILITY / CLUSTER / PERFORMANCE -->
+        <div class="category">
+            <h2>📈 Performance · Scalability</h2>
+            <div class="term-cloud">
+                <span class="term-item">Cluster</span>
+                <span class="term-item">Load Balancing</span>
+                <span class="term-item">Scalability</span>
+                <span class="term-item">Performance</span>
+            </div>
+        </div>
+
+        <!-- all remaining small terms (double-check full list) -->
+        <div class="category">
+            <h2>🔹 Additional keywords (all included)</h2>
+            <div class="term-cloud">
+                <!-- extra coverage: ensure no word missed from user list -->
+                <span class="term-item">Router</span>
+                <span class="term-item">Route Parameters</span>
+                <span class="term-item">Query Strings</span>
+                <span class="term-item">Body Parser</span>
+                <span class="term-item">JSON Parser</span>
+                <span class="term-item">URL Encoded</span>
+                <span class="term-item">Request Headers</span>
+                <span class="term-item">Response Headers</span>
+                <span class="term-item">Status Codes</span>
+                <span class="term-item">HTTP Methods</span>
+                <span class="term-item">Async/Await</span>
+                <span class="term-item">Promise</span>
+                <span class="term-item">Callback</span>
+                <span class="term-item">Next Function</span>
+                <span class="term-item">Middleware Stack</span>
+                <span class="term-item">Application Middleware</span>
+                <span class="term-item">Router Middleware</span>
+                <span class="term-item">Error Middleware</span>
+                <span class="term-item">Third-party Middleware</span>
+                <span class="term-item">Template Engine</span>
+                <span class="term-item">View Engine</span>
+                <span class="term-item">Rendering</span>
+                <span class="term-item">EJS</span>
+                <span class="term-item">Pug</span>
+                <span class="term-item">Handlebars</span>
+                <span class="term-item">Environment Variables</span>
+                <span class="term-item">dotenv</span>
+                <span class="term-item">Configuration</span>
+                <span class="term-item">Session</span>
+                <span class="term-item">Cookies</span>
+                <span class="term-item">JWT</span>
+                <span class="term-item">Authentication Middleware</span>
+                <span class="term-item">Authorization Middleware</span>
+                <span class="term-item">Input Validation</span>
+                <span class="term-item">Logging</span>
+                <span class="term-item">Morgan</span>
+                <span class="term-item">Helmet</span>
+                <span class="term-item">Rate Limiting</span>
+                <span class="term-item">Cluster</span>
+                <span class="term-item">Load Balancing</span>
+                <!-- SERVER / FRAMEWORK / BACKEND (already) -->
+                <span class="term-item">Server</span>
+                <span class="term-item">Framework</span>
+                <span class="term-item">Backend</span>
+                <span class="term-item">Routing</span>
+                <span class="term-item">Route</span>
+                <span class="term-item">Router</span>
+                <span class="term-item">REST API</span>
+                <span class="term-item">Endpoint</span>
+                <span class="term-item">API</span>
+                <span class="term-item">HTTP</span>
+                <span class="term-item">HTTPS</span>
+                <span class="term-item">GET</span>
+                <span class="term-item">POST</span>
+                <span class="term-item">PUT</span>
+                <span class="term-item">DELETE</span>
+                <span class="term-item">PATCH</span>
+                <span class="term-item">Request</span>
+                <span class="term-item">Response</span>
+                <span class="term-item">req.body</span>
+                <span class="term-item">req.params</span>
+                <span class="term-item">req.query</span>
+                <span class="term-item">Headers</span>
+                <span class="term-item">Status Code</span>
+                <span class="term-item">JSON</span>
+                <span class="term-item">CRUD</span>
+                <span class="term-item">Create</span>
+                <span class="term-item">Read</span>
+                <span class="term-item">Update</span>
+                <span class="term-item">Delete</span>
+                <span class="term-item">Authentication</span>
+                <span class="term-item">Authorization</span>
+                <span class="term-item">JWT</span>
+                <span class="term-item">Session</span>
+                <span class="term-item">Cookies</span>
+                <span class="term-item">Validation</span>
+                <span class="term-item">Logging</span>
+                <span class="term-item">Morgan</span>
+                <span class="term-item">Helmet</span>
+                <span class="term-item">CORS</span>
+                <span class="term-item">Static Files</span>
+                <span class="term-item">File Upload</span>
+                <span class="term-item">Multer</span>
+                <span class="term-item">Template Engine</span>
+                <span class="term-item">View Engine</span>
+                <span class="term-item">EJS</span>
+                <span class="term-item">Pug</span>
+                <span class="term-item">Handlebars</span>
+                <span class="term-item">Environment Variables</span>
+                <span class="term-item">dotenv</span>
+                <span class="term-item">Configuration</span>
+                <span class="term-item">Async</span>
+                <span class="term-item">Await</span>
+                <span class="term-item">Promise</span>
+                <span class="term-item">Callback</span>
+                <span class="term-item">Controller</span>
+                <span class="term-item">Model</span>
+                <span class="term-item">Router Module</span>
+                <span class="term-item">Database</span>
+                <span class="term-item">Connection</span>
+                <span class="term-item">MongoDB</span>
+                <span class="term-item">MySQL</span>
+                <span class="term-item">Mongoose</span>
+                <span class="term-item">Query</span>
+                <span class="term-item">Error Handling</span>
+                <span class="term-item">Cluster</span>
+                <span class="term-item">Scalability</span>
+                <span class="term-item">Performance</span>
+            </div>
+            <div class="note-sep">✅ all keywords from the list are included (no word miss)</div>
+        </div>
+    </div>
+
+    <div class="footer-glossary">
+        ⚡ Express.js · every term · routing, middleware, API, database, auth, templates, async, deployment · pure HTML/CSS
+    </div>
+</div>
+<!-- no javascript, no word change, all terms preserved -->
+</body>
+</html>

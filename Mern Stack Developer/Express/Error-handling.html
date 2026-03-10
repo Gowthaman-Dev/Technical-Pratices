@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express · Error Handling · வகுப்பு</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f1f5fa;
+            font-family: 'Segoe UI', 'Nirmala UI', system-ui, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            color: #1d3144;
+        }
+
+        .error-board {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 48px;
+            box-shadow: 0 30px 50px -20px #1f3d57;
+            overflow: hidden;
+            border: 1px solid #cbddf3;
+        }
+
+        /* ---------- header first question ---------- */
+        .header-q {
+            background: #0f2c3f;
+            color: white;
+            padding: 2rem 3rem;
+            border-bottom: 8px solid #e74c3c;
+        }
+
+        .header-q h2 {
+            font-size: 2.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-q .q-num {
+            background: #e74c3c;
+            padding: 0.2rem 1.6rem;
+            border-radius: 60px;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .header-q .ask-text {
+            font-size: 2rem;
+            font-weight: 500;
+        }
+
+        .students-answer {
+            background: #1b4c64;
+            padding: 0.8rem 2.2rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            border-left: 10px solid #e74c3c;
+        }
+
+        .teacher-says {
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            color: #fbc0b0;
+        }
+
+        /* main steps */
+        .step-container {
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.2rem;
+        }
+
+        /* card */
+        .step-card {
+            background: #f9fdff;
+            border-radius: 38px;
+            padding: 2rem 2.6rem;
+            border: 1px solid #d3e5f8;
+            box-shadow: 0 8px 12px rgba(0,35,55,0.02);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 2rem;
+            font-weight: 650;
+            margin-bottom: 1.2rem;
+            border-bottom: 3px dashed #bad0ec;
+            padding-bottom: 0.6rem;
+        }
+
+        .step-badge {
+            background: #12415a;
+            color: white;
+            border-radius: 60px;
+            padding: 0.2rem 1.4rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .tamil-desc {
+            background: #ecf4ff;
+            padding: 1rem 2.2rem;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            margin: 0.8rem 0;
+            border-left: 8px solid #e74c3c;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .english-phrase {
+            background: #e4eefc;
+            color: #00416d;
+            padding: 0.4rem 2.2rem;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: 500;
+            margin: 0.2rem 0 0.8rem 0;
+            border: 1px solid #a6c3e9;
+        }
+
+        .code-window {
+            background: #0c1f2f;
+            color: #e8f2ff;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1.2rem 2.2rem;
+            border-radius: 30px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #315e83;
+            margin: 1.2rem 0;
+            box-shadow: inset 0 0 10px #00000040;
+            font-size: 1rem;
+        }
+
+        .code-window .red { color: #ff7b7b; }
+        .code-window .green { color: #b9f0b9; }
+        .code-window .yellow { color: #ffe484; }
+
+        /* diagram */
+        .flow-diagram {
+            background: #112d42;
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px 25px;
+            margin: 1.5rem 0;
+            border: 2px solid #e74c3c;
+        }
+
+        .flow-diagram span {
+            background: #1f4b6e;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            font-size: 1.3rem;
+        }
+
+        .arrow-symbol {
+            font-size: 2rem;
+            color: #e88d7a;
+        }
+
+        /* params table */
+        .params-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            background: #e3f0fd;
+            border-radius: 48px;
+            padding: 1.8rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .param-item {
+            background: white;
+            border-radius: 40px;
+            padding: 0.7rem 1.8rem;
+            border: 2px solid #e74c3c;
+            min-width: 130px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .param-desc {
+            font-size: 0.9rem;
+            color: #1d5177;
+        }
+
+        /* hospital example */
+        .hospital-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: #e6f2fc;
+            border-radius: 60px;
+            padding: 2rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .hospital-item {
+            background: white;
+            border-radius: 40px;
+            padding: 1rem 2rem;
+            text-align: center;
+            border: 2px solid #e74c3c;
+        }
+
+        .real-icon { font-size: 2rem; }
+
+        .demo-output {
+            background: #062334;
+            color: #f5c0b0;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            border: 2px solid #e74c3c;
+            margin: 1rem 0;
+        }
+
+        .code-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #eef4fa;
+            border-radius: 40px;
+            padding: 1.5rem;
+            justify-content: center;
+        }
+
+        .code-badge {
+            background: #0f3852;
+            color: white;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .summary-box {
+            background: #e9f4ff;
+            border: 4px solid #12415a;
+            border-radius: 60px;
+            padding: 1.8rem;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .interview-box {
+            background: #0f2c3f;
+            color: white;
+            padding: 1.3rem 2rem;
+            border-radius: 60px;
+            border: 2px solid gold;
+            font-size: 1.3rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #b9d0ec;
+            margin: 1rem 0;
+        }
+
+        .footer-note {
+            background: #e5f0fb;
+            padding: 1rem 3rem;
+            color: #174261;
+            font-weight: 500;
+            border-top: 1px solid #bed3ed;
+        }
+    </style>
+</head>
+<body>
+<div class="error-board">
+    <!-- 1️⃣ First Question Ask -->
+    <div class="header-q">
+        <h2>
+            <span class="q-num">1️⃣</span>
+            <span class="ask-text">“Website open பண்ணும்போது 'Server Error' அல்லது 'Page Not Found' வந்ததுண்டா?”</span>
+        </h2>
+        <div class="students-answer">👉 Students answer: Yes</div>
+        <div class="teacher-says">👉 Application ல error வந்தா server அதை handle பண்ணணும். அதற்கு use பண்ணுவது Error Handling Middleware.</div>
+    </div>
+
+    <div class="step-container">
+        <!-- 2️⃣ Error Handling Definition -->
+        <div class="step-card">
+            <div class="step-header"><span class="step-badge">2️⃣</span> Error Handling Definition (Tamil)</div>
+            <div class="tamil-desc">Error Handling என்றால் என்ன? Application run ஆகும்போது error வந்தால் அதை catch பண்ணி proper response send பண்ணுவது. Example errors: database connection error, API error, invalid request.</div>
+            <div class="english-phrase">“Error handling is used to manage application errors and send proper responses.”</div>
+        </div>
+
+        <!-- 3️⃣ Error Flow (Board Diagram) -->
+        <div class="step-card">
+            <div class="step-header"><span class="step-badge">3️⃣</span> Error Flow (Board draw)</div>
+            <div class="flow-diagram">
+                <span>Client Request</span><span class="arrow-symbol">⬇️</span><span>Route / Controller</span><span class="arrow-symbol">⬇️</span><span>Error occurs</span><span class="arrow-symbol">⬇️</span><span>Error Middleware</span><span class="arrow-symbol">⬇️</span><span>Response</span>
+            </div>
+            <div class="tamil-desc">👉 Route ல error வந்தா error middleware handle பண்ணும்.</div>
+        </div>
+
+        <!-- 4️⃣ Express Error Middleware + parameters -->
+        <div class="step-card">
+            <div class="step-header"><span class="step-badge">4️⃣</span> Express Error Middleware</div>
+            <div class="code-window">
+<span class="yellow">app.use</span>((err, req, res, next) => {
+  res.status(500).send(<span class="green">"Server Error"</span>)
+})
+            </div>
+            <div class="params-grid">
+                <div class="param-item">err <span class="param-desc">error object</span></div>
+                <div class="param-item">req <span class="param-desc">request</span></div>
+                <div class="param-item">res <span class="param-desc">response</span></div>
+                <div class="param-item">next <span class="param-desc">next middleware</span></div>
+            </div>
+            <div class="tamil-desc">⚠️ Error middleware ல 4 parameters இருக்கணும்.</div>
+        </div>
+
+        <!-- 5️⃣ Example with Route + next(err) -->
+        <div class="step-card">
+            <div class="step-header"><span class="step-badge">5️⃣</span> Example with Route</div>
+            <div class="code-window">
+<span class="yellow">app.get</span>(<span class="green">"/users"</span>, (req, res, next) => {
+  <span class="yellow">try</span> {
+    <span class="red">throw new Error</span>(<span class="green">"Database error"</span>)
+  } <span class="yellow">catch</span>(err) {
+    next(err)
+  }
+})
+
+<span class="yellow">app.use</span>((err, req, res, next) => {
+  res.status(500).send(err.message)
+})
+            </div>
+            <div class="tamil-desc">1️⃣ Route ல error create &nbsp; 2️⃣ next(err) call &nbsp; 3️⃣ Error middleware handle</div>
+        </div>
+
+        <!-- 6️⃣ Real Life Example (Hospital) 🏥 -->
+        <div class="step-card">
+            <div class="step-header"><span class="step-badge">6️⃣</span> Real Life Example (Hospital 🏥)</div>
+            <div class="hospital-grid">
+                <div class="hospital-item"><span class="real-icon">🤒</span><div>Patient problem</div><small>Error</small></div>
+                <div class="hospital-item"><span class="real-icon">👨‍⚕️</span><div>Doctor</div><small>Error handler</small></div>
+                <div class="hospital-item"><span class="real-icon">💊</span><div>Treatment</div><small>Solution</small></div>
+            </div>
+            <div class="tamil-desc">Flow: Problem → Doctor → Treatment &nbsp;&nbsp; Web: Error → Error Middleware → Response</div>
+        </div>
+
+        <!-- 7️⃣ Class Demo (Important) -->
+        <div class="step-card">
+            <div class="step-header"><span class="step-badge">7️⃣</span> Class Demo (Important)</div>
+            <div class="tamil-desc">Browser open பண்ணு: <strong>http://localhost:5000/users</strong></div>
+            <div class="demo-output">
+                Terminal: Error: Database error <br>
+                Browser response: Database error
+            </div>
+            <div class="tamil-desc">👉 Students immediate concept புரியும்.</div>
+        </div>
+
+        <!-- 8️⃣ Common HTTP Error Codes -->
+        <div class="step-card">
+            <div class="step-header"><span class="step-badge">8️⃣</span> Common HTTP Error Codes</div>
+            <div class="code-row">
+                <span class="code-badge">404 → Page Not Found</span>
+                <span class="code-badge">500 → Server Error</span>
+                <span class="code-badge">400 → Bad Request</span>
+            </div>
+            <div class="code-window">
+res.status(404).send(<span class="green">"Page Not Found"</span>)
+            </div>
+        </div>
+
+        <!-- 9️⃣ Final Summary + interview -->
+        <div class="step-card">
+            <div class="step-header"><span class="step-badge">9️⃣</span> Final Summary (Board)</div>
+            <div class="summary-box">Request → Route → Error → Error Middleware → Response</div>
+            <hr>
+            <div class="interview-box">
+                🔥 “Express provides error-handling middleware to catch and manage application errors.”
+            </div>
+        </div>
+    </div>
+
+    <!-- footer - no js, no word change -->
+    <div class="footer-note">
+        ✅ html & css only · no js · error handling · express teaching flow · no word miss
+    </div>
+</div>
+<!-- no javascript -->
+</body>
+</html>

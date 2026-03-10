@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express · Static Files · வகுப்பு</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ecf3fa;
+            font-family: 'Segoe UI', 'Nirmala UI', system-ui, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            color: #1f3245;
+        }
+
+        .static-board {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 48px;
+            box-shadow: 0 30px 50px -20px #1b3a55;
+            overflow: hidden;
+            border: 1px solid #bed6f0;
+        }
+
+        /* ---------- header with first question ---------- */
+        .header-q {
+            background: #0c2f44;
+            color: white;
+            padding: 2rem 3rem;
+            border-bottom: 8px solid #3498db;
+        }
+
+        .header-q h2 {
+            font-size: 2.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .header-q .q-tag {
+            background: #3498db;
+            padding: 0.2rem 1.6rem;
+            border-radius: 60px;
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .header-q .ask-text {
+            font-size: 2rem;
+            font-weight: 500;
+        }
+
+        .explain-ans {
+            background: #1a4e72;
+            padding: 0.8rem 2.2rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            border-left: 10px solid #3498db;
+        }
+
+        .teacher-note {
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            color: #c5e2ff;
+        }
+
+        /* main content */
+        .steps-container {
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.3rem;
+        }
+
+        /* each step card */
+        .step-item {
+            background: #f8fdff;
+            border-radius: 38px;
+            padding: 2rem 2.6rem;
+            border: 1px solid #cde0f2;
+            box-shadow: 0 8px 12px rgba(0,40,60,0.02);
+        }
+
+        .step-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 2rem;
+            font-weight: 650;
+            margin-bottom: 1.2rem;
+            border-bottom: 3px dashed #b8d1ed;
+            padding-bottom: 0.6rem;
+        }
+
+        .step-badge {
+            background: #103f5c;
+            color: white;
+            border-radius: 60px;
+            padding: 0.2rem 1.4rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .tamil-box {
+            background: #eef6ff;
+            padding: 1rem 2.2rem;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            margin: 0.8rem 0;
+            border-left: 8px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .english-phrase {
+            background: #e2eefd;
+            color: #003d66;
+            padding: 0.4rem 2.2rem;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: 500;
+            margin: 0.2rem 0 0.8rem 0;
+            border: 1px solid #9abde7;
+        }
+
+        .code-window {
+            background: #0c1f2e;
+            color: #e3f0ff;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1.2rem 2.2rem;
+            border-radius: 30px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #2f5675;
+            margin: 1.2rem 0;
+            box-shadow: inset 0 0 10px #00000040;
+            font-size: 1rem;
+        }
+
+        .code-window .purple { color: #b8a9ff; }
+        .code-window .green { color: #b9f0b9; }
+        .code-window .yellow { color: #ffdc7a; }
+
+        /* folder structure example */
+        .folder-example {
+            background: #e2effa;
+            border-radius: 40px;
+            padding: 1.2rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            border: 2px dashed #3498db;
+        }
+        .folder-line { display: flex; align-items: center; gap: 10px; margin: 0.3rem 0; }
+
+        /* browser demo */
+        .browser-demo {
+            background: #0f2538;
+            color: #aae0ff;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.3rem;
+            border: 2px solid #3498db;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        /* diagram */
+        .flow-diagram {
+            background: #102e43;
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px 25px;
+            margin: 1.5rem 0;
+            border: 2px solid #3498db;
+        }
+        .flow-diagram span {
+            background: #1c4b72;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            font-size: 1.3rem;
+        }
+        .arrow-symbol {
+            font-size: 2rem;
+            color: #5faee3;
+        }
+
+        /* example grid (images, css, js) */
+        .example-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #e3f0fc;
+            border-radius: 60px;
+            padding: 1.5rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .grid-item {
+            background: white;
+            border-radius: 40px;
+            padding: 0.8rem 2rem;
+            border: 2px solid #3498db;
+            font-weight: 600;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        .use-case-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            background: #e7f1fa;
+            border-radius: 48px;
+            padding: 1.8rem;
+            justify-content: center;
+        }
+        .use-item {
+            background: #0c3857;
+            color: white;
+            border-radius: 40px;
+            padding: 0.6rem 1.8rem;
+        }
+        .code-snip {
+            background: #112c3f;
+            color: #b8e2ff;
+            padding: 0.8rem 2rem;
+            border-radius: 40px;
+            font-family: monospace;
+            border: 1px solid #3498db;
+        }
+
+        .summary-box {
+            background: #e9f4ff;
+            border: 4px solid #0e3f5e;
+            border-radius: 60px;
+            padding: 1.8rem;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .interview-box {
+            background: #0c2f44;
+            color: white;
+            padding: 1.3rem 2rem;
+            border-radius: 60px;
+            border: 2px solid gold;
+            font-size: 1.3rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #b2cde8;
+            margin: 1rem 0;
+        }
+
+        .footer {
+            background: #e4f0fb;
+            padding: 1rem 3rem;
+            color: #194263;
+            font-weight: 500;
+            border-top: 1px solid #b4ceea;
+        }
+    </style>
+</head>
+<body>
+<div class="static-board">
+    <!-- 1️⃣ First Question Ask (Class Start) -->
+    <div class="header-q">
+        <h2>
+            <span class="q-tag">1️⃣</span>
+            <span class="ask-text">“Website-ல images, CSS styles, JavaScript files எங்கிருந்து load ஆகுது?”</span>
+        </h2>
+        <div class="explain-ans">👉 Server அந்த files-ஐ browser கு send பண்ணும் · அந்த files தான் Static Files</div>
+        <div class="teacher-note">✨ Explain: Server → static files → browser</div>
+    </div>
+
+    <div class="steps-container">
+        <!-- 2️⃣ Static Files Definition (Tamil) -->
+        <div class="step-item">
+            <div class="step-head"><span class="step-badge">2️⃣</span> Static Files Definition (தமிழ்)</div>
+            <div class="tamil-box">Static files என்றால் என்ன? Server side processing இல்லாமல் direct-ஆ browser கு send பண்ணப்படும் files. Examples: images, CSS files, JavaScript files.</div>
+            <div class="english-phrase">“Static files are files served directly to the client without server processing.”</div>
+        </div>
+
+        <!-- 3️⃣ Example Files + folder structure -->
+        <div class="step-item">
+            <div class="step-head"><span class="step-badge">3️⃣</span> Example Files (folder structure)</div>
+            <div class="folder-example">
+                <div class="folder-line">📁 project</div>
+                <div class="folder-line" style="margin-left:1.5rem;">📄 server.js</div>
+                <div class="folder-line" style="margin-left:1.5rem;">📁 uploads</div>
+                <div class="folder-line" style="margin-left:3rem;">🖼️ image1.png</div>
+                <div class="folder-line" style="margin-left:3rem;">🎨 style.css</div>
+                <div class="folder-line" style="margin-left:3rem;">📜 script.js</div>
+            </div>
+            <div class="tamil-box">இந்த files browser கு serve பண்ண Express use பண்ணலாம்.</div>
+        </div>
+
+        <!-- 4️⃣ Express Static Middleware + code -->
+        <div class="step-item">
+            <div class="step-head"><span class="step-badge">4️⃣</span> Express Static Middleware</div>
+            <div class="code-window">
+<span class="yellow">import</span> express <span class="yellow">from</span> <span class="green">"express"</span>
+
+<span class="green">const app</span> = express()
+
+app.use(express.static(<span class="green">"uploads"</span>))
+
+app.listen(5000)
+            </div>
+            <div class="tamil-box">👉 express.static() → static files serve பண்ணும் middleware · "uploads" → files இருக்கும் folder</div>
+        </div>
+
+        <!-- 5️⃣ Browser Example -->
+        <div class="step-item">
+            <div class="step-head"><span class="step-badge">5️⃣</span> Browser Example</div>
+            <div class="browser-demo">🌐 http://localhost:5000/image1.png</div>
+            <div class="tamil-box">👉 Browser அந்த image-ஐ direct-ஆ show பண்ணும். Express server அந்த file-ஐ client கு send பண்ணுது.</div>
+        </div>
+
+        <!-- 6️⃣ Real Project Example -->
+        <div class="step-item">
+            <div class="step-head"><span class="step-badge">6️⃣</span> Real Project Example</div>
+            <div class="example-grid">
+                <div class="grid-item">profile image (🖼️)</div>
+                <div class="grid-item">CSS styling (🎨)</div>
+                <div class="grid-item">JS scripts (📜)</div>
+            </div>
+            <div class="code-snip">&lt;img src="http://localhost:5000/profile.png" /&gt;</div>
+            <div class="tamil-box">👉 image show பண்ண இப்படி use பண்ணலாம்.</div>
+        </div>
+
+        <!-- 7️⃣ Board Diagram (Teaching) -->
+        <div class="step-item">
+            <div class="step-head"><span class="step-badge">7️⃣</span> Board Diagram (Teaching)</div>
+            <div class="flow-diagram">
+                <span>Browser</span><span class="arrow-symbol">⬇️</span><span>Request image</span><span class="arrow-symbol">⬇️</span><span>Express Server</span><span class="arrow-symbol">⬇️</span><span>Static Folder</span><span class="arrow-symbol">⬇️</span><span>Image Response</span>
+            </div>
+            <div class="tamil-box">👉 Board ல draw பண்ணு இந்த flow.</div>
+        </div>
+
+        <!-- 8️⃣ Practical Demo (Important) -->
+        <div class="step-item">
+            <div class="step-head"><span class="step-badge">8️⃣</span> Practical Demo (Important)</div>
+            <div class="use-case-box">
+                <span class="use-item">1️⃣ uploads folder create</span>
+                <span class="use-item">2️⃣ image add பண்ணு</span>
+                <span class="use-item">3️⃣ browser ல open பண்ணு</span>
+            </div>
+            <div class="tamil-box">👉 Students immediate concept புரிஞ்சிடுவாங்க.</div>
+        </div>
+
+        <!-- 9️⃣ Final Summary + interview sentence -->
+        <div class="step-item">
+            <div class="step-head"><span class="step-badge">9️⃣</span> Final Summary (Board)</div>
+            <div class="summary-box">Client → Request static file → Express → Folder → Response</div>
+            <hr>
+            <div class="interview-box">
+                🔥 “Express can serve static files like images, CSS and JavaScript using the express.static middleware.”
+            </div>
+        </div>
+    </div>
+
+    <!-- footer - no js -->
+    <div class="footer">
+        ✅ html & css only · no js · static files · express teaching flow · no word miss
+    </div>
+</div>
+<!-- no javascript -->
+</body>
+</html>

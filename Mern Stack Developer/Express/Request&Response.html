@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express · Request & Response · வகுப்பு</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f0f5fb;
+            font-family: 'Segoe UI', 'Nirmala UI', system-ui, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+            color: #1e2e41;
+        }
+        .reqres-card {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 48px;
+            box-shadow: 0 30px 50px -20px #1f3c57;
+            overflow: hidden;
+            border: 1px solid #c2d8f2;
+        }
+
+        /* ---------- header first question ---------- */
+        .header-q {
+            background: #0a2942;
+            color: white;
+            padding: 2rem 3rem;
+            border-bottom: 8px solid #e67e22;
+        }
+        .header-q h2 {
+            font-size: 2.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .header-q .q-badge {
+            background: #e67e22;
+            padding: 0.2rem 1.6rem;
+            border-radius: 60px;
+            font-size: 1.7rem;
+            font-weight: 700;
+        }
+        .header-q .ask {
+            font-size: 2rem;
+            font-weight: 500;
+        }
+        .explain-box {
+            background: #1b4d72;
+            padding: 0.8rem 2.2rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            border-left: 10px solid #e67e22;
+        }
+        .teacher-explain {
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            color: #fbc79e;
+        }
+
+        /* main step area */
+        .steps-wrap {
+            padding: 2.5rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.4rem;
+        }
+
+        /* step card */
+        .step-unit {
+            background: #f9feff;
+            border-radius: 38px;
+            padding: 2rem 2.6rem;
+            border: 1px solid #cce0f5;
+            box-shadow: 0 8px 14px rgba(0,35,60,0.03);
+        }
+        .step-head {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 2rem;
+            font-weight: 650;
+            margin-bottom: 1.2rem;
+            border-bottom: 3px dashed #b3cef0;
+            padding-bottom: 0.7rem;
+        }
+        .step-num {
+            background: #0e3650;
+            color: white;
+            border-radius: 60px;
+            padding: 0.2rem 1.4rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .tamil-desc {
+            background: #ebf4ff;
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            margin: 0.8rem 0;
+            border-left: 8px solid #e67e22;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .english-phrase {
+            background: #e1edfd;
+            color: #003f68;
+            padding: 0.4rem 2rem;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: 500;
+            margin: 0.2rem 0 0.8rem 0;
+            border: 1px solid #9ec0e5;
+        }
+
+        .code-area {
+            background: #0b1e30;
+            color: #e5f0ff;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1.2rem 2.2rem;
+            border-radius: 30px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #2f5475;
+            margin: 1.2rem 0;
+            box-shadow: inset 0 0 10px #00000040;
+            font-size: 1rem;
+        }
+        .code-area .yellow { color: #ffd966; }
+        .code-area .green { color: #b5f0b0; }
+
+        /* flow diagram */
+        .comm-flow {
+            background: #0f2b40;
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px 25px;
+            margin: 1.5rem 0;
+            border: 2px solid #e67e22;
+        }
+        .comm-flow span {
+            background: #1f486b;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            font-size: 1.3rem;
+        }
+        .arr-sym {
+            font-size: 2rem;
+            color: #f29c4a;
+        }
+
+        /* request / response properties */
+        .prop-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            justify-content: center;
+        }
+        .prop-card {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 1rem 1.5rem;
+            min-width: 200px;
+            border: 2px solid #e67e22;
+            box-shadow: 0 4px 0 #c95f0f;
+        }
+        .prop-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #ccc;
+        }
+        .prop-desc {
+            margin-top: 5px;
+            color: #1c4668;
+        }
+        .method-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #eaf2fb;
+            border-radius: 60px;
+            padding: 1.5rem;
+            justify-content: center;
+        }
+        .method-item {
+            background: #0f3857;
+            color: white;
+            padding: 0.5rem 2rem;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 1.2rem;
+        }
+
+        /* real life post office */
+        .real-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: #e0effe;
+            border-radius: 60px;
+            padding: 2rem 2.5rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .real-item {
+            background: white;
+            border-radius: 40px;
+            padding: 1rem 2rem;
+            text-align: center;
+            border: 2px solid #e67e22;
+        }
+        .real-icon { font-size: 2rem; }
+        .real-label { font-weight: 700; color: #00355e; }
+
+        .demo-output {
+            background: #062334;
+            color: #b3e5fc;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            font-family: monospace;
+            font-size: 1.4rem;
+            border: 2px solid #e67e22;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .summary-final {
+            background: #e9f4ff;
+            border: 4px solid #0e3852;
+            border-radius: 60px;
+            padding: 1.8rem;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .interview-box {
+            background: #0a2942;
+            color: white;
+            padding: 1.3rem 2rem;
+            border-radius: 60px;
+            border: 2px solid gold;
+            font-size: 1.3rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dashed #acc9ea;
+            margin: 1.2rem 0;
+        }
+
+        .footer-note {
+            background: #e3effc;
+            padding: 1rem 3rem;
+            color: #1a3f5c;
+            font-weight: 500;
+            border-top: 1px solid #b8d0ea;
+        }
+    </style>
+</head>
+<body>
+<div class="reqres-card">
+    <!-- 1️⃣ First Question Ask (Class Start) -->
+    <div class="header-q">
+        <h2>
+            <span class="q-badge">1️⃣</span>
+            <span class="ask">“Browser server கிட்ட data அனுப்பினா அந்த data எங்க வரும்?”</span>
+        </h2>
+        <div class="explain-box">👉 Client அனுப்பும் data → Request &nbsp;&nbsp; 👉 Server திருப்பி அனுப்பும் data → Response</div>
+        <div class="teacher-explain">✨ Explain பண்ணு: Client → Request, Server → Response</div>
+    </div>
+
+    <div class="steps-wrap">
+        <!-- 2️⃣ Request / Response Definition -->
+        <div class="step-unit">
+            <div class="step-head"><span class="step-num">2️⃣</span> Request / Response Definition</div>
+            <div class="tamil-desc"><strong>Request (req)</strong> Client இருந்து server கு வரும் information. Example: form data, URL parameters, query data.</div>
+            <div class="tamil-desc"><strong>Response (res)</strong> Server இருந்து client கு அனுப்பும் reply / result.</div>
+            <div class="english-phrase">“Express uses request and response objects to handle client-server communication.”</div>
+        </div>
+
+        <!-- 3️⃣ Communication Flow (Board Diagram) -->
+        <div class="step-unit">
+            <div class="step-head"><span class="step-num">3️⃣</span> Communication Flow (Board draw)</div>
+            <div class="comm-flow">
+                <span>Client</span><span class="arr-sym">⬇️</span><span>Request (req)</span><span class="arr-sym">⬇️</span><span>Express Server</span><span class="arr-sym">⬇️</span><span>Response (res)</span><span class="arr-sym">⬇️</span><span>Client</span>
+            </div>
+            <div class="tamil-desc">👉 Browser request அனுப்பும் · Express process பண்ணும் · Response send பண்ணும்</div>
+        </div>
+
+        <!-- 4️⃣ Basic Express Example -->
+        <div class="step-unit">
+            <div class="step-head"><span class="step-num">4️⃣</span> Basic Express Example</div>
+            <div class="code-area">
+<span class="yellow">import</span> express <span class="yellow">from</span> <span class="green">"express"</span>
+
+<span class="green">const app</span> = express()
+
+app.get(<span class="green">"/"</span>, (req, res) => {
+  res.send(<span class="green">"Hello World"</span>)
+})
+
+app.listen(5000)
+            </div>
+            <div class="tamil-desc">👉 req → request object &nbsp;&nbsp; res → response object</div>
+        </div>
+
+        <!-- 5️⃣ Request Object Examples -->
+        <div class="step-unit">
+            <div class="step-head"><span class="step-num">5️⃣</span> Request Object Examples</div>
+            <div class="prop-grid">
+                <div class="prop-card"><span class="prop-title">req.body</span><div class="prop-desc">form data</div></div>
+                <div class="prop-card"><span class="prop-title">req.params</span><div class="prop-desc">URL parameter</div></div>
+                <div class="prop-card"><span class="prop-title">req.query</span><div class="prop-desc">query string</div></div>
+            </div>
+            <div class="code-area">
+<span class="yellow">app.get</span>(<span class="green">"/users/:id"</span>, (req, res) => {
+  console.log(req.params.id)
+})
+            </div>
+            <div class="tamil-desc">👉 Request object ல data இருக்கும்.</div>
+        </div>
+
+        <!-- 6️⃣ Response Object Examples -->
+        <div class="step-unit">
+            <div class="step-head"><span class="step-num">6️⃣</span> Response Object Examples</div>
+            <div class="method-row">
+                <span class="method-item">res.send() → text</span>
+                <span class="method-item">res.json() → JSON</span>
+                <span class="method-item">res.status() → code</span>
+            </div>
+            <div class="code-area">
+<span class="green">res.json</span>({ name: <span class="green">"Gowtham"</span> })
+            </div>
+            <div class="tamil-desc">👉 Response object client கு data send பண்ணும்.</div>
+        </div>
+
+        <!-- 7️⃣ Real Life Example (Post office) 📮 -->
+        <div class="step-unit">
+            <div class="step-head"><span class="step-num">7️⃣</span> Real Life Example (Post office 📮)</div>
+            <div class="real-grid">
+                <div class="real-item"><span class="real-icon">✉️</span><div class="real-label">Letter send</div><div style="font-size:0.9rem;">Request</div></div>
+                <div class="real-item"><span class="real-icon">📬</span><div class="real-label">Reply letter</div><div style="font-size:0.9rem;">Response</div></div>
+            </div>
+            <div class="tamil-desc">Person → Letter → Post Office → Reply &nbsp;&nbsp; Web: Client → Request → Server → Response</div>
+        </div>
+
+        <!-- 8️⃣ Class Demo (Important) -->
+        <div class="step-unit">
+            <div class="step-head"><span class="step-num">8️⃣</span> Class Demo (Important)</div>
+            <div class="tamil-desc">Browser open பண்ணு: <strong>http://localhost:5000</strong></div>
+            <div class="demo-output">Output: Hello World</div>
+            <div class="tamil-desc">👉 Browser request அனுப்புது · Server response அனுப்புது</div>
+        </div>
+
+        <!-- 9️⃣ Final Summary + interview sentence -->
+        <div class="step-unit">
+            <div class="step-head"><span class="step-num">9️⃣</span> Final Summary (Board)</div>
+            <div class="summary-final">Client → req → Server → res → Client</div>
+            <hr>
+            <div class="interview-box">
+                🔥 “Request object contains data sent by the client, and the response object is used by the server to send data back to the client.”
+            </div>
+        </div>
+    </div>
+
+    <!-- footer (no js) -->
+    <div class="footer-note">
+        ✅ html & css only · no js · request & response · express teaching flow · no word miss
+    </div>
+</div>
+<!-- no javascript -->
+</body>
+</html>

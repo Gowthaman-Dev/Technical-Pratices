@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Middleware விளக்கம் · Express.js வகுப்பு</title>
+    <style>
+        /* pure html + css, no js, no word change — exact class flow */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #eef2f7;
+            font-family: 'Segoe UI', 'Nirmala UI', system-ui, sans-serif;
+            line-height: 1.5;
+            padding: 2rem 1.2rem;
+            color: #1a2b3e;
+        }
+
+        .classroom-board {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 36px;
+            box-shadow: 0 30px 50px -20px #0b1f33;
+            overflow: hidden;
+            border: 1px solid #cbdded;
+        }
+
+        /* header – attention grab question */
+        .attention-header {
+            background: #0a1e32;
+            color: white;
+            padding: 1.8rem 2.8rem;
+            border-bottom: 8px solid #f97316;
+        }
+
+        .attention-header h1 {
+            font-size: 2.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .attention-header .q-mark {
+            background: #f97316;
+            padding: 0.2rem 1.3rem;
+            border-radius: 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .attention-header .question-text {
+            font-size: 1.9rem;
+            font-weight: 500;
+        }
+
+        .answer-flap {
+            background: #213a54;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin-top: 0.8rem;
+            font-size: 1.3rem;
+            border-left: 10px solid #f97316;
+        }
+
+        /* main content */
+        .flow-content {
+            padding: 2.5rem 2.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.4rem;
+        }
+
+        /* card style */
+        .step-card {
+            background: #f9fcff;
+            border-radius: 32px;
+            padding: 1.8rem 2.2rem;
+            border: 1px solid #dae6f5;
+            box-shadow: 0 6px 12px rgba(0,30,50,0.04);
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.9rem;
+            font-weight: 650;
+            margin-bottom: 1.2rem;
+            border-bottom: 3px dashed #b5cfec;
+            padding-bottom: 0.5rem;
+        }
+
+        .step-number {
+            background: #0f2c44;
+            color: white;
+            border-radius: 50px;
+            padding: 0.2rem 1.1rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .tamil-block {
+            background: #eef5ff;
+            padding: 0.9rem 1.8rem;
+            border-radius: 30px;
+            font-size: 1.25rem;
+            margin: 0.8rem 0;
+            border-left: 8px solid #f97316;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .english-note {
+            background: #e6edf6;
+            color: #022b49;
+            padding: 0.4rem 1.5rem;
+            border-radius: 40px;
+            display: inline-block;
+            font-weight: 500;
+            margin: 0.4rem 0 0.8rem 0;
+            border: 1px solid #a0c1da;
+        }
+
+        .code-window {
+            background: #0d1f2f;
+            color: #deecff;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1.2rem 1.8rem;
+            border-radius: 28px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #35526f;
+            margin: 1.2rem 0;
+            box-shadow: inset 0 0 10px #00000030;
+            font-size: 1rem;
+        }
+
+        .code-window span.key { color: #ffb871; }
+        .code-window span.str { color: #b3f0a0; }
+        .code-window span.fn { color: #ffb4a2; }
+
+        /* diagram simple row */
+        .flow-diagram {
+            background: #102433;
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px 30px;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 1.2rem 0;
+            border: 2px solid #f97316;
+        }
+
+        .flow-diagram span {
+            background: #1f3f5c;
+            padding: 0.4rem 1.8rem;
+            border-radius: 60px;
+            border: 1px solid #6c9fd1;
+        }
+
+        .arrow-sym {
+            font-size: 2.2rem;
+            color: #f9b953;
+        }
+
+        /* comparison grid (airport) */
+        .real-life-compare {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 2rem;
+            background: #e3f0fd;
+            border-radius: 48px;
+            padding: 1.8rem 2.2rem;
+            justify-content: center;
+            margin: 1.2rem 0;
+        }
+
+        .compare-item {
+            background: white;
+            border-radius: 36px;
+            padding: 0.8rem 1.8rem;
+            text-align: center;
+            min-width: 140px;
+            border: 2px solid #ffb347;
+        }
+
+        .real-icon { font-size: 2.2rem; }
+        .real-title { font-weight: 700; color: #00315e; }
+        .web-equiv { font-size: 0.9rem; background: #fedba0; padding: 0.2rem 1rem; border-radius: 30px; margin-top: 5px; }
+
+        .use-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .use-item {
+            background: white;
+            border-radius: 30px;
+            padding: 0.8rem;
+            text-align: center;
+            font-weight: 600;
+            border: 2px solid #adc9ed;
+            box-shadow: 0 4px 0 #9bb1cc;
+        }
+
+        .use-item small {
+            display: block;
+            font-weight: 400;
+            color: #2f4f6e;
+        }
+
+        .demo-output {
+            background: #031c2f;
+            color: #b3defa;
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 1.3rem;
+            border: 2px solid #f97316;
+        }
+
+        .summary-board {
+            background: #f3f9ff;
+            border: 4px solid #0f2c44;
+            border-radius: 40px;
+            padding: 2rem 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .interview-line {
+            background: #0a1e32;
+            color: white;
+            font-size: 1.4rem;
+            padding: 1.2rem 2rem;
+            border-radius: 60px;
+            border: 2px solid gold;
+            text-align: center;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px dotted #9bb9da;
+            margin: 1rem 0;
+        }
+
+        .footer-credit {
+            background: #e6f0fa;
+            padding: 1rem 2.8rem;
+            color: #14415e;
+            font-weight: 500;
+            border-top: 1px solid #bbd2ec;
+        }
+    </style>
+</head>
+<body>
+<div class="classroom-board">
+    <!-- 1️⃣ First Question Ask (Attention grab) exactly as text -->
+    <div class="attention-header">
+        <h1>
+            <span class="q-mark">1️⃣</span>
+            <span class="question-text">“User login பண்ணாமல் dashboard open பண்ண try பண்ணினா என்ன ஆகும்?”</span>
+        </h1>
+        <div class="answer-flap">👉 Students answer: Login page redirect ஆகும்</div>
+        <div style="margin-top: 1rem; font-size: 1.3rem; color: #ffdba4;">
+            👉 Server first check பண்ணும் login இருக்கா இல்லையா · அந்த checking process தான் <strong>Middleware</strong>
+        </div>
+    </div>
+
+    <!-- main content steps 2 to 10 -->
+    <div class="flow-content">
+        <!-- 2️⃣ Middleware Definition (Tamil) -->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">2️⃣</span> Middleware Definition (தமிழ்)</div>
+            <div class="tamil-block"><strong>Middleware என்றால் என்ன?</strong> Request server கு வரும்போது response send பண்ணும் முன்னாடி extra process run ஆகும் function தான் middleware.</div>
+            <div class="english-note">“Middleware is a function that processes a request before sending the response.”</div>
+        </div>
+
+        <!-- 3️⃣ Request Flow Diagram (Board ல draw) -->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">3️⃣</span> Request Flow Diagram <span style="font-size:1rem;">(board draw)</span></div>
+            <div class="flow-diagram">
+                <span>Client</span>
+                <span class="arrow-sym">⬇️</span>
+                <span>Middleware</span>
+                <span class="arrow-sym">⬇️</span>
+                <span>Route</span>
+                <span class="arrow-sym">⬇️</span>
+                <span>Response</span>
+            </div>
+            <div class="tamil-block">
+                👉 Request first middleware கு வரும் · middleware check பண்ணும் · next route கு அனுப்பும்
+            </div>
+        </div>
+
+        <!-- 4️⃣ Real Life Example (Security Check) ✈️ -->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">4️⃣</span> Real Life Example (Airport security ✈️)</div>
+            <div class="real-life-compare">
+                <div class="compare-item"><span class="real-icon">🛂</span><div class="real-title">Airport security</div><div class="web-equiv">Middleware</div></div>
+                <div class="compare-item"><span class="real-icon">🧑‍✈️</span><div class="real-title">Passenger</div><div class="web-equiv">Request</div></div>
+                <div class="compare-item"><span class="real-icon">✈️</span><div class="real-title">Flight</div><div class="web-equiv">Route</div></div>
+            </div>
+            <div class="tamil-block">Passenger → Security Check → Flight &nbsp;&nbsp;&nbsp; Web: Request → Middleware → Route → Response</div>
+        </div>
+
+        <!-- 5️⃣ Basic Middleware Example -->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">5️⃣</span> Basic Middleware Example</div>
+            <div class="code-window">
+<span style="color:#ffb871;">import</span> express <span style="color:#ffb871;">from</span> <span style="color:#b3f0a0;">"express"</span>
+
+<span style="color:#b3f0a0;">const app</span> = express()
+
+app.use(<span style="color:#d8a9ff;">(req, res, next)</span> => {
+  console.log(<span style="color:#b3f0a0;">"Middleware executed"</span>)
+  next()
+})
+
+app.get(<span style="color:#b3f0a0;">"/users"</span>, <span style="color:#d8a9ff;">(req, res)</span> => {
+  res.send(<span style="color:#b3f0a0;">"Users data"</span>)
+})
+
+app.listen(5000)
+            </div>
+            <div class="tamil-block">👉 app.use() → middleware &nbsp;&nbsp; 👉 next() → next function call</div>
+        </div>
+
+        <!-- 6️⃣ Middleware Without next()  ⚠️-->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">6️⃣</span> Middleware Without next() <span style="color:#c43e2b;">⚠️ important</span></div>
+            <div class="tamil-block">If next() call பண்ணலனா request stop ஆகும். Route run ஆகாது.</div>
+            <div class="code-window">
+app.use(<span style="color:#d8a9ff;">(req, res, next)</span> => {
+  console.log(<span style="color:#b3f0a0;">"Stop here"</span>)
+  <span style="color:#ff8888;">// next()  ❌ not called</span>
+})
+<span style="color:#ffb871;">// route below never runs</span>
+app.get(<span style="color:#b3f0a0;">"/users"</span>, ...)
+            </div>
+        </div>
+
+        <!-- 7️⃣ Middleware Use Cases (Students easy remember) -->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">7️⃣</span> Middleware Use Cases</div>
+            <div class="use-grid">
+                <div class="use-item">Authentication <small>user login check</small></div>
+                <div class="use-item">Logging <small>request log</small></div>
+                <div class="use-item">Validation <small>input check</small></div>
+                <div class="use-item">Security <small>CORS</small></div>
+            </div>
+            <div class="tamil-block">Example package: <code style="background:#dbeafe; padding:0.2rem 1rem; border-radius:30px;">cors</code> → app.use(cors())</div>
+        </div>
+
+        <!-- 8️⃣ Request Flow Example (Real Project) -->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">8️⃣</span> Request Flow Example (Real Project)</div>
+            <div class="flow-diagram" style="background: #083452;">
+                <span>User login request</span><span class="arrow-sym">⬇️</span><span>Authentication middleware</span><span class="arrow-sym">⬇️</span><span>Route controller</span><span class="arrow-sym">⬇️</span><span>Response</span>
+            </div>
+        </div>
+
+        <!-- 9️⃣ Class Demo (Very Important) -->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">9️⃣</span> Class Demo (Very Important)</div>
+            <div class="tamil-block">Browser open பண்ணி: <strong>http://localhost:5000/users</strong></div>
+            <div class="demo-output">Terminal output: <span style="background:#004466; padding:0.3rem 1.5rem; border-radius:30px;">Middleware executed</span></div>
+            <div class="tamil-block">Students understand middleware run first.</div>
+        </div>
+
+        <!-- 🔟 Final Summary + Interview Sentence -->
+        <div class="step-card">
+            <div class="step-title"><span class="step-number">🔟</span> Final Summary</div>
+            <div class="summary-board">
+                <div style="font-size:2rem; letter-spacing:5px;">Request → Middleware → Route → Response</div>
+                <div style="margin-top: 0.8rem; background:#ffe8c7; padding:0.5rem; border-radius:40px;">Board ல எழுதுங்க:</div>
+            </div>
+            <hr>
+            <div class="interview-line">
+                🔥 “Middleware is used to process requests before reaching the route handler.”
+            </div>
+        </div>
+    </div>
+
+    <!-- footer – no word change, just class info -->
+    <div class="footer-credit">
+        ✅ express.js · middleware concept · only html/css · no js · exactly as teaching flow
+    </div>
+</div>
+<!-- no javascript, no word miss, pure structure -->
+</body>
+</html>
