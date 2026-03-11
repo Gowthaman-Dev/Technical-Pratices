@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Node.js Basics – Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #0d0f14;
+      --surface:  #13161e;
+      --card:     #181c27;
+      --border:   #232840;
+      --green:    #4ade80;
+      --cyan:     #22d3ee;
+      --yellow:   #fbbf24;
+      --orange:   #fb923c;
+      --purple:   #a78bfa;
+      --pink:     #f472b6;
+      --text:     #e2e8f0;
+      --muted:    #64748b;
+      --code-bg:  #0a0c12;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans Tamil', sans-serif;
+      line-height: 1.75;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: .4;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 80px 24px 60px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(74,222,128,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(74,222,128,.1);
+      border: 1px solid rgba(74,222,128,.3);
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+    }
+    .hero-badge span { font-size: 1rem; }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+      background: linear-gradient(135deg, var(--green) 0%, var(--cyan) 60%, var(--purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    /* ── Section card ── */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      animation: fadeUp .6s ease both;
+    }
+    .section:nth-child(1) { animation-delay: .05s; }
+    .section:nth-child(2) { animation-delay: .15s; }
+    .section:nth-child(3) { animation-delay: .25s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .section-number {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: .9rem;
+      flex-shrink: 0;
+    }
+    .n1 .section-number { background: rgba(74,222,128,.15);  color: var(--green);  border: 1px solid rgba(74,222,128,.3);  }
+    .n2 .section-number { background: rgba(34,211,238,.15);  color: var(--cyan);   border: 1px solid rgba(34,211,238,.3);  }
+    .n3 .section-number { background: rgba(251,191,36,.15);  color: var(--yellow); border: 1px solid rgba(251,191,36,.3);  }
+
+    .section-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .n1 .section-header h2 { color: var(--green);  }
+    .n2 .section-header h2 { color: var(--cyan);   }
+    .n3 .section-header h2 { color: var(--yellow); }
+
+    .section-body {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── Prose ── */
+    p { color: #c8d1e0; font-size: .97rem; }
+
+    /* ── Sub-headings ── */
+    .sub-heading {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    /* ── Bullet list ── */
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bullet-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #c8d1e0;
+      font-size: .95rem;
+    }
+    .bullet-list li::before {
+      content: '▸';
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .n1 .bullet-list li::before { color: var(--green);  }
+    .n2 .bullet-list li::before { color: var(--cyan);   }
+    .n3 .bullet-list li::before { color: var(--yellow); }
+
+    /* ── Code block ── */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #0f111a;
+    }
+    .code-dots { display: flex; gap: 6px; }
+    .code-dots span {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+    }
+    .d1 { background: #ff5f57; }
+    .d2 { background: #febc2e; }
+    .d3 { background: #28c840; }
+    .code-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      letter-spacing: .08em;
+    }
+    pre {
+      padding: 20px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .83rem;
+      line-height: 1.7;
+      color: #a8b8d0;
+    }
+    .kw  { color: var(--purple); }
+    .fn  { color: var(--cyan);   }
+    .str { color: var(--green);  }
+    .cm  { color: var(--muted);  }
+    .num { color: var(--orange); }
+    .op  { color: var(--pink);   }
+
+    /* ── Output block ── */
+    .output-block {
+      background: #080a0f;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 10px;
+      padding: 14px 18px;
+    }
+    .output-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      color: var(--green);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .output-block pre {
+      padding: 0;
+      color: #86efac;
+      font-size: .82rem;
+    }
+
+    /* ── Flow diagram ── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .flow-box {
+      background: rgba(34,211,238,.07);
+      border: 1px solid rgba(34,211,238,.25);
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem;
+      font-weight: 700;
+      padding: 10px 32px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 220px;
+    }
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
+
+    /* ── Comparison grid ── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 560px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .compare-card h4 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .compare-card.bad  h4 { color: var(--orange); }
+    .compare-card.good h4 { color: var(--green);  }
+    .compare-card p { font-size: .88rem; }
+
+    /* ── Tag chips ── */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: 1px solid;
+    }
+    .chip-green  { background: rgba(74,222,128,.1);  color: var(--green);  border-color: rgba(74,222,128,.3);  }
+    .chip-cyan   { background: rgba(34,211,238,.1);  color: var(--cyan);   border-color: rgba(34,211,238,.3);  }
+    .chip-yellow { background: rgba(251,191,36,.1);  color: var(--yellow); border-color: rgba(251,191,36,.3);  }
+    .chip-purple { background: rgba(167,139,250,.1); color: var(--purple); border-color: rgba(167,139,250,.3); }
+    .chip-orange { background: rgba(251,146,60,.1);  color: var(--orange); border-color: rgba(251,146,60,.3);  }
+
+    /* ── Interview answer card ── */
+    .interview-card {
+      background: rgba(74,222,128,.06);
+      border: 1px solid rgba(74,222,128,.2);
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+    .interview-card .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      color: var(--green);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .interview-card blockquote {
+      color: #d1fae5;
+      font-size: .97rem;
+      font-style: italic;
+      line-height: 1.8;
+      border: none;
+      padding: 0;
+    }
+
+    /* ── Final answer ── */
+    .final-section {
+      background: linear-gradient(135deg, rgba(74,222,128,.08) 0%, rgba(34,211,238,.06) 50%, rgba(167,139,250,.08) 100%);
+      border: 1px solid rgba(74,222,128,.2);
+      border-radius: 18px;
+      padding: 36px 32px;
+      text-align: center;
+    }
+    .final-section .star { font-size: 1.6rem; margin-bottom: 12px; }
+    .final-section h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--green);
+      margin-bottom: 16px;
+    }
+    .final-section blockquote {
+      color: #e2e8f0;
+      font-size: 1rem;
+      line-height: 1.85;
+      font-style: italic;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    /* ── inline code ── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255,255,255,.07);
+      color: var(--cyan);
+      font-size: .82em;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<header class="hero">
+  <div class="hero-badge"><span>⚡</span> Backend Development</div>
+  <h1>Node.js Basics</h1>
+  <p>JavaScript-ஐ server side-ல் run பண்ண உதவும் powerful runtime environment பற்றி தெரிந்துகொள்வோம்.</p>
+</header>
+
+<main class="container">
+
+  <!-- ═══════════════════════════ SECTION 1 ═══════════════════════════ -->
+  <article class="section n1">
+    <div class="section-header">
+      <div class="section-number">01</div>
+      <h2>Node.js Basics</h2>
+    </div>
+    <div class="section-body">
+
+      <div>
+        <p class="sub-heading">Tamil Explanation</p>
+        <p>Node.js என்பது JavaScript runtime environment. இதன் மூலம் JavaScript-ஐ browser இல்லாமல் server side-ல் run பண்ணலாம்.</p>
+      </div>
+
+      <div>
+        <p class="sub-heading">Normally JavaScript run ஆகும் இடம்</p>
+        <ul class="bullet-list">
+          <li>Browser (Chrome, Firefox)</li>
+        </ul>
+        <br/>
+        <p>ஆனா Node.js வந்த பிறகு JavaScript backend-லும் run ஆக ஆரம்பிச்சது.</p>
+      </div>
+
+      <div>
+        <p class="sub-heading">Node.js use பண்ணி நாம் செய்ய முடியும்</p>
+        <ul class="bullet-list">
+          <li>Web servers create பண்ண</li>
+          <li>REST APIs create பண்ண</li>
+          <li>Database connect பண்ண</li>
+          <li>File system operations</li>
+          <li>Real-time applications (chat apps)</li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="sub-heading">Example (Simple Node Server)</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <span class="d1"></span><span class="d2"></span><span class="d3"></span>
+            </div>
+            <span class="code-label">server.js</span>
+          </div>
+          <pre><span class="kw">const</span> http = <span class="fn">require</span>(<span class="str">"http"</span>);
+
+<span class="kw">const</span> server = http.<span class="fn">createServer</span>((<span class="op">req</span>, <span class="op">res</span>) => {
+  res.<span class="fn">write</span>(<span class="str">"Hello from Node.js"</span>);
+  res.<span class="fn">end</span>();
+});
+
+server.<span class="fn">listen</span>(<span class="num">5000</span>, () => {
+  console.<span class="fn">log</span>(<span class="str">"Server running on port 5000"</span>);
+});</pre>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub-heading">இதில்</p>
+        <ul class="bullet-list">
+          <li><code>http</code> module use பண்ணி server create பண்ணுறோம்</li>
+          <li>Client request வந்தால் response send பண்ணுறோம்</li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="sub-heading">Important Points (Interview) – Node.js features</p>
+        <div class="chips">
+          <span class="chip chip-green">Open source</span>
+          <span class="chip chip-cyan">Cross platform</span>
+          <span class="chip chip-yellow">Event-driven</span>
+          <span class="chip chip-purple">Non-blocking I/O</span>
+          <span class="chip chip-orange">Fast execution (V8 engine)</span>
+        </div>
+      </div>
+
+      <div class="interview-card">
+        <div class="label">⭐ English Sentence (Interview)</div>
+        <blockquote>"Node.js is a runtime environment that allows JavaScript to run on the server side using the V8 JavaScript engine."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ═══════════════════════════ SECTION 2 ═══════════════════════════ -->
+  <article class="section n2">
+    <div class="section-header">
+      <div class="section-number">02</div>
+      <h2>Node.js Architecture (Single-Threaded Event-Driven)</h2>
+    </div>
+    <div class="section-body">
+
+      <div>
+        <p class="sub-heading">Tamil Explanation</p>
+        <p>Node.js Single Thread + Event Driven Architecture use பண்ணும்.</p>
+        <br/>
+        <p class="sub-heading">இதன் meaning</p>
+        <ul class="bullet-list">
+          <li>One main thread மட்டும் இருக்கும்</li>
+          <li>Requests வந்தாலும் block ஆகாமல் handle பண்ணும்</li>
+          <li>Event loop use பண்ணி asynchronous operations manage பண்ணும்</li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="sub-heading">Traditional Server (Multi Thread) — Example: Java / PHP</p>
+        <div class="compare-grid">
+          <div class="compare-card bad">
+            <h4>❌ Traditional (Multi Thread)</h4>
+            <div class="code-block" style="margin-top:8px;">
+              <pre style="padding:12px; font-size:.78rem;">Client 1 → Thread 1
+Client 2 → Thread 2
+Client 3 → Thread 3</pre>
+            </div>
+          </div>
+          <div class="compare-card good">
+            <h4>✅ Problems with Multi Thread</h4>
+            <ul class="bullet-list" style="margin-top:4px;">
+              <li>அதிக memory</li>
+              <li>slow performance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub-heading">Node.js Architecture</p>
+        <div class="flow">
+          <div class="flow-box">Client Requests</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Event Queue</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Event Loop</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Non-Blocking Operations</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Response</div>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub-heading">இதனால்</p>
+        <ul class="bullet-list">
+          <li>thousands of requests handle பண்ணும்</li>
+          <li>memory usage குறையும்</li>
+          <li>scalable applications build பண்ணலாம்</li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="sub-heading">Example</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <span class="d1"></span><span class="d2"></span><span class="d3"></span>
+            </div>
+            <span class="code-label">event-loop.js</span>
+          </div>
+          <pre><span class="fn">setTimeout</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Task finished"</span>)
+}, <span class="num">2000</span>)
+
+console.<span class="fn">log</span>(<span class="str">"Next task running"</span>)</pre>
+        </div>
+
+        <div class="output-block" style="margin-top:12px;">
+          <div class="output-label">▶ Output</div>
+          <pre>Next task running
+Task finished</pre>
+        </div>
+        <br/>
+        <p>Node.js wait பண்ணாமல் next code run பண்ணும்.</p>
+      </div>
+
+      <div class="interview-card">
+        <div class="label">⭐ English Sentence (Interview)</div>
+        <blockquote>"Node.js uses a single-threaded event-driven architecture to handle multiple requests efficiently."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ═══════════════════════════ SECTION 3 ═══════════════════════════ -->
+  <article class="section n3">
+    <div class="section-header">
+      <div class="section-number">03</div>
+      <h2>Non-Blocking I/O</h2>
+    </div>
+    <div class="section-body">
+
+      <div>
+        <p class="sub-heading">Tamil Explanation</p>
+        <p>Node.js-ல I/O operations block ஆகாது.</p>
+        <br/>
+        <p class="sub-heading">I/O என்றால்</p>
+        <ul class="bullet-list">
+          <li>File read</li>
+          <li>Database query</li>
+          <li>API call</li>
+          <li>Network request</li>
+        </ul>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card bad">
+          <h4>❌ Traditional languages-ல்</h4>
+          <div class="code-block" style="margin-top:8px;">
+            <pre style="padding:12px; font-size:.78rem;">Read file → wait → next code run</pre>
+          </div>
+        </div>
+        <div class="compare-card good">
+          <h4>✅ Node.js-ல்</h4>
+          <div class="code-block" style="margin-top:8px;">
+            <pre style="padding:12px; font-size:.78rem;">Read file → continue next code → result later</pre>
+          </div>
+        </div>
+      </div>
+      <p>இதுவே Non-Blocking I/O.</p>
+
+      <div>
+        <p class="sub-heading">Example</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots">
+              <span class="d1"></span><span class="d2"></span><span class="d3"></span>
+            </div>
+            <span class="code-label">non-blocking.js</span>
+          </div>
+          <pre><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>);
+
+fs.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>, <span class="str">"utf8"</span>, (<span class="op">err</span>, <span class="op">data</span>) => {
+  console.<span class="fn">log</span>(data);
+});
+
+console.<span class="fn">log</span>(<span class="str">"File reading started"</span>);</pre>
+        </div>
+
+        <div class="output-block" style="margin-top:12px;">
+          <div class="output-label">▶ Output</div>
+          <pre>File reading started
+(file content later)</pre>
+        </div>
+        <br/>
+        <p class="sub-heading">இதன் காரணம்</p>
+        <p>Node.js file read முடியும் வரை wait பண்ணாது.</p>
+      </div>
+
+      <div>
+        <p class="sub-heading">Benefits</p>
+        <ul class="bullet-list">
+          <li>Fast performance</li>
+          <li>High scalability</li>
+          <li>Multiple users handle பண்ண முடியும்</li>
+        </ul>
+      </div>
+
+      <div class="interview-card">
+        <div class="label">⭐ English Sentence (Interview)</div>
+        <blockquote>"Non-blocking I/O allows Node.js to handle multiple operations without waiting for each task to finish."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ═══════════════════════════ FINAL ANSWER ═══════════════════════════ -->
+  <div class="final-section">
+    <div class="star">⭐</div>
+    <h3>Final Interview Answer (Short Version)</h3>
+    <p style="color:var(--muted); font-size:.85rem; margin-bottom:18px;">நீங்க interview-ல short-ஆ சொல்லலாம்:</p>
+    <blockquote>"Node.js is a JavaScript runtime environment that runs on the V8 engine. It uses a single-threaded event-driven architecture with non-blocking I/O, which allows it to handle multiple requests efficiently and build scalable server-side applications."</blockquote>
+  </div>
+
+</main>
+
+</body>
+</html>

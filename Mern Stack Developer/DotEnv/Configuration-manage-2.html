@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>dotenv Environments — Tamil Teaching Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #090c10;
+      --surface: #0f1319;
+      --card:    #141922;
+      --border:  #1e2535;
+      --accent:  #38bdf8;
+      --green:   #4ade80;
+      --yellow:  #fbbf24;
+      --red:     #f87171;
+      --purple:  #a78bfa;
+      --orange:  #fb923c;
+      --muted:   #4b5a7a;
+      --text:    #c8d4ee;
+      --heading: #f1f5ff;
+      --mono:    'JetBrains Mono', monospace;
+      --tamil:   'Noto Sans Tamil', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--tamil);
+      line-height: 1.8;
+      padding-bottom: 80px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 62px 24px 52px;
+      background: linear-gradient(170deg, #090c10 0%, #0c1220 55%, #090c10 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 65% 45% at 50% 0%, rgba(56,189,248,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      border: 1px solid rgba(56,189,248,.3);
+      background: rgba(56,189,248,.08);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: .68rem;
+      letter-spacing: .14em;
+      padding: 4px 16px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: var(--mono);
+      font-size: clamp(1.9rem, 5vw, 3.4rem);
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -.025em;
+      line-height: 1.15;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      margin-top: 12px;
+      font-size: .98rem;
+      color: var(--muted);
+    }
+
+    /* ── WRAP ── */
+    .wrap { max-width: 840px; margin: 0 auto; padding: 0 20px; }
+
+    /* ── SECTION ── */
+    .section { margin-top: 54px; }
+    .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .sec-num {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #000;
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 700;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .sec-head h2 {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--heading);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+    }
+    .card p { font-size: .95rem; }
+    .card p + p { margin-top: 8px; }
+
+    /* ── TAMIL EXPLAIN BOX ── */
+    .tamil-box {
+      background: rgba(56,189,248,.05);
+      border: 1px solid rgba(56,189,248,.2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      font-size: .96rem;
+    }
+
+    /* ── ENGLISH SENTENCE ── */
+    .eng-box {
+      background: rgba(74,222,128,.05);
+      border: 1px solid rgba(74,222,128,.2);
+      border-left: 3px solid var(--green);
+      border-radius: 0 10px 10px 0;
+      padding: 14px 20px;
+      margin-bottom: 14px;
+      font-size: .93rem;
+      color: var(--heading);
+      font-style: italic;
+    }
+    .eng-box .label {
+      font-family: var(--mono);
+      font-size: .63rem;
+      color: var(--green);
+      letter-spacing: .12em;
+      font-style: normal;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* ── CODE BLOCK ── */
+    .code-wrap {
+      background: #060810;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .code-top {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dr { background: #ff5f57; }
+    .dy { background: #febc2e; }
+    .dg { background: #28c840; }
+    .code-file {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--muted);
+      letter-spacing: .08em;
+    }
+    pre {
+      padding: 18px 20px;
+      font-family: var(--mono);
+      font-size: .82rem;
+      line-height: 1.75;
+      color: #bbc8e8;
+      overflow-x: auto;
+    }
+    .kw   { color: #a78bfa; }
+    .str  { color: #fbbf24; }
+    .fn   { color: #38bdf8; }
+    .cmt  { color: #2e3d5c; font-style: italic; }
+    .num  { color: #4ade80; }
+    .key  { color: #fb923c; }
+    .bad  { color: #f87171; }
+    .op   { color: #bbc8e8; }
+
+    /* ── BAD PRACTICE TAG ── */
+    .bad-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(248,113,113,.1);
+      border: 1px solid rgba(248,113,113,.3);
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: .68rem;
+      padding: 3px 12px;
+      border-radius: 100px;
+      margin-bottom: 6px;
+    }
+
+    /* ── WARNING NOTE ── */
+    .warn-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(248,113,113,.06);
+      border: 1px solid rgba(248,113,113,.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 10px;
+      font-size: .92rem;
+      color: var(--red);
+    }
+
+    /* ── FILE TREE ── */
+    .file-tree {
+      background: #060810;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .file-tree-top {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      font-family: var(--mono);
+      font-size: .68rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .file-tree-body {
+      padding: 20px 24px;
+      font-family: var(--mono);
+      font-size: .82rem;
+      line-height: 2;
+    }
+    .tree-root  { color: var(--text); }
+    .tree-line  { color: var(--muted); }
+    .tree-dir   { color: var(--accent); }
+    .tree-file-dev  { color: #38bdf8; }
+    .tree-file-test { color: #fbbf24; }
+    .tree-file-prod { color: #4ade80; }
+    .tree-indent { padding-left: 20px; display: block; }
+    .tree-key   { color: #fb923c; }
+    .tree-val   { color: #4ade80; }
+    .tree-str   { color: #fbbf24; }
+    .tree-blank { display: block; height: 6px; }
+
+    /* ── FLOW LIST ── */
+    .flow-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .flow-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: .93rem;
+    }
+    .flow-bullet {
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 700;
+      background: rgba(56,189,248,.12);
+      color: var(--accent);
+      border-radius: 5px;
+      padding: 2px 8px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .flow-bullet.dev  { background: rgba(56,189,248,.12); color: var(--accent); }
+    .flow-bullet.prod { background: rgba(74,222,128,.12);  color: var(--green); }
+    .flow-bullet.env  { background: rgba(167,139,250,.12); color: var(--purple); }
+
+    /* ── TERMINAL BLOCK ── */
+    .terminal {
+      background: #040608;
+      border: 1px solid #1a2235;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .terminal-top {
+      background: #0a0e15;
+      border-bottom: 1px solid #1a2235;
+      padding: 7px 14px;
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: #2e3d5c;
+      letter-spacing: .1em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .terminal-top::before { content: '●'; color: #ff5f57; }
+    .terminal-top::after  { content: ''; }
+    .terminal pre {
+      color: #a0b4d0;
+      padding: 16px 20px;
+    }
+    .tcmt { color: #2e3d5c; font-style: italic; }
+    .tcmd { color: #4ade80; }
+    .tenv { color: #fbbf24; }
+
+    /* ── PRACTICAL STEPS ── */
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .steps li {
+      counter-increment: step;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px 14px 56px;
+      position: relative;
+      font-size: .93rem;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--mono);
+      font-size: .7rem;
+      font-weight: 700;
+      background: rgba(56,189,248,.12);
+      color: var(--accent);
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      display: grid; place-items: center;
+    }
+
+    /* ── KEY POINTS GRID ── */
+    .kp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    @media (max-width: 580px) { .kp-grid { grid-template-columns: 1fr; } }
+    .kp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 18px;
+      text-align: center;
+    }
+    .kp-icon {
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+    .kp-title {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--accent);
+      letter-spacing: .08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .kp-body { font-size: .85rem; color: var(--muted); }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 50px 0 0; }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 28px 0 0;
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">NODE.JS · TAMIL TEACHING GUIDE</div>
+    <h1>dotenv <span>&amp; Environments</span></h1>
+    <p class="hero-sub">Development · Testing · Production — Tamil-ல் முழு விளக்கம்</p>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ① START WITH THE PROBLEM -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-num">1</div>
+        <h2>Start with the Problem (Why needed?)</h2>
+      </div>
+
+      <div class="tamil-box">
+        நம்ம project development, testing, production என மூன்று environment-ல் run ஆகும். ஒவ்வொன்றுக்கும் PORT, DB URL, API keys வெவ்வேறு இருக்கலாம். அதை code-ல hardcode பண்ணினால், mistake chance அதிகம், maintenance கடினம்.
+      </div>
+
+      <div class="card"><p><strong style="color:var(--heading)">Example:</strong></p></div>
+
+      <div class="code-wrap">
+        <div class="code-top">
+          <span class="dot dr"></span><span class="dot dy"></span><span class="dot dg"></span>
+          <span class="bad-tag">❌ Bad practice</span>
+          <span class="code-file">app.js</span>
+        </div>
+        <pre><span class="cmt">// Bad practice</span>
+<span class="kw">const</span> PORT <span class="op">=</span> <span class="num">5000</span>; <span class="cmt">// dev</span>
+<span class="kw">const</span> MONGO_URL <span class="op">=</span> <span class="str">"mongodb://localhost:27017/devdb"</span>;</pre>
+      </div>
+
+      <div class="warn-note">
+        இதை production-க்கு change பண்ண மறந்தால் app break ஆகலாம். ❌
+      </div>
+
+      <div class="eng-box" style="margin-top:14px;">
+        <span class="label">ENGLISH SENTENCE FOR CLASS</span>
+        "Hardcoding environment-specific configuration can lead to errors when moving code between development, testing, and production."
+      </div>
+    </div>
+
+    <!-- ② INTRODUCE .env FILES -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-num">2</div>
+        <h2>Introduce .env Files</h2>
+      </div>
+
+      <div class="tamil-box">
+        ஒவ்வொரு environment-க்கும் தனி <code style="color:var(--accent);font-family:var(--mono)">.env</code> file வைத்தால் easy. Dev-க்கு <code style="color:var(--accent);font-family:var(--mono)">.env.development</code>, Test-க்கு <code style="color:var(--accent);font-family:var(--mono)">.env.test</code>, Prod-க்கு <code style="color:var(--accent);font-family:var(--mono)">.env.production</code>.
+      </div>
+
+      <div class="card"><p><strong style="color:var(--heading)">Visual aid:</strong></p></div>
+
+      <div class="file-tree">
+        <div class="file-tree-top">
+          <span class="dot dr"></span><span class="dot dy"></span><span class="dot dg"></span>
+          PROJECT STRUCTURE
+        </div>
+        <div class="file-tree-body">
+          <span class="tree-root">project/</span>
+          <span class="tree-blank"></span>
+
+          <span class="tree-line">├─ </span><span class="tree-file-dev">.env.development</span>
+          <span class="tree-indent"><span class="tree-key">PORT</span>=<span class="tree-val">5000</span></span>
+          <span class="tree-indent"><span class="tree-key">MONGO_URL</span>=<span class="tree-str">mongodb://localhost:27017/devdb</span></span>
+          <span class="tree-blank"></span>
+
+          <span class="tree-line">├─ </span><span class="tree-file-test">.env.test</span>
+          <span class="tree-indent"><span class="tree-key">PORT</span>=<span class="tree-val">4000</span></span>
+          <span class="tree-indent"><span class="tree-key">MONGO_URL</span>=<span class="tree-str">mongodb://localhost:27017/testdb</span></span>
+          <span class="tree-blank"></span>
+
+          <span class="tree-line">└─ </span><span class="tree-file-prod">.env.production</span>
+          <span class="tree-indent"><span class="tree-key">PORT</span>=<span class="tree-val">80</span></span>
+          <span class="tree-indent"><span class="tree-key">MONGO_URL</span>=<span class="tree-str">mongodb://prod-db-server:27017/proddb</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ HOW DOTENV LOADS -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-num">3</div>
+        <h2>Show How dotenv Loads Config</h2>
+      </div>
+
+      <div class="card"><p><strong style="color:var(--heading)">Code Example:</strong></p></div>
+
+      <div class="code-wrap">
+        <div class="code-top">
+          <span class="dot dr"></span><span class="dot dy"></span><span class="dot dg"></span>
+          <span class="code-file">app.js</span>
+        </div>
+        <pre><span class="kw">import</span> dotenv <span class="kw">from</span> <span class="str">"dotenv"</span>;
+
+<span class="cmt">// dynamically load based on NODE_ENV</span>
+dotenv.<span class="fn">config</span>({ <span class="key">path</span>: <span class="str">`.env.${<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">NODE_ENV</span>}`</span> });
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">PORT</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">MONGO_URL</span>);</pre>
+      </div>
+
+      <div class="card" style="margin-top:14px;"><p><strong style="color:var(--heading)">Class Explanation:</strong></p></div>
+
+      <ul class="flow-list">
+        <li>
+          <span class="flow-bullet dev">NODE_ENV=development</span>
+          <span><code style="font-family:var(--mono);color:var(--accent)">.env.development</code> load</span>
+        </li>
+        <li>
+          <span class="flow-bullet prod">NODE_ENV=production</span>
+          <span><code style="font-family:var(--mono);color:var(--green)">.env.production</code> load</span>
+        </li>
+        <li>
+          <span class="flow-bullet env">process.env</span>
+          <span>process.env-ல values access பண்ணலாம்</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ④ PRACTICAL DEMO -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-num">4</div>
+        <h2>Practical Demo (Interactive)</h2>
+      </div>
+
+      <ol class="steps">
+        <li>Create 3 <code style="font-family:var(--mono);color:var(--accent)">.env</code> files like above</li>
+        <li>
+          Change <code style="font-family:var(--mono);color:var(--accent)">NODE_ENV</code> in terminal:
+
+          <div class="terminal" style="margin-top:12px;">
+            <div class="terminal-top">TERMINAL</div>
+            <pre><span class="tcmt"># For development</span>
+<span class="tenv">NODE_ENV</span>=<span class="str">development</span> <span class="tcmd">node app.js</span>
+
+<span class="tcmt"># For production</span>
+<span class="tenv">NODE_ENV</span>=<span class="str">production</span> <span class="tcmd">node app.js</span></pre>
+          </div>
+        </li>
+        <li>Show output difference: PORT &amp; DB URL change ஆகுது.</li>
+      </ol>
+    </div>
+
+    <!-- ⑤ KEY POINTS -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-num">5</div>
+        <h2>Key Points for Students</h2>
+      </div>
+
+      <div class="kp-grid">
+        <div class="kp-card">
+          <div class="kp-icon">🔒</div>
+          <div class="kp-title">WHY IMPORTANT</div>
+          <div class="kp-body">Safe, maintainable, no hardcoding</div>
+        </div>
+        <div class="kp-card">
+          <div class="kp-icon">⚙️</div>
+          <div class="kp-title">HOW</div>
+          <div class="kp-body"><code style="font-family:var(--mono);font-size:.78rem;color:var(--accent)">.env</code> per environment + <code style="font-family:var(--mono);font-size:.78rem;color:var(--accent)">dotenv.config({ path })</code></div>
+        </div>
+        <div class="kp-card">
+          <div class="kp-icon">👁️</div>
+          <div class="kp-title">DEMO HELPS</div>
+          <div class="kp-body">Students can see same code behaves differently in different environments</div>
+        </div>
+      </div>
+    </div>
+
+    <hr/>
+    <div class="footer">dotenv Environments · Tamil Teaching Guide · Node.js Configuration</div>
+
+  </div>
+</body>
+</html>

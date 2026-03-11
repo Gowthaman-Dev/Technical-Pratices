@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>dotenv — Tamil Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #0d0f14;
+      --surface:  #13161e;
+      --card:     #1a1e2a;
+      --border:   #252a38;
+      --accent:   #f7c948;
+      --green:    #3ddc84;
+      --red:      #ff5f6d;
+      --blue:     #5eb8ff;
+      --purple:   #b48eff;
+      --muted:    #6b7694;
+      --text:     #dce3f5;
+      --heading:  #ffffff;
+      --mono:     'JetBrains Mono', monospace;
+      --tamil:    'Noto Sans Tamil', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--tamil);
+      line-height: 1.75;
+      min-height: 100vh;
+      padding: 0 0 80px;
+    }
+
+    /* ─── HERO ─────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0d0f14 0%, #12162a 60%, #0f1320 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 24px 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(247,201,72,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(247,201,72,.12);
+      border: 1px solid rgba(247,201,72,.3);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: .72rem;
+      letter-spacing: .12em;
+      padding: 4px 14px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: var(--mono);
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 700;
+      color: var(--heading);
+      letter-spacing: -.02em;
+      line-height: 1.1;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-sub {
+      margin-top: 14px;
+      font-size: 1.05rem;
+      color: var(--muted);
+      font-family: var(--tamil);
+    }
+
+    /* ─── LAYOUT ────────────────────────────────── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ─── SECTION TITLES ────────────────────────── */
+    .section {
+      margin-top: 52px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .section-num {
+      font-family: var(--mono);
+      font-size: .75rem;
+      font-weight: 700;
+      background: var(--accent);
+      color: #000;
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .section-title h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--heading);
+      font-family: var(--tamil);
+    }
+
+    /* ─── CARD ──────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 26px;
+      margin-bottom: 16px;
+    }
+    .card p {
+      font-size: .97rem;
+      color: var(--text);
+    }
+    .card p + p { margin-top: 10px; }
+
+    /* ─── CODE BLOCK ────────────────────────────── */
+    .code-wrap {
+      background: #0a0c12;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 14px 0;
+    }
+    .code-label {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 6px 14px;
+      font-family: var(--mono);
+      font-size: .68rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .code-label .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+    }
+    .dot-red   { background: #ff5f5f; }
+    .dot-yellow{ background: #ffd060; }
+    .dot-green { background: #3ddc84; }
+    pre {
+      padding: 18px 20px;
+      font-family: var(--mono);
+      font-size: .83rem;
+      line-height: 1.7;
+      color: #c9d4f0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .kw   { color: #b48eff; }
+    .str  { color: #f7c948; }
+    .fn   { color: #5eb8ff; }
+    .cmt  { color: #4a5270; font-style: italic; }
+    .num  { color: #3ddc84; }
+    .key  { color: #ff8c69; }
+
+    /* ─── GOOD / BAD ────────────────────────────── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 14px 0;
+    }
+    @media (max-width: 560px) { .compare-grid { grid-template-columns: 1fr; } }
+    .bad-card  { border-color: rgba(255,95,109,.35); }
+    .good-card { border-color: rgba(61,220,132,.35); }
+    .tag {
+      font-family: var(--mono);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      padding: 3px 10px;
+      border-radius: 100px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .tag-bad  { background: rgba(255,95,109,.15); color: var(--red); }
+    .tag-good { background: rgba(61,220,132,.15); color: var(--green); }
+
+    /* ─── NUMBERED LIST CARDS ───────────────────── */
+    .list-card {
+      counter-reset: item;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .list-card li {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px 14px 54px;
+      position: relative;
+      font-size: .95rem;
+    }
+    .list-card li::before {
+      counter-increment: item;
+      content: counter(item);
+      position: absolute;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 700;
+      background: rgba(247,201,72,.15);
+      color: var(--accent);
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      display: grid; place-items: center;
+    }
+
+    /* ─── FLOW DIAGRAM ──────────────────────────── */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      padding: 10px 0;
+    }
+    .flow-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 30px;
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: var(--blue);
+      text-align: center;
+      min-width: 200px;
+    }
+    .flow-arrow {
+      font-size: 1.3rem;
+      color: var(--accent);
+      line-height: 1.4;
+      padding: 2px 0;
+    }
+
+    /* ─── INTERVIEW CALLOUT ─────────────────────── */
+    .interview-box {
+      background: linear-gradient(135deg, rgba(247,201,72,.07), rgba(94,184,255,.07));
+      border: 1px solid rgba(247,201,72,.25);
+      border-radius: 14px;
+      padding: 22px 26px;
+      margin-top: 14px;
+    }
+    .interview-box .label {
+      font-family: var(--mono);
+      font-size: .68rem;
+      color: var(--accent);
+      letter-spacing: .12em;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .interview-box p {
+      font-size: 1rem;
+      color: var(--heading);
+      font-style: italic;
+    }
+    .interview-box p::before { content: '\201C'; color: var(--accent); }
+    .interview-box p::after  { content: '\201D'; color: var(--accent); }
+
+    /* ─── POINTS LIST ───────────────────────────── */
+    .points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .points li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .95rem;
+    }
+    .points li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ─── ADVANCED CARDS GRID ───────────────────── */
+    .adv-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 600px) { .adv-grid { grid-template-columns: 1fr; } }
+    .adv-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .adv-card h3 {
+      font-family: var(--mono);
+      font-size: .78rem;
+      color: var(--purple);
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+    }
+    .adv-card .tamil-desc {
+      font-size: .88rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .adv-card .eng-desc {
+      font-size: .83rem;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    /* ─── DIVIDER ────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0 0;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────── */
+    .footer {
+      text-align: center;
+      padding: 30px 20px 0;
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--muted);
+      letter-spacing: .08em;
+    }
+
+    /* ─── STEP CARDS ─────────────────────────────── */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .step-label {
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: .08em;
+      writing-mode: horizontal-tb;
+      padding: 0 12px;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .step-body { padding: 14px 18px; }
+    .step-body p { font-size: .88rem; margin-bottom: 6px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">NODE.JS · TAMIL GUIDE</div>
+    <h1>⇒ <span>dotenv</span></h1>
+    <p class="hero-sub">Environment Variables — Tamil-ல் முழு விளக்கம்</p>
+  </div>
+
+  <div class="container">
+
+    <!-- ①  என்றால் என்ன -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-num">1</div>
+        <h2>dotenv என்றால் என்ன?</h2>
+      </div>
+      <div class="card">
+        <p>dotenv என்பது <strong style="color:var(--accent)">.env file</strong>-ல இருக்கும் secret values-ஐ Node.js application-க்கு load பண்ண use பண்ணுற package.</p>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-label">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+          Example .env file
+        </div>
+        <pre><span class="key">PORT</span>=<span class="num">5000</span>
+<span class="key">MONGO_URL</span>=<span class="str">mongodb://localhost:27017/mydb</span>
+<span class="key">JWT_SECRET</span>=<span class="str">mysecretkey</span></pre>
+      </div>
+
+      <div class="card">
+        <p>இந்த values-ஐ code-ல use பண்ணலாம்.</p>
+      </div>
+
+      <div class="code-wrap">
+        <div class="code-label">
+          <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+          Usage
+        </div>
+        <pre><span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">PORT</span>)</pre>
+      </div>
+
+      <div class="interview-box">
+        <div class="label">INTERVIEW SENTENCE</div>
+        <p>Dotenv is used to load environment variables from a .env file into process.env.</p>
+      </div>
+    </div>
+
+    <!-- ②  ஏன் use -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-num">2</div>
+        <h2>dotenv ஏன் use பண்ணுறோம்?</h2>
+      </div>
+
+      <!-- Security -->
+      <div class="card" style="border-color:rgba(255,95,109,.25)">
+        <p style="color:var(--heading);font-weight:700;margin-bottom:12px;">1️⃣ Security</p>
+        <p>Password / secret keys code-ல directly எழுதக் கூடாது.</p>
+        <div class="compare-grid" style="margin-top:12px;">
+          <div class="code-wrap bad-card">
+            <div class="code-label"><span class="tag tag-bad">❌ Bad practice</span></div>
+            <pre><span class="kw">const</span> password = <span class="str">"123456"</span></pre>
+          </div>
+          <div class="code-wrap good-card">
+            <div class="code-label"><span class="tag tag-good">✅ Good practice</span></div>
+            <pre><span class="key">DB_PASSWORD</span>=<span class="num">123456</span>
+<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">DB_PASSWORD</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuration -->
+      <div class="card">
+        <p style="color:var(--heading);font-weight:700;margin-bottom:10px;">2️⃣ Configuration manage பண்ண</p>
+        <p>Different environments இருக்கும்:</p>
+        <ul class="points" style="margin-top:8px;">
+          <li>Development</li>
+          <li>Testing</li>
+          <li>Production</li>
+        </ul>
+        <p style="margin-top:10px;">ஒவ்வொன்றுக்கும் values change பண்ணலாம்.</p>
+        <div class="code-wrap" style="margin-top:10px;">
+          <div class="code-label"><span class="dot dot-yellow"></span> Example</div>
+          <pre><span class="key">PORT</span>=<span class="num">5000</span></pre>
+        </div>
+      </div>
+
+      <!-- Clean code -->
+      <div class="card">
+        <p style="color:var(--heading);font-weight:700;margin-bottom:10px;">3️⃣ Code clean ஆக இருக்கும்</p>
+        <p>Database URL போன்ற values code-ல clutter ஆகாது.</p>
+        <div class="code-wrap" style="margin-top:10px;">
+          <div class="code-label"><span class="dot dot-yellow"></span> Example</div>
+          <pre><span class="fn">mongoose</span>.<span class="fn">connect</span>(<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">MONGO_URL</span>)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③  எப்படி use -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-num">3</div>
+        <h2>dotenv எப்படி use பண்ணுறது?</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-label">Step 1<br/>install</div>
+          <div class="step-body">
+            <div class="code-wrap" style="margin:0">
+              <pre><span class="fn">npm</span> install <span class="str">dotenv</span></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-label">Step 2<br/>import</div>
+          <div class="step-body">
+            <div class="code-wrap" style="margin:0">
+              <pre><span class="kw">import</span> dotenv <span class="kw">from</span> <span class="str">"dotenv"</span></pre>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-label">Step 3<br/>config</div>
+          <div class="step-body">
+            <div class="code-wrap" style="margin:0">
+              <pre>dotenv.<span class="fn">config</span>()</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-wrap" style="margin-top:16px;">
+        <div class="code-label">
+          <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+          Full Example
+        </div>
+        <pre><span class="kw">import</span> express <span class="kw">from</span> <span class="str">"express"</span>
+<span class="kw">import</span> dotenv <span class="kw">from</span> <span class="str">"dotenv"</span>
+
+dotenv.<span class="fn">config</span>()
+
+<span class="kw">const</span> app = <span class="fn">express</span>()
+
+app.<span class="fn">listen</span>(<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">PORT</span>, () =&gt; {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Server running"</span>)
+})</pre>
+      </div>
+    </div>
+
+    <!-- ④  எப்படி work -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-num">4</div>
+        <h2>dotenv எப்படி work ஆகுது?</h2>
+      </div>
+
+      <div class="card" style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="flex:1;min-width:180px;">
+          <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px;">Flow:</p>
+          <div class="flow">
+            <div class="flow-box">.env file</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">dotenv.config()</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">process.env</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">Application use</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <p style="color:var(--muted);font-size:.85rem;margin-bottom:6px;">Example:</p>
+          <div class="code-wrap">
+            <pre><span class="key">PORT</span>=<span class="num">5000</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">PORT</span>)</pre>
+          </div>
+          <p style="color:var(--muted);font-size:.8rem;margin:8px 0 4px;">Output:</p>
+          <div class="code-wrap">
+            <pre><span class="num">5000</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤  Interview important points -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-num">5</div>
+        <h2>Interview important points</h2>
+      </div>
+      <ul class="list-card">
+        <li>.env file secrets store பண்ண use ஆகுது</li>
+        <li>dotenv package அதை Node.js-க்கு load பண்ணுது</li>
+        <li>values process.env மூலம் access பண்ணலாம்</li>
+        <li>security improve ஆகும்</li>
+        <li>configuration manage பண்ண easy</li>
+      </ul>
+    </div>
+
+    <!-- ⑥  Short Interview Answer -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-num">6</div>
+        <h2>Short Interview Answer</h2>
+      </div>
+      <div class="interview-box">
+        <div class="label">SHORT ANSWER</div>
+        <p>Dotenv is a package used to load environment variables from a .env file into process.env in Node.js applications, which helps manage configuration and keep sensitive data secure.</p>
+      </div>
+    </div>
+
+    <!-- Project Example -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-num" style="background:var(--blue);color:#000;">✦</div>
+        <h2>நீ இப்போ கேட்டது போல</h2>
+      </div>
+      <div class="code-wrap">
+        <div class="code-label">
+          <span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+          Project Import Pattern
+        </div>
+        <pre><span class="kw">import</span> express <span class="kw">from</span> <span class="str">'express'</span>
+<span class="kw">import</span> cors    <span class="kw">from</span> <span class="str">'cors'</span>
+<span class="kw">import</span> dotenv  <span class="kw">from</span> <span class="str">'dotenv'</span></pre>
+      </div>
+    </div>
+
+    <!-- Advanced -->
+    <hr class="divider"/>
+    <div class="section">
+      <div class="section-title">
+        <div class="section-num" style="background:var(--purple);color:#000;">★</div>
+        <h2>Advanced dotenv Concepts</h2>
+      </div>
+      <div class="adv-grid">
+
+        <!-- 1 -->
+        <div class="adv-card">
+          <h3>1️⃣ MULTIPLE .env FILES</h3>
+          <p class="tamil-desc">Project-ல் development, testing, production environments உண்டு. அதற்கு ஒவ்வொரு environment-க்கும் தனி .env file வைத்தால் சுலபம். உதாரணம்: .env.development, .env.production.</p>
+          <p class="eng-desc">We can use different .env files per environment to manage configuration safely.</p>
+          <div class="code-wrap">
+            <pre>dotenv.<span class="fn">config</span>({ <span class="key">path</span>: <span class="str">".env.production"</span> });</pre>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="adv-card">
+          <h3>2️⃣ DEFAULT VALUES</h3>
+          <p class="tamil-desc">.env file-ல variable இல்லாத போது app crash ஆகாமல் default value கொடுக்கலாம்.</p>
+          <p class="eng-desc">Provide fallback values if environment variables are missing.</p>
+          <div class="code-wrap">
+            <pre><span class="kw">const</span> PORT = <span class="kw">process</span>.<span class="kw">env</span>.<span class="key">PORT</span> || <span class="num">3000</span>;</pre>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="adv-card">
+          <h3>3️⃣ TYPE SAFETY</h3>
+          <p class="tamil-desc">process.env-ல உள்ள values எல்லாம் strings. Number, Boolean வேண்டுமானால் convert பண்ணணும்.</p>
+          <p class="eng-desc">Convert environment variables to correct type when needed.</p>
+          <div class="code-wrap">
+            <pre><span class="kw">const</span> port  = <span class="fn">Number</span>(<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">PORT</span>);
+<span class="kw">const</span> debug = <span class="kw">process</span>.<span class="kw">env</span>.<span class="key">DEBUG</span> === <span class="str">'true'</span>;</pre>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="adv-card">
+          <h3>4️⃣ SECURITY CAUTION</h3>
+          <p class="tamil-desc">.env file-ஐ Git-ல் commit பண்ணாதீர்கள். .gitignore-ல add பண்ணணும்.</p>
+          <p class="eng-desc">Never push .env to version control to keep secrets safe.</p>
+          <div class="code-wrap">
+            <div class="code-label">.gitignore</div>
+            <pre><span class="cmt"># ignore env secrets</span>
+<span class="str">.env</span>
+<span class="str">.env.*</span></pre>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="adv-card">
+          <h3>5️⃣ DOTENV-EXPAND</h3>
+          <p class="tamil-desc">ஒரு env variable-ஐ மற்றொரு variable-ல use பண்ணலாம். Example: BASE_URL=http://localhost:${PORT}</p>
+          <p class="eng-desc">Allows referencing one env variable inside another.</p>
+          <div class="code-wrap">
+            <pre><span class="key">PORT</span>=<span class="num">5000</span>
+<span class="key">BASE_URL</span>=<span class="str">http://localhost:${PORT}</span></pre>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="adv-card">
+          <h3>6️⃣ DYNAMIC LOADING</h3>
+          <p class="tamil-desc">Node environment (development/test/production) பறித்து அந்த environment-க்கு தேவையான .env file load பண்ணலாம்.</p>
+          <p class="eng-desc">Load different .env files dynamically based on NODE_ENV.</p>
+          <div class="code-wrap">
+            <pre>dotenv.<span class="fn">config</span>({
+  <span class="key">path</span>: <span class="str">`.env.${<span class="kw">process</span>.<span class="kw">env</span>.<span class="key">NODE_ENV</span>}`</span>
+});</pre>
+          </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="adv-card" style="grid-column: 1 / -1;">
+          <h3>7️⃣ CROSS-PLATFORM DIFFERENCES</h3>
+          <p class="tamil-desc">Windows &amp; Linux systems-ல் path or environment variable handling சிறிது வேறுபடும், கவனிக்கணும்.</p>
+          <p class="eng-desc">Be aware of OS differences when using environment variables or paths.</p>
+          <div class="compare-grid">
+            <div class="code-wrap">
+              <div class="code-label">Windows</div>
+              <pre><span class="cmt">set PORT=5000 &amp;&amp; node app.js</span></pre>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">Linux / Mac</div>
+              <pre><span class="cmt">PORT=5000 node app.js</span></pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <div class="footer">dotenv · Tamil Guide · Node.js Environment Variables</div>
+
+</body>
+</html>

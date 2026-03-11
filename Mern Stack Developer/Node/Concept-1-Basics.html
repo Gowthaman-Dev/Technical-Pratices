@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Node.js Teaching Guide – Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #0b0d14;
+      --surface:  #10131c;
+      --card:     #14172200;
+      --border:   #1e2235;
+      --green:    #4ade80;
+      --cyan:     #22d3ee;
+      --yellow:   #fbbf24;
+      --orange:   #fb923c;
+      --purple:   #a78bfa;
+      --pink:     #f472b6;
+      --red:      #f87171;
+      --text:     #dde4f0;
+      --muted:    #4e5a70;
+      --code-bg:  #080a10;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans Tamil', sans-serif;
+      line-height: 1.8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: .35;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 72px 24px 56px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(167,139,250,.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(167,139,250,.1);
+      border: 1px solid rgba(167,139,250,.3);
+      color: var(--purple);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      padding: 6px 18px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+      font-weight: 800; letter-spacing: -.025em; line-height: 1.1;
+      background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 50%, var(--orange) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 14px;
+    }
+    .hero p { color: var(--muted); font-size: 1rem; max-width: 520px; margin: 0 auto; }
+
+    /* LAYOUT */
+    .container {
+      max-width: 940px; margin: 0 auto;
+      padding: 52px 22px 90px;
+      display: flex; flex-direction: column; gap: 44px;
+    }
+
+    /* SECTION CARD */
+    .section {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      background: #0f121b;
+      animation: fadeUp .55s ease both;
+    }
+    .section:nth-child(1){animation-delay:.04s}
+    .section:nth-child(2){animation-delay:.10s}
+    .section:nth-child(3){animation-delay:.16s}
+    .section:nth-child(4){animation-delay:.22s}
+    .section:nth-child(5){animation-delay:.28s}
+    .section:nth-child(6){animation-delay:.34s}
+    .section:nth-child(7){animation-delay:.40s}
+    .section:nth-child(8){animation-delay:.46s}
+    .section:nth-child(9){animation-delay:.52s}
+    .section:nth-child(10){animation-delay:.58s}
+    .section:nth-child(11){animation-delay:.64s}
+    .section:nth-child(12){animation-delay:.70s}
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(24px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 26px;
+      border-bottom: 1px solid var(--border);
+      background: #0b0e18;
+    }
+    .step-num {
+      width: 40px; height: 40px; border-radius: 11px;
+      display: grid; place-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700; font-size: .85rem; flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em;
+    }
+
+    /* Step colours */
+    .s1 .step-num { background:rgba(74,222,128,.12); color:var(--green);  border:1px solid rgba(74,222,128,.3);  }
+    .s2 .step-num { background:rgba(251,146,60,.12);  color:var(--orange); border:1px solid rgba(251,146,60,.3);  }
+    .s3 .step-num { background:rgba(34,211,238,.12);  color:var(--cyan);   border:1px solid rgba(34,211,238,.3);  }
+    .s4 .step-num { background:rgba(251,191,36,.12);  color:var(--yellow); border:1px solid rgba(251,191,36,.3);  }
+    .s5 .step-num { background:rgba(167,139,250,.12); color:var(--purple); border:1px solid rgba(167,139,250,.3); }
+    .s6 .step-num { background:rgba(244,114,182,.12); color:var(--pink);   border:1px solid rgba(244,114,182,.3); }
+    .s7 .step-num { background:rgba(248,113,113,.12); color:var(--red);    border:1px solid rgba(248,113,113,.3); }
+    .f1 .step-num { background:rgba(74,222,128,.12);  color:var(--green);  border:1px solid rgba(74,222,128,.3);  }
+    .f2 .step-num { background:rgba(34,211,238,.12);  color:var(--cyan);   border:1px solid rgba(34,211,238,.3);  }
+    .f3 .step-num { background:rgba(251,191,36,.12);  color:var(--yellow); border:1px solid rgba(251,191,36,.3);  }
+    .f4 .step-num { background:rgba(251,146,60,.12);  color:var(--orange); border:1px solid rgba(251,146,60,.3);  }
+    .f5 .step-num { background:rgba(167,139,250,.12); color:var(--purple); border:1px solid rgba(167,139,250,.3); }
+
+    .s1 .section-header h2 { color:var(--green);  }
+    .s2 .section-header h2 { color:var(--orange); }
+    .s3 .section-header h2 { color:var(--cyan);   }
+    .s4 .section-header h2 { color:var(--yellow); }
+    .s5 .section-header h2 { color:var(--purple); }
+    .s6 .section-header h2 { color:var(--pink);   }
+    .s7 .section-header h2 { color:var(--red);    }
+    .f1 .section-header h2 { color:var(--green);  }
+    .f2 .section-header h2 { color:var(--cyan);   }
+    .f3 .section-header h2 { color:var(--yellow); }
+    .f4 .section-header h2 { color:var(--orange); }
+    .f5 .section-header h2 { color:var(--purple); }
+
+    .section-body { padding: 26px; display:flex; flex-direction:column; gap:22px; }
+
+    /* TEXT */
+    p { color:#b8c5d8; font-size:.96rem; }
+    .sub { font-family:'JetBrains Mono',monospace; font-size:.72rem; font-weight:700;
+           letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+
+    /* SPEECH BUBBLE */
+    .speech {
+      display:flex; align-items:flex-start; gap:12px;
+      background: rgba(167,139,250,.07);
+      border: 1px solid rgba(167,139,250,.2);
+      border-left: 3px solid var(--purple);
+      border-radius: 12px; padding: 14px 18px;
+    }
+    .speech-icon { font-size:1.3rem; flex-shrink:0; line-height:1.4; }
+    .speech p { color:#d8ceff; font-size:.95rem; }
+
+    /* QUESTION BOX */
+    .question {
+      display:flex; align-items:flex-start; gap:10px;
+      background: rgba(251,191,36,.06);
+      border: 1px solid rgba(251,191,36,.2);
+      border-radius: 12px; padding: 14px 18px;
+    }
+    .question-icon { font-size:1.2rem; flex-shrink:0; line-height:1.5; }
+    .question p { color:#fef3c7; font-size:.95rem; font-weight:600; }
+
+    /* ANSWER BOX */
+    .answer {
+      background: rgba(74,222,128,.06);
+      border: 1px solid rgba(74,222,128,.2);
+      border-radius: 12px; padding: 14px 18px;
+    }
+    .answer p { color:#d1fae5; font-size:.93rem; }
+
+    /* BULLET LIST */
+    .blist { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .blist li {
+      display:flex; align-items:flex-start; gap:10px;
+      color:#b8c5d8; font-size:.95rem;
+    }
+    .blist li::before { content:'▸'; flex-shrink:0; margin-top:2px; }
+    .s1 .blist li::before { color:var(--green);  }
+    .s2 .blist li::before { color:var(--orange); }
+    .s3 .blist li::before { color:var(--cyan);   }
+    .s4 .blist li::before { color:var(--yellow); }
+    .s5 .blist li::before { color:var(--purple); }
+    .s6 .blist li::before { color:var(--pink);   }
+    .s7 .blist li::before { color:var(--red);    }
+    .f1 .blist li::before { color:var(--green);  }
+    .f2 .blist li::before { color:var(--cyan);   }
+    .f3 .blist li::before { color:var(--yellow); }
+    .f4 .blist li::before { color:var(--orange); }
+    .f5 .blist li::before { color:var(--purple); }
+
+    /* INLINE CODE */
+    code {
+      font-family:'JetBrains Mono',monospace;
+      background:rgba(255,255,255,.07); color:var(--cyan);
+      font-size:.8em; padding:2px 7px; border-radius:5px;
+    }
+
+    /* CODE BLOCK */
+    .code-block { background:var(--code-bg); border:1px solid var(--border); border-radius:13px; overflow:hidden; }
+    .code-top {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:9px 15px; border-bottom:1px solid var(--border); background:#070910;
+    }
+    .dots { display:flex; gap:6px; }
+    .dots span { width:10px; height:10px; border-radius:50%; }
+    .d1{background:#ff5f57} .d2{background:#febc2e} .d3{background:#28c840}
+    .clabel { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); letter-spacing:.08em; }
+    pre { padding:18px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.82rem; line-height:1.75; color:#9ab0c8; }
+    .kw  { color:var(--purple); }
+    .fn  { color:var(--cyan);   }
+    .str { color:var(--green);  }
+    .cm  { color:var(--muted);  }
+    .num { color:var(--orange); }
+    .op  { color:var(--pink);   }
+
+    /* LINE EXPLAIN */
+    .line-explain { display:flex; flex-direction:column; gap:14px; }
+    .le-row {
+      background:#0b0e18; border:1px solid var(--border);
+      border-radius:11px; padding:14px 16px;
+    }
+    .le-row .code-block { margin-bottom:10px; }
+    .le-row p { font-size:.9rem; color:#b8c5d8; }
+    .le-row p::before { content:'👉 '; }
+
+    /* DIAGRAM */
+    .diagram {
+      display:flex; flex-direction:column; align-items:center; gap:0;
+      background:var(--code-bg); border:1px solid var(--border);
+      border-radius:13px; padding:28px 20px;
+    }
+    .diag-box {
+      background: rgba(34,211,238,.08);
+      border: 1px solid rgba(34,211,238,.25);
+      color: var(--cyan);
+      font-family:'JetBrains Mono',monospace;
+      font-size:.82rem; font-weight:700;
+      padding:10px 40px; border-radius:10px;
+      text-align:center; min-width:200px;
+    }
+    .diag-label {
+      font-family:'JetBrains Mono',monospace;
+      font-size:.68rem; color:var(--muted);
+      letter-spacing:.08em; text-align:center;
+      margin-top:2px;
+    }
+    .diag-arrow {
+      display:flex; flex-direction:column; align-items:center; gap:2px;
+      padding:4px 0;
+    }
+    .diag-arrow span { color:var(--muted); font-size:.75rem; font-family:'JetBrains Mono',monospace; }
+    .diag-arrow::before { content:'│'; color:var(--muted); font-size:1rem; line-height:1; }
+    .diag-arrow::after  { content:'↓'; color:var(--muted); font-size:1rem; line-height:1; }
+
+    /* CHIPS */
+    .chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .chip {
+      font-family:'JetBrains Mono',monospace; font-size:.74rem;
+      padding:5px 14px; border-radius:999px; border:1px solid;
+    }
+    .cg  { background:rgba(74,222,128,.1);  color:var(--green);  border-color:rgba(74,222,128,.3);  }
+    .cc  { background:rgba(34,211,238,.1);  color:var(--cyan);   border-color:rgba(34,211,238,.3);  }
+    .cy  { background:rgba(251,191,36,.1);  color:var(--yellow); border-color:rgba(251,191,36,.3);  }
+    .cp  { background:rgba(167,139,250,.1); color:var(--purple); border-color:rgba(167,139,250,.3); }
+    .co  { background:rgba(251,146,60,.1);  color:var(--orange); border-color:rgba(251,146,60,.3);  }
+
+    /* INTERVIEW CARD */
+    .interview {
+      background:rgba(74,222,128,.06);
+      border:1px solid rgba(74,222,128,.2);
+      border-radius:14px; padding:18px 22px;
+    }
+    .interview .ilabel {
+      font-family:'JetBrains Mono',monospace; font-size:.7rem;
+      color:var(--green); letter-spacing:.12em; text-transform:uppercase; margin-bottom:8px;
+    }
+    .interview blockquote { color:#d1fae5; font-style:italic; font-size:.95rem; line-height:1.85; }
+
+    /* SUPER TRICK */
+    .trick {
+      background: rgba(251,191,36,.06);
+      border: 1px solid rgba(251,191,36,.25);
+      border-radius:14px; padding:22px 24px;
+    }
+    .trick .tlabel {
+      font-family:'JetBrains Mono',monospace; font-size:.72rem;
+      color:var(--yellow); letter-spacing:.1em; text-transform:uppercase; margin-bottom:12px;
+    }
+    .trick .tq {
+      background:rgba(251,191,36,.08); border:1px solid rgba(251,191,36,.2);
+      border-radius:10px; padding:12px 16px; margin-bottom:12px;
+    }
+    .trick .tq p { color:#fef9c3; font-weight:600; }
+    .trick .tq p::before { content:'👉 '; }
+    .trick .ta p { color:#b8c5d8; font-size:.93rem; }
+    .trick .ta p::before { content:'👉 '; }
+
+    /* FEATURES SECTION LABEL */
+    .part-label {
+      display:flex; align-items:center; gap:14px;
+      padding:16px 26px 0;
+    }
+    .part-line { flex:1; height:1px; background:var(--border); }
+    .part-text {
+      font-family:'JetBrains Mono',monospace; font-size:.72rem;
+      letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+      white-space:nowrap;
+    }
+
+    /* FEATURE CARD */
+    .feature-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:18px;
+    }
+    @media(max-width:580px){ .feature-grid{ grid-template-columns:1fr; } }
+    .feat-card {
+      border:1px solid var(--border); border-radius:14px;
+      overflow:hidden;
+      animation: fadeUp .55s ease both;
+    }
+    .feat-card:nth-child(1){animation-delay:.68s}
+    .feat-card:nth-child(2){animation-delay:.74s}
+    .feat-card:nth-child(3){animation-delay:.80s}
+    .feat-card:nth-child(4){animation-delay:.86s}
+    .feat-card:nth-child(5){animation-delay:.92s}
+    .feat-header {
+      padding:14px 18px; border-bottom:1px solid var(--border);
+      background:#0b0e18;
+      display:flex; align-items:center; gap:10px;
+    }
+    .feat-num {
+      width:32px; height:32px; border-radius:8px;
+      display:grid; place-items:center;
+      font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.8rem;
+      flex-shrink:0;
+    }
+    .feat-header h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; }
+    .fn1 .feat-num { background:rgba(74,222,128,.12);  color:var(--green);  border:1px solid rgba(74,222,128,.3);  }
+    .fn2 .feat-num { background:rgba(34,211,238,.12);  color:var(--cyan);   border:1px solid rgba(34,211,238,.3);  }
+    .fn3 .feat-num { background:rgba(251,191,36,.12);  color:var(--yellow); border:1px solid rgba(251,191,36,.3);  }
+    .fn4 .feat-num { background:rgba(251,146,60,.12);  color:var(--orange); border:1px solid rgba(251,146,60,.3);  }
+    .fn5 .feat-num { background:rgba(167,139,250,.12); color:var(--purple); border:1px solid rgba(167,139,250,.3); }
+    .fn1 .feat-header h3 { color:var(--green);  }
+    .fn2 .feat-header h3 { color:var(--cyan);   }
+    .fn3 .feat-header h3 { color:var(--yellow); }
+    .fn4 .feat-header h3 { color:var(--orange); }
+    .fn5 .feat-header h3 { color:var(--purple); }
+    .feat-body { padding:18px; display:flex; flex-direction:column; gap:14px; background:#0f121b; }
+    .fn1 .feat-body .blist li::before { color:var(--green);  }
+    .fn2 .feat-body .blist li::before { color:var(--cyan);   }
+    .fn3 .feat-body .blist li::before { color:var(--yellow); }
+    .fn4 .feat-body .blist li::before { color:var(--orange); }
+    .fn5 .feat-body .blist li::before { color:var(--purple); }
+
+    /* 5th feature – full width */
+    .feat-card.full { grid-column: 1 / -1; }
+
+    /* FINAL */
+    .final-section {
+      background: linear-gradient(135deg, rgba(74,222,128,.07) 0%, rgba(34,211,238,.05) 50%, rgba(167,139,250,.07) 100%);
+      border: 1px solid rgba(74,222,128,.18);
+      border-radius: 20px; padding: 38px 30px; text-align: center;
+    }
+    .final-section .star { font-size:1.6rem; margin-bottom:12px; }
+    .final-section h3 {
+      font-family:'Syne',sans-serif; font-size:1.25rem; font-weight:800;
+      color:var(--green); margin-bottom:14px;
+    }
+    .final-section blockquote {
+      color:#e2e8f0; font-style:italic; font-size:.98rem;
+      line-height:1.9; max-width:680px; margin:0 auto;
+    }
+
+    ::-webkit-scrollbar { width:6px; height:6px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">🎓 Teaching Guide</div>
+  <h1>Node.js Class – Teaching Steps</h1>
+  <p>Step-by-step classroom guide with questions, examples & interview sentences — Tamil.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══════════════════ STEP 1 ══════════════════ -->
+  <article class="section s1">
+    <div class="section-header">
+      <div class="step-num">01</div>
+      <h2>Step 1 – First Question Ask Students</h2>
+    </div>
+    <div class="section-body">
+      <p>Class start பண்ணும்போது first question:</p>
+
+      <div class="question">
+        <div class="question-icon">👉</div>
+        <p>"JavaScript எங்கு run ஆகும்?"</p>
+      </div>
+
+      <div>
+        <p class="sub">Students answer: Browser — Example</p>
+        <ul class="blist">
+          <li>Chrome</li>
+          <li>Firefox</li>
+        </ul>
+      </div>
+
+      <p>அதுக்கப்புறம் சொல்லணும்:</p>
+      <div class="speech">
+        <div class="speech-icon">🗣️</div>
+        <p>"Correct. Normally JavaScript browser-ல தான் run ஆகும்."</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════════════════ STEP 2 ══════════════════ -->
+  <article class="section s2">
+    <div class="section-header">
+      <div class="step-num">02</div>
+      <h2>Step 2 – Problem Create பண்ணணும்</h2>
+    </div>
+    <div class="section-body">
+      <p>அடுத்த question:</p>
+      <div class="question">
+        <div class="question-icon">👉</div>
+        <p>"Backend-ல JavaScript run பண்ண முடியுமா?"</p>
+      </div>
+      <div class="answer"><p>Students: No</p></div>
+      <p>அப்போ சொல்லணும்:</p>
+      <div class="speech">
+        <div class="speech-icon">🗣️</div>
+        <p>"Before Node.js, JavaScript only browser-ல தான் run ஆகும்."</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════════════════ STEP 3 ══════════════════ -->
+  <article class="section s3">
+    <div class="section-header">
+      <div class="step-num">03</div>
+      <h2>Step 3 – Node.js Introduce</h2>
+    </div>
+    <div class="section-body">
+      <p>பிறகு main concept சொல்லணும்:</p>
+      <div class="speech">
+        <div class="speech-icon">🗣️</div>
+        <p>"Node.js வந்த பிறகு JavaScript-ஐ server side-ல run பண்ண முடிந்தது."</p>
+      </div>
+      <div>
+        <p class="sub">Simple definition</p>
+        <div class="question">
+          <div class="question-icon">👉</div>
+          <p>Node.js என்பது JavaScript runtime environment.</p>
+        </div>
+      </div>
+      <div>
+        <p class="sub">Tamil meaning</p>
+        <div class="question">
+          <div class="question-icon">👉</div>
+          <p>Browser இல்லாமல் JavaScript run பண்ண உதவும் environment.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════════════════ STEP 4 ══════════════════ -->
+  <article class="section s4">
+    <div class="section-header">
+      <div class="step-num">04</div>
+      <h2>Real Example (Students புரிய)</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல diagram explain பண்ணலாம்</p>
+
+      <div class="diagram">
+        <div>
+          <div class="diag-box">Frontend</div>
+          <div class="diag-label">(Browser)</div>
+        </div>
+        <div class="diag-arrow"><span>request</span></div>
+        <div>
+          <div class="diag-box">Backend</div>
+          <div class="diag-label">(Node.js server)</div>
+        </div>
+        <div class="diag-arrow"></div>
+        <div>
+          <div class="diag-box">Database</div>
+        </div>
+      </div>
+
+      <p>Explain:</p>
+      <div class="speech">
+        <div class="speech-icon">🗣️</div>
+        <p>"Frontend இருந்து request வரும். Node.js server அதை process பண்ணி response அனுப்பும்."</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════════════════ STEP 5 ══════════════════ -->
+  <article class="section s5">
+    <div class="section-header">
+      <div class="step-num">05</div>
+      <h2>What we can build using Node.js</h2>
+    </div>
+    <div class="section-body">
+      <p>Students-க்கு examples கொடுக்கணும்:</p>
+      <p>Node.js use பண்ணி:</p>
+      <ul class="blist">
+        <li>Web server create பண்ணலாம்</li>
+        <li>REST API build பண்ணலாம்</li>
+        <li>Database connect பண்ணலாம்</li>
+        <li>File system operations செய்யலாம்</li>
+        <li>Real-time chat apps build பண்ணலாம்</li>
+      </ul>
+      <div>
+        <p class="sub">Example</p>
+        <div class="chips">
+          <span class="chip cp">WhatsApp</span>
+          <span class="chip cc">Chat apps</span>
+          <span class="chip cg">Live notifications</span>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════════════════ STEP 6 ══════════════════ -->
+  <article class="section s6">
+    <div class="section-header">
+      <div class="step-num">06</div>
+      <h2>Code Example (Most Important)</h2>
+    </div>
+    <div class="section-body">
+      <p>பிறகு code show பண்ணணும்.</p>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="clabel">server.js</span>
+        </div>
+        <pre><span class="kw">const</span> http = <span class="fn">require</span>(<span class="str">"http"</span>);
+
+<span class="kw">const</span> server = http.<span class="fn">createServer</span>((<span class="op">req</span>, <span class="op">res</span>) => {
+  res.<span class="fn">write</span>(<span class="str">"Hello from Node.js"</span>);
+  res.<span class="fn">end</span>();
+});
+
+server.<span class="fn">listen</span>(<span class="num">5000</span>, () => {
+  console.<span class="fn">log</span>(<span class="str">"Server running on port 5000"</span>);
+});</pre>
+      </div>
+
+      <p>Explain:</p>
+      <div class="line-explain">
+
+        <div class="le-row">
+          <p class="sub">Line 1</p>
+          <div class="code-block">
+            <pre><span class="kw">const</span> http = <span class="fn">require</span>(<span class="str">"http"</span>);</pre>
+          </div>
+          <p>Node.js built-in http module import பண்ணுறோம்.</p>
+        </div>
+
+        <div class="le-row">
+          <p class="sub">Line 2</p>
+          <div class="code-block">
+            <pre>http.<span class="fn">createServer</span>()</pre>
+          </div>
+          <p>Server create பண்ணுறோம்.</p>
+        </div>
+
+        <div class="le-row">
+          <p class="sub">Request வந்தால்</p>
+          <div class="code-block">
+            <pre>res.<span class="fn">write</span>(<span class="str">"Hello from Node.js"</span>)</pre>
+          </div>
+          <p>Client-க்கு response send பண்ணுறோம்.</p>
+        </div>
+
+        <div class="le-row">
+          <p class="sub">Port start</p>
+          <div class="code-block">
+            <pre>server.<span class="fn">listen</span>(<span class="num">5000</span>)</pre>
+          </div>
+          <p>Server port 5000-ல் run ஆகும்.</p>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════════════════ STEP 7 ══════════════════ -->
+  <article class="section s7">
+    <div class="section-header">
+      <div class="step-num">07</div>
+      <h2>Interview Sentence</h2>
+    </div>
+    <div class="section-body">
+      <p>Class end-ல சொல்லணும்:</p>
+      <div class="question">
+        <div class="question-icon">👉</div>
+        <p>Students memorize this line</p>
+      </div>
+      <p>English:</p>
+      <div class="interview">
+        <div class="ilabel">⭐ Interview Sentence</div>
+        <blockquote>"Node.js is a runtime environment that allows JavaScript to run on the server side using the V8 engine."</blockquote>
+      </div>
+
+      <div class="trick">
+        <div class="tlabel">⭐ Super Teaching Trick</div>
+        <p style="color:#b8c5d8; font-size:.93rem; margin-bottom:12px;">Class-ல இந்த question கேளு:</p>
+        <div class="tq">
+          <p>"If JavaScript runs in browser, why do we need Node.js?"</p>
+        </div>
+        <p style="color:var(--muted); font-size:.82rem; margin-bottom:8px;">Answer:</p>
+        <div class="ta">
+          <p>To run JavaScript on the server side.</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ FEATURES DIVIDER ══════ -->
+  <div class="part-label">
+    <div class="part-line"></div>
+    <div class="part-text">Node.js Features</div>
+    <div class="part-line"></div>
+  </div>
+
+  <!-- ══════════════════ FEATURES ══════════════════ -->
+  <div class="feature-grid">
+
+    <!-- F1 Open Source -->
+    <article class="feat-card fn1">
+      <div class="feat-header">
+        <div class="feat-num">1️⃣</div>
+        <h3>Open Source</h3>
+      </div>
+      <div class="feat-body">
+        <div class="speech">
+          <div class="speech-icon">🗣️</div>
+          <p>Class-ல சொல்ல: "Node.js open source technology."</p>
+        </div>
+        <div>
+          <p class="sub">Meaning</p>
+          <ul class="blist">
+            <li>யாரும் free-ஆ download பண்ணி use பண்ணலாம்</li>
+            <li>Developers code contribute பண்ணலாம்</li>
+          </ul>
+        </div>
+        <div>
+          <p class="sub">Example</p>
+          <p>GitHub-ல Node.js code available.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- F2 Cross Platform -->
+    <article class="feat-card fn2">
+      <div class="feat-header">
+        <div class="feat-num">2️⃣</div>
+        <h3>Cross Platform</h3>
+      </div>
+      <div class="feat-body">
+        <div class="speech">
+          <div class="speech-icon">🗣️</div>
+          <p>சொல்ல: "Node.js cross-platform."</p>
+        </div>
+        <div>
+          <p class="sub">Meaning</p>
+          <ul class="blist">
+            <li>Windows</li>
+            <li>Linux</li>
+            <li>Mac</li>
+          </ul>
+          <br/>
+          <p>இந்த எல்லா operating system-லவும் run ஆகும்.</p>
+        </div>
+        <div>
+          <p class="sub">Example</p>
+          <p>ஒரு Node.js application Windows-ல build பண்ணினாலும் Linux server-ல run பண்ணலாம்.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- F3 Event-Driven -->
+    <article class="feat-card fn3">
+      <div class="feat-header">
+        <div class="feat-num">3️⃣</div>
+        <h3>Event-Driven</h3>
+      </div>
+      <div class="feat-body">
+        <div class="speech">
+          <div class="speech-icon">🗣️</div>
+          <p>சொல்ல: "Node.js works using event-driven architecture."</p>
+        </div>
+        <div>
+          <p class="sub">Meaning</p>
+          <ul class="blist">
+            <li>Event நடந்தால் code execute ஆகும்</li>
+          </ul>
+        </div>
+        <div>
+          <p class="sub">Example</p>
+          <div class="chips" style="flex-direction:column; gap:6px; display:flex;">
+            <span class="chip cy" style="width:fit-content;">User click</span>
+            <span class="chip cy" style="width:fit-content;">User login</span>
+            <span class="chip cy" style="width:fit-content;">API request</span>
+          </div>
+          <br/>
+          <p>இந்த events வந்தால் server respond பண்ணும்.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- F4 Non-Blocking I/O -->
+    <article class="feat-card fn4">
+      <div class="feat-header">
+        <div class="feat-num">4️⃣</div>
+        <h3>Non-Blocking I/O</h3>
+      </div>
+      <div class="feat-body">
+        <div class="speech">
+          <div class="speech-icon">🗣️</div>
+          <p>சொல்ல: "Node.js uses non-blocking I/O."</p>
+        </div>
+        <div>
+          <p class="sub">Meaning</p>
+          <ul class="blist">
+            <li>ஒரு request process ஆகும் போது server other requests-ஐ wait பண்ணாது</li>
+            <li>அது multiple requests handle பண்ணும்.</li>
+            <li>இதனால் performance அதிகம்.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- F5 V8 Engine – full width -->
+    <article class="feat-card fn5 full">
+      <div class="feat-header">
+        <div class="feat-num">5️⃣</div>
+        <h3>Fast Execution (V8 Engine)</h3>
+      </div>
+      <div class="feat-body">
+        <div class="speech">
+          <div class="speech-icon">🗣️</div>
+          <p>சொல்ல: "Node.js uses the V8 JavaScript engine."</p>
+        </div>
+        <div>
+          <p class="sub">Meaning</p>
+          <ul class="blist">
+            <li>V8 engine JavaScript-ஐ machine code-ஆ convert பண்ணும்</li>
+            <li>அதனால் execution speed அதிகம்.</li>
+          </ul>
+        </div>
+        <div>
+          <p class="sub">Example</p>
+          <p>Chrome browser கூட V8 engine தான் use பண்ணுது.</p>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ══════════════════ FINAL ANSWER ══════════════════ -->
+  <div class="final-section">
+    <div class="star">⭐</div>
+    <h3>Interview-ல சொல்லும் sentence</h3>
+    <blockquote>"Node.js features include open source, cross-platform support, event-driven architecture, non-blocking I/O, and fast execution using the V8 engine."</blockquote>
+  </div>
+
+</main>
+</body>
+</html>

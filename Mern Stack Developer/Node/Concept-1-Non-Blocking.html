@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Non-Blocking I/O – Teaching Guide Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #09080f;
+      --surface: #0e0c18;
+      --card:    #120f1e;
+      --border:  #1c1830;
+      --green:   #4ade80;
+      --cyan:    #22d3ee;
+      --yellow:  #fbbf24;
+      --orange:  #fb923c;
+      --purple:  #a78bfa;
+      --pink:    #f472b6;
+      --red:     #f87171;
+      --blue:    #60a5fa;
+      --teal:    #2dd4bf;
+      --text:    #dde4f0;
+      --muted:   #48506a;
+      --code-bg: #060510;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans Tamil', sans-serif;
+      line-height: 1.8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: .3;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; text-align: center;
+      padding: 72px 22px 56px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(45,212,191,.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(45,212,191,.1);
+      border: 1px solid rgba(45,212,191,.3);
+      color: var(--teal);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      padding: 6px 18px; border-radius: 999px; margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5.5vw, 3.6rem);
+      font-weight: 800; letter-spacing: -.025em; line-height: 1.1;
+      background: linear-gradient(135deg, var(--teal) 0%, var(--cyan) 40%, var(--purple) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 14px;
+    }
+    .hero p { color: var(--muted); font-size: .98rem; max-width: 540px; margin: 0 auto; }
+
+    /* ── CONTAINER ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 50px 22px 90px; display: flex; flex-direction: column; gap: 42px; }
+
+    /* ── SECTION ── */
+    .section {
+      border: 1px solid var(--border); border-radius: 20px;
+      overflow: hidden; background: var(--card);
+      animation: fadeUp .55s ease both;
+    }
+    .section:nth-child(1){animation-delay:.04s} .section:nth-child(2){animation-delay:.09s}
+    .section:nth-child(3){animation-delay:.14s} .section:nth-child(4){animation-delay:.19s}
+    .section:nth-child(5){animation-delay:.24s} .section:nth-child(6){animation-delay:.29s}
+    .section:nth-child(7){animation-delay:.34s} .section:nth-child(8){animation-delay:.39s}
+    .section:nth-child(9){animation-delay:.44s} .section:nth-child(10){animation-delay:.49s}
+    .section:nth-child(11){animation-delay:.54s} .section:nth-child(12){animation-delay:.59s}
+    .section:nth-child(13){animation-delay:.64s}
+    @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 26px; border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .snum {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: grid; place-items: center;
+      font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: .83rem;
+      flex-shrink: 0;
+    }
+    .section-header h2 { font-family: 'Syne', sans-serif; font-size: 1.12rem; font-weight: 700; letter-spacing: -.01em; }
+    .section-body { padding: 26px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* step accent colours */
+    .a1 .snum{background:rgba(248,113,113,.12);color:var(--red);   border:1px solid rgba(248,113,113,.3)} .a1 .section-header h2{color:var(--red)}
+    .a2 .snum{background:rgba(251,146,60,.12); color:var(--orange);border:1px solid rgba(251,146,60,.3)}  .a2 .section-header h2{color:var(--orange)}
+    .a3 .snum{background:rgba(251,191,36,.12); color:var(--yellow);border:1px solid rgba(251,191,36,.3)}  .a3 .section-header h2{color:var(--yellow)}
+    .a4 .snum{background:rgba(244,114,182,.12);color:var(--pink);  border:1px solid rgba(244,114,182,.3)} .a4 .section-header h2{color:var(--pink)}
+    .a5 .snum{background:rgba(34,211,238,.12); color:var(--cyan);  border:1px solid rgba(34,211,238,.3)}  .a5 .section-header h2{color:var(--cyan)}
+    .a6 .snum{background:rgba(74,222,128,.12); color:var(--green); border:1px solid rgba(74,222,128,.3)}  .a6 .section-header h2{color:var(--green)}
+    .a7 .snum{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)} .a7 .section-header h2{color:var(--purple)}
+    .a8 .snum{background:rgba(45,212,191,.12); color:var(--teal);  border:1px solid rgba(45,212,191,.3)}  .a8 .section-header h2{color:var(--teal)}
+    /* deep-dive */
+    .b1 .snum{background:rgba(96,165,250,.12); color:var(--blue);  border:1px solid rgba(96,165,250,.3)}  .b1 .section-header h2{color:var(--blue)}
+    .b2 .snum{background:rgba(34,211,238,.12); color:var(--cyan);  border:1px solid rgba(34,211,238,.3)}  .b2 .section-header h2{color:var(--cyan)}
+    .b3 .snum{background:rgba(74,222,128,.12); color:var(--green); border:1px solid rgba(74,222,128,.3)}  .b3 .section-header h2{color:var(--green)}
+    .b4 .snum{background:rgba(251,191,36,.12); color:var(--yellow);border:1px solid rgba(251,191,36,.3)}  .b4 .section-header h2{color:var(--yellow)}
+    .b5 .snum{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)} .b5 .section-header h2{color:var(--purple)}
+
+    /* ── TEXT ── */
+    p { color: #b8c5d8; font-size: .95rem; }
+    .sub { font-family:'JetBrains Mono',monospace; font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+
+    /* ── SPEECH ── */
+    .speech {
+      display:flex; align-items:flex-start; gap:12px;
+      background:rgba(45,212,191,.07); border:1px solid rgba(45,212,191,.2);
+      border-left:3px solid var(--teal); border-radius:12px; padding:14px 18px;
+    }
+    .si { font-size:1.2rem; flex-shrink:0; line-height:1.5; }
+    .speech p { color:#99f6e4; font-size:.95rem; }
+
+    /* ── QBOX ── */
+    .qbox {
+      display:flex; align-items:flex-start; gap:10px;
+      background:rgba(251,191,36,.06); border:1px solid rgba(251,191,36,.2);
+      border-radius:12px; padding:12px 16px;
+    }
+    .qbox p { color:#fef9c3; font-size:.94rem; font-weight:600; }
+
+    /* ── ABOX ── */
+    .abox { background:rgba(74,222,128,.06); border:1px solid rgba(74,222,128,.2); border-radius:12px; padding:12px 16px; }
+    .abox p { color:#d1fae5; font-size:.93rem; }
+
+    /* ── INFOBOX ── */
+    .infobox { background:rgba(96,165,250,.06); border:1px solid rgba(96,165,250,.2); border-left:3px solid var(--blue); border-radius:12px; padding:13px 17px; }
+    .infobox p { color:#bfdbfe; font-size:.93rem; }
+
+    /* ── BULLET ── */
+    .blist { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .blist li { display:flex; align-items:flex-start; gap:10px; color:#b8c5d8; font-size:.94rem; }
+    .blist li::before { content:'▸'; flex-shrink:0; margin-top:2px; }
+    .a1 .blist li::before,.rb1 li::before{color:var(--red)}
+    .a2 .blist li::before,.rb2 li::before{color:var(--orange)}
+    .a3 .blist li::before{color:var(--yellow)}
+    .a4 .blist li::before{color:var(--pink)}
+    .a5 .blist li::before{color:var(--cyan)}
+    .a6 .blist li::before{color:var(--green)}
+    .a7 .blist li::before{color:var(--purple)}
+    .a8 .blist li::before{color:var(--teal)}
+    .b1 .blist li::before{color:var(--blue)}
+    .b2 .blist li::before{color:var(--cyan)}
+    .b3 .blist li::before{color:var(--green)}
+    .b4 .blist li::before{color:var(--yellow)}
+    .b5 .blist li::before{color:var(--purple)}
+
+    /* ── INLINE CODE ── */
+    code { font-family:'JetBrains Mono',monospace; background:rgba(255,255,255,.07); color:var(--cyan); font-size:.8em; padding:2px 7px; border-radius:5px; }
+
+    /* ── CODE BLOCK ── */
+    .code-block { background:var(--code-bg); border:1px solid var(--border); border-radius:13px; overflow:hidden; }
+    .code-top { display:flex; align-items:center; justify-content:space-between; padding:9px 15px; border-bottom:1px solid var(--border); background:#040308; }
+    .dots { display:flex; gap:6px; }
+    .dots span { width:10px; height:10px; border-radius:50%; }
+    .d1{background:#ff5f57} .d2{background:#febc2e} .d3{background:#28c840}
+    .clabel { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--muted); letter-spacing:.08em; }
+    pre { padding:18px; overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:.82rem; line-height:1.75; color:#8a9fc0; }
+    .kw{color:var(--purple)} .fn{color:var(--cyan)} .str{color:var(--green)} .num{color:var(--orange)} .cm{color:var(--muted)} .op{color:var(--pink)}
+
+    /* ── OUTPUT ── */
+    .output { background:#040308; border:1px solid var(--border); border-left:3px solid var(--green); border-radius:10px; padding:14px 18px; }
+    .ol { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--green); letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+    .output pre { padding:0; color:#86efac; font-size:.82rem; }
+
+    /* ── FLOW ── */
+    .flow { display:flex; flex-direction:column; align-items:center; }
+    .flow-box {
+      background:rgba(45,212,191,.07); border:1px solid rgba(45,212,191,.22);
+      color:var(--teal); font-family:'JetBrains Mono',monospace;
+      font-size:.82rem; font-weight:700;
+      padding:10px 44px; border-radius:10px; text-align:center; min-width:220px;
+    }
+    .flow-arr { color:var(--muted); font-size:1.15rem; line-height:2; }
+    .flow-lbl { font-family:'JetBrains Mono',monospace; font-size:.68rem; color:var(--muted); text-align:center; margin-top:2px; line-height:1.6; }
+
+    /* ── NUMBERED FLOW ── */
+    .nflow { display:flex; flex-direction:column; gap:6px; }
+    .nflow-row { display:flex; align-items:center; gap:12px; }
+    .nflow-num {
+      width:30px; height:30px; border-radius:50%;
+      background:rgba(45,212,191,.12); border:1px solid rgba(45,212,191,.3);
+      color:var(--teal); font-family:'JetBrains Mono',monospace;
+      font-size:.78rem; font-weight:700;
+      display:grid; place-items:center; flex-shrink:0;
+    }
+    .nflow-text { color:#b8c5d8; font-size:.93rem; }
+
+    /* ── COMPARE GRID ── */
+    .cmp-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:560px){ .cmp-grid{grid-template-columns:1fr} }
+    .cmp-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:10px; }
+    .cmp-card h4 { font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:4px; }
+    .cmp-card.bad  h4 { color:var(--red); }
+    .cmp-card.good h4 { color:var(--green); }
+    .cmp-card.trad h4 { color:var(--orange); }
+    .cmp-card.node h4 { color:var(--teal); }
+
+    /* ── CHIPS ── */
+    .chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .chip { font-family:'JetBrains Mono',monospace; font-size:.73rem; padding:5px 13px; border-radius:999px; border:1px solid; }
+    .cg{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.3)}
+    .cc{background:rgba(34,211,238,.1);color:var(--cyan);border-color:rgba(34,211,238,.3)}
+    .cy{background:rgba(251,191,36,.1);color:var(--yellow);border-color:rgba(251,191,36,.3)}
+    .cp{background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3)}
+    .co{background:rgba(251,146,60,.1);color:var(--orange);border-color:rgba(251,146,60,.3)}
+    .ct{background:rgba(45,212,191,.1);color:var(--teal);border-color:rgba(45,212,191,.3)}
+    .cb{background:rgba(96,165,250,.1);color:var(--blue);border-color:rgba(96,165,250,.3)}
+
+    /* ── INTERVIEW ── */
+    .interview { background:rgba(74,222,128,.06); border:1px solid rgba(74,222,128,.2); border-radius:14px; padding:18px 22px; }
+    .il { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--green); letter-spacing:.12em; text-transform:uppercase; margin-bottom:8px; }
+    .interview blockquote { color:#d1fae5; font-style:italic; font-size:.95rem; line-height:1.9; }
+
+    /* ── TRICK ── */
+    .trick { background:rgba(251,191,36,.05); border:1px solid rgba(251,191,36,.22); border-radius:14px; padding:20px 22px; }
+    .tl { font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--yellow); letter-spacing:.12em; text-transform:uppercase; margin-bottom:12px; }
+    .trick .tq { background:rgba(251,191,36,.07); border:1px solid rgba(251,191,36,.2); border-radius:10px; padding:12px 16px; margin-bottom:10px; }
+    .trick .tq p { color:#fef9c3; font-weight:600; }
+    .trick .tq p::before { content:'👉 '; }
+    .trick .ta p { color:#b8c5d8; font-size:.93rem; }
+    .trick .ta p::before { content:'👉 '; }
+
+    /* ── PART DIVIDER ── */
+    .part-divider { display:flex; align-items:center; gap:14px; }
+    .part-line { flex:1; height:1px; background:var(--border); }
+    .part-text { font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+
+    /* ── IO CARD ── */
+    .io-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:14px; overflow:hidden;
+    }
+    .io-card-header {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 20px; border-bottom:1px solid var(--border);
+      background:#090813;
+    }
+    .io-num {
+      width:34px; height:34px; border-radius:8px;
+      display:grid; place-items:center;
+      font-family:'JetBrains Mono',monospace; font-weight:700; font-size:.8rem;
+      flex-shrink:0;
+    }
+    .io-card-header h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; }
+    .io-card-body { padding:18px 20px; display:flex; flex-direction:column; gap:14px; }
+
+    .ic1 .io-num{background:rgba(96,165,250,.12);color:var(--blue);border:1px solid rgba(96,165,250,.3)}   .ic1 .io-card-header h3{color:var(--blue)}
+    .ic2 .io-num{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.3)}  .ic2 .io-card-header h3{color:var(--green)}
+    .ic3 .io-num{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)} .ic3 .io-card-header h3{color:var(--purple)}
+    .ic4 .io-num{background:rgba(251,146,60,.12);color:var(--orange);border:1px solid rgba(251,146,60,.3)} .ic4 .io-card-header h3{color:var(--orange)}
+    .ic1 .blist li::before{color:var(--blue)}
+    .ic2 .blist li::before{color:var(--green)}
+    .ic3 .blist li::before{color:var(--purple)}
+    .ic4 .blist li::before{color:var(--orange)}
+
+    /* ── IO ARROW ROW ── */
+    .io-arrow-row {
+      display:flex; align-items:center; gap:0;
+      font-family:'JetBrains Mono',monospace; font-size:.82rem;
+    }
+    .io-left {
+      background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.25);
+      color:var(--blue); padding:10px 18px; border-radius:10px 0 0 10px;
+      min-width:120px; text-align:center; font-weight:700;
+    }
+    .io-mid { color:var(--muted); padding:0 12px; font-size:1.1rem; }
+    .io-right {
+      background:rgba(74,222,128,.08); border:1px solid rgba(74,212,128,.25);
+      color:var(--green); padding:10px 18px; border-radius:0 10px 10px 0;
+      min-width:120px; text-align:center; font-weight:700;
+    }
+
+    /* ── SUPER LINE ── */
+    .super-line {
+      background:linear-gradient(135deg,rgba(45,212,191,.08) 0%,rgba(167,139,250,.07) 100%);
+      border:1px solid rgba(45,212,191,.2); border-radius:14px; padding:20px 24px; text-align:center;
+    }
+    .super-line p { color:#99f6e4; font-size:1rem; font-weight:600; }
+    .super-line p::before { content:'👉 '; }
+
+    /* ── FINAL ── */
+    .final {
+      background:linear-gradient(135deg,rgba(45,212,191,.07) 0%,rgba(34,211,238,.05) 50%,rgba(167,139,250,.07) 100%);
+      border:1px solid rgba(45,212,191,.18); border-radius:20px; padding:38px 30px; text-align:center;
+    }
+    .final .star { font-size:1.5rem; margin-bottom:12px; }
+    .final h3 { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:var(--teal); margin-bottom:14px; }
+    .final blockquote { color:#e2e8f0; font-style:italic; font-size:.97rem; line-height:1.9; max-width:700px; margin:0 auto; }
+
+    ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">⚡ I/O Deep Dive</div>
+  <h1>Non-Blocking I/O – Teaching Guide</h1>
+  <p>Blocking vs Non-Blocking, I/O concepts & Node.js mastery — Tamil step-by-step classroom guide.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══════ STEP 1 ══════ -->
+  <article class="section a1">
+    <div class="section-header">
+      <div class="snum">01</div>
+      <h2>Step 1 – First Question (Thinking Start)</h2>
+    </div>
+    <div class="section-body">
+      <p>Class-ல first கேள்:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"Server ஒரு file read பண்ணும்போது மற்ற requests wait பண்ணணுமா?"</p>
+      </div>
+      <div class="abox"><p>Students usually: 👉 Yes</p></div>
+      <p>அப்போ சொல்லு:</p>
+      <div class="qbox"><p>👉 Traditional languages-ல் அது தான் நடக்கும்.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 2 ══════ -->
+  <article class="section a2">
+    <div class="section-header">
+      <div class="snum">02</div>
+      <h2>Step 2 – Blocking Concept Explain</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல example draw பண்ணு.</p>
+
+      <div class="flow">
+        <div class="flow-box">Read File</div>
+        <div class="flow-arr">↓</div>
+        <div class="flow-box">(wait)</div>
+        <div class="flow-arr">↓</div>
+        <div class="flow-box">Next Code</div>
+      </div>
+
+      <p>Explain:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"Traditional languages (Java, PHP synchronous code)-ல file read முடியும் வரை server wait பண்ணும்."</p>
+      </div>
+
+      <div>
+        <p class="sub">Example flow</p>
+        <div class="nflow">
+          <div class="nflow-row"><div class="nflow-num">1</div><div class="nflow-text">Read file</div></div>
+          <div class="nflow-row"><div class="nflow-num">2</div><div class="nflow-text">Wait</div></div>
+          <div class="nflow-row"><div class="nflow-num">3</div><div class="nflow-text">Next operation</div></div>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Problem</p>
+        <ul class="blist">
+          <li>server slow</li>
+          <li>requests queue ஆகும்</li>
+          <li>scalability குறையும்</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 3 ══════ -->
+  <article class="section a3">
+    <div class="section-header">
+      <div class="snum">03</div>
+      <h2>Step 3 – Node.js Idea Introduce</h2>
+    </div>
+    <div class="section-body">
+      <p>அடுத்த question:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"Wait பண்ணாமல் next work செய்ய முடியுமா?"</p>
+      </div>
+      <div>
+        <p class="sub">Answer</p>
+        <div class="qbox"><p>👉 Node.js அதையே செய்கிறது.</p></div>
+      </div>
+      <div>
+        <p class="sub">Explain</p>
+        <div class="qbox"><p>👉 Node.js Non-Blocking I/O use பண்ணும்.</p></div>
+      </div>
+      <div>
+        <p class="sub">Meaning</p>
+        <div class="infobox">
+          <p>Task start பண்ணி → wait பண்ணாமல் → next code execute பண்ணும்</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 4 ══════ -->
+  <article class="section a4">
+    <div class="section-header">
+      <div class="snum">04</div>
+      <h2>Step 4 – Code Example (Most Important)</h2>
+    </div>
+    <div class="section-body">
+      <p>Students-க்கு code show பண்ணு.</p>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="clabel">non-blocking.js</span>
+        </div>
+        <pre><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>);
+
+fs.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>, <span class="str">"utf8"</span>, (<span class="op">err</span>, <span class="op">data</span>) => {
+  console.<span class="fn">log</span>(data);
+});
+
+console.<span class="fn">log</span>(<span class="str">"File reading started"</span>);</pre>
+      </div>
+
+      <p>Explain line by line:</p>
+
+      <!-- line-by-line cards -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+          <p class="sub">Line 1</p>
+          <div class="code-block" style="margin-bottom:10px;">
+            <pre style="padding:12px;"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)</pre>
+          </div>
+          <div class="qbox"><p>👉 File System module import.</p></div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+          <p class="sub">Line 2</p>
+          <div class="code-block" style="margin-bottom:10px;">
+            <pre style="padding:12px;">fs.<span class="fn">readFile</span>()</pre>
+          </div>
+          <div class="qbox"><p>👉 file read operation start ஆகுது.</p></div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+          <p class="sub">Callback function</p>
+          <div class="code-block" style="margin-bottom:10px;">
+            <pre style="padding:12px;">(<span class="op">err</span>, <span class="op">data</span>) => {}</pre>
+          </div>
+          <div class="qbox"><p>👉 file read complete ஆன பிறகு run ஆகும்.</p></div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+          <p class="sub">Next line</p>
+          <div class="code-block" style="margin-bottom:10px;">
+            <pre style="padding:12px;">console.<span class="fn">log</span>(<span class="str">"File reading started"</span>)</pre>
+          </div>
+          <div class="qbox"><p>👉 Node.js wait பண்ணாமல் next code execute பண்ணும்.</p></div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 5 ══════ -->
+  <article class="section a5">
+    <div class="section-header">
+      <div class="snum">05</div>
+      <h2>Output Explain</h2>
+    </div>
+    <div class="section-body">
+      <div class="output">
+        <div class="ol">▶ Output</div>
+        <pre>File reading started
+(file content later)</pre>
+      </div>
+
+      <div>
+        <p class="sub">Meaning</p>
+        <div class="nflow">
+          <div class="nflow-row"><div class="nflow-num">1️⃣</div><div class="nflow-text">file read start</div></div>
+          <div class="nflow-row"><div class="nflow-num">2️⃣</div><div class="nflow-text">next code run</div></div>
+          <div class="nflow-row"><div class="nflow-num">3️⃣</div><div class="nflow-text">file read complete ஆன பிறகு result வரும்</div></div>
+        </div>
+      </div>
+
+      <div class="abox"><p>இதுதான் Non-Blocking I/O.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 6 ══════ -->
+  <article class="section a6">
+    <div class="section-header">
+      <div class="snum">06</div>
+      <h2>Real Life Example (Best Teaching Trick)</h2>
+    </div>
+    <div class="section-body">
+      <p>Restaurant example use பண்ணு.</p>
+
+      <div class="cmp-grid">
+        <div class="cmp-card trad">
+          <h4>❌ Blocking</h4>
+          <ul class="blist">
+            <li style="color:#fca5a5">waiter order எடுத்துட்டு kitchen wait பண்ணுவான்</li>
+            <li style="color:#fca5a5">next customer wait</li>
+          </ul>
+        </div>
+        <div class="cmp-card node">
+          <h4>✅ Non-Blocking</h4>
+          <ul class="blist">
+            <li style="color:#99f6e4">waiter order kitchen-க்கு அனுப்புவான்</li>
+            <li style="color:#99f6e4">next customer order எடுத்துக்குவான்</li>
+          </ul>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Node.js</p>
+        <div class="qbox"><p>👉 wait பண்ணாது</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 7 ══════ -->
+  <article class="section a7">
+    <div class="section-header">
+      <div class="snum">07</div>
+      <h2>Benefits (Students Remember)</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல எழுதணும்:</p>
+      <p class="sub">Node.js Non-Blocking I/O benefits</p>
+      <div class="chips">
+        <span class="chip cg">Fast performance</span>
+        <span class="chip cc">Handle multiple requests</span>
+        <span class="chip ct">High scalability</span>
+        <span class="chip cp">Efficient server</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 8 ══════ -->
+  <article class="section a8">
+    <div class="section-header">
+      <div class="snum">08</div>
+      <h2>Interview Sentence</h2>
+    </div>
+    <div class="section-body">
+      <p>Students memorize this line:</p>
+      <div class="interview">
+        <div class="il">⭐ Interview Sentence</div>
+        <blockquote>"Non-blocking I/O allows Node.js to execute multiple operations without waiting for each task to complete."</blockquote>
+      </div>
+
+      <div class="trick">
+        <div class="tl">✅ Teaching Trick</div>
+        <p style="color:#b8c5d8;font-size:.93rem;margin-bottom:12px;">இந்த question class-ல கேள்:</p>
+        <div class="tq"><p>"Why is Node.js faster than traditional servers?"</p></div>
+        <p style="color:var(--muted);font-size:.8rem;margin-bottom:8px;">Answer:</p>
+        <div class="ta"><p>Because it uses Non-Blocking I/O and Event Loop.</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ PART DIVIDER ══════ -->
+  <div class="part-divider">
+    <div class="part-line"></div>
+    <div class="part-text">Deep Dive – I/O என்றால் என்ன?</div>
+    <div class="part-line"></div>
+  </div>
+
+  <!-- ══════ DEEP 1 – I/O என்றால் என்ன ══════ -->
+  <article class="section b1">
+    <div class="section-header">
+      <div class="snum">1️⃣</div>
+      <h2>I/O என்றால் என்ன?</h2>
+    </div>
+    <div class="section-body">
+      <div class="infobox" style="text-align:center;">
+        <p style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--blue);">I/O = Input / Output</p>
+      </div>
+
+      <div>
+        <p class="sub">Meaning</p>
+        <ul class="blist">
+          <li>Computer வெளியில் இருந்து data வாங்குவது (Input)</li>
+          <li>Computer data வெளியே அனுப்புவது (Output)</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ DEEP 2 – Simple Example ══════ -->
+  <article class="section b2">
+    <div class="section-header">
+      <div class="snum">2️⃣</div>
+      <h2>Simple Example</h2>
+    </div>
+    <div class="section-body">
+      <div class="cmp-grid">
+        <div class="cmp-card" style="background:rgba(96,165,250,.06);border-color:rgba(96,165,250,.2);">
+          <h4 style="color:var(--blue);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;">Input</h4>
+          <p style="color:#bfdbfe;">நீ keyboard-ல type பண்ணுறது</p>
+          <div class="abox" style="background:rgba(96,165,250,.07);border-color:rgba(96,165,250,.2);">
+            <p style="color:#bfdbfe;">👉 Input</p>
+          </div>
+        </div>
+        <div class="cmp-card" style="background:rgba(74,222,128,.06);border-color:rgba(74,222,128,.2);">
+          <h4 style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;">Output</h4>
+          <p style="color:#d1fae5;">Screen-ல text காட்டுவது</p>
+          <div class="abox">
+            <p>👉 Output</p>
+          </div>
+        </div>
+      </div>
+      <div class="abox"><p>இதுதான் I/O.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ DEEP 3 – Programming I/O ══════ -->
+  <article class="section b3">
+    <div class="section-header">
+      <div class="snum">3️⃣</div>
+      <h2>Programming-ல I/O என்ன?</h2>
+    </div>
+    <div class="section-body">
+      <p>Program external source-லிருந்து data வாங்கினால் அல்லது data send பண்ணினால் அது I/O.</p>
+      <p class="sub">Examples</p>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <!-- File Read -->
+        <div class="io-card ic1">
+          <div class="io-card-header">
+            <div class="io-num">1️⃣</div>
+            <h3>File Read</h3>
+          </div>
+          <div class="io-card-body">
+            <p>Program file open பண்ணி data read பண்ணும்.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">file-read.js</span>
+              </div>
+              <pre>fs.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>)</pre>
+            </div>
+            <ul class="blist">
+              <li>file-லிருந்து data வாங்குறது</li>
+              <li>இது Input</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Database -->
+        <div class="io-card ic2">
+          <div class="io-card-header">
+            <div class="io-num">2️⃣</div>
+            <h3>Database Query</h3>
+          </div>
+          <div class="io-card-body">
+            <p>Database-ல data கேட்குறது.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">database.js</span>
+              </div>
+              <pre>User.<span class="fn">find</span>()</pre>
+            </div>
+            <ul class="blist">
+              <li>database-லிருந்து data வரும்</li>
+              <li>இது I/O</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- API Call -->
+        <div class="io-card ic3">
+          <div class="io-card-header">
+            <div class="io-num">3️⃣</div>
+            <h3>API Call</h3>
+          </div>
+          <div class="io-card-body">
+            <p>Server இன்னொரு server-க்கு request அனுப்பும்.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">api-call.js</span>
+              </div>
+              <pre>axios.<span class="fn">get</span>(<span class="str">"/users"</span>)</pre>
+            </div>
+            <ul class="blist">
+              <li>external API-லிருந்து data வரும்</li>
+              <li>இது I/O</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Network -->
+        <div class="io-card ic4">
+          <div class="io-card-header">
+            <div class="io-num">4️⃣</div>
+            <h3>Network Request</h3>
+          </div>
+          <div class="io-card-body">
+            <p>Browser server-க்கு request அனுப்பும்.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">network.js</span>
+              </div>
+              <pre><span class="fn">fetch</span>(<span class="str">"/products"</span>)</pre>
+            </div>
+            <ul class="blist">
+              <li>network-ல data travel ஆகுது</li>
+              <li>இது I/O</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ DEEP 4 – Simple Definition ══════ -->
+  <article class="section b4">
+    <div class="section-header">
+      <div class="snum">4️⃣</div>
+      <h2>Simple Definition (Remember)</h2>
+    </div>
+    <div class="section-body">
+      <div class="qbox"><p>👉 Computer external source-லிருந்து data read அல்லது write பண்ணும் operations = I/O</p></div>
+      <div>
+        <p class="sub">External sources</p>
+        <div class="chips">
+          <span class="chip cb">File system</span>
+          <span class="chip cg">Database</span>
+          <span class="chip cc">Network</span>
+          <span class="chip cp">API</span>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ DEEP 5 – Why I/O Important ══════ -->
+  <article class="section b5">
+    <div class="section-header">
+      <div class="snum">5️⃣</div>
+      <h2>Why I/O Important in Node.js</h2>
+    </div>
+    <div class="section-body">
+      <p>Node.js I/O operations wait பண்ணாது.</p>
+      <p class="sub">Example</p>
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="clabel">non-blocking.js</span>
+        </div>
+        <pre>fs.<span class="fn">readFile</span>()</pre>
+      </div>
+      <p>File read ஆகும் போது:</p>
+      <div class="qbox"><p>👉 Node.js next task execute பண்ணும்</p></div>
+      <div class="abox"><p>இதுதான் Non-Blocking I/O.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ SUPER SIMPLE ONE LINE ══════ -->
+  <div class="super-line">
+    <p style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">⭐ Super Simple One Line</p>
+    <p>I/O = Data inside computer ↔ outside world communication</p>
+  </div>
+
+  <!-- ══════ FINAL ══════ -->
+  <div class="final">
+    <div class="star">⭐</div>
+    <h3>Final Interview Sentence</h3>
+    <blockquote>"Non-blocking I/O allows Node.js to execute multiple operations without waiting for each task to complete."</blockquote>
+  </div>
+
+</main>
+</body>
+</html>

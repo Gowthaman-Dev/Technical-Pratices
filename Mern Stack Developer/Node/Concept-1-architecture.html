@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Node.js Architecture – Teaching Guide Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #08090f;
+      --surface: #0c0f1a;
+      --card:    #0f1220;
+      --border:  #1a1f30;
+      --green:   #4ade80;
+      --cyan:    #22d3ee;
+      --yellow:  #fbbf24;
+      --orange:  #fb923c;
+      --purple:  #a78bfa;
+      --pink:    #f472b6;
+      --red:     #f87171;
+      --blue:    #60a5fa;
+      --text:    #dde4f0;
+      --muted:   #4a5568;
+      --code-bg: #060810;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans Tamil', sans-serif;
+      line-height: 1.8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: .3;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; text-align: center;
+      padding: 70px 22px 54px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(96,165,250,.11) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(96,165,250,.1);
+      border: 1px solid rgba(96,165,250,.3);
+      color: var(--blue);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      padding: 6px 18px; border-radius: 999px; margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 5.5vw, 3.6rem);
+      font-weight: 800; letter-spacing: -.025em; line-height: 1.1;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 45%, var(--green) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 14px;
+    }
+    .hero p { color: var(--muted); font-size: .98rem; max-width: 520px; margin: 0 auto; }
+
+    /* ── CONTAINER ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 50px 22px 90px; display: flex; flex-direction: column; gap: 42px; }
+
+    /* ── SECTION ── */
+    .section {
+      border: 1px solid var(--border); border-radius: 20px;
+      overflow: hidden; background: var(--card);
+      animation: fadeUp .55s ease both;
+    }
+    .section:nth-child(1){animation-delay:.04s} .section:nth-child(2){animation-delay:.10s}
+    .section:nth-child(3){animation-delay:.16s} .section:nth-child(4){animation-delay:.22s}
+    .section:nth-child(5){animation-delay:.28s} .section:nth-child(6){animation-delay:.34s}
+    .section:nth-child(7){animation-delay:.40s} .section:nth-child(8){animation-delay:.46s}
+    .section:nth-child(9){animation-delay:.52s} .section:nth-child(10){animation-delay:.58s}
+    .section:nth-child(11){animation-delay:.64s}
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+    .section-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 26px; border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .snum {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: grid; place-items: center;
+      font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: .83rem;
+      flex-shrink: 0;
+    }
+    .section-header h2 { font-family: 'Syne', sans-serif; font-size: 1.13rem; font-weight: 700; letter-spacing: -.01em; }
+    .section-body { padding: 26px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* step colours */
+    .c1 .snum{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.3)} .c1 .section-header h2{color:var(--red)}
+    .c2 .snum{background:rgba(251,146,60,.12);color:var(--orange);border:1px solid rgba(251,146,60,.3)} .c2 .section-header h2{color:var(--orange)}
+    .c3 .snum{background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.3)} .c3 .section-header h2{color:var(--yellow)}
+    .c4 .snum{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.3)}  .c4 .section-header h2{color:var(--green)}
+    .c5 .snum{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.3)}   .c5 .section-header h2{color:var(--cyan)}
+    .c6 .snum{background:rgba(244,114,182,.12);color:var(--pink);border:1px solid rgba(244,114,182,.3)} .c6 .section-header h2{color:var(--pink)}
+    .c7 .snum{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)} .c7 .section-header h2{color:var(--purple)}
+    .c8 .snum{background:rgba(96,165,250,.12);color:var(--blue);border:1px solid rgba(96,165,250,.3)}   .c8 .section-header h2{color:var(--blue)}
+
+    /* deep-dive colours */
+    .d1 .snum{background:rgba(96,165,250,.12);color:var(--blue);border:1px solid rgba(96,165,250,.3)}   .d1 .section-header h2{color:var(--blue)}
+    .d2 .snum{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.3)}  .d2 .section-header h2{color:var(--green)}
+    .d3 .snum{background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.3)} .d3 .section-header h2{color:var(--yellow)}
+
+    /* ── PROSE ── */
+    p { color: #b8c5d8; font-size: .95rem; }
+    .sub { font-family: 'JetBrains Mono', monospace; font-size: .7rem; font-weight: 700;
+           letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+
+    /* ── SPEECH ── */
+    .speech {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(96,165,250,.07); border: 1px solid rgba(96,165,250,.2);
+      border-left: 3px solid var(--blue); border-radius: 12px; padding: 14px 18px;
+    }
+    .speech-icon { font-size: 1.2rem; flex-shrink: 0; line-height: 1.5; }
+    .speech p { color: #bfdbfe; font-size: .95rem; }
+
+    /* ── QUESTION ── */
+    .qbox {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.2);
+      border-radius: 12px; padding: 13px 17px;
+    }
+    .qbox p { color: #fef9c3; font-size: .95rem; font-weight: 600; }
+
+    /* ── ANSWER ── */
+    .abox {
+      background: rgba(74,222,128,.06); border: 1px solid rgba(74,222,128,.2);
+      border-radius: 12px; padding: 13px 17px;
+    }
+    .abox p { color: #d1fae5; font-size: .93rem; }
+
+    /* ── BULLET ── */
+    .blist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .blist li { display: flex; align-items: flex-start; gap: 10px; color: #b8c5d8; font-size: .94rem; }
+    .blist li::before { content: '▸'; flex-shrink: 0; margin-top: 2px; }
+    .c1 .blist li::before{color:var(--red)}    .c2 .blist li::before{color:var(--orange)}
+    .c3 .blist li::before{color:var(--yellow)} .c4 .blist li::before{color:var(--green)}
+    .c5 .blist li::before{color:var(--cyan)}   .c6 .blist li::before{color:var(--pink)}
+    .c7 .blist li::before{color:var(--purple)} .c8 .blist li::before{color:var(--blue)}
+    .d1 .blist li::before{color:var(--blue)}   .d2 .blist li::before{color:var(--green)}
+    .d3 .blist li::before{color:var(--yellow)}
+
+    /* ── CODE BLOCK ── */
+    .code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 13px; overflow: hidden; }
+    .code-top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 15px; border-bottom: 1px solid var(--border); background: #040609;
+    }
+    .dots { display: flex; gap: 6px; }
+    .dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .dd1{background:#ff5f57} .dd2{background:#febc2e} .dd3{background:#28c840}
+    .clabel { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--muted); letter-spacing: .08em; }
+    pre { padding: 18px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: .82rem; line-height: 1.75; color: #8a9fc0; }
+    .kw{color:var(--purple)} .fn{color:var(--cyan)} .str{color:var(--green)}
+    .num{color:var(--orange)} .op{color:var(--pink)} .cm{color:var(--muted)}
+
+    /* ── OUTPUT ── */
+    .output {
+      background: #040609; border: 1px solid var(--border);
+      border-left: 3px solid var(--green); border-radius: 10px; padding: 14px 18px;
+    }
+    .output-label { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--green); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+    .output pre { padding: 0; color: #86efac; font-size: .82rem; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .flow-box {
+      background: rgba(34,211,238,.07); border: 1px solid rgba(34,211,238,.22);
+      color: var(--cyan); font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem; font-weight: 700;
+      padding: 10px 44px; border-radius: 10px; text-align: center; min-width: 230px;
+    }
+    .flow-sub { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--muted); text-align: center; margin-top: 3px; }
+    .flow-arrow { color: var(--muted); font-size: 1.15rem; line-height: 2; }
+
+    /* ── THREAD DIAGRAM ── */
+    .thread-grid { display: flex; flex-direction: column; gap: 8px; }
+    .thread-row {
+      display: flex; align-items: center; gap: 0;
+      font-family: 'JetBrains Mono', monospace; font-size: .82rem;
+    }
+    .t-client {
+      background: rgba(251,146,60,.08); border: 1px solid rgba(251,146,60,.25);
+      color: var(--orange); padding: 8px 16px; border-radius: 8px 0 0 8px;
+      min-width: 110px; text-align: center;
+    }
+    .t-arrow { color: var(--muted); padding: 0 10px; font-size: 1rem; }
+    .t-thread {
+      background: rgba(167,139,250,.08); border: 1px solid rgba(167,139,250,.25);
+      color: var(--purple); padding: 8px 16px; border-radius: 0 8px 8px 0;
+      min-width: 110px; text-align: center;
+    }
+
+    /* ── QUEUE DIAGRAM ── */
+    .queue-stack { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+    .q-row {
+      background: rgba(34,211,238,.07); border: 1px solid rgba(34,211,238,.2);
+      color: var(--cyan); font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem; padding: 8px 22px; border-radius: 8px; min-width: 160px;
+    }
+
+    /* ── COMPARE GRID ── */
+    .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:560px){ .cmp-grid{grid-template-columns:1fr} }
+    .cmp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .cmp-card h4 { font-family: 'JetBrains Mono', monospace; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+    .cmp-card.bad h4{color:var(--red)} .cmp-card.good h4{color:var(--green)}
+
+    /* ── RESTAURANT ── */
+    .restaurant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:560px){ .restaurant-grid{grid-template-columns:1fr} }
+    .rest-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+    .rest-card h4 { font-family: 'JetBrains Mono', monospace; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+    .rest-card.trad h4{color:var(--orange)} .rest-card.node h4{color:var(--green)}
+
+    /* ── CHIPS ── */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { font-family: 'JetBrains Mono', monospace; font-size: .73rem; padding: 5px 13px; border-radius: 999px; border: 1px solid; }
+    .cg{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.3)}
+    .cc{background:rgba(34,211,238,.1);color:var(--cyan);border-color:rgba(34,211,238,.3)}
+    .cy{background:rgba(251,191,36,.1);color:var(--yellow);border-color:rgba(251,191,36,.3)}
+    .cp{background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3)}
+    .co{background:rgba(251,146,60,.1);color:var(--orange);border-color:rgba(251,146,60,.3)}
+    .cb{background:rgba(96,165,250,.1);color:var(--blue);border-color:rgba(96,165,250,.3)}
+
+    /* ── INTERVIEW ── */
+    .interview {
+      background: rgba(74,222,128,.06); border: 1px solid rgba(74,222,128,.2);
+      border-radius: 14px; padding: 18px 22px;
+    }
+    .i-label { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--green); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+    .interview blockquote { color: #d1fae5; font-style: italic; font-size: .95rem; line-height: 1.9; }
+
+    /* ── TRICK ── */
+    .trick { background: rgba(251,191,36,.05); border: 1px solid rgba(251,191,36,.22); border-radius: 14px; padding: 20px 22px; }
+    .t-label { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--yellow); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
+    .trick .tq { background: rgba(251,191,36,.07); border: 1px solid rgba(251,191,36,.2); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; }
+    .trick .tq p { color: #fef9c3; font-weight: 600; }
+    .trick .tq p::before { content: '👉 '; }
+    .trick .ta p::before { content: '👉 '; }
+    .trick .ta p { color: #b8c5d8; font-size: .93rem; }
+
+    /* ── PART DIVIDER ── */
+    .part-divider { display: flex; align-items: center; gap: 14px; }
+    .part-line { flex: 1; height: 1px; background: var(--border); }
+    .part-text { font-family: 'JetBrains Mono', monospace; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+
+    /* ── DEEP STEPS ── */
+    .deep-steps { display: flex; flex-direction: column; gap: 18px; }
+    .deep-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+    }
+    .ds-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      background: #0a0d16;
+    }
+    .ds-num {
+      width: 34px; height: 34px; border-radius: 8px;
+      display: grid; place-items: center;
+      font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: .8rem;
+      flex-shrink: 0;
+    }
+    .ds-header h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: -.01em; }
+    .ds-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+    .ds1 .ds-num{background:rgba(96,165,250,.12);color:var(--blue);border:1px solid rgba(96,165,250,.3)}  .ds1 .ds-header h3{color:var(--blue)}
+    .ds2 .ds-num{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.3)} .ds2 .ds-header h3{color:var(--green)}
+    .ds3 .ds-num{background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.3)}.ds3 .ds-header h3{color:var(--yellow)}
+    .ds4 .ds-num{background:rgba(251,146,60,.12);color:var(--orange);border:1px solid rgba(251,146,60,.3)}.ds4 .ds-header h3{color:var(--orange)}
+
+    .ds1 .blist li::before{color:var(--blue)}   .ds2 .blist li::before{color:var(--green)}
+    .ds3 .blist li::before{color:var(--yellow)} .ds4 .blist li::before{color:var(--orange)}
+
+    /* ── INLINE CODE ── */
+    code { font-family:'JetBrains Mono',monospace; background:rgba(255,255,255,.07); color:var(--cyan); font-size:.8em; padding:2px 7px; border-radius:5px; }
+
+    /* ── FINAL ── */
+    .final {
+      background: linear-gradient(135deg,rgba(96,165,250,.07) 0%,rgba(34,211,238,.05) 50%,rgba(74,222,128,.07) 100%);
+      border: 1px solid rgba(96,165,250,.18); border-radius: 20px; padding: 38px 30px; text-align: center;
+    }
+    .final .star { font-size: 1.5rem; margin-bottom: 12px; }
+    .final h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--green); margin-bottom: 14px; }
+    .final blockquote { color: #e2e8f0; font-style: italic; font-size: .97rem; line-height: 1.9; max-width: 700px; margin: 0 auto; }
+
+    ::-webkit-scrollbar{width:6px;height:6px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">⚡ Architecture Deep Dive</div>
+  <h1>Node.js Architecture – Teaching Guide</h1>
+  <p>Single-threaded, Event-driven, Non-blocking I/O — Tamil step-by-step classroom guide.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══════ STEP 1 ══════ -->
+  <article class="section c1">
+    <div class="section-header">
+      <div class="snum">01</div>
+      <h2>Step 1 – Problem First (Students Think)</h2>
+    </div>
+    <div class="section-body">
+      <p>Class start பண்ணும்போது question கேளு:</p>
+      <div class="speech">
+        <div class="speech-icon">🗣️</div>
+        <p>"ஒரு server-க்கு ஒரே நேரத்தில் 1000 users request அனுப்பினால் என்ன ஆகும்?"</p>
+      </div>
+      <div>
+        <p class="sub">Students usually answer</p>
+        <ul class="blist">
+          <li>server slow ஆகும்</li>
+          <li>crash ஆகும்</li>
+        </ul>
+      </div>
+      <div class="qbox">
+        <p>👉 Traditional servers எப்படி handle பண்ணும் தெரியுமா?</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 2 ══════ -->
+  <article class="section c2">
+    <div class="section-header">
+      <div class="snum">02</div>
+      <h2>Step 2 – Traditional Server Explain</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல diagram draw பண்ணு:</p>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="dd1"></span><span class="dd2"></span><span class="dd3"></span></div>
+          <span class="clabel">multi-thread model</span>
+        </div>
+        <pre>Client 1 → Thread 1
+Client 2 → Thread 2
+Client 3 → Thread 3
+Client 4 → Thread 4</pre>
+      </div>
+
+      <p>Explain:</p>
+      <div class="speech">
+        <div class="speech-icon">🗣️</div>
+        <p>"Java / PHP servers normally multi-thread model use பண்ணும்."</p>
+      </div>
+
+      <div>
+        <p class="sub">Meaning</p>
+        <div class="qbox"><p>👉 ஒவ்வொரு client request-க்கும் separate thread create ஆகும்</p></div>
+      </div>
+
+      <div>
+        <p class="sub">Problem</p>
+        <ul class="blist">
+          <li>அதிக memory usage</li>
+          <li>அதிக CPU usage</li>
+          <li>server slow ஆகும்</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 3 ══════ -->
+  <article class="section c3">
+    <div class="section-header">
+      <div class="snum">03</div>
+      <h2>Step 3 – Node.js Idea Introduce</h2>
+    </div>
+    <div class="section-body">
+      <p>அடுத்த question:</p>
+      <div class="speech">
+        <div class="speech-icon">🗣️</div>
+        <p>"ஒரே thread இருந்தாலும் thousands requests handle பண்ண முடியுமா?"</p>
+      </div>
+      <div class="abox"><p>Students: Impossible</p></div>
+      <p>அப்போ சொல்லணும்:</p>
+      <div class="qbox"><p>👉 Node.js அதையே செய்கிறது.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 4 ══════ -->
+  <article class="section c4">
+    <div class="section-header">
+      <div class="snum">04</div>
+      <h2>Step 4 – Node.js Architecture Explain</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல இந்த diagram draw பண்ணு:</p>
+
+      <div class="flow">
+        <div class="flow-box">Client Requests</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">Event Queue</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">Event Loop</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">Non-Blocking Operations</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box">Response</div>
+      </div>
+
+      <p>Explain slowly:</p>
+
+      <!-- sub steps -->
+      <div class="deep-steps">
+
+        <div class="deep-step ds1">
+          <div class="ds-header">
+            <div class="ds-num">1️⃣</div>
+            <h3>Client Requests</h3>
+          </div>
+          <div class="ds-body">
+            <p>Users இருந்து request வரும்.</p>
+            <p class="sub">Example</p>
+            <ul class="blist">
+              <li>login</li>
+              <li>API request</li>
+              <li>data fetch</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="deep-step ds2">
+          <div class="ds-header">
+            <div class="ds-num">2️⃣</div>
+            <h3>Event Queue</h3>
+          </div>
+          <div class="ds-body">
+            <p>Requests queue-ல store ஆகும்.</p>
+            <p class="sub">Like</p>
+            <div class="queue-stack">
+              <div class="q-row">Request 1</div>
+              <div class="q-row">Request 2</div>
+              <div class="q-row">Request 3</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="deep-step ds3">
+          <div class="ds-header">
+            <div class="ds-num">3️⃣</div>
+            <h3>Event Loop</h3>
+          </div>
+          <div class="ds-body">
+            <p>Event loop check பண்ணும்:</p>
+            <div class="qbox"><p>👉 எந்த request ready?</p></div>
+            <p>அது execute பண்ணும்.</p>
+          </div>
+        </div>
+
+        <div class="deep-step ds4">
+          <div class="ds-header">
+            <div class="ds-num">4️⃣</div>
+            <h3>Non-Blocking Operation</h3>
+          </div>
+          <div class="ds-body">
+            <p>Node.js wait பண்ணாது.</p>
+            <p class="sub">Example</p>
+            <p>Database request send பண்ணி அடுத்த request handle பண்ணும்.</p>
+            <p>இதுதான் non-blocking.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 5 ══════ -->
+  <article class="section c5">
+    <div class="section-header">
+      <div class="snum">05</div>
+      <h2>Simple Real Life Example</h2>
+    </div>
+    <div class="section-body">
+      <div class="speech">
+        <div class="speech-icon">🗣️</div>
+        <p>"ஒரு restaurant imagine பண்ணுங்க."</p>
+      </div>
+
+      <div class="restaurant-grid">
+        <div class="rest-card trad">
+          <h4>❌ Traditional server</h4>
+          <div class="qbox" style="margin-top:4px;"><p>👉 ஒவ்வொரு customer-க்கும் separate waiter.</p></div>
+        </div>
+        <div class="rest-card node">
+          <h4>✅ Node.js</h4>
+          <div class="qbox" style="margin-top:4px;"><p>👉 ஒரே waiter orders எடுத்துக்கிட்டு kitchen-க்கு அனுப்புவான்.</p></div>
+        </div>
+      </div>
+
+      <p>Kitchen cook பண்ணும் போது waiter மற்ற customers-ஐ handle பண்ணுவான்.</p>
+      <div class="abox"><p>இதுதான் event-driven model.</p></div>
+      <p>Students உடனே புரியும் 👍</p>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 6 ══════ -->
+  <article class="section c6">
+    <div class="section-header">
+      <div class="snum">06</div>
+      <h2>Code Example</h2>
+    </div>
+    <div class="section-body">
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="dd1"></span><span class="dd2"></span><span class="dd3"></span></div>
+          <span class="clabel">async-demo.js</span>
+        </div>
+        <pre><span class="fn">setTimeout</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Task finished"</span>)
+}, <span class="num">2000</span>)
+
+console.<span class="fn">log</span>(<span class="str">"Next task running"</span>)</pre>
+      </div>
+
+      <div>
+        <p class="sub">Explain</p>
+        <div class="qbox"><p>👉 <code>setTimeout</code> asynchronous task.</p></div>
+        <p style="margin-top:8px;">Node.js wait பண்ணாது.</p>
+      </div>
+
+      <div class="output">
+        <div class="output-label">▶ Output</div>
+        <pre>Next task running
+Task finished</pre>
+      </div>
+
+      <div>
+        <p class="sub">Meaning</p>
+        <div class="qbox"><p>👉 Node.js next code execute பண்ணும்.</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 7 ══════ -->
+  <article class="section c7">
+    <div class="section-header">
+      <div class="snum">07</div>
+      <h2>Key Points Students Remember</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல எழுதணும்:</p>
+      <p class="sub">Node.js Architecture</p>
+      <div class="chips">
+        <span class="chip cp">Single thread</span>
+        <span class="chip cc">Event loop</span>
+        <span class="chip cg">Event queue</span>
+        <span class="chip cy">Non-blocking I/O</span>
+        <span class="chip cb">Asynchronous operations</span>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 8 ══════ -->
+  <article class="section c8">
+    <div class="section-header">
+      <div class="snum">08</div>
+      <h2>Interview Sentence</h2>
+    </div>
+    <div class="section-body">
+      <p>Students memorize this:</p>
+      <div class="interview">
+        <div class="i-label">⭐ Interview Sentence</div>
+        <blockquote>"Node.js uses a single-threaded event-driven architecture with non-blocking I/O to efficiently handle multiple requests."</blockquote>
+      </div>
+
+      <div class="trick">
+        <div class="t-label">✅ Teaching Trick</div>
+        <p style="color:#b8c5d8;font-size:.93rem;margin-bottom:12px;">இந்த question class-ல கேள்:</p>
+        <div class="tq">
+          <p>"If Node.js has only one thread, how can it handle thousands of requests?"</p>
+        </div>
+        <p style="color:var(--muted);font-size:.8rem;margin-bottom:8px;">Answer:</p>
+        <div class="ta"><p>Using Event Loop and Non-Blocking I/O.</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ PART DIVIDER ══════ -->
+  <div class="part-divider">
+    <div class="part-line"></div>
+    <div class="part-text">Deep Dive – Architecture Components</div>
+    <div class="part-line"></div>
+  </div>
+
+  <!-- ══════ DEEP DIVE 1 – Client Requests ══════ -->
+  <article class="section d1">
+    <div class="section-header">
+      <div class="snum">1️⃣</div>
+      <h2>Client Requests (Client இருந்து request வருது)</h2>
+    </div>
+    <div class="section-body">
+      <p>முதலில் client என்றால் என்ன?</p>
+      <div>
+        <p class="sub">Client examples</p>
+        <ul class="blist">
+          <li>Browser (Chrome)</li>
+          <li>Mobile App</li>
+          <li>Frontend React App</li>
+          <li>Postman</li>
+        </ul>
+      </div>
+      <p>User ஒரு action பண்ணும்போது request server-க்கு போகும்.</p>
+      <div>
+        <p class="sub">Examples</p>
+        <div class="deep-steps">
+          <div class="deep-step ds1" style="padding:0">
+            <div class="ds-body" style="padding:14px 18px">
+              <div class="thread-grid">
+                <div class="thread-row">
+                  <div class="t-client">User login</div>
+                  <div class="t-arrow">→</div>
+                  <div class="t-thread"><code>/login</code> API request</div>
+                </div>
+                <div class="thread-row">
+                  <div class="t-client">User products open</div>
+                  <div class="t-arrow">→</div>
+                  <div class="t-thread"><code>/products</code> API request</div>
+                </div>
+                <div class="thread-row">
+                  <div class="t-client">User data fetch</div>
+                  <div class="t-arrow">→</div>
+                  <div class="t-thread"><code>/users</code> API request</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Diagram</p>
+        <div class="flow">
+          <div class="flow-box">User</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Browser / React App</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Node.js Server</div>
+        </div>
+      </div>
+
+      <p>அதாவது:</p>
+      <div class="qbox"><p>👉 Client → Server request send பண்ணும்</p></div>
+      <p>Example:</p>
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="dd1"></span><span class="dd2"></span><span class="dd3"></span></div>
+          <span class="clabel">client.js</span>
+        </div>
+        <pre><span class="fn">fetch</span>(<span class="str">"/users"</span>)</pre>
+      </div>
+      <p>இந்த request Node.js server-க்கு வரும்.</p>
+    </div>
+  </article>
+
+  <!-- ══════ DEEP DIVE 2 – Event Queue ══════ -->
+  <article class="section d2">
+    <div class="section-header">
+      <div class="snum">2️⃣</div>
+      <h2>Event Queue (Requests waiting line)</h2>
+    </div>
+    <div class="section-body">
+      <p>Node.js server-க்கு many requests ஒரே நேரத்தில் வரும்.</p>
+      <div>
+        <p class="sub">Example</p>
+        <div class="thread-grid">
+          <div class="thread-row">
+            <div class="t-client">User 1</div>
+            <div class="t-arrow">→</div>
+            <div class="t-thread">login</div>
+          </div>
+          <div class="thread-row">
+            <div class="t-client">User 2</div>
+            <div class="t-arrow">→</div>
+            <div class="t-thread">products</div>
+          </div>
+          <div class="thread-row">
+            <div class="t-client">User 3</div>
+            <div class="t-arrow">→</div>
+            <div class="t-thread">orders</div>
+          </div>
+          <div class="thread-row">
+            <div class="t-client">User 4</div>
+            <div class="t-arrow">→</div>
+            <div class="t-thread">profile</div>
+          </div>
+        </div>
+      </div>
+      <p>இந்த requests Event Queue-ல wait பண்ணும்.</p>
+
+      <div>
+        <p class="sub">Queue என்றால் என்ன?</p>
+        <div class="qbox"><p>👉 Line</p></div>
+      </div>
+
+      <div>
+        <p class="sub">Example</p>
+        <div class="queue-stack">
+          <div class="q-row">Request 1</div>
+          <div class="q-row">Request 2</div>
+          <div class="q-row">Request 3</div>
+          <div class="q-row">Request 4</div>
+        </div>
+      </div>
+
+      <p>இது supermarket billing line மாதிரி.</p>
+      <p>First வந்தது first process ஆகும்.</p>
+      <p>இதற்கு FIFO சொல்வாங்க.</p>
+      <div class="interview" style="background:rgba(34,211,238,.05);border-color:rgba(34,211,238,.2);">
+        <div class="i-label" style="color:var(--cyan);">FIFO meaning</div>
+        <blockquote style="color:#a5f3fc;">First In First Out</blockquote>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ DEEP DIVE 3 – Event Loop ══════ -->
+  <article class="section d3">
+    <div class="section-header">
+      <div class="snum">3️⃣</div>
+      <h2>Event Loop (Node.js brain)</h2>
+    </div>
+    <div class="section-body">
+      <p>Event loop தான் Node.js-ல most important concept.</p>
+
+      <div>
+        <p class="sub">Event loop என்ன பண்ணும்?</p>
+        <div class="qbox"><p>👉 Event Queue check பண்ணும்.</p></div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="dd1"></span><span class="dd2"></span><span class="dd3"></span></div>
+          <span class="clabel">question</span>
+        </div>
+        <pre>Is any request ready?</pre>
+      </div>
+
+      <p>Ready இருந்தா:</p>
+      <div class="qbox"><p>👉 அந்த request execute பண்ணும்.</p></div>
+
+      <div>
+        <p class="sub">Diagram</p>
+        <div class="flow">
+          <div class="flow-box">Event Queue</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Event Loop</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Execute Request</div>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Example Flow (Step by Step)</p>
+        <p>3 requests வந்தது imagine பண்ணு.</p>
+        <div class="code-block" style="margin-top:10px;">
+          <div class="code-top">
+            <div class="dots"><span class="dd1"></span><span class="dd2"></span><span class="dd3"></span></div>
+            <span class="clabel">requests</span>
+          </div>
+          <pre>Request 1 → Database call
+Request 2 → API response
+Request 3 → File read</pre>
+        </div>
+        <p class="sub" style="margin-top:14px;">Flow</p>
+        <div class="flow">
+          <div class="flow-box">Client Requests</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Event Queue</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Event Loop</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Async Operation</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box">Response</div>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Important Concept (Non Blocking)</p>
+        <p>Example:</p>
+        <p>Request 1 database call பண்ணுது.</p>
+        <p>Database response வர 2 seconds ஆகும்.</p>
+        <div class="cmp-grid" style="margin-top:12px;">
+          <div class="cmp-card bad">
+            <h4>❌ Traditional server</h4>
+            <div class="code-block">
+              <pre style="padding:12px;font-size:.78rem;">wait 2 seconds</pre>
+            </div>
+          </div>
+          <div class="cmp-card good">
+            <h4>✅ Node.js</h4>
+            <div class="code-block">
+              <pre style="padding:12px;font-size:.78rem;">send database request
+move to next request</pre>
+            </div>
+          </div>
+        </div>
+        <p style="margin-top:12px;">அதாவது:</p>
+        <div class="qbox"><p>👉 Node.js wait பண்ணாது</p></div>
+        <div class="abox" style="margin-top:10px;"><p>இதுதான் Non-Blocking I/O</p></div>
+      </div>
+
+      <div>
+        <p class="sub">Real Life Example (Best for Teaching)</p>
+        <p>Restaurant example.</p>
+        <div>
+          <p class="sub" style="margin-top:10px;">Customers</p>
+          <div class="queue-stack">
+            <div class="q-row">Customer 1</div>
+            <div class="q-row">Customer 2</div>
+            <div class="q-row">Customer 3</div>
+          </div>
+        </div>
+        <p style="margin-top:12px;">Waiter:</p>
+        <div class="qbox"><p>👉 orders collect பண்ணுவான்</p></div>
+        <p style="margin-top:8px;">Kitchen cook பண்ணும்.</p>
+        <p>Waiter wait பண்ண மாட்டான்.</p>
+        <p>Next customer order எடுத்துக்குவான்.</p>
+        <div class="abox" style="margin-top:10px;"><p>இதுதான்: Event Driven Model</p></div>
+      </div>
+
+      <div>
+        <p class="sub">Small Code Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="dd1"></span><span class="dd2"></span><span class="dd3"></span></div>
+            <span class="clabel">event-loop.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="fn">setTimeout</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Database response"</span>)
+}, <span class="num">2000</span>)
+
+console.<span class="fn">log</span>(<span class="str">"Next request"</span>)</pre>
+        </div>
+        <div class="output" style="margin-top:12px;">
+          <div class="output-label">▶ Output</div>
+          <pre>Start
+Next request
+Database response</pre>
+        </div>
+        <p style="margin-top:10px;">Node.js wait பண்ணவில்லை.</p>
+      </div>
+
+      <div class="interview">
+        <div class="i-label">⭐ Interview One Line</div>
+        <p style="color:#b8c5d8;font-size:.88rem;margin-bottom:8px;">நீங்க interview-ல சொல்லலாம்:</p>
+        <blockquote>"Client requests are placed in the event queue, and the event loop continuously checks the queue and processes requests using non-blocking asynchronous operations."</blockquote>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ FINAL ══════ -->
+  <div class="final">
+    <div class="star">⭐</div>
+    <h3>Final Interview Sentence</h3>
+    <blockquote>"Node.js uses a single-threaded event-driven architecture with non-blocking I/O to efficiently handle multiple requests."</blockquote>
+  </div>
+
+</main>
+</body>
+</html>

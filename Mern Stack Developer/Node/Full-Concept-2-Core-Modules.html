@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modules, Global Objects & Process – Node.js Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #090b10;
+      --surface: #0d1018;
+      --card:    #111420;
+      --border:  #1b2030;
+      --green:   #4ade80;
+      --cyan:    #22d3ee;
+      --yellow:  #fbbf24;
+      --orange:  #fb923c;
+      --purple:  #a78bfa;
+      --pink:    #f472b6;
+      --red:     #f87171;
+      --blue:    #60a5fa;
+      --teal:    #2dd4bf;
+      --lime:    #a3e635;
+      --text:    #dde4f0;
+      --muted:   #47516a;
+      --code-bg: #060709;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      background:var(--bg);color:var(--text);
+      font-family:'Noto Sans Tamil',sans-serif;
+      line-height:1.8;min-height:100vh;overflow-x:hidden;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none;z-index:0;opacity:.3;
+    }
+
+    /* HERO */
+    .hero{
+      position:relative;text-align:center;
+      padding:70px 22px 54px;
+      border-bottom:1px solid var(--border);overflow:hidden;
+    }
+    .hero::after{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(163,230,53,.09) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(163,230,53,.1);border:1px solid rgba(163,230,53,.3);
+      color:var(--lime);font-family:'JetBrains Mono',monospace;
+      font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+      padding:6px 18px;border-radius:999px;margin-bottom:20px;
+    }
+    .hero h1{
+      font-family:'Syne',sans-serif;
+      font-size:clamp(2rem,5.5vw,3.6rem);
+      font-weight:800;letter-spacing:-.025em;line-height:1.1;
+      background:linear-gradient(135deg,var(--lime) 0%,var(--green) 40%,var(--cyan) 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      margin-bottom:14px;
+    }
+    .hero p{color:var(--muted);font-size:.98rem;max-width:540px;margin:0 auto;}
+
+    /* CONTAINER */
+    .container{max-width:960px;margin:0 auto;padding:50px 22px 90px;display:flex;flex-direction:column;gap:42px;}
+
+    /* SECTION */
+    .section{
+      border:1px solid var(--border);border-radius:20px;
+      overflow:hidden;background:var(--card);
+      animation:fadeUp .55s ease both;
+    }
+    .section:nth-child(1){animation-delay:.04s}.section:nth-child(2){animation-delay:.10s}
+    .section:nth-child(3){animation-delay:.16s}.section:nth-child(4){animation-delay:.22s}
+    .section:nth-child(5){animation-delay:.28s}.section:nth-child(6){animation-delay:.34s}
+    .section:nth-child(7){animation-delay:.40s}.section:nth-child(8){animation-delay:.46s}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+    .section-header{
+      display:flex;align-items:center;gap:14px;
+      padding:18px 26px;border-bottom:1px solid var(--border);
+      background:var(--surface);
+    }
+    .snum{
+      width:38px;height:38px;border-radius:10px;
+      display:grid;place-items:center;
+      font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.83rem;flex-shrink:0;
+    }
+    .section-header h2{font-family:'Syne',sans-serif;font-size:1.12rem;font-weight:700;letter-spacing:-.01em;}
+    .section-body{padding:26px;display:flex;flex-direction:column;gap:20px;}
+
+    .m4  .snum{background:rgba(163,230,53,.12);color:var(--lime);  border:1px solid rgba(163,230,53,.3)} .m4  .section-header h2{color:var(--lime)}
+    .m5  .snum{background:rgba(34,211,238,.12); color:var(--cyan);  border:1px solid rgba(34,211,238,.3)}.m5  .section-header h2{color:var(--cyan)}
+    .m6  .snum{background:rgba(251,146,60,.12); color:var(--orange);border:1px solid rgba(251,146,60,.3)}.m6  .section-header h2{color:var(--orange)}
+
+    /* TEXT */
+    p{color:#b8c5d8;font-size:.95rem;}
+    .sub{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+
+    /* QBOX */
+    .qbox{display:flex;align-items:flex-start;gap:10px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:12px 16px;}
+    .qbox p{color:#fef9c3;font-size:.94rem;font-weight:600;}
+
+    /* ABOX */
+    .abox{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:12px 16px;}
+    .abox p{color:#d1fae5;font-size:.93rem;}
+
+    /* INFOBOX */
+    .infobox{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.2);border-left:3px solid var(--blue);border-radius:12px;padding:13px 17px;}
+    .infobox p{color:#bfdbfe;font-size:.93rem;}
+
+    /* BULLET */
+    .blist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .blist li{display:flex;align-items:flex-start;gap:10px;color:#b8c5d8;font-size:.94rem;}
+    .blist li::before{content:'▸';flex-shrink:0;margin-top:2px;}
+    .m4 .blist li::before{color:var(--lime)}
+    .m5 .blist li::before{color:var(--cyan)}
+    .m6 .blist li::before{color:var(--orange)}
+
+    /* INLINE CODE */
+    code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.07);color:var(--cyan);font-size:.8em;padding:2px 7px;border-radius:5px;}
+
+    /* CODE BLOCK */
+    .code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+    .code-top{display:flex;align-items:center;justify-content:space-between;padding:9px 15px;border-bottom:1px solid var(--border);background:#040507;}
+    .dots{display:flex;gap:6px;}
+    .dots span{width:10px;height:10px;border-radius:50%;}
+    .d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+    .clabel{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;}
+    pre{padding:18px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.75;color:#8a9fc0;}
+    .kw{color:var(--purple)}.fn{color:var(--cyan)}.str{color:var(--green)}
+    .num{color:var(--orange)}.cm{color:var(--muted)}.op{color:var(--pink)}
+
+    /* OUTPUT */
+    .output{background:#040507;border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:14px 18px;}
+    .ol{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .output pre{padding:0;color:#86efac;font-size:.82rem;}
+
+    /* CHIPS */
+    .chips{display:flex;flex-wrap:wrap;gap:8px;}
+    .chip{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:5px 13px;border-radius:999px;border:1px solid;}
+    .cg{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.3)}
+    .cc{background:rgba(34,211,238,.1);color:var(--cyan);border-color:rgba(34,211,238,.3)}
+    .cy{background:rgba(251,191,36,.1);color:var(--yellow);border-color:rgba(251,191,36,.3)}
+    .cp{background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3)}
+    .co{background:rgba(251,146,60,.1);color:var(--orange);border-color:rgba(251,146,60,.3)}
+    .cl{background:rgba(163,230,53,.1);color:var(--lime);border-color:rgba(163,230,53,.3)}
+    .cb{background:rgba(96,165,250,.1);color:var(--blue);border-color:rgba(96,165,250,.3)}
+
+    /* INTERVIEW */
+    .interview{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:18px 22px;}
+    .il{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+    .interview blockquote{color:#d1fae5;font-style:italic;font-size:.95rem;line-height:1.9;}
+
+    /* MODULE TYPE GRID */
+    .mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+    @media(max-width:580px){.mod-grid{grid-template-columns:1fr}}
+    .mod-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    .mod-card-header{padding:13px 18px;border-bottom:1px solid var(--border);background:#0a0c14;}
+    .mod-card-header h3{font-family:'Syne',sans-serif;font-size:.98rem;font-weight:700;}
+    .mc1 .mod-card-header h3{color:var(--lime)}
+    .mc2 .mod-card-header h3{color:var(--purple)}
+    .mod-card-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px;}
+    .mc1 .blist li::before{color:var(--lime)}
+    .mc2 .blist li::before{color:var(--purple)}
+
+    /* FILE PAIR */
+    .file-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    @media(max-width:560px){.file-pair{grid-template-columns:1fr}}
+
+    /* EXPORT METHODS */
+    .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    @media(max-width:560px){.export-grid{grid-template-columns:1fr}}
+    .exp-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;}
+    .exp-card h4{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+    .exp1 h4{color:var(--cyan)}.exp2 h4{color:var(--purple)}
+
+    /* TABLE */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+    table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;}
+    thead tr{background:#0a0c15;border-bottom:1px solid var(--border);}
+    thead th{padding:12px 18px;text-align:left;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;}
+    tbody tr{border-bottom:1px solid var(--border);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:nth-child(odd){background:rgba(255,255,255,.02);}
+    tbody td{padding:11px 18px;color:#b8c5d8;vertical-align:top;}
+    tbody td:first-child{color:var(--cyan);font-weight:700;}
+    .m5 tbody td:first-child{color:var(--cyan)}
+    .m6 tbody td:first-child{color:var(--orange)}
+
+    /* GLOBAL OBJECTS HIGHLIGHT */
+    .global-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+    @media(max-width:560px){.global-grid{grid-template-columns:repeat(2,1fr)}}
+    .glob-item{
+      background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.18);
+      border-radius:10px;padding:10px 14px;text-align:center;
+      font-family:'JetBrains Mono',monospace;font-size:.82rem;
+      color:var(--cyan);font-weight:700;
+    }
+
+    /* PROCESS PROPS */
+    .proc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+    @media(max-width:560px){.proc-grid{grid-template-columns:1fr}}
+    .proc-item{
+      background:rgba(251,146,60,.06);border:1px solid rgba(251,146,60,.18);
+      border-radius:10px;padding:10px 14px;
+    }
+    .proc-item .pk{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--orange);font-weight:700;margin-bottom:3px;}
+    .proc-item .pv{font-size:.85rem;color:#b8c5d8;}
+
+    /* FINAL */
+    .final{
+      background:linear-gradient(135deg,rgba(163,230,53,.07) 0%,rgba(74,222,128,.05) 50%,rgba(34,211,238,.07) 100%);
+      border:1px solid rgba(163,230,53,.18);border-radius:20px;padding:38px 30px;text-align:center;
+    }
+    .final .star{font-size:1.5rem;margin-bottom:12px;}
+    .final h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--lime);margin-bottom:14px;}
+    .final blockquote{color:#e2e8f0;font-style:italic;font-size:.97rem;line-height:1.9;max-width:720px;margin:0 auto;}
+
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">📦 Node.js Concepts</div>
+  <h1>Modules, Global Objects &amp; Process</h1>
+  <p>Node.js modules, global objects மற்றும் process object — Tamil explanation with examples &amp; interview sentences.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══════════════════ 4 – MODULES ══════════════════ -->
+  <article class="section m4">
+    <div class="section-header">
+      <div class="snum">4️⃣</div>
+      <h2>Modules</h2>
+    </div>
+    <div class="section-body">
+
+      <div>
+        <p class="sub">Tamil Explanation</p>
+        <p>Module என்றால் ஒரு JavaScript file அல்லது reusable code block.</p>
+        <br/>
+        <p>Node.js-ல் code-ஐ small files ஆக split பண்ணி organize பண்ணலாம். இதனால்:</p>
+      </div>
+
+      <ul class="blist">
+        <li>Code clean ஆக இருக்கும்</li>
+        <li>Reuse பண்ண முடியும்</li>
+        <li>Maintain easy ஆகும்</li>
+      </ul>
+
+      <p>Node.js-ல் இரண்டு type modules இருக்கும்:</p>
+
+      <div class="mod-grid">
+
+        <!-- Core Modules -->
+        <div class="mod-card mc1">
+          <div class="mod-card-header"><h3>1️⃣ Core Modules</h3></div>
+          <div class="mod-card-body">
+            <p>Node.js built-in modules.</p>
+            <p class="sub">Examples</p>
+            <ul class="blist">
+              <li><code>fs</code> → file system</li>
+              <li><code>http</code> → server create</li>
+              <li><code>path</code> → file paths</li>
+              <li><code>os</code> → operating system info</li>
+            </ul>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">core.js</span>
+              </div>
+              <pre><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Defined -->
+        <div class="mod-card mc2">
+          <div class="mod-card-header"><h3>2️⃣ User Defined Modules</h3></div>
+          <div class="mod-card-body">
+            <p>நாமே create பண்ணும் modules.</p>
+            <p class="sub">Example</p>
+            <div class="file-pair">
+              <div>
+                <div class="clabel" style="margin-bottom:6px;display:block;">math.js</div>
+                <div class="code-block">
+                  <div class="code-top">
+                    <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                    <span class="clabel">math.js</span>
+                  </div>
+                  <pre><span class="kw">function</span> <span class="fn">add</span>(a, b) {
+  <span class="kw">return</span> a + b
+}
+
+module.exports = add</pre>
+                </div>
+              </div>
+              <div>
+                <div class="clabel" style="margin-bottom:6px;display:block;">app.js</div>
+                <div class="code-block">
+                  <div class="code-top">
+                    <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                    <span class="clabel">app.js</span>
+                  </div>
+                  <pre><span class="kw">const</span> add = <span class="fn">require</span>(<span class="str">"./math"</span>)
+
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>))</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Export Methods -->
+      <div>
+        <p class="sub">Module Export Methods</p>
+        <div class="export-grid">
+          <div class="exp-card exp1">
+            <h4>1️⃣ module.exports</h4>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">export</span>
+              </div>
+              <pre>module.exports = <span class="kw">function</span>() {}</pre>
+            </div>
+          </div>
+          <div class="exp-card exp2">
+            <h4>2️⃣ exports</h4>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">export</span>
+              </div>
+              <pre>exports.add = add</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why Modules -->
+      <div>
+        <p class="sub">Why Modules Important</p>
+        <div class="chips">
+          <span class="chip cl">Code reuse</span>
+          <span class="chip cg">Maintainability</span>
+          <span class="chip cc">Separation of concerns</span>
+          <span class="chip cp">Large applications manage easy</span>
+        </div>
+      </div>
+
+      <div class="interview">
+        <div class="il">⭐ English Sentence (Interview)</div>
+        <blockquote>"Modules in Node.js help organize code into reusable and maintainable files."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════════════════ 5 – GLOBAL OBJECTS ══════════════════ -->
+  <article class="section m5">
+    <div class="section-header">
+      <div class="snum">5️⃣</div>
+      <h2>Global Objects</h2>
+    </div>
+    <div class="section-body">
+
+      <div>
+        <p class="sub">Tamil Explanation</p>
+        <p>Global Objects என்றால் Node.js application முழுவதும் access பண்ணக்கூடிய objects.</p>
+        <br/>
+        <p>இதற்கு import தேவையில்லை.</p>
+      </div>
+
+      <div>
+        <p class="sub">Examples</p>
+        <div class="global-grid">
+          <div class="glob-item"><code>console</code></div>
+          <div class="glob-item"><code>process</code></div>
+          <div class="glob-item"><code>setTimeout</code></div>
+          <div class="glob-item"><code>setInterval</code></div>
+          <div class="glob-item"><code>__dirname</code></div>
+          <div class="glob-item"><code>__filename</code></div>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">global.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(<span class="str">"Hello"</span>)</pre>
+        </div>
+        <p style="margin-top:10px;">இது global object. Import தேவையில்லை.</p>
+      </div>
+
+      <div>
+        <p class="sub">Example 2</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">dirname.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(__dirname)</pre>
+        </div>
+        <div class="output" style="margin-top:10px;">
+          <div class="ol">▶ Output</div>
+          <pre>project folder path</pre>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Important Global Objects</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Object</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>console</td><td>log messages</td></tr>
+              <tr><td>process</td><td>process info</td></tr>
+              <tr><td>__dirname</td><td>current folder path</td></tr>
+              <tr><td>__filename</td><td>current file path</td></tr>
+              <tr><td>setTimeout</td><td>run code later</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="interview">
+        <div class="il">⭐ English Sentence (Interview)</div>
+        <blockquote>"Global objects are available throughout the Node.js application without requiring import."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════════════════ 6 – PROCESS OBJECT ══════════════════ -->
+  <article class="section m6">
+    <div class="section-header">
+      <div class="snum">6️⃣</div>
+      <h2>Process Object</h2>
+    </div>
+    <div class="section-body">
+
+      <div>
+        <p class="sub">Tamil Explanation</p>
+        <p>process object என்பது Node.js application run ஆகும் current process information கொடுக்கும்.</p>
+        <br/>
+        <p>இது ஒரு global object.</p>
+      </div>
+
+      <div>
+        <p>இதன் மூலம்:</p>
+        <ul class="blist">
+          <li>environment variables access</li>
+          <li>command line arguments</li>
+          <li>process control</li>
+        </ul>
+      </div>
+
+      <!-- Example 1 -->
+      <div>
+        <p class="sub">Example 1 (Environment Variables)</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">env.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(process.env.PORT)</pre>
+        </div>
+        <p style="margin-top:10px;">இது <code>.env</code> file values access பண்ண உதவும்.</p>
+      </div>
+
+      <!-- Example 2 -->
+      <div>
+        <p class="sub">Example 2 (Command Line Arguments)</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">argv.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(process.argv)</pre>
+        </div>
+        <p style="margin-top:10px;">Run command:</p>
+        <div class="code-block" style="margin-top:8px;">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">terminal</span>
+          </div>
+          <pre>node app.js hello</pre>
+        </div>
+        <div class="output" style="margin-top:10px;">
+          <div class="ol">▶ Output</div>
+          <pre>['node', 'app.js', 'hello']</pre>
+        </div>
+      </div>
+
+      <!-- Example 3 -->
+      <div>
+        <p class="sub">Example 3 (Exit Process)</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">exit.js</span>
+          </div>
+          <pre>process.<span class="fn">exit</span>()</pre>
+        </div>
+        <p style="margin-top:10px;">Program stop ஆகும்.</p>
+      </div>
+
+      <!-- Process Properties Table -->
+      <div>
+        <p class="sub">Important Process Properties</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>process.env</td><td>environment variables</td></tr>
+              <tr><td>process.argv</td><td>command arguments</td></tr>
+              <tr><td>process.exit()</td><td>stop program</td></tr>
+              <tr><td>process.pid</td><td>process id</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="interview">
+        <div class="il">⭐ English Sentence (Interview)</div>
+        <blockquote>"The process object provides information and control over the current Node.js process."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════════════════ FINAL ══════════════════ -->
+  <div class="final">
+    <div class="star">⭐</div>
+    <h3>Final Interview Answer (Short)</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px;">நீங்க interview-ல சொல்லலாம்:</p>
+    <blockquote>"Node.js uses modules to organize code into reusable files. Global objects are available throughout the application without importing them. The process object provides information about the currently running Node.js process, including environment variables and command-line arguments."</blockquote>
+  </div>
+
+</main>
+</body>
+</html>

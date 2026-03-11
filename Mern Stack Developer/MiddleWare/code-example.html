@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Middleware · JWT · route protect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ecf2f9;
+            font-family: 'Segoe UI', 'Nirmala UI', system-ui, sans-serif;
+            padding: 2rem 1.2rem;
+            color: #1a3f5c;
+        }
+
+        .auth-card {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 56px;
+            box-shadow: 0 30px 60px -20px #1b4f6e;
+            overflow: hidden;
+            border: 1px solid #cde0f2;
+        }
+
+        .header-auth {
+            background: #0f3f5c;
+            color: white;
+            padding: 2.5rem 3rem;
+            border-bottom: 12px solid #e67e22;
+        }
+
+        .header-auth h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .header-auth .auth-icon {
+            background: #e67e22;
+            color: #0f3f5c;
+            padding: 0.3rem 2.2rem;
+            border-radius: 80px;
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .subhead {
+            font-size: 1.6rem;
+            color: #ffd8b0;
+            margin-top: 0.5rem;
+        }
+
+        .content-stack {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.8rem;
+        }
+
+        .section {
+            background: #f9feff;
+            border-radius: 48px;
+            padding: 2.2rem 2.8rem;
+            border: 2px solid #dfecf9;
+            box-shadow: 0 12px 18px -16px #1e4d70;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px dashed #c1d8f2;
+            padding-bottom: 0.8rem;
+        }
+
+        .section-num {
+            background: #0f3f5c;
+            color: white;
+            border-radius: 60px;
+            padding: 0.2rem 1.8rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #003459;
+        }
+
+        .tamil-box {
+            background: #fef6e9;
+            border-radius: 36px;
+            padding: 1.2rem 2rem;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            border-left: 12px solid #e67e22;
+        }
+
+        .code-window {
+            background: #0f263b;
+            color: #f2faff;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1.2rem 2rem;
+            border-radius: 30px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #3a6790;
+            margin: 1.2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .code-window .yellow { color: #fadc7a; }
+        .code-window .green { color: #baf0b0; }
+        .code-window .comment { color: #aac8ff; font-style: italic; }
+
+        .flow-row {
+            display: flex;
+            flex-wrap: wrap;
+            background: #e3f0fd;
+            border-radius: 60px;
+            padding: 1.2rem 2.5rem;
+            justify-content: center;
+            align-items: center;
+            gap: 15px 25px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border: 2px solid #e67e22;
+            margin: 1.5rem 0;
+        }
+
+        .arrow { color: #b35600; font-size: 2rem; }
+
+        .highlight-box {
+            background: #fff2db;
+            border-radius: 32px;
+            padding: 1rem 2rem;
+            border-left: 8px solid #0f3f5c;
+            font-weight: 500;
+        }
+
+        .interview-phrase {
+            background: #e3efff;
+            border-radius: 40px;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-left: 8px solid #0f3f5c;
+            margin: 1rem 0;
+        }
+
+        .interview-phrase::before {
+            content: "🗣️ ";
+            font-weight: 600;
+        }
+
+        .simple-answer {
+            background: #1d5a7a;
+            color: white;
+            border-radius: 48px;
+            padding: 1.5rem 2.5rem;
+            font-size: 1.4rem;
+            border: 3px solid #e67e22;
+        }
+
+        .footer-note {
+            background: #e2effa;
+            padding: 1.8rem 3rem;
+            color: #0f3f5c;
+            font-weight: 500;
+            border-top: 2px solid #bed3ee;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-card">
+    <div class="header-auth">
+        <h1>
+            <span class="auth-icon">🔐 Auth</span>
+            <span>middleware · JWT · route protection</span>
+        </h1>
+        <div class="subhead">dashboard · token verify · 401 · interview prep</div>
+    </div>
+
+    <div class="content-stack">
+        <!-- 1️⃣ Problem (Why we need this) -->
+        <div class="section">
+            <div class="section-head">
+                <span class="section-num">1️⃣</span>
+                <span class="section-title">Problem (why we need this)</span>
+            </div>
+            <div class="tamil-box">
+                <strong>First interviewer-க்கு situation சொல்லு:</strong><br>
+                “Some routes like dashboard should be accessed only by logged-in users. So we use authentication middleware to verify the user token.”<br><br>
+                <strong>Tamil idea:</strong> Login பண்ணாத user dashboard access பண்ணக்கூடாது.
+            </div>
+        </div>
+
+        <!-- 2️⃣ Middleware Code -->
+        <div class="section">
+            <div class="section-head">
+                <span class="section-num">2️⃣</span>
+                <span class="section-title">Middleware code</span>
+            </div>
+            <div class="code-window">
+<span class="yellow">const</span> verifyUser = (req,res,next) => {
+   <span class="yellow">const</span> token = req.headers.authorization
+   <span class="yellow">if</span>(!token) {
+      <span class="yellow">return</span> res.status(401).json({msg:<span class="green">"No token"</span>})
+   }
+   next()
+}
+            </div>
+        </div>
+
+        <!-- 3️⃣ Line by line Explanation -->
+        <div class="section">
+            <div class="section-head">
+                <span class="section-num">3️⃣</span>
+                <span class="section-title">Line by line explanation</span>
+            </div>
+            <div class="tamil-box">
+                <strong>const token = req.headers.authorization</strong><br>
+                Client send பண்ணுற JWT token read பண்ணுறோம். Example: <code>Authorization: Bearer eyJhbGci...</code><br><br>
+                <strong>if(!token)</strong><br>
+                Token இல்லனா → <strong>return res.status(401).json({msg:"No token"})</strong><br>
+                401 → Unauthorized, user login இல்ல.<br><br>
+                <strong>next()</strong><br>
+                Token இருந்தா ➡ request next step-க்கு போகும் ➡ route handler run ஆகும்.
+            </div>
+        </div>
+
+        <!-- 4️⃣ Route Use -->
+        <div class="section">
+            <div class="section-head">
+                <span class="section-num">4️⃣</span>
+                <span class="section-title">Route use</span>
+            </div>
+            <div class="code-window">
+<span class="yellow">app.get</span>(<span class="green">"/dashboard"</span>, verifyUser, (req,res) => {
+   res.send(<span class="green">"Dashboard data"</span>)
+})
+            </div>
+            <div class="tamil-box">
+                User /dashboard call பண்ணும்போது flow:<br>
+                Client request → verifyUser middleware → Token check → Valid → dashboard route run
+            </div>
+        </div>
+
+        <!-- 5️⃣ Flow Diagram (super point) -->
+        <div class="section">
+            <div class="section-head">
+                <span class="section-num">5️⃣</span>
+                <span class="section-title">Flow diagram (interview super point)</span>
+            </div>
+            <div class="flow-row">
+                <span>Client Request</span> <span class="arrow">⬇️</span> <span style="background:#e67e22; color:white; padding:0.3rem 1.8rem; border-radius:40px;">verifyUser</span> <span class="arrow">⬇️</span> <span>Token verify</span> <span class="arrow">⬇️</span> <span>Valid → Route</span> <span class="arrow">⬇️</span> <span>Response</span>
+            </div>
+        </div>
+
+        <!-- 6️⃣ Interview Sentence -->
+        <div class="section">
+            <div class="section-head">
+                <span class="section-num">6️⃣</span>
+                <span class="section-title">Interview sentence</span>
+            </div>
+            <div class="interview-phrase">
+                “In a MERN application, authentication middleware is used to protect routes. The middleware checks the JWT token in the request header. If the token is valid, it allows access to the route using next(); otherwise it returns a 401 unauthorized response.”
+            </div>
+        </div>
+
+        <!-- 7️⃣ Super Simple Interview Answer -->
+        <div class="section">
+            <div class="section-head">
+                <span class="section-num">7️⃣</span>
+                <span class="section-title">Super simple interview answer</span>
+            </div>
+            <div class="simple-answer">
+                👉 “This middleware checks whether the user has a valid token. If the token is missing, it returns an unauthorized error. If the token exists, the request proceeds to the dashboard route.”
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ✅ Authentication middleware · JWT · 401 · route protect · interview prep · HTML/CSS only
+    </div>
+</div>
+<!-- no javascript -->
+</body>
+</html>

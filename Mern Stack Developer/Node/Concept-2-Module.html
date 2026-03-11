@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Node.js Modules – Teaching Guide Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #08090e;
+      --surface: #0c0e18;
+      --card:    #10121f;
+      --border:  #181d2e;
+      --green:   #4ade80;
+      --cyan:    #22d3ee;
+      --yellow:  #fbbf24;
+      --orange:  #fb923c;
+      --purple:  #a78bfa;
+      --pink:    #f472b6;
+      --red:     #f87171;
+      --blue:    #60a5fa;
+      --lime:    #a3e635;
+      --teal:    #2dd4bf;
+      --text:    #dde4f0;
+      --muted:   #46516a;
+      --code-bg: #05060b;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans Tamil',sans-serif;line-height:1.8;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.28;}
+
+    /* HERO */
+    .hero{position:relative;text-align:center;padding:72px 22px 56px;border-bottom:1px solid var(--border);overflow:hidden;}
+    .hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(163,230,53,.10) 0%,transparent 70%);pointer-events:none;}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(163,230,53,.1);border:1px solid rgba(163,230,53,.3);color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:6px 18px;border-radius:999px;margin-bottom:20px;}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.025em;line-height:1.1;background:linear-gradient(135deg,var(--lime) 0%,var(--green) 45%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px;}
+    .hero p{color:var(--muted);font-size:.98rem;max-width:520px;margin:0 auto;}
+
+    /* CONTAINER */
+    .container{max-width:960px;margin:0 auto;padding:50px 22px 90px;display:flex;flex-direction:column;gap:42px;}
+
+    /* SECTION */
+    .section{border:1px solid var(--border);border-radius:20px;overflow:hidden;background:var(--card);animation:fadeUp .55s ease both;}
+    .section:nth-child(1){animation-delay:.04s}.section:nth-child(2){animation-delay:.10s}.section:nth-child(3){animation-delay:.16s}.section:nth-child(4){animation-delay:.22s}.section:nth-child(5){animation-delay:.28s}.section:nth-child(6){animation-delay:.34s}.section:nth-child(7){animation-delay:.40s}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+    .section-header{display:flex;align-items:center;gap:14px;padding:18px 26px;border-bottom:1px solid var(--border);background:var(--surface);}
+    .snum{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.83rem;flex-shrink:0;}
+    .section-header h2{font-family:'Syne',sans-serif;font-size:1.12rem;font-weight:700;letter-spacing:-.01em;}
+    .section-body{padding:26px;display:flex;flex-direction:column;gap:20px;}
+
+    .s1 .snum{background:rgba(248,113,113,.12);color:var(--red);   border:1px solid rgba(248,113,113,.3)} .s1 .section-header h2{color:var(--red)}
+    .s2 .snum{background:rgba(251,191,36,.12); color:var(--yellow);border:1px solid rgba(251,191,36,.3)} .s2 .section-header h2{color:var(--yellow)}
+    .s3 .snum{background:rgba(163,230,53,.12); color:var(--lime);  border:1px solid rgba(163,230,53,.3)} .s3 .section-header h2{color:var(--lime)}
+    .s4 .snum{background:rgba(34,211,238,.12); color:var(--cyan);  border:1px solid rgba(34,211,238,.3)} .s4 .section-header h2{color:var(--cyan)}
+    .s5 .snum{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)} .s5 .section-header h2{color:var(--purple)}
+    .s6 .snum{background:rgba(251,146,60,.12); color:var(--orange);border:1px solid rgba(251,146,60,.3)} .s6 .section-header h2{color:var(--orange)}
+    .s7 .snum{background:rgba(74,222,128,.12); color:var(--green); border:1px solid rgba(74,222,128,.3)} .s7 .section-header h2{color:var(--green)}
+
+    /* TEXT */
+    p{color:#b8c5d8;font-size:.95rem;}
+    .sub{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+
+    /* SPEECH */
+    .speech{display:flex;align-items:flex-start;gap:12px;background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.2);border-left:3px solid var(--blue);border-radius:12px;padding:14px 18px;}
+    .si{font-size:1.2rem;flex-shrink:0;line-height:1.5;}
+    .speech p{color:#bfdbfe;font-size:.95rem;}
+
+    /* QBOX */
+    .qbox{display:flex;align-items:flex-start;gap:10px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:12px 16px;}
+    .qbox p{color:#fef9c3;font-size:.94rem;font-weight:600;}
+
+    /* ABOX */
+    .abox{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:12px 16px;}
+    .abox p{color:#d1fae5;font-size:.93rem;}
+
+    /* BULLET */
+    .blist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .blist li{display:flex;align-items:flex-start;gap:10px;color:#b8c5d8;font-size:.94rem;}
+    .blist li::before{content:'▸';flex-shrink:0;margin-top:2px;}
+    .s1 .blist li::before{color:var(--red)}
+    .s2 .blist li::before{color:var(--yellow)}
+    .s3 .blist li::before{color:var(--lime)}
+    .s4 .blist li::before{color:var(--cyan)}
+    .s5 .blist li::before{color:var(--purple)}
+    .s6 .blist li::before{color:var(--orange)}
+    .s7 .blist li::before{color:var(--green)}
+
+    /* ERROR LIST */
+    .elist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .elist li{display:flex;align-items:flex-start;gap:10px;color:#fca5a5;font-size:.94rem;}
+    .elist li::before{content:'❌';flex-shrink:0;font-size:.85rem;margin-top:3px;}
+
+    /* INLINE CODE */
+    code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.07);color:var(--cyan);font-size:.8em;padding:2px 7px;border-radius:5px;}
+
+    /* CODE BLOCK */
+    .code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+    .code-top{display:flex;align-items:center;justify-content:space-between;padding:9px 15px;border-bottom:1px solid var(--border);background:#030408;}
+    .dots{display:flex;gap:6px;}
+    .dots span{width:10px;height:10px;border-radius:50%;}
+    .d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+    .clabel{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;}
+    pre{padding:18px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.75;color:#8a9fc0;}
+    .kw{color:var(--purple)}.fn{color:var(--cyan)}.str{color:var(--green)}.num{color:var(--orange)}.cm{color:var(--muted)}
+
+    /* OUTPUT */
+    .output{background:#030408;border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:14px 18px;}
+    .ol{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .output pre{padding:0;color:#86efac;font-size:.82rem;}
+
+    /* FILE PILL ROW */
+    .file-pills{display:flex;flex-wrap:wrap;gap:8px;}
+    .file-pill{font-family:'JetBrains Mono',monospace;font-size:.8rem;background:rgba(163,230,53,.08);border:1px solid rgba(163,230,53,.25);color:var(--lime);padding:6px 14px;border-radius:8px;}
+
+    /* FILE PAIR */
+    .file-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    @media(max-width:560px){.file-pair{grid-template-columns:1fr}}
+    .fp-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.08em;margin-bottom:6px;}
+
+    /* MODULE TYPE CARDS */
+    .mod-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+    @media(max-width:580px){.mod-type-grid{grid-template-columns:1fr}}
+    .mod-type-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    .mod-type-header{padding:13px 18px;border-bottom:1px solid var(--border);background:#090b14;}
+    .mod-type-header h3{font-family:'Syne',sans-serif;font-size:.98rem;font-weight:700;}
+    .mt1 .mod-type-header h3{color:var(--lime)}
+    .mt2 .mod-type-header h3{color:var(--purple)}
+    .mod-type-body{padding:16px 18px;display:flex;flex-direction:column;gap:12px;}
+    .mt1 .blist li::before{color:var(--lime)}
+    .mt2 .blist li::before{color:var(--purple)}
+
+    /* EXPORT GRID */
+    .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    @media(max-width:540px){.export-grid{grid-template-columns:1fr}}
+    .exp-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .exp-header{padding:11px 16px;border-bottom:1px solid var(--border);background:#090b14;}
+    .exp-header h4{font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;}
+    .ec1 .exp-header h4{color:var(--cyan)}.ec2 .exp-header h4{color:var(--purple)}
+    .exp-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+
+    /* BENEFITS CHIPS */
+    .chips{display:flex;flex-wrap:wrap;gap:8px;}
+    .chip{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:5px 13px;border-radius:999px;border:1px solid;}
+    .cg{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.3)}
+    .cc{background:rgba(34,211,238,.1);color:var(--cyan);border-color:rgba(34,211,238,.3)}
+    .cy{background:rgba(251,191,36,.1);color:var(--yellow);border-color:rgba(251,191,36,.3)}
+    .cp{background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3)}
+    .co{background:rgba(251,146,60,.1);color:var(--orange);border-color:rgba(251,146,60,.3)}
+    .cl{background:rgba(163,230,53,.1);color:var(--lime);border-color:rgba(163,230,53,.3)}
+
+    /* CAR MODULE VISUAL */
+    .car-section{display:flex;flex-direction:column;gap:14px;}
+    .car-icon{font-size:2.6rem;text-align:center;margin-bottom:4px;}
+    .car-parts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+    @media(max-width:500px){.car-parts-grid{grid-template-columns:repeat(2,1fr)}}
+    .car-part{background:rgba(251,146,60,.07);border:1px solid rgba(251,146,60,.22);border-radius:10px;padding:10px;text-align:center;}
+    .car-part .part-icon{font-size:1.4rem;margin-bottom:4px;}
+    .car-part .part-name{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--orange);font-weight:700;}
+    .arrow-down{text-align:center;color:var(--muted);font-size:1.4rem;line-height:1.6;}
+    .file-modules-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+    @media(max-width:500px){.file-modules-grid{grid-template-columns:repeat(2,1fr)}}
+    .file-module{background:rgba(163,230,53,.07);border:1px solid rgba(163,230,53,.22);border-radius:10px;padding:10px;text-align:center;}
+    .file-module .fm-name{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--lime);font-weight:700;}
+    .fm-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:2px;}
+
+    /* CONNECT LINE */
+    .connect-label{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.08em;margin:4px 0;}
+
+    /* INTERVIEW */
+    .interview{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:18px 22px;}
+    .il{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+    .interview blockquote{color:#d1fae5;font-style:italic;font-size:.95rem;line-height:1.9;}
+
+    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">📦 Module System</div>
+  <h1>Node.js Modules – Teaching Guide</h1>
+  <p>Why modules, types, export methods, benefits & real-life example — Tamil classroom guide.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══════ STEP 1 ══════ -->
+  <article class="section s1">
+    <div class="section-header">
+      <div class="snum">01</div>
+      <h2>Step 1 – Problem Create (Why Modules?)</h2>
+    </div>
+    <div class="section-body">
+
+      <p>Class-ல first கேள்:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"ஒரு பெரிய project-ல எல்லா code-யும் ஒரே file-ல எழுதினா என்ன ஆகும்?"</p>
+      </div>
+
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">app.js</span>
+          </div>
+          <pre><span class="cm">// இதுல:</span>
+<span class="cm">// - login code</span>
+<span class="cm">// - database code</span>
+<span class="cm">// - API code</span>
+<span class="cm">// - calculation code</span>
+<span class="cm">// - file handling code</span>
+<span class="cm">// எல்லாம் ஒரே file.</span></pre>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Problems</p>
+        <ul class="elist">
+          <li>code messy</li>
+          <li>debug difficult</li>
+          <li>reuse முடியாது</li>
+        </ul>
+      </div>
+
+      <p>அப்போ சொல்லணும்:</p>
+      <div class="qbox">
+        <p>👉 இதை solve பண்ண தான் Modules.</p>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════ STEP 2 ══════ -->
+  <article class="section s2">
+    <div class="section-header">
+      <div class="snum">02</div>
+      <h2>Step 2 – Simple Definition</h2>
+    </div>
+    <div class="section-body">
+
+      <p>Board-ல எழுதணும்:</p>
+      <div class="qbox">
+        <p>👉 Module = Reusable JavaScript file</p>
+      </div>
+
+      <div>
+        <p class="sub">Tamil explanation</p>
+        <div class="qbox">
+          <p>👉 Module என்றால் reusable code கொண்ட JavaScript file.</p>
+        </div>
+      </div>
+
+      <div>
+        <p class="sub">Example</p>
+        <div class="file-pills">
+          <div class="file-pill">math.js</div>
+          <div class="file-pill">auth.js</div>
+          <div class="file-pill">database.js</div>
+        </div>
+      </div>
+
+      <div class="abox">
+        <p>ஒவ்வொரு file-மும் ஒரு module.</p>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════ STEP 3 ══════ -->
+  <article class="section s3">
+    <div class="section-header">
+      <div class="snum">03</div>
+      <h2>Step 3 – Types of Modules</h2>
+    </div>
+    <div class="section-body">
+
+      <p>Node.js-ல 2 types modules இருக்கும்.</p>
+
+      <div class="mod-type-grid">
+
+        <!-- Core Modules -->
+        <div class="mod-type-card mt1">
+          <div class="mod-type-header"><h3>1️⃣ Core Modules</h3></div>
+          <div class="mod-type-body">
+            <p>Node.js already provide பண்ணும் modules.</p>
+            <p class="sub">Examples</p>
+            <ul class="blist">
+              <li><code>fs</code> → file system</li>
+              <li><code>http</code> → server create</li>
+              <li><code>path</code> → file paths</li>
+              <li><code>os</code> → operating system info</li>
+            </ul>
+            <p class="sub">Example code</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">core.js</span>
+              </div>
+              <pre><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)</pre>
+            </div>
+            <p>Explain:</p>
+            <div class="qbox">
+              <p>👉 <code>require()</code> use பண்ணி module import பண்ணுறோம்.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Defined Modules -->
+        <div class="mod-type-card mt2">
+          <div class="mod-type-header"><h3>2️⃣ User Defined Modules</h3></div>
+          <div class="mod-type-body">
+            <p>நாமே create பண்ணும் modules.</p>
+            <p class="sub">Example</p>
+
+            <div>
+              <div class="fp-label">math.js</div>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">math.js</span>
+                </div>
+                <pre><span class="kw">function</span> <span class="fn">add</span>(a, b) {
+  <span class="kw">return</span> a + b
+}
+
+module.exports = add</pre>
+              </div>
+              <div class="qbox" style="margin-top:8px;">
+                <p>👉 function export பண்ணுறோம்.</p>
+              </div>
+            </div>
+
+            <div>
+              <div class="fp-label" style="margin-top:10px;">app.js</div>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">app.js</span>
+                </div>
+                <pre><span class="kw">const</span> add = <span class="fn">require</span>(<span class="str">"./math"</span>)
+
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">2</span>, <span class="num">3</span>))</pre>
+              </div>
+              <div class="qbox" style="margin-top:8px;">
+                <p>👉 <code>require()</code> use பண்ணி module import பண்ணுறோம்.</p>
+              </div>
+            </div>
+
+            <div class="output">
+              <div class="ol">▶ Output</div>
+              <pre>5</pre>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 4 ══════ -->
+  <article class="section s4">
+    <div class="section-header">
+      <div class="snum">04</div>
+      <h2>Module Export Methods</h2>
+    </div>
+    <div class="section-body">
+
+      <p>Node.js-ல export பண்ண இரண்டு method இருக்கும்.</p>
+
+      <div class="export-grid">
+
+        <div class="exp-card ec1">
+          <div class="exp-header"><h4>1️⃣ module.exports</h4></div>
+          <div class="exp-body">
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">export</span>
+              </div>
+              <pre>module.exports = add</pre>
+            </div>
+            <div class="qbox">
+              <p>👉 single function export பண்ணலாம்.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="exp-card ec2">
+          <div class="exp-header"><h4>2️⃣ exports</h4></div>
+          <div class="exp-body">
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">export</span>
+              </div>
+              <pre>exports.add = add</pre>
+            </div>
+            <div class="qbox">
+              <p>👉 multiple functions export பண்ணலாம்.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">multi-export.js</span>
+          </div>
+          <pre>exports.add = add
+exports.sub = sub</pre>
+        </div>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════ STEP 5 ══════ -->
+  <article class="section s5">
+    <div class="section-header">
+      <div class="snum">05</div>
+      <h2>Why Modules Important</h2>
+    </div>
+    <div class="section-body">
+
+      <p>Board-ல list எழுதணும்.</p>
+      <p class="sub">Modules benefits</p>
+      <div class="chips">
+        <span class="chip cl">Code reuse</span>
+        <span class="chip cg">Clean structure</span>
+        <span class="chip cc">Maintain easy</span>
+        <span class="chip cy">Large applications manage easy</span>
+        <span class="chip cp">Separation of concerns</span>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════ STEP 6 ══════ -->
+  <article class="section s6">
+    <div class="section-header">
+      <div class="snum">06</div>
+      <h2>Real Life Example (Best Teaching Trick)</h2>
+    </div>
+    <div class="section-body">
+
+      <p>ஒரு car imagine பண்ணு 🚗</p>
+
+      <div class="car-section">
+        <p class="sub">Car parts</p>
+        <div class="car-parts-grid">
+          <div class="car-part">
+            <div class="part-icon">🔧</div>
+            <div class="part-name">Engine</div>
+          </div>
+          <div class="car-part">
+            <div class="part-icon">⚙️</div>
+            <div class="part-name">Wheels</div>
+          </div>
+          <div class="car-part">
+            <div class="part-icon">🛑</div>
+            <div class="part-name">Brake</div>
+          </div>
+          <div class="car-part">
+            <div class="part-icon">🔄</div>
+            <div class="part-name">Steering</div>
+          </div>
+        </div>
+
+        <div class="abox">
+          <p>ஒவ்வொரு part-ம் separate module.</p>
+        </div>
+        <div class="abox">
+          <p>Car assemble பண்ணும்போது எல்லாம் connect ஆகும்.</p>
+        </div>
+
+        <div class="connect-label">அதே போல ↓</div>
+
+        <div class="file-modules-grid">
+          <div class="file-module">
+            <div class="fm-name">auth.js</div>
+            <div class="fm-label">module</div>
+          </div>
+          <div class="file-module">
+            <div class="fm-name">db.js</div>
+            <div class="fm-label">module</div>
+          </div>
+          <div class="file-module">
+            <div class="fm-name">routes.js</div>
+            <div class="fm-label">module</div>
+          </div>
+          <div class="file-module">
+            <div class="fm-name">server.js</div>
+            <div class="fm-label">module</div>
+          </div>
+        </div>
+
+        <div class="abox">
+          <p>ஒவ்வொரு file-ம் module.</p>
+        </div>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════ STEP 7 ══════ -->
+  <article class="section s7">
+    <div class="section-header">
+      <div class="snum">07</div>
+      <h2>Interview Sentence</h2>
+    </div>
+    <div class="section-body">
+
+      <p>Students memorize this:</p>
+      <div class="interview">
+        <div class="il">⭐ Interview Sentence</div>
+        <blockquote>"Modules in Node.js allow developers to organize code into reusable and maintainable files."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+</main>
+</body>
+</html>

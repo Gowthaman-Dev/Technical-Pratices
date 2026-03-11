@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Node.js Global Objects – Teaching Guide Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #08080f;
+      --surface: #0c0b18;
+      --card:    #100f1e;
+      --border:  #18172c;
+      --green:   #4ade80;
+      --cyan:    #22d3ee;
+      --yellow:  #fbbf24;
+      --orange:  #fb923c;
+      --purple:  #a78bfa;
+      --pink:    #f472b6;
+      --red:     #f87171;
+      --blue:    #60a5fa;
+      --teal:    #2dd4bf;
+      --lime:    #a3e635;
+      --text:    #dde4f0;
+      --muted:   #44506a;
+      --code-bg: #050410;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans Tamil',sans-serif;line-height:1.8;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.28;}
+
+    /* ── HERO ── */
+    .hero{position:relative;text-align:center;padding:72px 22px 56px;border-bottom:1px solid var(--border);overflow:hidden;}
+    .hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(167,139,250,.11) 0%,transparent 70%);pointer-events:none;}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);color:var(--purple);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:6px 18px;border-radius:999px;margin-bottom:20px;}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.025em;line-height:1.1;background:linear-gradient(135deg,var(--purple) 0%,var(--pink) 45%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px;}
+    .hero p{color:var(--muted);font-size:.98rem;max-width:520px;margin:0 auto;}
+
+    /* ── CONTAINER ── */
+    .container{max-width:960px;margin:0 auto;padding:50px 22px 90px;display:flex;flex-direction:column;gap:42px;}
+
+    /* ── SECTION ── */
+    .section{border:1px solid var(--border);border-radius:20px;overflow:hidden;background:var(--card);animation:fadeUp .55s ease both;}
+    .section:nth-child(1){animation-delay:.04s}.section:nth-child(2){animation-delay:.09s}
+    .section:nth-child(3){animation-delay:.14s}.section:nth-child(4){animation-delay:.19s}
+    .section:nth-child(5){animation-delay:.24s}.section:nth-child(6){animation-delay:.29s}
+    .section:nth-child(7){animation-delay:.34s}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+    .section-header{display:flex;align-items:center;gap:14px;padding:18px 26px;border-bottom:1px solid var(--border);background:var(--surface);}
+    .snum{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.83rem;flex-shrink:0;}
+    .section-header h2{font-family:'Syne',sans-serif;font-size:1.12rem;font-weight:700;letter-spacing:-.01em;}
+    .section-body{padding:26px;display:flex;flex-direction:column;gap:20px;}
+
+    .c1 .snum{background:rgba(34,211,238,.12);color:var(--cyan);  border:1px solid rgba(34,211,238,.3)} .c1 .section-header h2{color:var(--cyan)}
+    .c2 .snum{background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.3)} .c2 .section-header h2{color:var(--yellow)}
+    .c3 .snum{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)}.c3 .section-header h2{color:var(--purple)}
+    .c4 .snum{background:rgba(244,114,182,.12);color:var(--pink); border:1px solid rgba(244,114,182,.3)} .c4 .section-header h2{color:var(--pink)}
+    .c5 .snum{background:rgba(96,165,250,.12); color:var(--blue); border:1px solid rgba(96,165,250,.3)}  .c5 .section-header h2{color:var(--blue)}
+    .c6 .snum{background:rgba(251,146,60,.12); color:var(--orange);border:1px solid rgba(251,146,60,.3)} .c6 .section-header h2{color:var(--orange)}
+    .c7 .snum{background:rgba(74,222,128,.12); color:var(--green);border:1px solid rgba(74,222,128,.3)}  .c7 .section-header h2{color:var(--green)}
+
+    /* ── TEXT ── */
+    p{color:#b8c5d8;font-size:.95rem;}
+    .sub{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+
+    /* ── SPEECH ── */
+    .speech{display:flex;align-items:flex-start;gap:12px;background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.2);border-left:3px solid var(--blue);border-radius:12px;padding:14px 18px;}
+    .si{font-size:1.2rem;flex-shrink:0;line-height:1.5;}
+    .speech p{color:#bfdbfe;font-size:.95rem;}
+
+    /* ── QBOX ── */
+    .qbox{display:flex;align-items:flex-start;gap:10px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:12px 16px;}
+    .qbox p{color:#fef9c3;font-size:.94rem;font-weight:600;}
+
+    /* ── ABOX ── */
+    .abox{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:12px 16px;}
+    .abox p{color:#d1fae5;font-size:.93rem;}
+
+    /* ── INFOBOX ── */
+    .infobox{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.2);border-left:3px solid var(--purple);border-radius:12px;padding:13px 17px;}
+    .infobox p{color:#ede9fe;font-size:.93rem;}
+
+    /* ── BULLET ── */
+    .blist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .blist li{display:flex;align-items:flex-start;gap:10px;color:#b8c5d8;font-size:.94rem;}
+    .blist li::before{content:'▸';flex-shrink:0;margin-top:2px;color:var(--purple);}
+
+    /* ── INLINE CODE ── */
+    code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.07);color:var(--cyan);font-size:.8em;padding:2px 7px;border-radius:5px;}
+
+    /* ── CODE BLOCK ── */
+    .code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+    .code-top{display:flex;align-items:center;justify-content:space-between;padding:9px 15px;border-bottom:1px solid var(--border);background:#030209;}
+    .dots{display:flex;gap:6px;}
+    .dots span{width:10px;height:10px;border-radius:50%;}
+    .d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+    .clabel{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;}
+    pre{padding:18px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.75;color:#8a9fc0;}
+    .kw{color:var(--purple)}.fn{color:var(--cyan)}.str{color:var(--green)}.num{color:var(--orange)}.cm{color:var(--muted)}
+
+    /* ── OUTPUT ── */
+    .output{background:#030209;border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:14px 18px;}
+    .ol{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .output pre{padding:0;color:#86efac;font-size:.82rem;}
+
+    /* ── GLOBAL OBJECTS GRID ── */
+    .glob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+    @media(max-width:620px){.glob-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:380px){.glob-grid{grid-template-columns:1fr}}
+
+    .glob-card{border-radius:14px;overflow:hidden;border:1px solid var(--border);}
+    .glob-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .glob-icon{font-size:1.3rem;flex-shrink:0;}
+    .glob-header h3{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;}
+    .glob-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--surface);}
+    .glob-purpose{font-size:.86rem;color:#b8c5d8;}
+    .glob-purpose::before{content:'👉 ';font-size:.85rem;}
+
+    .g1{background:#0d1020;}.g1 .glob-header{background:#0a0d1c;}.g1 .glob-header h3{color:var(--cyan)}
+    .g2{background:#0d1020;}.g2 .glob-header{background:#0a0d1c;}.g2 .glob-header h3{color:var(--green)}
+    .g3{background:#0d1020;}.g3 .glob-header{background:#0a0d1c;}.g3 .glob-header h3{color:var(--yellow)}
+    .g4{background:#0d1020;}.g4 .glob-header{background:#0a0d1c;}.g4 .glob-header h3{color:var(--pink)}
+    .g5{background:#0d1020;}.g5 .glob-header{background:#0a0d1c;}.g5 .glob-header h3{color:var(--orange)}
+    .g6{background:#0d1020;}.g6 .glob-header{background:#0a0d1c;}.g6 .glob-header h3{color:var(--purple)}
+
+    .g1 .code-block{border-color:#1a2038}
+    .g1 .code-top{background:#07090f}
+
+    /* ── COMPARE TRICK ── */
+    .trick-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:540px){.trick-grid{grid-template-columns:1fr}}
+    .trick-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .trick-card-header{padding:10px 16px;border-bottom:1px solid var(--border);}
+    .trick-card-header h4{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;}
+    .tc1 .trick-card-header h4{color:var(--red)}
+    .tc2 .trick-card-header h4{color:var(--green)}
+    .trick-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+
+    /* ── TABLE ── */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+    table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;}
+    thead tr{background:#0a0d18;border-bottom:1px solid var(--border);}
+    thead th{padding:12px 18px;text-align:left;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;}
+    tbody tr{border-bottom:1px solid var(--border);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:nth-child(odd){background:rgba(255,255,255,.018);}
+    tbody td{padding:11px 18px;color:#b8c5d8;vertical-align:top;}
+    tbody td:first-child{color:var(--cyan);font-weight:700;}
+
+    /* ── INTERVIEW ── */
+    .interview{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:18px 22px;}
+    .il{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+    .interview blockquote{color:#d1fae5;font-style:italic;font-size:.95rem;line-height:1.9;}
+
+    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">🌐 Global Objects</div>
+  <h1>Node.js Global Objects – Teaching Guide</h1>
+  <p>console, process, __dirname, setTimeout மற்றும் more — Tamil classroom guide with examples.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══════ STEP 1 ══════ -->
+  <article class="section c1">
+    <div class="section-header">
+      <div class="snum">01</div>
+      <h2>Step 1 – First Question (Start Class)</h2>
+    </div>
+    <div class="section-body">
+      <p>Class-ல first கேள்:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"fs module use பண்ணணும்னா என்ன செய்யணும்?"</p>
+      </div>
+      <div>
+        <p class="sub">Students answer</p>
+        <div class="qbox"><p>👉 <code>require("fs")</code></p></div>
+      </div>
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">import.js</span>
+          </div>
+          <pre><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)</pre>
+        </div>
+      </div>
+      <p>Explain:</p>
+      <div class="qbox"><p>👉 module use பண்ண import செய்யணும்</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 2 ══════ -->
+  <article class="section c2">
+    <div class="section-header">
+      <div class="snum">02</div>
+      <h2>Step 2 – Next Question</h2>
+    </div>
+    <div class="section-body">
+      <p>அடுத்த question கேள்:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"console.log use பண்ண import பண்ணுறோமா?"</p>
+      </div>
+      <div>
+        <p class="sub">Students</p>
+        <div class="abox"><p>👉 No</p></div>
+      </div>
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">global.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(<span class="str">"Hello"</span>)</pre>
+        </div>
+      </div>
+      <p>Explain:</p>
+      <div class="qbox"><p>👉 import இல்லாம use பண்ணுறோம்.</p></div>
+      <div class="infobox">
+        <p>அதனால் இதை Global Object சொல்வாங்க.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 3 ══════ -->
+  <article class="section c3">
+    <div class="section-header">
+      <div class="snum">03</div>
+      <h2>Step 3 – Definition</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல எழுதணும்:</p>
+      <div class="infobox">
+        <p>👉 Global Objects = Import இல்லாம application முழுவதும் use பண்ணக்கூடிய objects</p>
+      </div>
+      <div>
+        <p class="sub">Tamil meaning</p>
+        <div class="qbox"><p>👉 Node.js program முழுவதும் direct-ஆ access பண்ணலாம்.</p></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 4 ══════ -->
+  <article class="section c4">
+    <div class="section-header">
+      <div class="snum">04</div>
+      <h2>Important Global Objects</h2>
+    </div>
+    <div class="section-body">
+      <p>Students remember பண்ண இந்த list சொல்லு.</p>
+
+      <div class="glob-grid">
+
+        <!-- console -->
+        <div class="glob-card g1">
+          <div class="glob-header">
+            <div class="glob-icon">📋</div>
+            <h3>1️⃣ console</h3>
+          </div>
+          <div class="glob-body">
+            <p class="sub">Purpose</p>
+            <p class="glob-purpose">log messages print பண்ண.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">console.js</span>
+              </div>
+              <pre>console.<span class="fn">log</span>(<span class="str">"Hello Node"</span>)</pre>
+            </div>
+            <div class="output">
+              <div class="ol">▶ Output</div>
+              <pre>Hello Node</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- process -->
+        <div class="glob-card g2">
+          <div class="glob-header">
+            <div class="glob-icon">⚙️</div>
+            <h3>2️⃣ process</h3>
+          </div>
+          <div class="glob-body">
+            <p class="sub">Purpose</p>
+            <p class="glob-purpose">current Node.js process info.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">process.js</span>
+              </div>
+              <pre>console.<span class="fn">log</span>(process.platform)</pre>
+            </div>
+            <div class="output">
+              <div class="ol">▶ Output example</div>
+              <pre>win32</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- __dirname -->
+        <div class="glob-card g3">
+          <div class="glob-header">
+            <div class="glob-icon">📁</div>
+            <h3>3️⃣ __dirname</h3>
+          </div>
+          <div class="glob-body">
+            <p class="sub">Purpose</p>
+            <p class="glob-purpose">current folder path.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">dirname.js</span>
+              </div>
+              <pre>console.<span class="fn">log</span>(__dirname)</pre>
+            </div>
+            <div class="output">
+              <div class="ol">▶ Output</div>
+              <pre>C:\project\app</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- __filename -->
+        <div class="glob-card g4">
+          <div class="glob-header">
+            <div class="glob-icon">📄</div>
+            <h3>4️⃣ __filename</h3>
+          </div>
+          <div class="glob-body">
+            <p class="sub">Purpose</p>
+            <p class="glob-purpose">current file path.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">filename.js</span>
+              </div>
+              <pre>console.<span class="fn">log</span>(__filename)</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- setTimeout -->
+        <div class="glob-card g5">
+          <div class="glob-header">
+            <div class="glob-icon">⏱️</div>
+            <h3>5️⃣ setTimeout</h3>
+          </div>
+          <div class="glob-body">
+            <p class="sub">Purpose</p>
+            <p class="glob-purpose">code later run பண்ண.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">timeout.js</span>
+              </div>
+              <pre><span class="fn">setTimeout</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Hello"</span>)
+}, <span class="num">2000</span>)</pre>
+            </div>
+            <div class="qbox" style="background:rgba(251,146,60,.06);border-color:rgba(251,146,60,.2);">
+              <p style="color:#fed7aa;">👉 2 seconds பிறகு run ஆகும்.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- setInterval -->
+        <div class="glob-card g6">
+          <div class="glob-header">
+            <div class="glob-icon">🔁</div>
+            <h3>6️⃣ setInterval</h3>
+          </div>
+          <div class="glob-body">
+            <p class="sub">Purpose</p>
+            <p class="glob-purpose">repeated execution.</p>
+            <p class="sub">Example</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">interval.js</span>
+              </div>
+              <pre><span class="fn">setInterval</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Running"</span>)
+}, <span class="num">1000</span>)</pre>
+            </div>
+            <div class="qbox" style="background:rgba(167,139,250,.06);border-color:rgba(167,139,250,.2);">
+              <p style="color:#ede9fe;">👉 every second run ஆகும்.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 5 ══════ -->
+  <article class="section c5">
+    <div class="section-header">
+      <div class="snum">05</div>
+      <h2>Simple Table (Students Remember)</h2>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Object</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>console</td><td>log messages</td></tr>
+            <tr><td>process</td><td>process info</td></tr>
+            <tr><td>__dirname</td><td>current folder path</td></tr>
+            <tr><td>__filename</td><td>current file path</td></tr>
+            <tr><td>setTimeout</td><td>run later</td></tr>
+            <tr><td>setInterval</td><td>run repeatedly</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 6 ══════ -->
+  <article class="section c6">
+    <div class="section-header">
+      <div class="snum">06</div>
+      <h2>Real Teaching Trick</h2>
+    </div>
+    <div class="section-body">
+      <p>இந்த question கேள்:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"Which is global?"</p>
+      </div>
+
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">compare.js</span>
+          </div>
+          <pre>fs.<span class="fn">readFile</span>()
+console.<span class="fn">log</span>()</pre>
+        </div>
+      </div>
+
+      <div class="trick-grid">
+        <div class="trick-card tc1">
+          <div class="trick-card-header"><h4>❌ requires import</h4></div>
+          <div class="trick-card-body">
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">import needed</span>
+              </div>
+              <pre><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+fs.<span class="fn">readFile</span>()</pre>
+            </div>
+            <div class="qbox" style="background:rgba(248,113,113,.06);border-color:rgba(248,113,113,.2);">
+              <p style="color:#fecaca;">👉 <code>fs</code> module import செய்யணும்</p>
+            </div>
+          </div>
+        </div>
+        <div class="trick-card tc2">
+          <div class="trick-card-header"><h4>✅ global — no import</h4></div>
+          <div class="trick-card-body">
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">no import</span>
+              </div>
+              <pre>console.<span class="fn">log</span>(<span class="str">"Hello"</span>)</pre>
+            </div>
+            <div class="abox">
+              <p>👉 <code>console</code> global</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="abox">
+        <p>Students immediately புரியும்.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 7 ══════ -->
+  <article class="section c7">
+    <div class="section-header">
+      <div class="snum">07</div>
+      <h2>Interview Sentence</h2>
+    </div>
+    <div class="section-body">
+      <p>Students memorize this:</p>
+      <div class="interview">
+        <div class="il">⭐ Interview Sentence</div>
+        <blockquote>"Global objects in Node.js are available throughout the application without requiring import."</blockquote>
+      </div>
+    </div>
+  </article>
+
+</main>
+</body>
+</html>

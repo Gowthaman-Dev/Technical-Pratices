@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express Middleware · முழு விளக்கம் · interview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #edf2f9;
+            font-family: 'Segoe UI', 'Nirmala UI', system-ui, sans-serif;
+            padding: 2rem 1.2rem;
+            color: #1d394f;
+        }
+
+        .middleware-book {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 56px;
+            box-shadow: 0 30px 60px -20px #1e4b6e;
+            overflow: hidden;
+            border: 1px solid #ced9e8;
+        }
+
+        /* header */
+        .header-mw {
+            background: #144a6f;
+            color: white;
+            padding: 2.5rem 3rem;
+            border-bottom: 12px solid #f4b740;
+        }
+
+        .header-mw h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .header-mw .mw-icon {
+            background: #f4b740;
+            color: #144a6f;
+            padding: 0.3rem 2rem;
+            border-radius: 80px;
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .sub-head {
+            font-size: 1.5rem;
+            color: #ffeab0;
+            margin-top: 0.8rem;
+        }
+
+        /* grid layout */
+        .content-grid {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        .section {
+            background: #fafdff;
+            border-radius: 48px;
+            padding: 2.2rem 2.5rem;
+            border: 2px solid #dde6f2;
+            box-shadow: 0 12px 20px -16px #1e3d57;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px dashed #b9cee9;
+            padding-bottom: 0.8rem;
+        }
+
+        .section-num {
+            background: #144a6f;
+            color: white;
+            border-radius: 60px;
+            padding: 0.2rem 1.6rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #003459;
+        }
+
+        .tamil-box {
+            background: #fef6e7;
+            border-radius: 36px;
+            padding: 1.2rem 2rem;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            border-left: 12px solid #f4b740;
+            line-height: 1.6;
+        }
+
+        .code-window {
+            background: #102433;
+            color: #f0f6ff;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1.2rem 2rem;
+            border-radius: 30px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #467394;
+            margin: 1.2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .code-window .y { color: #fad974; }
+        .code-window .g { color: #b9f5b0; }
+        .code-window .comm { color: #a8c5ff; font-style: italic; }
+
+        .english-phrase {
+            background: #e3efff;
+            border-radius: 40px;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-left: 8px solid #144a6f;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+
+        .english-phrase::before {
+            content: "🗣️ ";
+            font-weight: 600;
+        }
+
+        .flow-row {
+            display: flex;
+            flex-wrap: wrap;
+            background: #ddeeff;
+            border-radius: 60px;
+            padding: 1.2rem 2rem;
+            justify-content: center;
+            gap: 15px 30px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border: 2px solid #f4b740;
+        }
+
+        .flow-arrow { color: #b45400; font-size: 1.8rem; }
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .type-card {
+            background: #fff7e7;
+            border-radius: 28px;
+            padding: 1.2rem 1rem;
+            border: 2px solid #f4b740;
+            text-align: center;
+        }
+
+        .type-title {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .mini-table {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background: #e5effa;
+            border-radius: 50px;
+            padding: 1.5rem 2rem;
+            justify-content: center;
+        }
+        .mini-item {
+            background: white;
+            border-radius: 30px;
+            padding: 0.5rem 1.8rem;
+            border: 1px solid #144a6f;
+        }
+
+        .footer-note {
+            background: #e1ecf7;
+            padding: 1.8rem 3rem;
+            color: #1c4b70;
+            font-weight: 500;
+            border-top: 2px solid #b9cde0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="middleware-book">
+    <div class="header-mw">
+        <h1>
+            <span class="mw-icon">⚙️ Middleware</span>
+            <span>முழு விளக்கம் · interview தமிழ்</span>
+        </h1>
+        <div class="sub-head">request ↔ response நடுவில் run ஆகும் function</div>
+    </div>
+
+    <div class="content-grid">
+        <!-- 1️⃣ Middleware என்றால் என்ன? -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-num">1️⃣</span>
+                <span class="section-title">Middleware என்றால் என்ன?</span>
+            </div>
+            <div class="tamil-box">
+                <strong>Tamil:</strong> Middleware என்பது request மற்றும் response நடுவில் run ஆகும் function.<br>
+                Flow: <strong>Client Request → Middleware → Route → Response</strong><br>
+                Frontend இருந்து request வந்ததும் route க்கு போகும் முன் ஒரு function run ஆகும். அதுதான் middleware.
+            </div>
+            <div class="flow-row">
+                <span>Client Request</span> <span class="flow-arrow">➡️</span> <span style="background:#f4b740; padding:0.2rem 1.5rem; border-radius:40px;">Middleware</span> <span class="flow-arrow">➡️</span> <span>Route</span> <span class="flow-arrow">➡️</span> <span>Response</span>
+            </div>
+            <div class="english-phrase">“Middleware is a function that runs between the request and the response in an Express application.”</div>
+        </div>
+
+        <!-- 2️⃣ Middleware எப்படி வேலை செய்கிறது? -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-num">2️⃣</span>
+                <span class="section-title">Middleware எப்படி வேலை செய்கிறது?</span>
+            </div>
+            <div class="code-window">
+<span class="y">app.use</span>((req, res, next) => {
+   console.log(<span class="g">"Request received"</span>)
+   next()
+})
+            </div>
+            <div class="tamil-box">
+                <strong>Part &nbsp; Meaning</strong><br>
+                req &nbsp; → client request data<br>
+                res &nbsp; → response send பண்ண<br>
+                next() → next function / route க்கு போக<br>
+                ⚠️ <span style="background:#fdd; padding:0.2rem 1rem; border-radius:30px;">next() call பண்ணலனா request stop ஆகும்</span>
+            </div>
+            <div class="english-phrase">“Middleware functions have access to request, response, and the next function.”</div>
+        </div>
+
+        <!-- 3️⃣ Middleware ஏன் use பண்ணுறோம்? (important) -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-num">3️⃣</span>
+                <span class="section-title">Middleware ஏன் use பண்ணுறோம்?</span>
+            </div>
+            <div class="mini-table">
+                <div class="mini-item">🔐 Authentication</div>
+                <div class="mini-item">📋 Logging</div>
+                <div class="mini-item">✅ Validation</div>
+                <div class="mini-item">🛡️ Security</div>
+            </div>
+            <div class="tamil-box">
+                <strong>1. Authentication:</strong> User login இருக்கானா check.<br>
+                <div class="code-window" style="margin:0.5rem 0;">
+const auth = (req,res,next) => {
+   if(req.headers.token) next()
+   else res.send(<span class="g">"Unauthorized"</span>)
+}
+                </div>
+                <strong>2. Logging:</strong> Server-க்கு வரும் request track.<br>
+                <div class="code-window" style="margin:0.5rem 0;">
+app.use((req,res,next) => {
+   console.log(req.method, req.url)
+   next()
+})
+                </div>
+                <strong>3. Validation:</strong> User data check.<br>
+                <div class="code-window" style="margin:0.5rem 0;">
+if(!req.body.email) return res.send(<span class="g">"Email required"</span>)
+                </div>
+                <strong>4. Security:</strong> JWT verification, API key check.
+            </div>
+        </div>
+
+        <!-- 4️⃣ Middleware types (Interview முக்கியம்) -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-num">4️⃣</span>
+                <span class="section-title">Middleware types (interview முக்கியம்)</span>
+            </div>
+            <div class="type-grid">
+                <div class="type-card"><span class="type-title">📌 Application Middleware</span> app.use(cors())</div>
+                <div class="type-card"><span class="type-title">📍 Route Middleware</span> app.get("/dashboard", auth, ...)</div>
+                <div class="type-card"><span class="type-title">📦 Third-party Middleware</span> cors, multer, morgan</div>
+                <div class="type-card"><span class="type-title">⚙️ Built-in Middleware</span> express.json()</div>
+            </div>
+            <div class="tamil-box">
+                <strong>Example third-party:</strong> <code>import cors from "cors"; app.use(cors())</code><br>
+                <strong>Built-in:</strong> <code>app.use(express.json())</code> → JSON data read பண்ண.
+            </div>
+        </div>
+
+        <!-- 5️⃣ Middleware flow example -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-num">5️⃣</span>
+                <span class="section-title">Middleware flow example</span>
+            </div>
+            <div class="code-window">
+<span class="y">app.use</span>((req,res,next) => {
+   console.log(<span class="g">"Middleware 1"</span>)
+   next()
+})
+
+<span class="y">app.use</span>((req,res,next) => {
+   console.log(<span class="g">"Middleware 2"</span>)
+   next()
+})
+
+<span class="y">app.get</span>(<span class="g">"/"</span>, (req,res) => {
+   res.send(<span class="g">"Hello"</span>)
+})
+            </div>
+            <div class="tamil-box"><strong>Output:</strong> Middleware 1, Middleware 2, Hello</div>
+        </div>
+
+        <!-- 6️⃣ Real MERN example (Interview level) -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-num">6️⃣</span>
+                <span class="section-title">Real MERN example (Interview level)</span>
+            </div>
+            <div class="code-window">
+<span class="y">const</span> verifyUser = (req,res,next) => {
+   <span class="y">const</span> token = req.headers.authorization
+   <span class="y">if</span>(!token) {
+      <span class="y">return</span> res.status(401).json({msg:<span class="g">"No token"</span>})
+   }
+   next()
+}
+
+app.get(<span class="g">"/dashboard"</span>, verifyUser, (req,res) => {
+   res.send(<span class="g">"Dashboard data"</span>)
+})
+            </div>
+            <div class="tamil-box">👉 Login இல்லாத user dashboard access பண்ண முடியாது.</div>
+        </div>
+
+        <!-- 7️⃣ Short Interview Answer -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-num">7️⃣</span>
+                <span class="section-title">Short Interview Answer</span>
+            </div>
+            <div class="english-phrase" style="background:#fff2db; border-left-color:#f4b740; font-size:1.3rem;">
+                “Middleware in Express is a function that runs before the route handler. It is used for authentication, logging, validation, and modifying requests or responses.”
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ✅ Express Middleware · full concept · தமிழ் · interview sentences · HTML/CSS only (no JS)
+    </div>
+</div>
+<!-- no javascript -->
+</body>
+</html>

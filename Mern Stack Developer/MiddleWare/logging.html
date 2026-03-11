@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Middleware · interview prep · logging middleware · தமிழ்</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e9f0f5;
+            font-family: 'Segoe UI', 'Nirmala UI', system-ui, sans-serif;
+            padding: 2rem 1rem;
+            color: #1d3d5c;
+        }
+
+        .mw-interview {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 56px;
+            box-shadow: 0 30px 60px -20px #1b4a6b;
+            overflow: hidden;
+            border: 1px solid #c7ddf5;
+        }
+
+        .header-mw {
+            background: #1b4f72;
+            color: white;
+            padding: 2.5rem 3rem;
+            border-bottom: 12px solid #f39c12;
+        }
+
+        .header-mw h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .header-mw .mw-badge {
+            background: #f39c12;
+            color: #1b4f72;
+            padding: 0.3rem 2.5rem;
+            border-radius: 80px;
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .sub-header {
+            font-size: 1.6rem;
+            color: #ffe6b0;
+            margin-top: 0.5rem;
+        }
+
+        /* content stack */
+        .content-stack {
+            padding: 2.8rem 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        /* section cards */
+        .section-card {
+            background: #f9feff;
+            border-radius: 48px;
+            padding: 2.2rem 2.5rem;
+            border: 2px solid #e0edf9;
+            box-shadow: 0 15px 20px -18px #234f6e;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px dashed #bdd3ef;
+            padding-bottom: 0.8rem;
+        }
+
+        .section-num {
+            background: #1b4f72;
+            color: white;
+            border-radius: 60px;
+            padding: 0.2rem 1.8rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #003057;
+        }
+
+        .tamil-block {
+            background: #fef8ed;
+            border-radius: 36px;
+            padding: 1.2rem 2rem;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            border-left: 12px solid #f39c12;
+        }
+
+        .eng-important {
+            background: #e2efff;
+            border-radius: 40px;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-left: 8px solid #1b4f72;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+
+        .eng-important::before {
+            content: "🗣️ ";
+        }
+
+        .code-box {
+            background: #0f263b;
+            color: #f2f9ff;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            padding: 1.2rem 2rem;
+            border-radius: 30px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #3e6b92;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        .code-box .yellow { color: #fcdb7e; }
+        .code-box .green { color: #b6f0b6; }
+        .code-box .comment { color: #a8c9ff; }
+
+        .flow-row {
+            display: flex;
+            flex-wrap: wrap;
+            background: #e3f0fc;
+            border-radius: 50px;
+            padding: 1.2rem 2.5rem;
+            justify-content: center;
+            gap: 15px 25px;
+            font-weight: 600;
+            font-size: 1.3rem;
+            border: 2px solid #f39c12;
+        }
+
+        .arrow { color: #c45d00; font-size: 2rem; }
+
+        .point-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+
+        .point-card {
+            background: #fff3e0;
+            border-radius: 28px;
+            padding: 1.2rem;
+            border: 2px solid #f39c12;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .point-card small {
+            display: block;
+            color: #1b4f72;
+        }
+
+        .mini-highlight {
+            background: #fff2d7;
+            border-radius: 32px;
+            padding: 0.5rem 1.8rem;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+
+        .footer-note {
+            background: #e2eff9;
+            padding: 1.8rem 3rem;
+            color: #1d4c6e;
+            font-weight: 500;
+            border-top: 2px solid #b9d3ee;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="mw-interview">
+    <div class="header-mw">
+        <h1>
+            <span class="mw-badge">⚙️ Middleware</span>
+            <span>interview prep + logging</span>
+        </h1>
+        <div class="sub-header">தமிழ் · english definitions · flow · next() · logging deep dive</div>
+    </div>
+
+    <div class="content-stack">
+        <!-- 1️⃣ What is Middleware? (Interview Definition) -->
+        <div class="section-card">
+            <div class="section-head">
+                <span class="section-num">1️⃣</span>
+                <span class="section-title">What is Middleware? (interview)</span>
+            </div>
+            <div class="eng-important">“Middleware is a function that runs between the request and the response in an Express application. It can modify the request, check data, perform authentication, logging, validation, or security before sending the response.”</div>
+            <div class="tamil-block">
+                <strong>Simple English:</strong> “Middleware is a function that executes before the request reaches the route handler.”<br><br>
+                <strong>Tamil meaning:</strong> Client request → Route handler போகும் முன் execute ஆகும் function தான் middleware.
+            </div>
+            <div class="flow-row">
+                <span>Client Request</span> <span class="arrow">➡️</span> <span style="background:#f39c12; padding:0.3rem 2rem; border-radius:40px;">Middleware</span> <span class="arrow">➡️</span> <span>Route Handler</span> <span class="arrow">➡️</span> <span>Response</span>
+            </div>
+        </div>
+
+        <!-- 2️⃣ Why do we use Middleware? (4 points) -->
+        <div class="section-card">
+            <div class="section-head">
+                <span class="section-num">2️⃣</span>
+                <span class="section-title">Why use Middleware? (4 points)</span>
+            </div>
+            <div class="point-grid">
+                <div class="point-card">🔐 Authentication <small>user login check</small></div>
+                <div class="point-card">📋 Logging <small>track requests</small></div>
+                <div class="point-card">✅ Validation <small>data correct-ஆ?</small></div>
+                <div class="point-card">🛡️ Security <small>token / API key</small></div>
+            </div>
+
+            <!-- Authentication example + interview line -->
+            <div class="tamil-block"><strong>🔐 Authentication:</strong> User login இருக்கானா check.</div>
+            <div class="code-box">
+<span class="yellow">const</span> auth = (req,res,next) => {
+   <span class="yellow">if</span>(req.headers.token){
+      next()
+   } <span class="yellow">else</span> {
+      res.send(<span class="green">"Unauthorized"</span>)
+   }
+}
+            </div>
+            <div class="eng-important">“Authentication middleware checks whether the user is logged in or authorized before accessing protected routes.”</div>
+
+            <!-- Logging example + interview line -->
+            <div class="tamil-block"><strong>📋 Logging:</strong> Server-க்கு வரும் request details track.</div>
+            <div class="code-box">
+app.use((req,res,next) => {
+   console.log(req.method, req.url)
+   next()
+})
+            </div>
+            <div class="eng-important">“Logging middleware records information about incoming requests such as HTTP method and URL.”</div>
+
+            <!-- Validation example + interview line -->
+            <div class="tamil-block"><strong>✅ Validation:</strong> User data correct-ஆ check.</div>
+            <div class="code-box">
+<span class="yellow">if</span>(!req.body.email){
+   <span class="yellow">return</span> res.send(<span class="green">"Email required"</span>)
+}
+            </div>
+            <div class="eng-important">“Validation middleware ensures that the request data is correct before processing it.”</div>
+
+            <!-- Security example + interview line -->
+            <div class="tamil-block"><strong>🛡️ Security:</strong> Token verify, API key check.</div>
+            <div class="eng-important">“Security middleware verifies tokens or API keys to protect the application.”</div>
+        </div>
+
+        <!-- 3️⃣ Middleware Flow & next() (important) -->
+        <div class="section-card">
+            <div class="section-head">
+                <span class="section-num">3️⃣</span>
+                <span class="section-title">Middleware Flow & next()</span>
+            </div>
+            <div class="flow-row">
+                <span>Client Request</span><span class="arrow">⬇️</span><span>Middleware</span><span class="arrow">⬇️</span><span>Route Handler</span><span class="arrow">⬇️</span><span>Response</span>
+            </div>
+            <div class="eng-important">“Middleware functions run sequentially before the route handler and must call next() to pass control to the next middleware.”</div>
+            <div class="tamil-block">
+                <strong>⚠️ next() important point:</strong> next() call பண்ணலனா request stop ஆகும்.<br>
+                <span class="mini-highlight">“The next() function is used to pass control to the next middleware.”</span>
+            </div>
+            <div class="code-box">
+app.use((req,res,next) => {
+   console.log(<span class="green">"Middleware executed"</span>)
+   next()
+})
+            </div>
+        </div>
+
+        <!-- 4️⃣ Final Interview Answer (short) -->
+        <div class="section-card">
+            <div class="section-head">
+                <span class="section-num">4️⃣</span>
+                <span class="section-title">Final Interview Answer (short)</span>
+            </div>
+            <div class="eng-important" style="font-size:1.3rem;">“Middleware is used to execute logic before the route handler. It helps in authentication, logging, validation, and security. Middleware functions run between the request and response cycle and use next() to pass control to the next middleware.”</div>
+        </div>
+
+        <!-- 5️⃣ Logging Middleware – Easy Explanation (deep) -->
+        <div class="section-card">
+            <div class="section-head">
+                <span class="section-num">5️⃣</span>
+                <span class="section-title">📋 Logging Middleware – deep dive</span>
+            </div>
+            <div class="tamil-block">
+                <strong>1️⃣ Idea என்ன?</strong> Server-க்கு வரும் request details print பண்ணுறது. யார் எந்த URL call பண்ணாங்கன்னு server log பண்ணிக்க முடியும்.
+            </div>
+            <div class="code-box">
+app.use((req,res,next) => {
+   console.log(req.method, req.url)
+   next()
+})
+            </div>
+            <div class="tamil-block">
+                <strong>Line by line:</strong><br>
+                • <code>app.use()</code> – Express-ல middleware run பண்ண use பண்ணுற method. “Run this function for every request”<br>
+                • <code>req.method</code> – User என்ன request type use பண்ணான் (GET, POST, PUT, DELETE)<br>
+                • <code>req.url</code> – User எந்த URL call பண்ணான் ( /users, /login )<br>
+                • <code>console.log</code> – Server console-ல print ஆகும்: e.g. GET /users<br>
+                • <code>next()</code> – Next middleware / route-க்கு request அனுப்பும். ⚡ next() இல்லனா request stop.
+            </div>
+            <div class="eng-important">“Logging middleware prints request details such as method and URL in the server console to monitor incoming requests.”</div>
+            <div class="flow-row">
+                <span>GET /users</span> <span class="arrow">➡️</span> <span style="background:#f39c12; padding:0.3rem 2rem;">Logging mw</span> <span class="arrow">➡️</span> <span>console: GET /users</span> <span class="arrow">➡️</span> <span>next()</span>
+            </div>
+            <div class="tamil-block">
+                <strong>🔥 Super Short Interview Answer:</strong><br>
+                “Logging middleware prints request details such as method and URL in the server console to monitor incoming requests.”
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ✅ Express Middleware · interview definitions · logging · next() · தமிழ் · HTML/CSS only (no js)
+    </div>
+</div>
+<!-- no javascript -->
+</body>
+</html>
