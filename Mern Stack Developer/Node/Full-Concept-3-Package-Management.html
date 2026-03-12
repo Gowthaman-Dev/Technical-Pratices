@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NPM & package.json – Node.js Tamil Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #080b0f;
+      --surface: #0b0f18;
+      --card:    #0f1320;
+      --border:  #172030;
+      --green:   #4ade80;
+      --cyan:    #22d3ee;
+      --yellow:  #fbbf24;
+      --orange:  #fb923c;
+      --purple:  #a78bfa;
+      --pink:    #f472b6;
+      --red:     #f87171;
+      --blue:    #60a5fa;
+      --teal:    #2dd4bf;
+      --lime:    #a3e635;
+      --text:    #dde4f0;
+      --muted:   #44516a;
+      --code-bg: #05070e;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans Tamil',sans-serif;line-height:1.8;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.28;}
+
+    /* HERO */
+    .hero{position:relative;text-align:center;padding:72px 22px 56px;border-bottom:1px solid var(--border);overflow:hidden;}
+    .hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(251,191,36,.10) 0%,transparent 70%);pointer-events:none;}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:var(--yellow);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:6px 18px;border-radius:999px;margin-bottom:20px;}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.025em;line-height:1.1;background:linear-gradient(135deg,var(--yellow) 0%,var(--orange) 45%,var(--red) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px;}
+    .hero p{color:var(--muted);font-size:.98rem;max-width:540px;margin:0 auto;}
+
+    /* CONTAINER */
+    .container{max-width:960px;margin:0 auto;padding:50px 22px 90px;display:flex;flex-direction:column;gap:42px;}
+
+    /* SECTION */
+    .section{border:1px solid var(--border);border-radius:20px;overflow:hidden;background:var(--card);animation:fadeUp .55s ease both;}
+    .section:nth-child(1){animation-delay:.04s}.section:nth-child(2){animation-delay:.10s}.section:nth-child(3){animation-delay:.16s}.section:nth-child(4){animation-delay:.22s}.section:nth-child(5){animation-delay:.28s}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+    .section-header{display:flex;align-items:center;gap:14px;padding:18px 26px;border-bottom:1px solid var(--border);background:var(--surface);}
+    .snum{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.83rem;flex-shrink:0;}
+    .section-header h2{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:-.01em;}
+    .section-body{padding:26px;display:flex;flex-direction:column;gap:22px;}
+
+    .npm .snum{background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.3)}.npm .section-header h2{color:var(--yellow)}
+    .pkg .snum{background:rgba(74,222,128,.12);color:var(--green);border:1px solid rgba(74,222,128,.3)}.pkg .section-header h2{color:var(--green)}
+    .fin .snum{background:rgba(251,146,60,.12);color:var(--orange);border:1px solid rgba(251,146,60,.3)}.fin .section-header h2{color:var(--orange)}
+    .mern-s .snum{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.3)}.mern-s .section-header h2{color:var(--cyan)}
+
+    /* TEXT */
+    p{color:#b8c5d8;font-size:.95rem;}
+    .sub{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+
+    /* QBOX */
+    .qbox{display:flex;align-items:flex-start;gap:10px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:12px 16px;}
+    .qbox p{color:#fef9c3;font-size:.94rem;font-weight:600;}
+
+    /* ABOX */
+    .abox{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:12px 16px;}
+    .abox p{color:#d1fae5;font-size:.93rem;}
+
+    /* INFOBOX */
+    .infobox{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.2);border-left:3px solid var(--blue);border-radius:12px;padding:13px 17px;}
+    .infobox p{color:#bfdbfe;font-size:.93rem;}
+
+    /* BULLET */
+    .blist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .blist li{display:flex;align-items:flex-start;gap:10px;color:#b8c5d8;font-size:.94rem;}
+    .blist li::before{content:'▸';flex-shrink:0;margin-top:2px;}
+    .npm .blist li::before{color:var(--yellow)}
+    .pkg .blist li::before{color:var(--green)}
+
+    /* INLINE CODE */
+    code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.07);color:var(--cyan);font-size:.8em;padding:2px 7px;border-radius:5px;}
+
+    /* CODE BLOCK */
+    .code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+    .code-top{display:flex;align-items:center;justify-content:space-between;padding:9px 15px;border-bottom:1px solid var(--border);background:#030507;}
+    .dots{display:flex;gap:6px;}
+    .dots span{width:10px;height:10px;border-radius:50%;}
+    .d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+    .clabel{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;}
+    pre{padding:18px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.75;color:#8a9fc0;}
+    .kw{color:var(--purple)}.fn{color:var(--cyan)}.str{color:var(--green)}.num{color:var(--orange)}.cm{color:var(--muted)}.pk{color:var(--yellow)}.pv{color:var(--green)}.pn{color:var(--pink)}
+
+    /* NPM COMMANDS */
+    .cmd-list{display:flex;flex-direction:column;gap:14px;}
+    .cmd-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+    .cmd-header{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--border);background:#090c15;}
+    .cmd-badge{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:6px;flex-shrink:0;}
+    .cmd-header h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;}
+    .cmd-body{padding:14px 18px;display:flex;flex-direction:column;gap:10px;}
+
+    .cmd1 .cmd-badge{background:rgba(74,222,128,.15);color:var(--green);border:1px solid rgba(74,222,128,.3)}.cmd1 .cmd-header h3{color:var(--green)}
+    .cmd2 .cmd-badge{background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.3)}.cmd2 .cmd-header h3{color:var(--yellow)}
+    .cmd3 .cmd-badge{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3)}.cmd3 .cmd-header h3{color:var(--purple)}
+    .cmd4 .cmd-badge{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.3)}.cmd4 .cmd-header h3{color:var(--red)}
+    .cmd5 .cmd-badge{background:rgba(34,211,238,.15);color:var(--cyan);border:1px solid rgba(34,211,238,.3)}.cmd5 .cmd-header h3{color:var(--cyan)}
+
+    .cmd2 .blist li::before,.cmd3 .blist li::before{color:var(--yellow)}
+
+    /* NODE MODULES */
+    .nm-box{background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.2);border-left:3px solid var(--purple);border-radius:12px;padding:14px 18px;}
+    .nm-box .nm-title{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--purple);font-weight:700;letter-spacing:.08em;margin-bottom:10px;}
+    .nm-box .blist li::before{color:var(--purple)}
+
+    /* TABLE */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+    table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;}
+    thead tr{background:#0a0d18;border-bottom:1px solid var(--border);}
+    thead th{padding:12px 18px;text-align:left;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;}
+    tbody tr{border-bottom:1px solid var(--border);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:nth-child(odd){background:rgba(255,255,255,.018);}
+    tbody td{padding:11px 18px;color:#b8c5d8;vertical-align:top;}
+    tbody td:first-child{color:var(--cyan);font-weight:700;}
+
+    /* DEPS GRID */
+    .deps-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:560px){.deps-grid{grid-template-columns:1fr}}
+    .dep-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+    .dep-header{padding:12px 18px;border-bottom:1px solid var(--border);background:#090c15;}
+    .dep-header h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;}
+    .dep-body{padding:14px 18px;display:flex;flex-direction:column;gap:10px;}
+    .dp1 .dep-header h3{color:var(--green)}.dp2 .dep-header h3{color:var(--yellow)}
+    .dp1 .blist li::before{color:var(--green)}.dp2 .blist li::before{color:var(--yellow)}
+
+    /* INIT GRID */
+    .init-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media(max-width:480px){.init-grid{grid-template-columns:1fr}}
+
+    /* INTERVIEW */
+    .interview{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:18px 22px;}
+    .il{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+    .interview blockquote{color:#d1fae5;font-style:italic;font-size:.95rem;line-height:1.9;}
+
+    /* FINAL */
+    .final{background:linear-gradient(135deg,rgba(251,191,36,.07) 0%,rgba(251,146,60,.05) 50%,rgba(248,113,113,.07) 100%);border:1px solid rgba(251,191,36,.18);border-radius:20px;padding:38px 30px;text-align:center;}
+    .final .star{font-size:1.5rem;margin-bottom:12px;}
+    .final h3{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--yellow);margin-bottom:14px;}
+    .final blockquote{color:#e2e8f0;font-style:italic;font-size:.97rem;line-height:1.9;max-width:700px;margin:0 auto;}
+
+    /* MERN DEPS */
+    .mern-deps{background:var(--code-bg);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+    .mern-deps .code-top{background:#030507;}
+
+    /* CHIPS */
+    .chips{display:flex;flex-wrap:wrap;gap:8px;}
+    .chip{font-family:'JetBrains Mono',monospace;font-size:.73rem;padding:5px 13px;border-radius:999px;border:1px solid;}
+    .cg{background:rgba(74,222,128,.1);color:var(--green);border-color:rgba(74,222,128,.3)}
+    .cy{background:rgba(251,191,36,.1);color:var(--yellow);border-color:rgba(251,191,36,.3)}
+    .cp{background:rgba(167,139,250,.1);color:var(--purple);border-color:rgba(167,139,250,.3)}
+    .cc{background:rgba(34,211,238,.1);color:var(--cyan);border-color:rgba(34,211,238,.3)}
+    .co{background:rgba(251,146,60,.1);color:var(--orange);border-color:rgba(251,146,60,.3)}
+
+    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">📦 Package Manager</div>
+  <h1>NPM &amp; package.json</h1>
+  <p>Node Package Manager, commands, package.json fields, dependencies — Tamil guide with MERN example.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══════ NPM ══════ -->
+  <article class="section npm">
+    <div class="section-header">
+      <div class="snum">7️⃣</div>
+      <h2>NPM (Node Package Manager)</h2>
+    </div>
+    <div class="section-body">
+
+      <div>
+        <p class="sub">Tamil Explanation</p>
+        <p>NPM என்பது Node.js packages install மற்றும் manage பண்ண பயன்படும் tool.</p>
+        <br/>
+        <p>Node.js install பண்ணும்போது NPM automatic-ஆ install ஆகும்.</p>
+      </div>
+
+      <div>
+        <p>NPM use பண்ணி நாம்:</p>
+        <ul class="blist">
+          <li>External libraries install பண்ணலாம்</li>
+          <li>Dependencies manage பண்ணலாம்</li>
+          <li>Scripts run பண்ணலாம்</li>
+          <li>Packages publish பண்ணலாம்</li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="sub">Example (Package Install)</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">terminal</span>
+          </div>
+          <pre>npm install express</pre>
+        </div>
+      </div>
+
+      <div>
+        <p>இதன் மூலம்:</p>
+        <ul class="blist">
+          <li>Express package install ஆகும்</li>
+          <li><code>node_modules</code> folder create ஆகும்</li>
+          <li>package.json update ஆகும்</li>
+        </ul>
+      </div>
+
+      <!-- NPM Commands -->
+      <div>
+        <p class="sub">Important NPM Commands</p>
+        <div class="cmd-list">
+
+          <div class="cmd-card cmd1">
+            <div class="cmd-header">
+              <span class="cmd-badge">1️⃣</span>
+              <h3>Install Package</h3>
+            </div>
+            <div class="cmd-body">
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">terminal</span>
+                </div>
+                <pre>npm install express</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="cmd-card cmd2">
+            <div class="cmd-header">
+              <span class="cmd-badge">2️⃣</span>
+              <h3>Install Dev Dependency</h3>
+            </div>
+            <div class="cmd-body">
+              <p>Development time மட்டும் use பண்ணும் package.</p>
+              <p class="sub">Example</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">terminal</span>
+                </div>
+                <pre>npm install nodemon --save-dev</pre>
+              </div>
+              <div>
+                <p class="sub">Examples</p>
+                <div class="chips">
+                  <span class="chip cy">nodemon</span>
+                  <span class="chip cy">eslint</span>
+                  <span class="chip cy">prettier</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cmd-card cmd3">
+            <div class="cmd-header">
+              <span class="cmd-badge">3️⃣</span>
+              <h3>Install Global Package</h3>
+            </div>
+            <div class="cmd-body">
+              <p>System முழுவதும் use பண்ண.</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">terminal</span>
+                </div>
+                <pre>npm install -g nodemon</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="cmd-card cmd4">
+            <div class="cmd-header">
+              <span class="cmd-badge">4️⃣</span>
+              <h3>Remove Package</h3>
+            </div>
+            <div class="cmd-body">
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">terminal</span>
+                </div>
+                <pre>npm uninstall express</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="cmd-card cmd5">
+            <div class="cmd-header">
+              <span class="cmd-badge">5️⃣</span>
+              <h3>Install All Dependencies</h3>
+            </div>
+            <div class="cmd-body">
+              <p>Project clone பண்ணும்போது use பண்ணுவோம்.</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">terminal</span>
+                </div>
+                <pre>npm install</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- node_modules -->
+      <div class="nm-box">
+        <div class="nm-title">📁 node_modules Folder</div>
+        <p style="color:#b8c5d8;font-size:.93rem;margin-bottom:10px;">Package install பண்ணும்போது node_modules folder create ஆகும்.</p>
+        <p class="sub">இதில் இருக்கும்</p>
+        <ul class="blist">
+          <li>Installed packages</li>
+          <li>dependencies of dependencies</li>
+        </ul>
+      </div>
+
+      <div class="interview">
+        <div class="il">⭐ English Sentence (Interview)</div>
+        <blockquote>"NPM is the default package manager for Node.js used to install, manage, and update project dependencies."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════ PACKAGE.JSON ══════ -->
+  <article class="section pkg">
+    <div class="section-header">
+      <div class="snum">8️⃣</div>
+      <h2>package.json</h2>
+    </div>
+    <div class="section-body">
+
+      <div>
+        <p class="sub">Tamil Explanation</p>
+        <p>package.json என்பது Node.js project-இன் configuration file.</p>
+      </div>
+
+      <div>
+        <p>இதில் இருக்கும்:</p>
+        <ul class="blist">
+          <li>project information</li>
+          <li>dependencies</li>
+          <li>scripts</li>
+          <li>version</li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">package.json</span>
+          </div>
+          <pre>{
+  <span class="pk">"name"</span>: <span class="pv">"mern-project"</span>,
+  <span class="pk">"version"</span>: <span class="pv">"1.0.0"</span>,
+  <span class="pk">"description"</span>: <span class="pv">"Job portal backend"</span>,
+  <span class="pk">"main"</span>: <span class="pv">"server.js"</span>,
+  <span class="pk">"scripts"</span>: {
+    <span class="pk">"start"</span>: <span class="pv">"node server.js"</span>
+  },
+  <span class="pk">"dependencies"</span>: {
+    <span class="pk">"express"</span>: <span class="pv">"^4.18.2"</span>
+  }
+}</pre>
+        </div>
+      </div>
+
+      <!-- Important Fields table -->
+      <div>
+        <p class="sub">Important Fields</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>name</td><td>project name</td></tr>
+              <tr><td>version</td><td>project version</td></tr>
+              <tr><td>description</td><td>project details</td></tr>
+              <tr><td>main</td><td>entry file</td></tr>
+              <tr><td>scripts</td><td>commands run பண்ண</td></tr>
+              <tr><td>dependencies</td><td>required packages</td></tr>
+              <tr><td>devDependencies</td><td>development packages</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- scripts -->
+      <div>
+        <p class="sub">scripts Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">package.json</span>
+          </div>
+          <pre><span class="pk">"scripts"</span>: {
+  <span class="pk">"start"</span>: <span class="pv">"node server.js"</span>,
+  <span class="pk">"dev"</span>: <span class="pv">"nodemon server.js"</span>
+}</pre>
+        </div>
+        <p style="margin-top:10px;">Run command:</p>
+        <div class="code-block" style="margin-top:8px;">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">terminal</span>
+          </div>
+          <pre>npm run dev</pre>
+        </div>
+      </div>
+
+      <!-- deps vs devDeps -->
+      <div>
+        <p class="sub">dependencies vs devDependencies</p>
+        <div class="deps-grid">
+
+          <div class="dep-card dp1">
+            <div class="dep-header"><h3>dependencies</h3></div>
+            <div class="dep-body">
+              <p>Production-ல run ஆக தேவையான packages.</p>
+              <p class="sub">Example</p>
+              <ul class="blist">
+                <li>express</li>
+                <li>mongoose</li>
+                <li>bcrypt</li>
+                <li>jsonwebtoken</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="dep-card dp2">
+            <div class="dep-header"><h3>devDependencies</h3></div>
+            <div class="dep-body">
+              <p>Development time மட்டும் use பண்ணும்.</p>
+              <p class="sub">Example</p>
+              <ul class="blist">
+                <li>nodemon</li>
+                <li>eslint</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- package.json create -->
+      <div>
+        <p class="sub">package.json Create Command</p>
+        <div class="init-grid">
+          <div class="code-block">
+            <div class="code-top">
+              <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+              <span class="clabel">terminal</span>
+            </div>
+            <pre>npm init</pre>
+          </div>
+          <div class="code-block">
+            <div class="code-top">
+              <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+              <span class="clabel">terminal</span>
+            </div>
+            <pre>npm init -y</pre>
+          </div>
+        </div>
+        <div class="abox" style="margin-top:10px;">
+          <p>இதனால் automatically package.json create ஆகும்.</p>
+        </div>
+      </div>
+
+      <div class="interview">
+        <div class="il">⭐ English Sentence (Interview)</div>
+        <blockquote>"package.json is a configuration file that stores project metadata, dependencies, and scripts for a Node.js application."</blockquote>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- ══════ REAL PROJECT ══════ -->
+  <article class="section mern-s">
+    <div class="section-header">
+      <div class="snum">⭐</div>
+      <h2>Real Project Example (MERN)</h2>
+    </div>
+    <div class="section-body">
+      <p>உங்க project-ல இருக்கும் dependencies:</p>
+      <p class="sub">Example</p>
+      <div class="code-block mern-deps">
+        <div class="code-top">
+          <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="clabel">package.json – MERN project</span>
+        </div>
+        <pre><span class="pk">"dependencies"</span>: {
+  <span class="pk">"express"</span>:      <span class="pv">"^4.18.2"</span>,
+  <span class="pk">"mongoose"</span>:     <span class="pv">"^7.0.0"</span>,
+  <span class="pk">"bcrypt"</span>:       <span class="pv">"^5.1.0"</span>,
+  <span class="pk">"jsonwebtoken"</span>: <span class="pv">"^9.0.0"</span>,
+  <span class="pk">"cors"</span>:         <span class="pv">"^2.8.5"</span>,
+  <span class="pk">"dotenv"</span>:       <span class="pv">"^16.0.3"</span>
+}</pre>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ FINAL ══════ -->
+  <div class="final">
+    <div class="star">⭐</div>
+    <h3>Final Interview Answer (Short)</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px;">நீங்க interview-ல சொல்லலாம்:</p>
+    <blockquote>"NPM is the package manager for Node.js used to install and manage external libraries. The package.json file stores project metadata, dependencies, and scripts required to run the application."</blockquote>
+  </div>
+
+</main>
+</body>
+</html>

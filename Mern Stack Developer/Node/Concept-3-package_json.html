@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>package.json – Teaching Guide Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:       #f5f2eb;
+      --surface:  #eeeae0;
+      --card:     #faf8f4;
+      --ink:      #1a1208;
+      --ink2:     #4a3f2a;
+      --border:   #d4cdb8;
+      --accent:   #c84b2f;
+      --accent2:  #1a6b3c;
+      --accent3:  #1d4e89;
+      --gold:     #b8860b;
+      --muted:    #857a68;
+      --code-bg:  #1a1208;
+      --code-fg:  #e8dfc8;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+
+    body{
+      background:var(--bg);
+      color:var(--ink);
+      font-family:'Noto Sans Tamil','Space Grotesk',sans-serif;
+      line-height:1.75;
+      overflow-x:hidden;
+    }
+
+    /* ── paper grain overlay ── */
+    body::before{
+      content:'';
+      position:fixed;inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      pointer-events:none;z-index:0;
+    }
+
+    /* ── HERO ── */
+    .hero{
+      position:relative;
+      background:var(--ink);
+      color:#f5f2eb;
+      padding:80px 28px 64px;
+      overflow:hidden;
+      border-bottom:4px solid var(--accent);
+    }
+    .hero::after{
+      content:'{ }';
+      position:absolute;
+      right:-20px;top:50%;
+      transform:translateY(-50%);
+      font-family:'Fira Code',monospace;
+      font-size:clamp(7rem,18vw,14rem);
+      font-weight:600;
+      color:rgba(245,242,235,.04);
+      line-height:1;
+      pointer-events:none;
+      white-space:nowrap;
+    }
+    .hero-eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      font-family:'Fira Code',monospace;
+      font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+      color:var(--accent);margin-bottom:18px;
+    }
+    .hero-eyebrow::before{content:'▶';font-size:.6rem;}
+    .hero h1{
+      font-family:'Space Grotesk',sans-serif;
+      font-size:clamp(2.2rem,6vw,4rem);
+      font-weight:700;
+      line-height:1.05;
+      letter-spacing:-.025em;
+      color:#f5f2eb;
+      margin-bottom:14px;
+      max-width:620px;
+    }
+    .hero h1 span{color:var(--accent);}
+    .hero p{
+      color:rgba(245,242,235,.55);
+      font-size:.97rem;
+      max-width:500px;
+    }
+
+    /* ── CONTAINER ── */
+    .container{
+      max-width:900px;
+      margin:0 auto;
+      padding:56px 24px 96px;
+      display:flex;flex-direction:column;gap:36px;
+    }
+
+    /* ── SECTION ── */
+    .section{
+      background:var(--card);
+      border:1.5px solid var(--border);
+      border-radius:4px;
+      overflow:hidden;
+      position:relative;
+      animation:fadeUp .5s ease both;
+    }
+    .section:nth-child(1){animation-delay:.03s}
+    .section:nth-child(2){animation-delay:.08s}
+    .section:nth-child(3){animation-delay:.13s}
+    .section:nth-child(4){animation-delay:.18s}
+    .section:nth-child(5){animation-delay:.23s}
+    .section:nth-child(6){animation-delay:.28s}
+    .section:nth-child(7){animation-delay:.33s}
+    .section:nth-child(8){animation-delay:.38s}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+    /* left accent bar */
+    .section::before{
+      content:'';
+      position:absolute;left:0;top:0;bottom:0;
+      width:4px;
+    }
+    .bar-red::before{background:var(--accent)}
+    .bar-green::before{background:var(--accent2)}
+    .bar-blue::before{background:var(--accent3)}
+    .bar-gold::before{background:var(--gold)}
+    .bar-muted::before{background:var(--muted)}
+
+    .section-header{
+      display:flex;align-items:center;gap:16px;
+      padding:16px 24px 16px 28px;
+      border-bottom:1.5px solid var(--border);
+      background:var(--surface);
+    }
+    .step-tag{
+      font-family:'Fira Code',monospace;
+      font-size:.68rem;font-weight:600;
+      letter-spacing:.12em;text-transform:uppercase;
+      padding:4px 11px;border-radius:2px;
+      flex-shrink:0;
+    }
+    .tag-red{background:rgba(200,75,47,.1);color:var(--accent);border:1px solid rgba(200,75,47,.25)}
+    .tag-green{background:rgba(26,107,60,.1);color:var(--accent2);border:1px solid rgba(26,107,60,.25)}
+    .tag-blue{background:rgba(29,78,137,.1);color:var(--accent3);border:1px solid rgba(29,78,137,.25)}
+    .tag-gold{background:rgba(184,134,11,.1);color:var(--gold);border:1px solid rgba(184,134,11,.25)}
+    .tag-muted{background:rgba(133,122,104,.12);color:var(--muted);border:1px solid rgba(133,122,104,.25)}
+
+    .section-header h2{
+      font-family:'Space Grotesk',sans-serif;
+      font-size:1.05rem;font-weight:600;
+      color:var(--ink);letter-spacing:-.01em;
+    }
+    .section-body{
+      padding:24px 26px 26px 30px;
+      display:flex;flex-direction:column;gap:18px;
+    }
+
+    /* ── TEXT ── */
+    p{color:var(--ink2);font-size:.94rem;}
+    .label{
+      font-family:'Fira Code',monospace;
+      font-size:.65rem;font-weight:600;
+      letter-spacing:.14em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:6px;
+    }
+
+    /* ── SPEECH ── */
+    .speech{
+      display:flex;align-items:flex-start;gap:12px;
+      background:#fff8f0;
+      border:1.5px solid rgba(200,75,47,.2);
+      border-left:3px solid var(--accent);
+      border-radius:4px;
+      padding:13px 16px;
+    }
+    .si{font-size:1.15rem;flex-shrink:0;line-height:1.5;}
+    .speech p{color:var(--accent);font-size:.93rem;font-weight:500;}
+
+    /* ── CALLOUT ── */
+    .callout{
+      display:flex;align-items:flex-start;gap:10px;
+      padding:12px 15px;border-radius:4px;
+    }
+    .callout p{font-size:.92rem;font-weight:500;}
+    .callout-yellow{background:#fffbeb;border:1.5px solid rgba(184,134,11,.25);}
+    .callout-yellow p{color:var(--gold);}
+    .callout-green{background:#f0faf4;border:1.5px solid rgba(26,107,60,.2);}
+    .callout-green p{color:var(--accent2);}
+    .callout-blue{background:#f0f5ff;border:1.5px solid rgba(29,78,137,.2);}
+    .callout-blue p{color:var(--accent3);}
+    .callout-red{background:#fff5f3;border:1.5px solid rgba(200,75,47,.2);}
+    .callout-red p{color:var(--accent);}
+
+    /* ── BULLET ── */
+    .blist{list-style:none;display:flex;flex-direction:column;gap:6px;}
+    .blist li{
+      display:flex;align-items:flex-start;gap:10px;
+      color:var(--ink2);font-size:.93rem;
+    }
+    .blist li::before{content:'—';flex-shrink:0;color:var(--border);margin-top:1px;}
+
+    /* ── INLINE CODE ── */
+    code{
+      font-family:'Fira Code',monospace;
+      background:rgba(26,18,8,.07);
+      color:var(--accent);
+      font-size:.8em;
+      padding:2px 6px;
+      border-radius:3px;
+      border:1px solid rgba(26,18,8,.1);
+    }
+
+    /* ── CODE BLOCK ── */
+    .code-block{
+      background:var(--code-bg);
+      border:1.5px solid #2e2518;
+      border-radius:4px;overflow:hidden;
+    }
+    .code-top{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:8px 14px;
+      border-bottom:1px solid #2e2518;
+      background:#120e06;
+    }
+    .dots{display:flex;gap:6px;}
+    .dots span{width:10px;height:10px;border-radius:50%;}
+    .dot1{background:#ff5f57}.dot2{background:#febc2e}.dot3{background:#28c840}
+    .clabel{
+      font-family:'Fira Code',monospace;
+      font-size:.67rem;color:#5a5040;letter-spacing:.08em;
+    }
+    pre{
+      padding:17px;overflow-x:auto;
+      font-family:'Fira Code',monospace;
+      font-size:.81rem;line-height:1.8;
+      color:var(--code-fg);
+    }
+    .pk{color:#f0c070}.pv{color:#88d498}.pn{color:#80bfff}
+    .cm{color:#5a5040}
+    .tr-dir{color:#3e3428}.tr-fold{color:#f0c070}.tr-file{color:#80bfff}
+
+    /* ── FIELD CARDS ── */
+    .field-stack{display:flex;flex-direction:column;gap:14px;}
+    .field-card{
+      border:1.5px solid var(--border);
+      border-radius:4px;overflow:hidden;
+      background:#fff;
+    }
+    .field-card-top{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 16px;
+      border-bottom:1.5px solid var(--border);
+      background:var(--surface);
+    }
+    .field-name{
+      font-family:'Fira Code',monospace;
+      font-size:.82rem;font-weight:600;
+      padding:3px 10px;border-radius:3px;
+    }
+    .fn-green{background:rgba(26,107,60,.1);color:var(--accent2);border:1px solid rgba(26,107,60,.2)}
+    .fn-blue{background:rgba(29,78,137,.1);color:var(--accent3);border:1px solid rgba(29,78,137,.2)}
+    .fn-gold{background:rgba(184,134,11,.1);color:var(--gold);border:1px solid rgba(184,134,11,.2)}
+    .fn-red{background:rgba(200,75,47,.1);color:var(--accent);border:1px solid rgba(200,75,47,.2)}
+    .fn-muted{background:rgba(133,122,104,.1);color:var(--muted);border:1px solid rgba(133,122,104,.2)}
+    .field-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+
+    /* ── DEP GRID ── */
+    .dep-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    @media(max-width:540px){.dep-grid{grid-template-columns:1fr}}
+    .dep-card{
+      border:1.5px solid var(--border);border-radius:4px;overflow:hidden;background:#fff;
+    }
+    .dep-card-top{
+      padding:10px 16px;border-bottom:1.5px solid var(--border);
+      background:var(--surface);
+    }
+    .dep-card-top h4{
+      font-family:'Fira Code',monospace;
+      font-size:.82rem;font-weight:600;
+    }
+    .dct-green .dep-card-top h4{color:var(--accent2)}
+    .dct-gold .dep-card-top h4{color:var(--gold)}
+    .dep-card-body{padding:13px 16px;display:flex;flex-direction:column;gap:6px;}
+    .dct-green .blist li::before{color:var(--accent2)}
+    .dct-gold .blist li::before{color:var(--gold)}
+
+    /* ── TABLE ── */
+    .table-wrap{overflow-x:auto;border:1.5px solid var(--border);border-radius:4px;}
+    table{width:100%;border-collapse:collapse;font-family:'Fira Code',monospace;font-size:.8rem;}
+    thead tr{background:var(--surface);border-bottom:1.5px solid var(--border);}
+    thead th{
+      padding:11px 16px;text-align:left;
+      color:var(--muted);letter-spacing:.08em;
+      text-transform:uppercase;font-size:.68rem;
+    }
+    tbody tr{border-bottom:1.5px solid var(--border);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody td{padding:11px 16px;color:var(--ink2);}
+    tbody td:first-child{color:var(--ink);font-weight:600;}
+
+    /* ── INIT SIDE BY SIDE ── */
+    .init-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media(max-width:480px){.init-pair{grid-template-columns:1fr}}
+
+    /* ── TREE BOX ── */
+    .tree-box{
+      background:var(--code-bg);
+      border:1.5px solid #2e2518;
+      border-radius:4px;overflow:hidden;
+    }
+    .tree-top{
+      padding:8px 14px;border-bottom:1px solid #2e2518;
+      background:#120e06;
+      font-family:'Fira Code',monospace;font-size:.67rem;
+      color:#5a5040;letter-spacing:.08em;
+    }
+
+    /* ── ID CARD ── */
+    .id-card{
+      background:var(--ink);
+      border-radius:4px;
+      padding:24px 24px;
+      color:#f5f2eb;
+      position:relative;overflow:hidden;
+    }
+    .id-card::before{
+      content:'ID';
+      position:absolute;right:20px;top:50%;
+      transform:translateY(-50%);
+      font-family:'Space Grotesk',sans-serif;
+      font-size:5rem;font-weight:700;
+      color:rgba(245,242,235,.05);
+      pointer-events:none;
+    }
+    .id-card-label{
+      font-family:'Fira Code',monospace;
+      font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
+      color:var(--accent);margin-bottom:8px;
+    }
+    .id-card h3{
+      font-family:'Space Grotesk',sans-serif;
+      font-size:1.1rem;font-weight:600;
+      color:#f5f2eb;margin-bottom:14px;
+    }
+    .id-card .blist li::before{color:rgba(245,242,235,.3)}
+    .id-card .blist li{color:rgba(245,242,235,.7)}
+    .id-card .footer{
+      margin-top:12px;
+      color:rgba(245,242,235,.5);
+      font-size:.88rem;
+    }
+    .id-card .footer::before{content:'→ ';color:var(--accent2);}
+
+    /* ── INTERVIEW ── */
+    .interview{
+      background:var(--ink);
+      border-radius:4px;
+      padding:20px 24px;
+    }
+    .int-label{
+      font-family:'Fira Code',monospace;
+      font-size:.67rem;letter-spacing:.14em;text-transform:uppercase;
+      color:var(--accent2);margin-bottom:10px;display:flex;align-items:center;gap:6px;
+    }
+    .int-label::before{content:'★';}
+    .interview blockquote{
+      color:#f5f2eb;
+      font-style:italic;
+      font-size:.95rem;
+      line-height:1.85;
+      border-left:3px solid var(--accent2);
+      padding-left:16px;
+    }
+
+    /* ── ROCKY BOX ── */
+    .rocky-box{
+      background:#f0faf4;
+      border:1.5px solid rgba(26,107,60,.25);
+      border-radius:4px;
+      padding:18px 20px;
+    }
+    .rocky-label{
+      font-family:'Fira Code',monospace;
+      font-size:.67rem;letter-spacing:.14em;text-transform:uppercase;
+      color:var(--accent2);margin-bottom:10px;display:flex;align-items:center;gap:6px;
+    }
+    .rocky-label::before{content:'✓';}
+    .rocky-q{
+      font-family:'Space Grotesk',sans-serif;
+      font-size:.93rem;font-weight:600;
+      color:var(--accent2);
+    }
+    .rocky-q::before{content:'→ ';}
+
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-eyebrow">Node.js Tamil Guide</div>
+  <h1>package<span>.</span>json</h1>
+  <p>Project information file — fields, dependencies, scripts & create commands — Tamil classroom guide.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══ STEP 1 ══ -->
+  <article class="section bar-red">
+    <div class="section-header">
+      <span class="step-tag tag-red">Step 01</span>
+      <h2>First Question (Why package.json?)</h2>
+    </div>
+    <div class="section-body">
+      <p>Class-ல கேள்:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"ஒரு Node.js project-ல எந்த packages use பண்ணுறோம் எப்படி தெரியும்?"</p>
+      </div>
+
+      <div>
+        <div class="label">Example project</div>
+        <div class="tree-box">
+          <div class="tree-top">project</div>
+          <pre style="padding:16px;"><span class="tr-fold">project</span>
+<span class="tr-dir">│</span>
+<span class="tr-dir">├──</span> <span class="tr-fold">node_modules</span>
+<span class="tr-dir">├──</span> <span class="tr-file">server.js</span></pre>
+        </div>
+      </div>
+
+      <div class="callout callout-blue">
+        <p>Students confuse ஆகுவாங்க.</p>
+      </div>
+      <p>அப்போ சொல்லணும்:</p>
+      <div class="callout callout-yellow">
+        <p>👉 அதற்காக தான் package.json.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══ STEP 2 ══ -->
+  <article class="section bar-green">
+    <div class="section-header">
+      <span class="step-tag tag-green">Step 02</span>
+      <h2>Definition</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல எழுதணும்.</p>
+      <div class="callout callout-green">
+        <p>👉 package.json = Node.js project information file</p>
+      </div>
+      <div>
+        <div class="label">Meaning — இந்த file-ல இருக்கும்</div>
+        <ul class="blist">
+          <li>project name</li>
+          <li>version</li>
+          <li>dependencies</li>
+          <li>scripts</li>
+        </ul>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══ STEP 3 ══ -->
+  <article class="section bar-gold">
+    <div class="section-header">
+      <span class="step-tag tag-gold">Step 03</span>
+      <h2>Example File</h2>
+    </div>
+    <div class="section-body">
+      <p>Students-க்கு simple example காட்டணும்.</p>
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+          <span class="clabel">package.json</span>
+        </div>
+        <pre>{
+  <span class="pk">"name"</span>: <span class="pv">"mern-project"</span>,
+  <span class="pk">"version"</span>: <span class="pv">"1.0.0"</span>,
+  <span class="pk">"main"</span>: <span class="pv">"server.js"</span>,
+  <span class="pk">"scripts"</span>: {
+    <span class="pk">"start"</span>: <span class="pv">"node server.js"</span>
+  },
+  <span class="pk">"dependencies"</span>: {
+    <span class="pk">"express"</span>: <span class="pv">"^4.18.2"</span>
+  }
+}</pre>
+      </div>
+      <div class="callout callout-blue">
+        <p>Explain one-by-one.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══ STEP 4 ══ -->
+  <article class="section bar-blue">
+    <div class="section-header">
+      <span class="step-tag tag-blue">Step 04</span>
+      <h2>Important Fields Explain</h2>
+    </div>
+    <div class="section-body">
+      <div class="field-stack">
+
+        <!-- name -->
+        <div class="field-card">
+          <div class="field-card-top">
+            <span class="field-name fn-green">name</span>
+          </div>
+          <div class="field-card-body">
+            <p>Project name.</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+                <span class="clabel">package.json</span>
+              </div>
+              <pre><span class="pk">"name"</span>: <span class="pv">"mern-project"</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- version -->
+        <div class="field-card">
+          <div class="field-card-top">
+            <span class="field-name fn-blue">version</span>
+          </div>
+          <div class="field-card-body">
+            <p>Project version.</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+                <span class="clabel">package.json</span>
+              </div>
+              <pre><span class="pk">"version"</span>: <span class="pv">"1.0.0"</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- main -->
+        <div class="field-card">
+          <div class="field-card-top">
+            <span class="field-name fn-gold">main</span>
+          </div>
+          <div class="field-card-body">
+            <p>Project entry file.</p>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+                <span class="clabel">package.json</span>
+              </div>
+              <pre><span class="pk">"main"</span>: <span class="pv">"server.js"</span></pre>
+            </div>
+            <div class="callout callout-yellow">
+              <p>👉 server start ஆகும் file.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- scripts -->
+        <div class="field-card">
+          <div class="field-card-top">
+            <span class="field-name fn-red">scripts</span>
+          </div>
+          <div class="field-card-body">
+            <p>Commands run பண்ண.</p>
+            <div class="label">Example</div>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+                <span class="clabel">package.json</span>
+              </div>
+              <pre><span class="pk">"scripts"</span>: {
+  <span class="pk">"start"</span>: <span class="pv">"node server.js"</span>,
+  <span class="pk">"dev"</span>: <span class="pv">"nodemon server.js"</span>
+}</pre>
+            </div>
+            <div class="label">Run command</div>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+                <span class="clabel">terminal</span>
+              </div>
+              <pre>npm run dev</pre>
+            </div>
+            <div class="callout callout-yellow">
+              <p>👉 nodemon server start.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- dependencies -->
+        <div class="field-card">
+          <div class="field-card-top">
+            <span class="field-name fn-green">dependencies</span>
+          </div>
+          <div class="field-card-body">
+            <p>Project run ஆக தேவையான packages.</p>
+            <div class="label">Example</div>
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+                <span class="clabel">package.json</span>
+              </div>
+              <pre><span class="pk">"dependencies"</span>: {
+  <span class="pk">"express"</span>: <span class="pv">"^4.18.2"</span>
+}</pre>
+            </div>
+            <div class="label">Examples</div>
+            <ul class="blist">
+              <li>express</li>
+              <li>mongoose</li>
+              <li>bcrypt</li>
+              <li>jsonwebtoken</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- devDependencies -->
+        <div class="field-card">
+          <div class="field-card-top">
+            <span class="field-name fn-muted">devDependencies</span>
+          </div>
+          <div class="field-card-body">
+            <p>Development time மட்டும் use பண்ணும்.</p>
+            <div class="label">Examples</div>
+            <ul class="blist">
+              <li>nodemon</li>
+              <li>eslint</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ══ STEP 5 ══ -->
+  <article class="section bar-gold">
+    <div class="section-header">
+      <span class="step-tag tag-gold">Step 05</span>
+      <h2>dependencies vs devDependencies</h2>
+    </div>
+    <div class="section-body">
+      <div class="label">Simple table</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td>dependencies</td><td>production packages</td></tr>
+            <tr><td>devDependencies</td><td>development tools</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="label">Example</div>
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+          <span class="clabel">comparison</span>
+        </div>
+        <pre>express  → dependencies
+nodemon  → devDependencies</pre>
+      </div>
+
+      <div class="dep-grid">
+        <div class="dep-card dct-green">
+          <div class="dep-card-top"><h4>✅ dependencies</h4></div>
+          <div class="dep-card-body">
+            <ul class="blist">
+              <li>express</li>
+              <li>mongoose</li>
+              <li>bcrypt</li>
+              <li>jsonwebtoken</li>
+            </ul>
+          </div>
+        </div>
+        <div class="dep-card dct-gold">
+          <div class="dep-card-top"><h4>🔧 devDependencies</h4></div>
+          <div class="dep-card-body">
+            <ul class="blist">
+              <li>nodemon</li>
+              <li>eslint</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══ STEP 6 ══ -->
+  <article class="section bar-green">
+    <div class="section-header">
+      <span class="step-tag tag-green">Step 06</span>
+      <h2>Create package.json</h2>
+    </div>
+    <div class="section-body">
+      <div class="label">Command</div>
+      <div class="init-pair">
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+            <span class="clabel">terminal</span>
+          </div>
+          <pre>npm init</pre>
+        </div>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="dot1"></span><span class="dot2"></span><span class="dot3"></span></div>
+            <span class="clabel">terminal</span>
+          </div>
+          <pre>npm init -y</pre>
+        </div>
+      </div>
+
+      <div class="callout callout-green">
+        <p>இதனால் automatically create ஆகும்.</p>
+      </div>
+
+      <div class="label">Project structure</div>
+      <div class="tree-box">
+        <div class="tree-top">after npm init</div>
+        <pre style="padding:16px;"><span class="tr-fold">project</span>
+<span class="tr-dir">│</span>
+<span class="tr-dir">├──</span> <span class="tr-fold">node_modules</span>
+<span class="tr-dir">├──</span> <span class="tr-file">package.json</span>
+<span class="tr-dir">└──</span> <span class="tr-file">server.js</span></pre>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══ STEP 7 ══ -->
+  <article class="section bar-muted">
+    <div class="section-header">
+      <span class="step-tag tag-muted">Step 07</span>
+      <h2>Real Life Example (Best Teaching Trick)</h2>
+    </div>
+    <div class="section-body">
+      <div class="id-card">
+        <div class="id-card-label">Teaching Trick</div>
+        <h3>package.json = Project ID card</h3>
+        <div class="label" style="color:rgba(245,242,235,.35);margin-bottom:8px;">இதில் இருக்கும்</div>
+        <ul class="blist">
+          <li>project name</li>
+          <li>version</li>
+          <li>packages used</li>
+          <li>commands</li>
+        </ul>
+        <p class="footer">அதனால் project manage easy.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══ STEP 8 ══ -->
+  <article class="section bar-green">
+    <div class="section-header">
+      <span class="step-tag tag-green">Step 08</span>
+      <h2>Interview Sentence</h2>
+    </div>
+    <div class="section-body">
+      <p>Students memorize this:</p>
+      <div class="interview">
+        <div class="int-label">Interview Sentence</div>
+        <blockquote>"package.json is a configuration file that stores project metadata, dependencies, and scripts in a Node.js project."</blockquote>
+      </div>
+
+      <div class="rocky-box">
+        <div class="rocky-label">Rocky, Node.js topic-ல interview-ல 100% கேட்கும் question ஒன்று இருக்கு:</div>
+        <p class="rocky-q">"What happens when we run npm install?"</p>
+      </div>
+    </div>
+  </article>
+
+</main>
+</body>
+</html>

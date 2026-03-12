@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Node.js Process Object – Teaching Guide Tamil</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #080a0f;
+      --surface: #0b0e18;
+      --card:    #0f1220;
+      --border:  #172030;
+      --green:   #4ade80;
+      --cyan:    #22d3ee;
+      --yellow:  #fbbf24;
+      --orange:  #fb923c;
+      --purple:  #a78bfa;
+      --pink:    #f472b6;
+      --red:     #f87171;
+      --blue:    #60a5fa;
+      --teal:    #2dd4bf;
+      --lime:    #a3e635;
+      --text:    #dde4f0;
+      --muted:   #44516a;
+      --code-bg: #050710;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans Tamil',sans-serif;line-height:1.8;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.28;}
+
+    /* HERO */
+    .hero{position:relative;text-align:center;padding:72px 22px 56px;border-bottom:1px solid var(--border);overflow:hidden;}
+    .hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 0%,rgba(251,146,60,.10) 0%,transparent 70%);pointer-events:none;}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);color:var(--orange);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;padding:6px 18px;border-radius:999px;margin-bottom:20px;}
+    .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5.5vw,3.6rem);font-weight:800;letter-spacing:-.025em;line-height:1.1;background:linear-gradient(135deg,var(--orange) 0%,var(--yellow) 45%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px;}
+    .hero p{color:var(--muted);font-size:.98rem;max-width:540px;margin:0 auto;}
+
+    /* CONTAINER */
+    .container{max-width:960px;margin:0 auto;padding:50px 22px 90px;display:flex;flex-direction:column;gap:42px;}
+
+    /* SECTION */
+    .section{border:1px solid var(--border);border-radius:20px;overflow:hidden;background:var(--card);animation:fadeUp .55s ease both;}
+    .section:nth-child(1){animation-delay:.04s}.section:nth-child(2){animation-delay:.09s}.section:nth-child(3){animation-delay:.14s}.section:nth-child(4){animation-delay:.19s}.section:nth-child(5){animation-delay:.24s}.section:nth-child(6){animation-delay:.29s}.section:nth-child(7){animation-delay:.34s}.section:nth-child(8){animation-delay:.39s}.section:nth-child(9){animation-delay:.44s}.section:nth-child(10){animation-delay:.49s}.section:nth-child(11){animation-delay:.54s}.section:nth-child(12){animation-delay:.59s}.section:nth-child(13){animation-delay:.64s}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+    .section-header{display:flex;align-items:center;gap:14px;padding:18px 26px;border-bottom:1px solid var(--border);background:var(--surface);}
+    .snum{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.83rem;flex-shrink:0;}
+    .section-header h2{font-family:'Syne',sans-serif;font-size:1.12rem;font-weight:700;letter-spacing:-.01em;}
+    .section-body{padding:26px;display:flex;flex-direction:column;gap:20px;}
+
+    .a1 .snum{background:rgba(34,211,238,.12); color:var(--cyan);  border:1px solid rgba(34,211,238,.3)}  .a1 .section-header h2{color:var(--cyan)}
+    .a2 .snum{background:rgba(251,146,60,.12); color:var(--orange);border:1px solid rgba(251,146,60,.3)}  .a2 .section-header h2{color:var(--orange)}
+    .a3 .snum{background:rgba(244,114,182,.12);color:var(--pink);  border:1px solid rgba(244,114,182,.3)} .a3 .section-header h2{color:var(--pink)}
+    .a4 .snum{background:rgba(96,165,250,.12); color:var(--blue);  border:1px solid rgba(96,165,250,.3)}  .a4 .section-header h2{color:var(--blue)}
+    .a5 .snum{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)} .a5 .section-header h2{color:var(--purple)}
+    .a6 .snum{background:rgba(251,191,36,.12); color:var(--yellow);border:1px solid rgba(251,191,36,.3)}  .a6 .section-header h2{color:var(--yellow)}
+    .a7 .snum{background:rgba(74,222,128,.12); color:var(--green); border:1px solid rgba(74,222,128,.3)}  .a7 .section-header h2{color:var(--green)}
+    /* argv sections */
+    .b1 .snum{background:rgba(163,230,53,.12); color:var(--lime);  border:1px solid rgba(163,230,53,.3)}  .b1 .section-header h2{color:var(--lime)}
+    .b2 .snum{background:rgba(34,211,238,.12); color:var(--cyan);  border:1px solid rgba(34,211,238,.3)}  .b2 .section-header h2{color:var(--cyan)}
+    .b3 .snum{background:rgba(251,191,36,.12); color:var(--yellow);border:1px solid rgba(251,191,36,.3)}  .b3 .section-header h2{color:var(--yellow)}
+    .b4 .snum{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.3)} .b4 .section-header h2{color:var(--purple)}
+    .b5 .snum{background:rgba(244,114,182,.12);color:var(--pink);  border:1px solid rgba(244,114,182,.3)} .b5 .section-header h2{color:var(--pink)}
+    .b6 .snum{background:rgba(251,146,60,.12); color:var(--orange);border:1px solid rgba(251,146,60,.3)}  .b6 .section-header h2{color:var(--orange)}
+    .b7 .snum{background:rgba(74,222,128,.12); color:var(--green); border:1px solid rgba(74,222,128,.3)}  .b7 .section-header h2{color:var(--green)}
+
+    /* TEXT */
+    p{color:#b8c5d8;font-size:.95rem;}
+    .sub{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+
+    /* SPEECH */
+    .speech{display:flex;align-items:flex-start;gap:12px;background:rgba(96,165,250,.07);border:1px solid rgba(96,165,250,.2);border-left:3px solid var(--blue);border-radius:12px;padding:14px 18px;}
+    .si{font-size:1.2rem;flex-shrink:0;line-height:1.5;}
+    .speech p{color:#bfdbfe;font-size:.95rem;}
+
+    /* QBOX */
+    .qbox{display:flex;align-items:flex-start;gap:10px;background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:12px 16px;}
+    .qbox p{color:#fef9c3;font-size:.94rem;font-weight:600;}
+
+    /* ABOX */
+    .abox{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:12px;padding:12px 16px;}
+    .abox p{color:#d1fae5;font-size:.93rem;}
+
+    /* INFOBOX */
+    .infobox{background:rgba(251,146,60,.06);border:1px solid rgba(251,146,60,.2);border-left:3px solid var(--orange);border-radius:12px;padding:13px 17px;}
+    .infobox p{color:#fed7aa;font-size:.93rem;}
+
+    /* BULLET */
+    .blist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .blist li{display:flex;align-items:flex-start;gap:10px;color:#b8c5d8;font-size:.94rem;}
+    .blist li::before{content:'▸';flex-shrink:0;margin-top:2px;color:var(--orange);}
+
+    /* INLINE CODE */
+    code{font-family:'JetBrains Mono',monospace;background:rgba(255,255,255,.07);color:var(--cyan);font-size:.8em;padding:2px 7px;border-radius:5px;}
+
+    /* CODE BLOCK */
+    .code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:13px;overflow:hidden;}
+    .code-top{display:flex;align-items:center;justify-content:space-between;padding:9px 15px;border-bottom:1px solid var(--border);background:#030508;}
+    .dots{display:flex;gap:6px;}
+    .dots span{width:10px;height:10px;border-radius:50%;}
+    .d1{background:#ff5f57}.d2{background:#febc2e}.d3{background:#28c840}
+    .clabel{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em;}
+    pre{padding:18px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.75;color:#8a9fc0;}
+    .kw{color:var(--purple)}.fn{color:var(--cyan)}.str{color:var(--green)}.num{color:var(--orange)}.cm{color:var(--muted)}
+
+    /* OUTPUT */
+    .output{background:#030508;border:1px solid var(--border);border-left:3px solid var(--green);border-radius:10px;padding:14px 18px;}
+    .ol{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .output pre{padding:0;color:#86efac;font-size:.82rem;}
+
+    /* TABLE */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+    table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;}
+    thead tr{background:#0a0d18;border-bottom:1px solid var(--border);}
+    thead th{padding:12px 18px;text-align:left;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;}
+    tbody tr{border-bottom:1px solid var(--border);}
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:nth-child(odd){background:rgba(255,255,255,.018);}
+    tbody td{padding:11px 18px;color:#b8c5d8;vertical-align:top;}
+    tbody td:first-child{color:var(--orange);font-weight:700;}
+
+    /* INDEX TABLE – different first col color */
+    .idx-tbl tbody td:first-child{color:var(--cyan)}
+    .idx-tbl tbody td:nth-child(2){color:var(--yellow);font-weight:700;}
+
+    /* PROCESS USES CARDS */
+    .uses-grid{display:flex;flex-direction:column;gap:18px;}
+    .use-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    .use-header{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);background:#090b14;}
+    .use-icon{font-size:1.3rem;flex-shrink:0;}
+    .use-header h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
+    .use-body{padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+
+    .uc1 .use-header h3{color:var(--green)}
+    .uc2 .use-header h3{color:var(--cyan)}
+    .uc3 .use-header h3{color:var(--red)}
+    .uc4 .use-header h3{color:var(--yellow)}
+    .uc1 .blist li::before{color:var(--green)}
+    .uc2 .blist li::before{color:var(--cyan)}
+    .uc3 .blist li::before{color:var(--red)}
+    .uc4 .blist li::before{color:var(--yellow)}
+
+    /* APPS GRID */
+    .apps-grid{display:flex;flex-wrap:wrap;gap:10px;}
+    .app-item{background:rgba(251,146,60,.07);border:1px solid rgba(251,146,60,.2);border-radius:10px;padding:10px 18px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--orange);font-weight:700;display:flex;align-items:center;gap:8px;}
+
+    /* ARGV DIAGRAM */
+    .argv-diagram{background:var(--code-bg);border:1px solid var(--border);border-radius:13px;padding:22px;}
+    .argv-cmd{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:var(--yellow);font-weight:700;text-align:center;margin-bottom:6px;}
+    .argv-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);text-align:center;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .argv-arrow{text-align:center;font-size:1.3rem;color:var(--muted);line-height:2;}
+    .argv-var{font-family:'JetBrains Mono',monospace;font-size:.88rem;color:var(--cyan);font-weight:700;text-align:center;margin-bottom:10px;}
+    .argv-items{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;}
+    .argv-item{background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:700;padding:8px 18px;border-radius:8px;}
+    .argv-sep{color:var(--muted);font-size:1.2rem;}
+
+    /* STEP BOX */
+    .step-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .step-box-header{padding:10px 16px;border-bottom:1px solid var(--border);background:#090b14;}
+    .step-box-header p{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted);letter-spacing:.08em;}
+    .step-box-body{padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+
+    /* TRICK HIGHLIGHT */
+    .trick-box{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.22);border-radius:14px;padding:20px 22px;}
+    .tl{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--yellow);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+    .trick-box .tq{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:12px 16px;margin-bottom:10px;}
+    .trick-box .tq p{color:#fef9c3;font-weight:600;}
+    .trick-box .tq p::before{content:'🗣️ ';}
+    .trick-box .ta p::before{content:'👉 ';}
+    .trick-box .ta p{color:#b8c5d8;font-size:.93rem;}
+
+    /* SUPER TRICK */
+    .super-trick{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:20px 22px;}
+    .stl{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+    .super-trick .sq{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:12px 16px;margin-bottom:10px;}
+    .super-trick .sq p{color:#d1fae5;font-weight:600;font-size:.93rem;}
+
+    /* INTERVIEW */
+    .interview{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:14px;padding:18px 22px;}
+    .il{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--green);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+    .interview blockquote{color:#d1fae5;font-style:italic;font-size:.95rem;line-height:1.9;}
+
+    /* PART DIVIDER */
+    .part-divider{display:flex;align-items:center;gap:14px;}
+    .part-line{flex:1;height:1px;background:var(--border);}
+    .part-text{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+
+    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">⚙️ Process Object</div>
+  <h1>Node.js Process Object – Teaching Guide</h1>
+  <p>process.env, process.argv, process.exit மற்றும் process.argv deep dive — Tamil classroom guide.</p>
+</header>
+
+<main class="container">
+
+  <!-- ══════ STEP 1 ══════ -->
+  <article class="section a1">
+    <div class="section-header">
+      <div class="snum">01</div>
+      <h2>Step 1 – First Question</h2>
+    </div>
+    <div class="section-body">
+      <p>Class-ல first கேள்:</p>
+      <div class="speech">
+        <div class="si">🗣️</div>
+        <p>"Node.js program run பண்ணும்போது என்ன start ஆகும்?"</p>
+      </div>
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">terminal</span>
+          </div>
+          <pre>node app.js</pre>
+        </div>
+      </div>
+      <p>Explain:</p>
+      <div class="qbox"><p>👉 Node.js ஒரு process create பண்ணும்.</p></div>
+      <div class="infobox"><p>அந்த running program-ஐ தான் process சொல்வாங்க.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 2 ══════ -->
+  <article class="section a2">
+    <div class="section-header">
+      <div class="snum">02</div>
+      <h2>Step 2 – Definition</h2>
+    </div>
+    <div class="section-body">
+      <p>Board-ல எழுதணும்:</p>
+      <div class="infobox">
+        <p>👉 Process Object = Current Node.js program information கொடுக்கும் object</p>
+      </div>
+      <div>
+        <p class="sub">Tamil meaning</p>
+        <div class="qbox"><p>👉 Node.js application run ஆகும் process பற்றிய தகவல் கொடுக்கும் global object.</p></div>
+      </div>
+      <div>
+        <p class="sub">Important</p>
+        <div class="abox">
+          <p>👉 Import தேவையில்லை &nbsp;&nbsp; 👉 இது global object</p>
+        </div>
+      </div>
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">process.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(process)</pre>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 3 ══════ -->
+  <article class="section a3">
+    <div class="section-header">
+      <div class="snum">03</div>
+      <h2>Important Uses of Process Object</h2>
+    </div>
+    <div class="section-body">
+      <p>Students easy-ஆ remember பண்ண 3 main uses சொல்லு.</p>
+
+      <div class="uses-grid">
+
+        <!-- 1 env -->
+        <div class="use-card uc1">
+          <div class="use-header">
+            <div class="use-icon">🔑</div>
+            <h3>1️⃣ Environment Variables</h3>
+          </div>
+          <div class="use-body">
+            <div>
+              <p class="sub">Purpose</p>
+              <div class="qbox"><p>👉 system variables access பண்ண.</p></div>
+            </div>
+            <div>
+              <p class="sub">Example</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">env.js</span>
+                </div>
+                <pre>console.<span class="fn">log</span>(process.env.PORT)</pre>
+              </div>
+            </div>
+            <div class="qbox"><p>👉 <code>.env</code> file values read பண்ணலாம்.</p></div>
+            <div>
+              <p class="sub">Example .env</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">.env</span>
+                </div>
+                <pre>PORT=5000</pre>
+              </div>
+            </div>
+            <div class="output">
+              <div class="ol">▶ Output</div>
+              <pre>5000</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 argv -->
+        <div class="use-card uc2">
+          <div class="use-header">
+            <div class="use-icon">💬</div>
+            <h3>2️⃣ Command Line Arguments</h3>
+          </div>
+          <div class="use-body">
+            <p>Node.js program run பண்ணும்போது arguments pass பண்ணலாம்.</p>
+            <div>
+              <p class="sub">Example command</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">terminal</span>
+                </div>
+                <pre>node app.js hello</pre>
+              </div>
+            </div>
+            <div>
+              <p class="sub">Code</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">app.js</span>
+                </div>
+                <pre>console.<span class="fn">log</span>(process.argv)</pre>
+              </div>
+            </div>
+            <div class="output">
+              <div class="ol">▶ Output</div>
+              <pre>['node', 'app.js', 'hello']</pre>
+            </div>
+            <div>
+              <p class="sub">Explain</p>
+              <div class="table-wrap idx-tbl">
+                <table>
+                  <thead><tr><th>Index</th><th>Meaning</th></tr></thead>
+                  <tbody>
+                    <tr><td>0</td><td>Node path</td></tr>
+                    <tr><td>1</td><td>file name</td></tr>
+                    <tr><td>2</td><td>argument</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 exit -->
+        <div class="use-card uc3">
+          <div class="use-header">
+            <div class="use-icon">🛑</div>
+            <h3>3️⃣ Stop Program</h3>
+          </div>
+          <div class="use-body">
+            <p>Program stop பண்ண.</p>
+            <div>
+              <p class="sub">Example</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">exit.js</span>
+                </div>
+                <pre>process.<span class="fn">exit</span>()</pre>
+              </div>
+            </div>
+            <div class="qbox"><p>👉 program immediately stop ஆகும்.</p></div>
+          </div>
+        </div>
+
+        <!-- 4 pid -->
+        <div class="use-card uc4">
+          <div class="use-header">
+            <div class="use-icon">🔢</div>
+            <h3>4️⃣ Process ID</h3>
+          </div>
+          <div class="use-body">
+            <div>
+              <p class="sub">Example</p>
+              <div class="code-block">
+                <div class="code-top">
+                  <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                  <span class="clabel">pid.js</span>
+                </div>
+                <pre>console.<span class="fn">log</span>(process.pid)</pre>
+              </div>
+            </div>
+            <div class="qbox"><p>👉 current running process ID.</p></div>
+            <div class="output">
+              <div class="ol">▶ Output example</div>
+              <pre>2345</pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 4 ══════ -->
+  <article class="section a4">
+    <div class="section-header">
+      <div class="snum">04</div>
+      <h2>Simple Table (Students Remember)</h2>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Property</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td>process.env</td><td>environment variables</td></tr>
+            <tr><td>process.argv</td><td>command arguments</td></tr>
+            <tr><td>process.exit()</td><td>stop program</td></tr>
+            <tr><td>process.pid</td><td>process id</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 5 ══════ -->
+  <article class="section a5">
+    <div class="section-header">
+      <div class="snum">05</div>
+      <h2>Real Life Example (Best Teaching Trick)</h2>
+    </div>
+    <div class="section-body">
+      <p>Computer-ல running apps imagine பண்ணு.</p>
+      <div>
+        <p class="sub">Examples</p>
+        <div class="apps-grid">
+          <div class="app-item">🌐 Chrome</div>
+          <div class="app-item">💻 VS Code</div>
+          <div class="app-item">⚡ Node.js program</div>
+        </div>
+      </div>
+      <div class="infobox"><p>ஒவ்வொரு program-ம் separate process.</p></div>
+      <p>Node.js program run ஆன பிறகு:</p>
+      <div class="qbox"><p>👉 process object அந்த program information கொடுக்கும்.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ STEP 6 ══════ -->
+  <article class="section a6">
+    <div class="section-header">
+      <div class="snum">06</div>
+      <h2>Interview Sentence</h2>
+    </div>
+    <div class="section-body">
+      <p>Students memorize this:</p>
+      <div class="interview">
+        <div class="il">⭐ Interview Sentence</div>
+        <blockquote>"The process object provides information and control over the current Node.js process."</blockquote>
+      </div>
+      <div class="trick-box">
+        <div class="tl">⭐ Teaching Trick</div>
+        <p style="color:#b8c5d8;font-size:.93rem;margin-bottom:12px;">Class-ல இந்த question கேள்:</p>
+        <div class="tq"><p>"How can we access environment variables in Node.js?"</p></div>
+        <p style="color:var(--muted);font-size:.8rem;margin-bottom:8px;">Answer:</p>
+        <div class="ta">
+          <p><code>process.env</code></p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ PART DIVIDER ══════ -->
+  <div class="part-divider">
+    <div class="part-line"></div>
+    <div class="part-text">Deep Dive – Command Line Arguments (process.argv)</div>
+    <div class="part-line"></div>
+  </div>
+
+  <!-- ══════ ARGV 1 ══════ -->
+  <article class="section b1">
+    <div class="section-header">
+      <div class="snum">1️⃣</div>
+      <h2>First Idea</h2>
+    </div>
+    <div class="section-body">
+      <p>நாம் Node.js program run பண்ணும்போது extra values pass பண்ணலாம்.</p>
+      <div>
+        <p class="sub">Example command</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">terminal</span>
+          </div>
+          <pre>node app.js hello</pre>
+        </div>
+      </div>
+      <div>
+        <p class="sub">இதில்</p>
+        <ul class="blist">
+          <li><code>node</code> → Node.js run</li>
+          <li><code>app.js</code> → program file</li>
+          <li><code>hello</code> → argument</li>
+        </ul>
+      </div>
+      <div class="infobox">
+        <p>இந்த values எல்லாம் process.argv-ல store ஆகும்.</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ ARGV 2 ══════ -->
+  <article class="section b2">
+    <div class="section-header">
+      <div class="snum">2️⃣</div>
+      <h2>Code Example</h2>
+    </div>
+    <div class="section-body">
+      <div>
+        <p class="sub">app.js</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">app.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(process.argv)</pre>
+        </div>
+      </div>
+      <p>Program run பண்ணு:</p>
+      <div class="code-block">
+        <div class="code-top">
+          <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+          <span class="clabel">terminal</span>
+        </div>
+        <pre>node app.js hello</pre>
+      </div>
+      <div class="output">
+        <div class="ol">▶ Output</div>
+        <pre>[
+  'C:\\Program Files\\nodejs\\node.exe',
+  'C:\\project\\app.js',
+  'hello'
+]</pre>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ ARGV 3 ══════ -->
+  <article class="section b3">
+    <div class="section-header">
+      <div class="snum">3️⃣</div>
+      <h2>Output Meaning</h2>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap idx-tbl">
+        <table>
+          <thead><tr><th>Index</th><th>Value</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>node path</td><td>Node.js location</td></tr>
+            <tr><td>1</td><td>file name</td><td>run பண்ணும் file</td></tr>
+            <tr><td>2</td><td>hello</td><td>நாம pass பண்ணிய argument</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ ARGV 4 ══════ -->
+  <article class="section b4">
+    <div class="section-header">
+      <div class="snum">4️⃣</div>
+      <h2>Simple Diagram</h2>
+    </div>
+    <div class="section-body">
+      <div class="argv-diagram">
+        <p class="argv-label">Command</p>
+        <div class="argv-cmd">node app.js hello</div>
+        <div class="argv-arrow">↓</div>
+        <div class="argv-var">process.argv</div>
+        <div class="argv-items">
+          <div class="argv-item">node</div>
+          <div class="argv-sep">,</div>
+          <div class="argv-item">app.js</div>
+          <div class="argv-sep">,</div>
+          <div class="argv-item">hello</div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ══════ ARGV 5 ══════ -->
+  <article class="section b5">
+    <div class="section-header">
+      <div class="snum">5️⃣</div>
+      <h2>Real Example (Useful)</h2>
+    </div>
+    <div class="section-body">
+      <div>
+        <p class="sub">Example</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">terminal</span>
+          </div>
+          <pre>node app.js Rocky</pre>
+        </div>
+      </div>
+      <div>
+        <p class="sub">Code</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">app.js</span>
+          </div>
+          <pre>console.<span class="fn">log</span>(<span class="str">"Hello"</span>, process.argv[<span class="num">2</span>])</pre>
+        </div>
+      </div>
+      <div class="output">
+        <div class="ol">▶ Output</div>
+        <pre>Hello Rocky</pre>
+      </div>
+      <div class="qbox"><p>👉 command line-ல name pass பண்ணலாம்.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ ARGV 6 ══════ -->
+  <article class="section b6">
+    <div class="section-header">
+      <div class="snum">6️⃣</div>
+      <h2>Class-ல எப்படி teach பண்ணலாம்</h2>
+    </div>
+    <div class="section-body">
+      <p>Students-க்கு live example காட்டுங்க.</p>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <div class="step-box">
+          <div class="step-box-header"><p>Step 1</p></div>
+          <div class="step-box-body">
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">app.js</span>
+              </div>
+              <pre>console.<span class="fn">log</span>(process.argv)</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-box">
+          <div class="step-box-header"><p>Step 2 run</p></div>
+          <div class="step-box-body">
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">terminal</span>
+              </div>
+              <pre>node app.js hi</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-box">
+          <div class="step-box-header"><p>Step 3 explain</p></div>
+          <div class="step-box-body">
+            <div class="code-block">
+              <div class="code-top">
+                <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+                <span class="clabel">result</span>
+              </div>
+              <pre>process.argv[<span class="num">2</span>] = hi</pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="abox"><p>அப்போ students உடனே புரியும்.</p></div>
+    </div>
+  </article>
+
+  <!-- ══════ ARGV 7 ══════ -->
+  <article class="section b7">
+    <div class="section-header">
+      <div class="snum">7️⃣</div>
+      <h2>Interview One Line</h2>
+    </div>
+    <div class="section-body">
+      <div class="interview">
+        <div class="il">⭐ Interview One Line</div>
+        <blockquote>"process.argv is used to access command line arguments passed to a Node.js program."</blockquote>
+      </div>
+
+      <div class="super-trick">
+        <div class="stl">✅ Rocky, ஒரு super important trick question interview-ல கேட்பாங்க:</div>
+        <div class="sq">
+          <p>"How do you get only the user arguments from process.argv?"</p>
+        </div>
+        <p style="color:var(--muted);font-size:.8rem;margin-bottom:8px;">இதுக்கு answer:</p>
+        <div class="code-block">
+          <div class="code-top">
+            <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+            <span class="clabel">answer</span>
+          </div>
+          <pre>process.argv.<span class="fn">slice</span>(<span class="num">2</span>)</pre>
+        </div>
+      </div>
+    </div>
+  </article>
+
+</main>
+</body>
+</html>
