@@ -1,0 +1,51 @@
+✅ Node.js Full Concepts (Interview Ready)
+Core Basics
+
+1️⃣ Node.js Basics
+2️⃣ Node.js Architecture (Single-threaded, Event-Driven)
+3️⃣ Non-Blocking I/O
+
+English:
+“Node.js uses a single-threaded event-driven architecture with non-blocking I/O.”
+
+Code Structure
+
+4️⃣ Modules
+5️⃣ Global Objects
+6️⃣ Process Object
+
+Package Management
+
+7️⃣ NPM
+8️⃣ package.json
+
+Working with System
+
+9️⃣ File System (fs)
+🔟 HTTP Module
+
+Asynchronous Programming
+
+1️⃣1️⃣ Callbacks
+1️⃣2️⃣ Promises
+1️⃣3️⃣ Async / Await
+1️⃣4️⃣ Event Loop
+*setTimeout / setInterval
+*setImmediate()
+*process.nextTick()
+
+Data Handling
+
+1️⃣5️⃣ Streams
+1️⃣6️⃣ Buffers
+
+Configuration & Errors
+
+1️⃣7️⃣ Environment Variables
+1️⃣8️⃣ Error Handling
+
+⭐ Final Answer (Interview)
+
+நீங்க interview-ல சொல்லலாம்:
+
+“Node.js concepts include architecture, non-blocking I/O, modules, NPM, package.json, file system, HTTP module, event loop, callbacks, promises, async/await, streams, buffers, environment variables, process object, global objects, and error handling.”
