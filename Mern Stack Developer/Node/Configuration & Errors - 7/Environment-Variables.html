@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Environment Variables – Full Class Teaching Method</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #0b0d12;
+      --surface:  #111420;
+      --surface2: #171b28;
+      --surface3: #1c2132;
+      --border:   #242840;
+      --accent:   #f0c040;
+      --accent2:  #4ecdc4;
+      --accent3:  #ff6b6b;
+      --green:    #6bffb8;
+      --purple:   #b47aff;
+      --blue:     #60a5fa;
+      --text:     #e8eaf2;
+      --muted:    #6b7280;
+      --code-bg:  #090b10;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      line-height: 1.7;
+    }
+
+    /* grid bg */
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(240,192,64,.03) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(240,192,64,.03) 1px,transparent 1px);
+      background-size:44px 44px;
+      pointer-events:none; z-index:0;
+    }
+
+    .page { position:relative; z-index:1; max-width:940px; margin:0 auto; padding:56px 22px 90px; }
+
+    /* ── HERO ── */
+    .hero {
+      text-align:center;
+      margin-bottom:64px;
+    }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:3px; text-transform:uppercase;
+      color:var(--accent);
+      border:1px solid rgba(240,192,64,.35);
+      padding:5px 16px; border-radius:2px;
+      margin-bottom:22px;
+    }
+    .hero h1 {
+      font-size:clamp(2rem,5vw,3.4rem);
+      font-weight:800; letter-spacing:-1.5px; line-height:1.08;
+    }
+    .hero h1 em { color:var(--accent); font-style:normal; }
+    .hero .sub {
+      margin-top:14px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px; color:var(--muted);
+    }
+
+    /* ── STEP CARD ── */
+    .step {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:14px;
+      margin-bottom:36px;
+      overflow:hidden;
+    }
+
+    .step-head {
+      display:flex; align-items:center; gap:14px;
+      padding:20px 28px;
+      background:var(--surface2);
+      border-bottom:1px solid var(--border);
+    }
+    .step-num {
+      font-family:'JetBrains Mono',monospace;
+      font-size:20px; font-weight:700;
+      color:var(--accent);
+      min-width:38px;
+    }
+    .step-head h2 { font-size:18px; font-weight:800; letter-spacing:-.4px; }
+    .step-head .tag-right {
+      margin-left:auto;
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted);
+      border:1px solid var(--border);
+      padding:3px 10px; border-radius:20px;
+    }
+
+    .step-body { padding:26px 28px; }
+
+    /* ── HOOK BOX ── */
+    .hook-box {
+      background:linear-gradient(135deg,rgba(255,107,107,.08),rgba(240,192,64,.05));
+      border:1px solid rgba(255,107,107,.25);
+      border-radius:10px;
+      padding:18px 22px;
+      margin-bottom:18px;
+      font-size:15px;
+    }
+    .hook-box strong { color:var(--accent3); }
+
+    /* ── LABEL ── */
+    .lbl {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2.5px; text-transform:uppercase;
+      color:var(--accent2);
+      margin:22px 0 8px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .lbl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* ── CONCEPT BOX ── */
+    .concept {
+      background:var(--surface2);
+      border-left:3px solid var(--accent2);
+      border-radius:0 8px 8px 0;
+      padding:16px 20px;
+      font-size:14px;
+      margin-bottom:14px;
+    }
+
+    /* ── CHIPS ── */
+    .chips { display:flex; flex-wrap:wrap; gap:9px; margin:10px 0; }
+    .chip {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:20px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:12px; color:var(--green);
+      padding:5px 14px;
+    }
+    .chip::before { content:'▸ '; color:var(--accent); }
+
+    /* ── CODE BLOCK ── */
+    .cb {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:10px;
+      overflow:hidden;
+      margin:14px 0;
+    }
+    .cb-top {
+      display:flex; align-items:center; gap:7px;
+      padding:9px 15px;
+      background:#0d0f15;
+      border-bottom:1px solid var(--border);
+    }
+    .dot { width:10px; height:10px; border-radius:50%; }
+    .r{background:#ff5f57;} .y{background:#febc2e;} .g{background:#28c840;}
+    .cb-top .fname {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; color:var(--muted); margin-left:4px;
+    }
+    .cb pre {
+      padding:18px 20px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px; line-height:1.85;
+      overflow-x:auto; color:var(--text);
+      white-space:pre;
+    }
+    .kw { color:var(--purple); }
+    .fn { color:var(--accent2); }
+    .str{ color:var(--green); }
+    .num{ color:var(--accent); }
+    .cm { color:var(--muted); font-style:italic; }
+    .vr { color:#f9a8d4; }
+    .obj{ color:var(--accent); }
+    .arr{ color:var(--accent3); }
+
+    /* ── EXPLANATION GRID ── */
+    .exp-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:12px; margin:14px 0;
+    }
+    .exp-card {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:14px 16px;
+    }
+    .exp-card .ec-key {
+      font-family:'JetBrains Mono',monospace;
+      font-size:12px; color:var(--accent);
+      margin-bottom:4px; font-weight:700;
+    }
+    .exp-card .ec-val {
+      font-size:13px; color:var(--muted);
+    }
+
+    /* ── DIAGRAM ── */
+    .diagram {
+      background:var(--code-bg);
+      border:2px dashed var(--border);
+      border-radius:12px;
+      padding:28px 22px;
+      margin:16px 0;
+      text-align:center;
+    }
+    .diag-box {
+      display:inline-block;
+      background:var(--surface2);
+      border:1px solid var(--accent);
+      border-radius:8px;
+      padding:16px 30px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px;
+      text-align:left;
+      margin-bottom:6px;
+    }
+    .diag-box .db-title {
+      color:var(--accent);
+      font-weight:700;
+      border-bottom:1px solid var(--border);
+      padding-bottom:6px; margin-bottom:8px;
+    }
+    .diag-box .db-line { color:var(--green); line-height:1.9; }
+    .diag-arrow {
+      font-size:22px; color:var(--accent);
+      display:block; margin:6px 0;
+    }
+    .diag-step {
+      display:inline-block;
+      background:var(--surface2);
+      border:1px solid var(--accent2);
+      border-radius:6px;
+      padding:8px 24px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px; color:var(--accent2);
+      margin-bottom:6px;
+    }
+    .diag-step2 {
+      display:inline-block;
+      background:var(--surface2);
+      border:1px solid var(--purple);
+      border-radius:6px;
+      padding:8px 24px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px; color:var(--purple);
+      margin-bottom:6px;
+    }
+    .diag-access {
+      display:flex; flex-direction:column; gap:4px;
+      align-items:center; margin-top:6px;
+    }
+    .diag-access span {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:4px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:12px; color:var(--green);
+      padding:3px 14px;
+    }
+
+    /* ── WHY CARDS ── */
+    .why-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:14px; margin:14px 0;
+    }
+    .why-card {
+      background:var(--surface2);
+      border:1px solid var(--border);
+      border-radius:10px;
+      overflow:hidden;
+    }
+    .why-card .wc-top {
+      padding:12px 18px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:2px; text-transform:uppercase;
+      font-weight:700;
+      border-bottom:1px solid var(--border);
+    }
+    .wc-top.sec  { background:rgba(255,107,107,.08); color:var(--accent3); }
+    .wc-top.conf { background:rgba(240,192,64,.08);  color:var(--accent); }
+    .wc-top.env  { background:rgba(78,205,196,.08);  color:var(--accent2); }
+    .why-card .wc-body { padding:16px 18px; font-size:13px; color:var(--muted); }
+    .why-card .wc-body p { margin-bottom:10px; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow {
+      display:flex; flex-direction:column; align-items:center;
+      gap:0; margin:18px 0;
+    }
+    .flow-node {
+      background:var(--surface2);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:12px 32px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px; font-weight:700;
+      color:var(--text); text-align:center;
+      min-width:240px;
+    }
+    .flow-node.highlight { border-color:var(--accent); color:var(--accent); }
+    .flow-node.blue      { border-color:var(--blue);   color:var(--blue); }
+    .flow-node.green     { border-color:var(--green);  color:var(--green); }
+    .flow-node.purple    { border-color:var(--purple); color:var(--purple); }
+    .flow-arrow {
+      font-size:20px; color:var(--accent);
+      line-height:1; margin:4px 0;
+    }
+
+    /* ── INTERVIEW CARDS ── */
+    .interview-stack { display:flex; flex-direction:column; gap:16px; margin-top:6px; }
+    .int-card {
+      border-radius:10px;
+      overflow:hidden;
+      border:1px solid var(--border);
+    }
+    .int-card .ic-top {
+      padding:10px 18px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:8px;
+    }
+    .ic-top.basic    { background:rgba(240,192,64,.08);  color:var(--accent); }
+    .ic-top.better   { background:rgba(78,205,196,.08);  color:var(--accent2); }
+    .ic-top.quick    { background:rgba(107,255,184,.08); color:var(--green); }
+    .int-card .ic-body {
+      background:var(--code-bg);
+      padding:16px 20px;
+      font-size:14px; font-style:italic;
+      color:var(--text); line-height:1.7;
+    }
+    .ic-body::before { content:'"'; color:var(--accent); font-size:22px; line-height:0; vertical-align:-5px; margin-right:4px; }
+    .ic-body::after  { content:'"'; color:var(--accent); font-size:22px; line-height:0; vertical-align:-5px; margin-left:4px; }
+
+    /* ── TEXT HELPERS ── */
+    .note {
+      font-size:14px; color:var(--muted);
+      margin:10px 0;
+    }
+    .note strong { color:var(--text); }
+    .note .x { color:var(--accent3); }
+    .note .check { color:var(--green); }
+
+    /* ── SECTION DIVIDER ── */
+    .divider {
+      height:1px;
+      background:linear-gradient(90deg,transparent,var(--border),transparent);
+      margin:10px 0 18px;
+    }
+
+    .env-tag {
+      display:inline-block;
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; color:var(--accent3);
+      background:rgba(255,107,107,.08);
+      border:1px solid rgba(255,107,107,.2);
+      border-radius:4px;
+      padding:2px 9px;
+    }
+
+    .highlight-note {
+      background:linear-gradient(135deg,rgba(240,192,64,.07),rgba(78,205,196,.05));
+      border:1px solid rgba(240,192,64,.2);
+      border-radius:8px;
+      padding:12px 18px;
+      font-size:13px;
+      color:var(--muted);
+      margin:12px 0;
+      font-family:'JetBrains Mono',monospace;
+    }
+    .highlight-note strong { color:var(--accent); }
+
+    .board-banner {
+      display:inline-block;
+      background:rgba(180,122,255,.1);
+      border:1px solid rgba(180,122,255,.3);
+      border-radius:4px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--purple);
+      padding:4px 12px;
+      margin-bottom:12px;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">⭐ Full Class Teaching Method</div>
+    <h1>Environment <em>Variables</em></h1>
+    <p class="sub">// Step-by-step classroom guide · MERN Stack · Node.js</p>
+  </div>
+
+  <!-- ── STEP 1 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">1️⃣</span>
+      <h2>Start with a Problem (Hook)</h2>
+      <span class="tag-right">Hook</span>
+    </div>
+    <div class="step-body">
+      <div class="hook-box">
+        <strong>Teacher first question கேளுங்க:</strong><br/>
+        "Database password அல்லது API key-ஐ code-ல direct எழுதலாமா?"
+      </div>
+
+      <div class="lbl">Example</div>
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">bad-practice.js</span></div>
+        <pre><span class="kw">const</span> <span class="vr">dbPassword</span> = <span class="str">"mypassword123"</span></pre>
+      </div>
+
+      <div class="lbl">📌 Problem</div>
+      <p class="note">• Code GitHub-க்கு push பண்ணினா<br>• Password public ஆகிடும் <span class="x">❌</span></p>
+      <p class="note" style="margin-top:8px;"><strong>So security problem.</strong></p>
+    </div>
+  </div>
+
+  <!-- ── STEP 2 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">2️⃣</span>
+      <h2>Introduce Environment Variables</h2>
+      <span class="tag-right">Concept</span>
+    </div>
+    <div class="step-body">
+      <div class="lbl">📌 Tamil Explanation</div>
+      <div class="concept">
+        Environment Variables என்பது<br/>
+        👉 Application configuration values store பண்ணும் variables<br/>
+        இந்த values code-க்கு வெளியே store ஆகும்
+      </div>
+
+      <div class="lbl">Examples</div>
+      <div class="chips">
+        <span class="chip">Database URL</span>
+        <span class="chip">JWT Secret</span>
+        <span class="chip">Port number</span>
+        <span class="chip">API keys</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">3️⃣</span>
+      <h2>Real Project Example</h2>
+      <span class="tag-right">MERN</span>
+    </div>
+    <div class="step-body">
+      <div class="concept">
+        Teacher சொல்லணும்:<br/>
+        ஒரு MERN project-ல usually இந்த values இருக்கும்:
+      </div>
+
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">project values</span></div>
+        <pre><span class="vr">Database URL</span>
+<span class="vr">JWT secret</span>
+<span class="vr">Server port</span>
+<span class="vr">API keys</span></pre>
+      </div>
+
+      <p class="note">இந்த values code-ல எழுதக்கூடாது.</p>
+      <p class="note">அதனால <span class="env-tag">.env</span> file use பண்ணுறோம்</p>
+    </div>
+  </div>
+
+  <!-- ── STEP 4 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">4️⃣</span>
+      <h2>.env File Explanation</h2>
+      <span class="tag-right">File</span>
+    </div>
+    <div class="step-body">
+      <p class="note">Project root-ல <span class="env-tag">.env</span> file create பண்ணுவோம்.</p>
+      <p class="note" style="margin-bottom:4px;">Example:</p>
+
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">.env</span></div>
+        <pre><span class="vr">PORT</span>=<span class="num">5000</span>
+<span class="vr">MONGO_URL</span>=<span class="str">mongodb://localhost:27017/jobportal</span>
+<span class="vr">JWT_SECRET</span>=<span class="str">mysecretkey</span></pre>
+      </div>
+
+      <div class="lbl">📌 Explanation</div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="ec-key">PORT</div>
+          <div class="ec-val">→ server port</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">MONGO_URL</div>
+          <div class="ec-val">→ database connection</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">JWT_SECRET</div>
+          <div class="ec-val">→ authentication secret</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 5 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">5️⃣</span>
+      <h2>dotenv Package</h2>
+      <span class="tag-right">Package</span>
+    </div>
+    <div class="step-body">
+      <div class="concept">
+        Node.js .env file read பண்ண முடியாது<br/>
+        அதனால dotenv package use பண்ணுறோம்.
+      </div>
+
+      <div class="lbl">Install</div>
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">terminal</span></div>
+        <pre><span class="fn">npm</span> install <span class="str">dotenv</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 6 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">6️⃣</span>
+      <h2>Server File Setup</h2>
+      <span class="tag-right">Code</span>
+    </div>
+    <div class="step-body">
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">server.js</span></div>
+        <pre><span class="kw">import</span> <span class="vr">dotenv</span> <span class="kw">from</span> <span class="str">"dotenv"</span>
+
+<span class="vr">dotenv</span>.<span class="fn">config</span>()
+
+<span class="kw">const</span> <span class="vr">port</span> = <span class="obj">process</span>.<span class="vr">env</span>.<span class="vr">PORT</span>
+
+<span class="vr">app</span>.<span class="fn">listen</span>(<span class="vr">port</span>, () =&gt; {
+ <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Server running"</span>)
+})</pre>
+      </div>
+
+      <div class="lbl">📌 Explanation</div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="ec-key">dotenv.config()</div>
+          <div class="ec-val">→ .env variables load ஆகும்</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">process.env</div>
+          <div class="ec-val">→ environment variables access</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 7 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">7️⃣</span>
+      <h2>Access Environment Variables</h2>
+      <span class="tag-right">Access</span>
+    </div>
+    <div class="step-body">
+      <p class="note">Node.js-ல் variables access பண்ண:</p>
+
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">access</span></div>
+        <pre><span class="obj">process</span>.<span class="vr">env</span>.<span class="vr">PORT</span>
+<span class="obj">process</span>.<span class="vr">env</span>.<span class="vr">JWT_SECRET</span>
+<span class="obj">process</span>.<span class="vr">env</span>.<span class="vr">MONGO_URL</span></pre>
+      </div>
+
+      <div class="lbl">Example</div>
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">usage</span></div>
+        <pre><span class="kw">const</span> <span class="vr">secret</span> = <span class="obj">process</span>.<span class="vr">env</span>.<span class="vr">JWT_SECRET</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 8 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">8️⃣</span>
+      <h2>Board Diagram (Very Important)</h2>
+      <span class="tag-right">Visual</span>
+    </div>
+    <div class="step-body">
+      <div class="board-banner">📋 Board-ல இப்படிச் draw பண்ணுங்க</div>
+
+      <div class="diagram">
+        <div class="diag-box">
+          <div class="db-title">.env file</div>
+          <div class="db-line">PORT=5000</div>
+          <div class="db-line">JWT_SECRET=xyz</div>
+          <div class="db-line">MONGO_URL=dburl</div>
+        </div>
+
+        <span class="diag-arrow">↓</span>
+
+        <div class="diag-step">dotenv.config()</div>
+
+        <span class="diag-arrow">↓</span>
+
+        <div class="diag-step2">Node.js App</div>
+
+        <span class="diag-arrow">↓</span>
+
+        <div class="diag-access">
+          <span>process.env.PORT</span>
+          <span>process.env.JWT_SECRET</span>
+        </div>
+      </div>
+
+      <p class="note" style="text-align:center;color:var(--green);">Students flow clear-ஆ புரியும்</p>
+    </div>
+  </div>
+
+  <!-- ── STEP 9 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">9️⃣</span>
+      <h2>Why Environment Variables Used</h2>
+      <span class="tag-right">Reasons</span>
+    </div>
+    <div class="step-body">
+      <div class="why-grid">
+
+        <!-- Security -->
+        <div class="why-card">
+          <div class="wc-top sec">1️⃣ Security</div>
+          <div class="wc-body">
+            <p>Secret values code-ல இருக்காது.</p>
+            <p>Example:</p>
+            <div class="chips" style="margin-top:4px;">
+              <span class="chip">JWT_SECRET</span>
+              <span class="chip">API_KEY</span>
+              <span class="chip">DB_PASSWORD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Easy Config -->
+        <div class="why-card">
+          <div class="wc-top conf">2️⃣ Easy Configuration</div>
+          <div class="wc-body">
+            <p>Port change பண்ண easy.</p>
+            <div class="cb" style="margin-top:8px;">
+              <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+              <pre><span class="vr">PORT</span>=<span class="num">5000</span>
+<span class="vr">PORT</span>=<span class="num">8000</span></pre>
+            </div>
+            <p style="margin-top:8px;">Code change தேவையில்லை.</p>
+          </div>
+        </div>
+
+        <!-- Different Environments -->
+        <div class="why-card" style="grid-column:1/-1;">
+          <div class="wc-top env">3️⃣ Different Environments</div>
+          <div class="wc-body">
+            <p>Projects-ல usually 3 environments இருக்கும்:</p>
+            <div class="chips" style="margin:8px 0;">
+              <span class="chip">Development</span>
+              <span class="chip">Testing</span>
+              <span class="chip">Production</span>
+            </div>
+            <p>ஒவ்வொன்றுக்கும் different configuration</p>
+            <p style="margin-top:6px;">Example:</p>
+            <div class="cb" style="margin-top:8px;">
+              <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+              <pre><span class="vr">DEV_DB_URL</span>
+<span class="vr">PROD_DB_URL</span></pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 10 ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">🔟</span>
+      <h2>Real Project Flow</h2>
+      <span class="tag-right">Flow</span>
+    </div>
+    <div class="step-body">
+      <p class="note" style="margin-bottom:16px;">Real MERN project-ல flow:</p>
+
+      <div class="flow">
+        <div class="flow-node highlight">.env file</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node blue">dotenv package</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node green">process.env</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node purple">Application configuration</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── INTERVIEW ANSWERS ── -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num" style="font-size:18px;">⭐</span>
+      <h2>Interview Answers</h2>
+      <span class="tag-right">Interview</span>
+    </div>
+    <div class="step-body">
+      <div class="interview-stack">
+
+        <div class="int-card">
+          <div class="ic-top basic">⭐ Interview Answer</div>
+          <div class="ic-body">Environment variables are used to store configuration values like database URLs, API keys, and secrets outside the source code.</div>
+        </div>
+
+        <div class="int-card">
+          <div class="ic-top better">⭐ Better Interview Answer (Professional)</div>
+          <div class="ic-body">Environment variables allow us to store sensitive configuration values such as database URLs, API keys, and JWT secrets outside the application code, improving security and flexibility.</div>
+        </div>
+
+        <div class="int-card">
+          <div class="ic-top quick">⭐ 10-Second Interview Answer</div>
+          <div class="ic-body">Environment variables store configuration values like database URLs, API keys, and secrets outside the code.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

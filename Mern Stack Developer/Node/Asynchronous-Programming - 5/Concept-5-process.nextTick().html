@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>process.nextTick() – Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07090c;
+    --surface:#0b0d12;
+    --card:#0f1219;
+    --border:#161c27;
+    --green:#4ade80;
+    --cyan:#22d3ee;
+    --yellow:#fbbf24;
+    --orange:#fb923c;
+    --pink:#f472b6;
+    --purple:#a78bfa;
+    --red:#f87171;
+    --blue:#60a5fa;
+    --teal:#2dd4bf;
+    --lime:#a3e635;
+    --text:#dde3f0;
+    --muted:#303a50;
+    --dim:#7888a8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Noto Sans Tamil','JetBrains Mono',monospace;
+    min-height:100vh;overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(163,230,53,.012) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(163,230,53,.012) 1px,transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;z-index:0;
+  }
+  .wrap{
+    position:relative;z-index:1;
+    max-width:980px;margin:0 auto;
+    padding:2rem 1.5rem 5rem;
+  }
+
+  /* ── HEADER ── */
+  .header{text-align:center;padding:3rem 0 2.5rem;animation:fadeDown .6s ease both;}
+  .badge{
+    display:inline-block;
+    background:rgba(163,230,53,.1);border:1px solid rgba(163,230,53,.28);
+    color:var(--lime);font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    padding:.28rem 1rem;border-radius:100px;margin-bottom:1.1rem;
+  }
+  .header h1{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(1.7rem,4vw,2.6rem);
+    font-weight:700;color:#fff;line-height:1.15;margin-bottom:.5rem;
+  }
+  .header h1 span{color:var(--lime);}
+  .header p{font-size:.88rem;color:var(--dim);}
+
+  /* ── STEP HEADER ── */
+  .shdr{
+    display:flex;align-items:center;gap:.9rem;
+    margin:2.3rem 0 .9rem;animation:fadeUp .45s ease both;
+  }
+  .snum{
+    font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:700;
+    padding:.24rem .6rem;border-radius:6px;white-space:nowrap;
+  }
+  .c1  .snum{background:rgba(96,165,250,.14); color:var(--blue);  border:1px solid rgba(96,165,250,.28);}
+  .c2  .snum{background:rgba(163,230,53,.14); color:var(--lime);  border:1px solid rgba(163,230,53,.28);}
+  .c3  .snum{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.28);}
+  .c4  .snum{background:rgba(34,211,238,.14); color:var(--cyan);  border:1px solid rgba(34,211,238,.28);}
+  .c5  .snum{background:rgba(167,139,250,.14);color:var(--purple);border:1px solid rgba(167,139,250,.28);}
+  .c6  .snum{background:rgba(251,191,36,.14); color:var(--yellow);border:1px solid rgba(251,191,36,.28);}
+  .c7  .snum{background:rgba(248,113,113,.14);color:var(--red);   border:1px solid rgba(248,113,113,.28);}
+  .c8  .snum{background:rgba(251,146,60,.14); color:var(--orange);border:1px solid rgba(251,146,60,.28);}
+  .c9  .snum{background:rgba(45,212,191,.14); color:var(--teal);  border:1px solid rgba(45,212,191,.28);}
+  .c10 .snum{background:rgba(163,230,53,.14); color:var(--lime);  border:1px solid rgba(163,230,53,.28);}
+  .stitle{font-family:'JetBrains Mono',monospace;font-size:1.02rem;font-weight:700;color:#fff;}
+
+  /* ── CARD ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:1.55rem 1.75rem;
+    margin-bottom:1rem;overflow:hidden;
+    animation:fadeUp .45s ease both;
+  }
+  .card.c1 {border-top:2px solid var(--blue);}
+  .card.c2 {border-top:2px solid var(--lime);}
+  .card.c3 {border-top:2px solid var(--green);}
+  .card.c4 {border-top:2px solid var(--cyan);}
+  .card.c5 {border-top:2px solid var(--purple);}
+  .card.c6 {border-top:2px solid var(--yellow);}
+  .card.c7 {border-top:2px solid var(--red);}
+  .card.c8 {border-top:2px solid var(--orange);}
+  .card.c9 {border-top:2px solid var(--teal);}
+  .card.c10{border-top:2px solid var(--lime);}
+
+  /* ── UTILS ── */
+  .tag{
+    display:inline-block;font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    background:var(--surface);border:1px solid var(--border);
+    padding:.18rem .6rem;border-radius:100px;margin-bottom:.75rem;letter-spacing:.05em;
+  }
+  .lbl{
+    font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.1em;margin:.85rem 0 .32rem;
+  }
+  .def{
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
+    padding:.82rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.85;margin-bottom:.85rem;
+  }
+  .def strong{color:var(--text);}
+  .point{
+    display:flex;align-items:flex-start;gap:.5rem;
+    font-size:.84rem;color:var(--dim);line-height:1.65;margin-bottom:.42rem;
+  }
+  .point .a{color:var(--lime);font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+
+  /* ── CODE ── */
+  pre{
+    background:#05080f;border:1px solid var(--border);border-radius:8px;
+    padding:1rem 1.2rem;overflow-x:auto;margin-bottom:.82rem;tab-size:2;
+  }
+  code{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.9;color:#bec0e0;}
+  .kw {color:#f97316;}
+  .fn {color:#60a5fa;}
+  .str{color:#86efac;}
+  .num{color:#c084fc;}
+  .op {color:#dde3f0;}
+
+  /* ── OUTPUT ── */
+  .out-lbl{font-family:'JetBrains Mono',monospace;font-size:.61rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.28rem;}
+  .out{
+    background:#040710;border:1px solid var(--border);
+    border-left:3px solid var(--green);border-radius:6px;
+    padding:.7rem 1rem;
+    font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);line-height:1.9;
+    margin-bottom:.82rem;
+  }
+
+  /* ── FLOW ── */
+  .flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin:.72rem 0;}
+  .fb{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;
+    padding:.38rem .9rem;font-family:'JetBrains Mono',monospace;
+    font-size:.76rem;color:var(--text);min-width:200px;text-align:center;
+  }
+  .fa{color:var(--lime);font-family:'JetBrains Mono',monospace;font-size:.84rem;padding:.14rem 0 .14rem 1.3rem;line-height:1;}
+  .fb.lime  {background:rgba(163,230,53,.07);border-color:rgba(163,230,53,.22);color:var(--lime);}
+  .fb.green {background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.22);color:var(--green);}
+  .fb.cyan  {background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.22);color:var(--cyan);}
+  .fb.blue  {background:rgba(96,165,250,.07);border-color:rgba(96,165,250,.22);color:var(--blue);}
+  .fb.purple{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.22);color:var(--purple);}
+  .fb.yellow{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.22);color:var(--yellow);}
+  .fb.orange{background:rgba(251,146,60,.07);border-color:rgba(251,146,60,.22);color:var(--orange);}
+  .fb.red   {background:rgba(248,113,113,.07);border-color:rgba(248,113,113,.22);color:var(--red);}
+
+  /* ── BOARD ── */
+  .board{
+    background:rgba(163,230,53,.04);border:1px solid rgba(163,230,53,.16);
+    border-left:3px solid var(--lime);border-radius:8px;
+    padding:.82rem 1rem;margin:.72rem 0;
+    font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--lime);line-height:2;
+  }
+  .board .btitle{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;}
+
+  /* ── HINTS ── */
+  .hint{
+    background:rgba(163,230,53,.05);border:1px solid rgba(163,230,53,.18);
+    border-left:3px solid var(--lime);border-radius:8px;
+    padding:.78rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.78rem 0;
+  }
+  .hint strong{color:var(--lime);}
+  .hint-green{
+    background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.18);
+    border-left:3px solid var(--green);border-radius:8px;
+    padding:.78rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.78rem 0;
+  }
+  .hint-green strong{color:var(--green);}
+
+  /* ── SPEECH ── */
+  .speech{
+    display:flex;align-items:flex-start;gap:.7rem;
+    background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.15);
+    border-left:3px solid var(--blue);border-radius:8px;
+    padding:.88rem 1.05rem;margin-bottom:.9rem;font-size:.87rem;color:var(--dim);line-height:1.75;
+  }
+  .speech .ico{font-size:1rem;flex-shrink:0;margin-top:.05rem;}
+
+  /* ── CHIPS ── */
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0;}
+  .chip{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:.24rem .68rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--dim);}
+  .chip.fast{background:rgba(163,230,53,.1);border-color:rgba(163,230,53,.22);color:var(--lime);}
+
+  /* ── COMPARISON ── */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:.78rem 0;}
+  .cmp-col{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:9px;padding:1rem 1.05rem;}
+  .cmp-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;}
+  .cmp-col:first-child .cmp-title{color:var(--lime);}
+  .cmp-col:last-child  .cmp-title{color:var(--teal);}
+
+  /* ── PRIORITY BOARD ── */
+  .priority{
+    display:flex;flex-direction:column;gap:.5rem;margin:.78rem 0;
+  }
+  .pri-item{
+    display:flex;align-items:center;gap:.85rem;
+    background:rgba(255,255,255,.03);border:1px solid var(--border);
+    border-radius:9px;padding:.65rem 1rem;
+  }
+  .pri-rank{
+    font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;
+    min-width:28px;text-align:center;flex-shrink:0;
+  }
+  .pri-item:nth-child(1) .pri-rank{color:var(--lime);}
+  .pri-item:nth-child(2) .pri-rank{color:var(--teal);}
+  .pri-item:nth-child(3) .pri-rank{color:var(--yellow);}
+  .pri-item:nth-child(1){border-left:3px solid var(--lime);}
+  .pri-item:nth-child(2){border-left:3px solid var(--teal);}
+  .pri-item:nth-child(3){border-left:3px solid var(--yellow);}
+  .pri-name{font-family:'JetBrains Mono',monospace;font-size:.83rem;color:var(--text);}
+  .pri-item:nth-child(1) .pri-name{color:var(--lime);}
+  .pri-item:nth-child(2) .pri-name{color:var(--teal);}
+  .pri-item:nth-child(3) .pri-name{color:var(--yellow);}
+  .pri-badge{
+    font-family:'JetBrains Mono',monospace;font-size:.62rem;
+    background:rgba(163,230,53,.1);color:var(--lime);
+    border:1px solid rgba(163,230,53,.2);
+    padding:.14rem .5rem;border-radius:5px;margin-left:auto;
+  }
+
+  /* ── REASON BOX ── */
+  .reason{
+    display:flex;flex-direction:column;gap:.4rem;margin:.75rem 0;
+  }
+  .reason-item{
+    display:flex;align-items:flex-start;gap:.65rem;
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
+    padding:.6rem .9rem;font-size:.83rem;color:var(--dim);line-height:1.6;
+  }
+  .reason-item .arrow{font-family:'JetBrains Mono',monospace;color:var(--lime);flex-shrink:0;}
+  .reason-item code{font-family:'JetBrains Mono',monospace;font-size:.78rem;}
+  .reason-item:first-child code{color:var(--lime);}
+  .reason-item:last-child  code{color:var(--teal);}
+
+  /* ── RESTAURANT ── */
+  .rest{
+    background:rgba(251,146,60,.04);border:1px solid rgba(251,146,60,.15);border-radius:10px;
+    padding:1.05rem 1.25rem;margin:.78rem 0;
+  }
+  .rest-title{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--orange);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem;}
+  .rest-flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-bottom:.8rem;}
+  .rest-step{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.18);border-radius:7px;padding:.36rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--orange);min-width:200px;text-align:center;}
+  .rest-arr{color:var(--orange);font-size:.84rem;padding:.14rem 0 .14rem 1.2rem;line-height:1;font-family:'JetBrains Mono',monospace;}
+
+  /* ── WHEN USED ── */
+  .when-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.5rem;margin:.75rem 0;}
+  .when-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:.75rem .9rem;font-size:.81rem;color:var(--dim);line-height:1.5;}
+  .when-card .ico{font-size:.95rem;display:block;margin-bottom:.28rem;}
+
+  /* ── INTERVIEW ── */
+  .interview{background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.2);border-left:3px solid var(--purple);border-radius:8px;padding:1rem 1.12rem;margin-top:1.05rem;}
+  .int-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.48rem;}
+  .interview p{font-size:.87rem;color:var(--dim);line-height:1.8;font-style:italic;}
+  .followup{background:rgba(163,230,53,.04);border:1px solid rgba(163,230,53,.15);border-left:3px solid var(--lime);border-radius:8px;padding:.78rem 1rem;margin-top:.78rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--lime);line-height:1.7;}
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}}
+
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  @media(max-width:600px){
+    .card{padding:1.2rem}
+    .wrap{padding:1rem 1rem 3.5rem}
+    .cmp{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Class Teaching Notes</div>
+    <h1><span>process.nextTick()</span> – Class Guide</h1>
+    <p>Step-by-step teaching · Tamil + English</p>
+  </div>
+
+
+  <!-- ════ STEP 1 ════ -->
+  <div class="shdr c1">
+    <span class="snum">1️⃣ Step 1</span>
+    <span class="stitle">Start With Simple Question</span>
+  </div>
+
+  <div class="card c1">
+    <div class="tag">Class-ல கேள்:</div>
+    <div class="speech">
+      <span class="ico">🗣️</span>
+      <span>"Current code finish ஆன உடனே next task run பண்ணணும்னா எப்படி?"</span>
+    </div>
+
+    <div class="lbl">Options explain பண்ணு:</div>
+    <div class="chips">
+      <span class="chip">setTimeout</span>
+      <span class="chip">setImmediate</span>
+      <span class="chip fast">process.nextTick</span>
+    </div>
+
+    <div class="hint">
+      <strong>👉 இதில் most fastest execution → process.nextTick()</strong>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 2 ════ -->
+  <div class="shdr c2">
+    <span class="snum">2️⃣ Step 2</span>
+    <span class="stitle">Simple Definition</span>
+  </div>
+
+  <div class="card c2">
+    <div class="tag">Board-ல எழுதணும்:</div>
+    <div class="board">
+      <div class="btitle">Definition</div>
+      👉 process.nextTick() = current operation முடிந்த உடனே run ஆகும் callback
+    </div>
+
+    <div class="lbl">Important idea:</div>
+    <div class="flow">
+      <div class="fb lime">Current code finish</div>
+      <div class="fa">↓</div>
+      <div class="fb lime">nextTick callback run</div>
+      <div class="fa">↓</div>
+      <div class="fb green">event loop continue</div>
+    </div>
+
+    <div class="lbl">Meaning:</div>
+    <div class="point"><span class="a">👉</span> Event loop wait பண்ணாது.</div>
+  </div>
+
+
+  <!-- ════ STEP 3 ════ -->
+  <div class="shdr c3">
+    <span class="snum">3️⃣ Step 3</span>
+    <span class="stitle">Basic Syntax</span>
+  </div>
+
+  <div class="card c3">
+    <pre><code><span class="op">process</span>.<span class="fn">nextTick</span>(<span class="op">callback</span>)</code></pre>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="op">process</span>.<span class="fn">nextTick</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Next tick"</span>)
+})</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <div class="point"><span class="a">👉</span> Node.js next tick phase-ல execute பண்ணும்.</div>
+  </div>
+
+
+  <!-- ════ STEP 4 ════ -->
+  <div class="shdr c4">
+    <span class="snum">4️⃣ Step 4</span>
+    <span class="stitle">Simple Example</span>
+  </div>
+
+  <div class="card c4">
+    <pre><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="op">process</span>.<span class="fn">nextTick</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Next tick"</span>)
+})
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"End"</span>)</code></pre>
+
+    <div class="out-lbl">Output:</div>
+    <div class="out">Start<br>End<br>Next tick</div>
+
+    <div class="lbl">Explain flow:</div>
+    <div class="flow">
+      <div class="fb green">Start</div>
+      <div class="fa">↓</div>
+      <div class="fb lime">nextTick register</div>
+      <div class="fa">↓</div>
+      <div class="fb green">End</div>
+      <div class="fa">↓</div>
+      <div class="fb lime">nextTick execute</div>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 5 ════ -->
+  <div class="shdr c5">
+    <span class="snum">5️⃣ Step 5</span>
+    <span class="stitle">Event Loop Relationship</span>
+  </div>
+
+  <div class="card c5">
+    <div class="tag">Diagram students-க்கு explain பண்ணு:</div>
+    <div class="flow">
+      <div class="fb cyan">Current code</div>
+      <div class="fa">↓</div>
+      <div class="fb lime">process.nextTick queue</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">Event Loop</div>
+    </div>
+
+    <div class="lbl">Meaning:</div>
+    <div class="point"><span class="a">👉</span> nextTick event loop-க்கு முன்னாடி run ஆகும்.</div>
+  </div>
+
+
+  <!-- ════ STEP 6 ════ -->
+  <div class="shdr c6">
+    <span class="snum">6️⃣ Step 6</span>
+    <span class="stitle">Compare With setImmediate</span>
+  </div>
+
+  <div class="card c6">
+    <div class="lbl">Example:</div>
+    <pre><code><span class="fn">setImmediate</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Immediate"</span>)
+})
+
+<span class="op">process</span>.<span class="fn">nextTick</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"NextTick"</span>)
+})</code></pre>
+
+    <div class="lbl">Output usually:</div>
+    <div class="out">NextTick<br>Immediate</div>
+
+    <div class="lbl">Reason:</div>
+    <div class="reason">
+      <div class="reason-item">
+        <span class="arrow">→</span>
+        <span><code>process.nextTick</code> → before event loop</span>
+      </div>
+      <div class="reason-item">
+        <span class="arrow">→</span>
+        <span><code>setImmediate</code> → after event loop</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 7 ════ -->
+  <div class="shdr c7">
+    <span class="snum">7️⃣ Step 7</span>
+    <span class="stitle">Execution Priority</span>
+  </div>
+
+  <div class="card c7">
+    <div class="tag">Board-ல priority order எழுதணும்.</div>
+    <div class="priority">
+      <div class="pri-item">
+        <span class="pri-rank">1️⃣</span>
+        <span class="pri-name">process.nextTick</span>
+        <span class="pri-badge">fastest</span>
+      </div>
+      <div class="pri-item">
+        <span class="pri-rank">2️⃣</span>
+        <span class="pri-name">setImmediate</span>
+      </div>
+      <div class="pri-item">
+        <span class="pri-rank">3️⃣</span>
+        <span class="pri-name">setTimeout</span>
+      </div>
+    </div>
+
+    <div class="lbl">Meaning:</div>
+    <div class="point"><span class="a">👉</span> nextTick fastest callback execution.</div>
+  </div>
+
+
+  <!-- ════ STEP 8 ════ -->
+  <div class="shdr c8">
+    <span class="snum">8️⃣ Real Life Example</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c8">
+    <div class="tag">Restaurant example:</div>
+    <div class="rest">
+      <div class="rest-title">🍽️ Restaurant Example</div>
+      <div class="rest-flow">
+        <div class="rest-step">Customer bill pay</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">Waiter immediately check table</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">then next customer attend</div>
+      </div>
+    </div>
+    <div class="hint-green">
+      <strong>Immediate small task → nextTick.</strong>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 9 ════ -->
+  <div class="shdr c9">
+    <span class="snum">9️⃣ When Used</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c9">
+    <div class="lbl">Examples:</div>
+    <div class="when-grid">
+      <div class="when-card"><span class="ico">🛡️</span>error handling</div>
+      <div class="when-card"><span class="ico">🧹</span>cleanup tasks</div>
+      <div class="when-card"><span class="ico">⚙️</span>scheduling small operations</div>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 10 ════ -->
+  <div class="shdr c10">
+    <span class="snum">🔟 Interview Sentence</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c10">
+    <div class="tag">Students memorize:</div>
+    <div class="interview">
+      <div class="int-lbl">⭐ Interview Sentence</div>
+      <p>"process.nextTick schedules a callback to run immediately after the current operation, before the event loop continues."</p>
+    </div>
+    <div class="followup">
+      👉 "Why should process.nextTick be used carefully?"
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

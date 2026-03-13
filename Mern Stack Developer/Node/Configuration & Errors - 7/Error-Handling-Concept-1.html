@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Error Handling – Full Class Teaching Method</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:       #0b0d12;
+      --surface:  #111420;
+      --surface2: #171b28;
+      --surface3: #1c2132;
+      --border:   #242840;
+      --accent:   #f0c040;
+      --accent2:  #4ecdc4;
+      --accent3:  #ff6b6b;
+      --green:    #6bffb8;
+      --purple:   #b47aff;
+      --blue:     #60a5fa;
+      --text:     #e8eaf2;
+      --muted:    #6b7280;
+      --code-bg:  #090b10;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      line-height: 1.7;
+    }
+
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(255,107,107,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,107,107,.025) 1px, transparent 1px);
+      background-size:44px 44px;
+      pointer-events:none; z-index:0;
+    }
+
+    .page { position:relative; z-index:1; max-width:940px; margin:0 auto; padding:56px 22px 90px; }
+
+    /* HERO */
+    .hero { text-align:center; margin-bottom:64px; }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:3px; text-transform:uppercase;
+      color:var(--accent3);
+      border:1px solid rgba(255,107,107,.35);
+      padding:5px 16px; border-radius:2px;
+      margin-bottom:22px;
+    }
+    .hero h1 {
+      font-size:clamp(2rem,5vw,3.4rem);
+      font-weight:800; letter-spacing:-1.5px; line-height:1.08;
+    }
+    .hero h1 em { color:var(--accent3); font-style:normal; }
+    .hero .sub {
+      margin-top:14px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px; color:var(--muted);
+    }
+
+    /* STEP CARD */
+    .step {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:14px;
+      margin-bottom:36px;
+      overflow:hidden;
+    }
+    .step-head {
+      display:flex; align-items:center; gap:14px;
+      padding:20px 28px;
+      background:var(--surface2);
+      border-bottom:1px solid var(--border);
+    }
+    .step-num {
+      font-family:'JetBrains Mono',monospace;
+      font-size:20px; font-weight:700;
+      color:var(--accent3);
+      min-width:38px;
+    }
+    .step-head h2 { font-size:18px; font-weight:800; letter-spacing:-.4px; }
+    .step-head .tag-right {
+      margin-left:auto;
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted);
+      border:1px solid var(--border);
+      padding:3px 10px; border-radius:20px;
+    }
+    .step-body { padding:26px 28px; }
+
+    /* HOOK BOX */
+    .hook-box {
+      background:linear-gradient(135deg,rgba(255,107,107,.08),rgba(240,192,64,.05));
+      border:1px solid rgba(255,107,107,.25);
+      border-radius:10px;
+      padding:18px 22px;
+      margin-bottom:18px;
+      font-size:15px;
+    }
+    .hook-box strong { color:var(--accent3); }
+
+    /* LABEL */
+    .lbl {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2.5px; text-transform:uppercase;
+      color:var(--accent2);
+      margin:22px 0 8px;
+      display:flex; align-items:center; gap:8px;
+    }
+    .lbl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* CONCEPT BOX */
+    .concept {
+      background:var(--surface2);
+      border-left:3px solid var(--accent2);
+      border-radius:0 8px 8px 0;
+      padding:16px 20px;
+      font-size:14px;
+      margin-bottom:14px;
+    }
+    .concept.red { border-left-color:var(--accent3); }
+
+    /* CHIPS */
+    .chips { display:flex; flex-wrap:wrap; gap:9px; margin:10px 0; }
+    .chip {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:20px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:12px; color:var(--accent3);
+      padding:5px 14px;
+    }
+    .chip::before { content:'▸ '; color:var(--accent); }
+
+    /* CODE BLOCK */
+    .cb {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:10px;
+      overflow:hidden;
+      margin:14px 0;
+    }
+    .cb-top {
+      display:flex; align-items:center; gap:7px;
+      padding:9px 15px;
+      background:#0d0f15;
+      border-bottom:1px solid var(--border);
+    }
+    .dot { width:10px; height:10px; border-radius:50%; }
+    .r{background:#ff5f57;} .y{background:#febc2e;} .g{background:#28c840;}
+    .cb-top .fname { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-left:4px; }
+    .cb pre {
+      padding:18px 20px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px; line-height:1.85;
+      overflow-x:auto; color:var(--text);
+      white-space:pre;
+    }
+    .kw  { color:var(--purple); }
+    .fn  { color:var(--accent2); }
+    .str { color:var(--green); }
+    .num { color:var(--accent); }
+    .cm  { color:var(--muted); font-style:italic; }
+    .vr  { color:#f9a8d4; }
+    .err { color:var(--accent3); }
+
+    /* NOTE */
+    .note { font-size:14px; color:var(--muted); margin:8px 0; }
+    .note strong { color:var(--text); }
+
+    /* OUTPUT BOX */
+    .output-box {
+      background: #07090e;
+      border:1px solid rgba(107,255,184,.15);
+      border-left:3px solid var(--green);
+      border-radius:0 8px 8px 0;
+      padding:13px 18px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px;
+      color:var(--green);
+      margin:12px 0;
+    }
+    .output-box .out-lbl {
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); margin-bottom:6px;
+    }
+
+    /* ERROR TYPE CARDS */
+    .error-types { display:flex; flex-direction:column; gap:22px; margin:16px 0; }
+    .et-card {
+      background:var(--surface2);
+      border:1px solid var(--border);
+      border-radius:12px;
+      overflow:hidden;
+    }
+    .et-top {
+      display:flex; align-items:center; gap:10px;
+      padding:13px 20px;
+      border-bottom:1px solid var(--border);
+    }
+    .et-top.syntax  { background:rgba(255,107,107,.07); }
+    .et-top.runtime { background:rgba(240,192,64,.07); }
+    .et-top.logical { background:rgba(107,255,184,.07); }
+    .et-num {
+      font-family:'JetBrains Mono',monospace;
+      font-size:16px; font-weight:700;
+    }
+    .et-top.syntax  .et-num { color:var(--accent3); }
+    .et-top.runtime .et-num { color:var(--accent); }
+    .et-top.logical .et-num { color:var(--green); }
+    .et-title { font-size:16px; font-weight:800; }
+    .et-top.syntax  .et-title { color:var(--accent3); }
+    .et-top.runtime .et-title { color:var(--accent); }
+    .et-top.logical .et-title { color:var(--green); }
+
+    .et-body { padding:18px 20px; }
+    .et-meaning {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:12px 16px;
+      margin-bottom:14px;
+    }
+    .et-meaning .em-lbl {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); margin-bottom:6px;
+    }
+    .et-meaning p { font-size:14px; }
+
+    .et-exp {
+      background:var(--surface3);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:14px 16px;
+      margin:12px 0;
+    }
+    .et-exp .ee-lbl {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--accent2); margin-bottom:8px;
+    }
+    .et-exp p { font-size:13px; color:var(--muted); }
+
+    .et-error {
+      font-family:'JetBrains Mono',monospace;
+      font-size:12px;
+      background:rgba(255,107,107,.08);
+      border:1px solid rgba(255,107,107,.2);
+      border-radius:6px;
+      padding:10px 14px;
+      color:var(--accent3);
+      margin:10px 0;
+    }
+    .et-error .ee-lbl2 {
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); margin-bottom:4px;
+    }
+
+    .et-point {
+      display:inline-flex; align-items:flex-start; gap:8px;
+      background:rgba(240,192,64,.06);
+      border:1px solid rgba(240,192,64,.2);
+      border-radius:8px;
+      padding:11px 16px;
+      font-size:13px; margin-top:10px; width:100%;
+    }
+    .et-point .ep-lbl {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--accent); margin-bottom:4px; display:block;
+    }
+    .et-point .ep-text { color:var(--text); font-size:14px; }
+    .et-point .ep-text .arrow { color:var(--accent); font-weight:700; }
+
+    .et-point-green {
+      background:rgba(107,255,184,.05);
+      border-color:rgba(107,255,184,.2);
+    }
+    .et-point-green .ep-lbl { color:var(--green); }
+
+    /* OCCURS LIST */
+    .occurs-list { list-style:none; margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; }
+    .occurs-list li {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:6px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:12px; color:var(--blue);
+      padding:5px 13px;
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x:auto;
+      margin:16px 0;
+      border-radius:10px;
+      border:1px solid var(--border);
+    }
+    .err-table {
+      width:100%; border-collapse:collapse;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px;
+    }
+    .err-table th {
+      background:var(--surface2);
+      color:var(--accent);
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      text-align:left; padding:13px 18px;
+      border-bottom:2px solid var(--border);
+    }
+    .err-table td {
+      padding:13px 18px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+    }
+    .err-table tr:last-child td { border-bottom:none; }
+    .err-table tr:hover td { background:rgba(255,107,107,.03); }
+    .err-table td:first-child { font-weight:700; }
+    .err-table tr:nth-child(1) td:first-child { color:var(--accent3); }
+    .err-table tr:nth-child(2) td:first-child { color:var(--accent); }
+    .err-table tr:nth-child(3) td:first-child { color:var(--green); }
+    .code-tag {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:4px;
+      padding:2px 8px;
+      color:var(--accent2);
+      font-size:12px;
+    }
+
+    /* REAL ERRORS GRID */
+    .real-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px; margin:14px 0;
+    }
+    .real-card {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:14px 16px;
+      font-size:13px;
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .real-card .ri { font-size:18px; flex-shrink:0; }
+    .real-card span { color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:12px; }
+
+    /* EXP GRID */
+    .exp-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:12px; margin:14px 0;
+    }
+    .exp-card {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:8px; padding:14px 16px;
+    }
+    .exp-card .ec-key {
+      font-family:'JetBrains Mono',monospace;
+      font-size:12px; color:var(--accent); margin-bottom:4px; font-weight:700;
+    }
+    .exp-card .ec-val { font-size:13px; color:var(--muted); }
+
+    /* FLOW DIAGRAM */
+    .flow {
+      display:flex; flex-direction:column; align-items:center;
+      gap:0; margin:18px 0;
+    }
+    .flow-node {
+      background:var(--surface2);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:13px 36px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:13px; font-weight:700;
+      color:var(--text); text-align:center;
+      min-width:260px;
+    }
+    .flow-node.c1 { border-color:var(--accent3); color:var(--accent3); }
+    .flow-node.c2 { border-color:var(--accent);  color:var(--accent); }
+    .flow-node.c3 { border-color:var(--purple);  color:var(--purple); }
+    .flow-node.c4 { border-color:var(--green);   color:var(--green); }
+    .flow-arrow { font-size:20px; color:var(--accent); line-height:1; margin:4px 0; }
+
+    /* INTERVIEW */
+    .interview-stack { display:flex; flex-direction:column; gap:16px; margin-top:6px; }
+    .int-card {
+      border-radius:10px; overflow:hidden;
+      border:1px solid var(--border);
+    }
+    .int-card .ic-top {
+      padding:10px 18px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:8px;
+    }
+    .ic-top.basic  { background:rgba(240,192,64,.08);  color:var(--accent); }
+    .ic-top.better { background:rgba(78,205,196,.08);  color:var(--accent2); }
+    .ic-top.quick  { background:rgba(107,255,184,.08); color:var(--green); }
+    .int-card .ic-body {
+      background:var(--code-bg);
+      padding:16px 20px;
+      font-size:14px; font-style:italic;
+      color:var(--text); line-height:1.7;
+    }
+    .ic-body::before { content:'"'; color:var(--accent); font-size:22px; line-height:0; vertical-align:-5px; margin-right:4px; }
+    .ic-body::after  { content:'"'; color:var(--accent); font-size:22px; line-height:0; vertical-align:-5px; margin-left:4px; }
+
+    /* DEFINITION GRID */
+    .def-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px; margin:14px 0;
+    }
+    @media(max-width:600px){ .def-grid { grid-template-columns:1fr; } }
+    .def-card {
+      background:var(--surface2);
+      border:1px solid var(--border);
+      border-radius:10px; overflow:hidden;
+    }
+    .def-card .dc-top {
+      padding:9px 16px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      border-bottom:1px solid var(--border);
+    }
+    .dc-top.tamil { background:rgba(180,122,255,.08); color:var(--purple); }
+    .dc-top.eng   { background:rgba(78,205,196,.08);  color:var(--accent2); }
+    .def-card .dc-body {
+      padding:14px 16px;
+      font-size:14px; color:var(--text);
+    }
+
+    .important-note {
+      background:rgba(240,192,64,.06);
+      border:1px solid rgba(240,192,64,.2);
+      border-radius:8px;
+      padding:12px 18px;
+      font-size:14px;
+      color:var(--muted);
+      margin:12px 0;
+    }
+    .important-note strong { color:var(--accent); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">🛡️ Full Class Teaching Method</div>
+    <h1>Error <em>Handling</em></h1>
+    <p class="sub">// Step-by-step classroom guide · Node.js · Express · MERN Stack</p>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">1️⃣</span>
+      <h2>Start with a Real Question (Hook)</h2>
+      <span class="tag-right">Hook</span>
+    </div>
+    <div class="step-body">
+      <div class="hook-box">
+        <strong>Teacher class-ல first question கேளுங்க:</strong><br/>
+        "Application run ஆகும்போது error வந்தா என்ன ஆகும்?"
+      </div>
+
+      <p class="note"><strong>Students usually:</strong> App crash ஆகும்</p>
+
+      <div class="lbl">Example situations</div>
+      <div class="chips">
+        <span class="chip">Database connection error</span>
+        <span class="chip">Invalid API request</span>
+        <span class="chip">Server crash</span>
+        <span class="chip">API failure</span>
+      </div>
+
+      <div class="important-note" style="margin-top:16px;">
+        <strong>📌</strong> இந்த errors handle பண்ணுற process தான் Error Handling.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">2️⃣</span>
+      <h2>Definition</h2>
+      <span class="tag-right">Concept</span>
+    </div>
+    <div class="step-body">
+      <div class="def-grid">
+        <div class="def-card">
+          <div class="dc-top tamil">📌 Tamil Explanation</div>
+          <div class="dc-body">Application run ஆகும்போது வரும் errors-ஐ detect பண்ணி handle பண்ணுற process தான் Error Handling.</div>
+        </div>
+        <div class="def-card">
+          <div class="dc-top eng">📌 Simple English Definition</div>
+          <div class="dc-body">Error handling is the process of detecting and managing errors that occur during program execution.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">3️⃣</span>
+      <h2>Types of Errors</h2>
+      <span class="tag-right">3 Types</span>
+    </div>
+    <div class="step-body">
+      <p class="note" style="margin-bottom:18px;">Node.js / JavaScript-ல் 3 main types of errors இருக்கிறது.</p>
+
+      <div class="error-types">
+
+        <!-- Syntax Error -->
+        <div class="et-card">
+          <div class="et-top syntax">
+            <span class="et-num">1️⃣</span>
+            <span class="et-title">Syntax Error</span>
+          </div>
+          <div class="et-body">
+            <div class="et-meaning">
+              <div class="em-lbl">📌 Meaning</div>
+              <p>Code syntax mistake.<br/>Program run ஆகவே முடியாது.</p>
+            </div>
+
+            <div class="lbl">Example</div>
+            <div class="cb">
+              <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">syntax-error.js</span></div>
+              <pre><span class="kw">const</span> <span class="vr">name</span> =</pre>
+            </div>
+
+            <div class="et-exp">
+              <div class="ee-lbl">Explanation</div>
+              <p>Variable assign செய்யவில்லை.<br/>Node.js run பண்ணும்போது syntax error throw ஆகும்.</p>
+            </div>
+
+            <div class="lbl">Example error</div>
+            <div class="et-error">
+              <div class="ee-lbl2">Error</div>
+              SyntaxError: Unexpected end of input
+            </div>
+
+            <div class="et-point">
+              <div>
+                <span class="ep-lbl">📌 Important Point</span>
+                <span class="ep-text">Syntax error வந்தா:<br/><span class="arrow">👉</span> program start ஆகாது</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Runtime Error -->
+        <div class="et-card">
+          <div class="et-top runtime">
+            <span class="et-num">2️⃣</span>
+            <span class="et-title">Runtime Error</span>
+          </div>
+          <div class="et-body">
+            <div class="et-meaning">
+              <div class="em-lbl">📌 Meaning</div>
+              <p>Program run ஆகும்போது error வரும்.</p>
+            </div>
+
+            <div class="lbl">Example</div>
+            <div class="cb">
+              <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">runtime-error.js</span></div>
+              <pre><span class="kw">const</span> <span class="vr">user</span> = <span class="kw">undefined</span>
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="vr">user</span>.<span class="vr">name</span>)</pre>
+            </div>
+
+            <div class="et-exp">
+              <div class="ee-lbl">Explanation</div>
+              <p>user = undefined<br/>user.name access பண்ண முடியாது</p>
+            </div>
+
+            <div class="lbl">Error</div>
+            <div class="et-error">
+              <div class="ee-lbl2">Error</div>
+              TypeError: Cannot read property 'name'
+            </div>
+
+            <div class="et-point">
+              <div>
+                <span class="ep-lbl">📌 Important Point</span>
+                <span class="ep-text">Runtime errors usually occur:</span>
+              </div>
+            </div>
+            <ul class="occurs-list" style="margin-top:10px;">
+              <li>API calls</li>
+              <li>Database queries</li>
+              <li>Object access</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Logical Error -->
+        <div class="et-card">
+          <div class="et-top logical">
+            <span class="et-num">3️⃣</span>
+            <span class="et-title">Logical Error</span>
+          </div>
+          <div class="et-body">
+            <div class="et-meaning">
+              <div class="em-lbl">📌 Meaning</div>
+              <p>Code run ஆகும் ஆனால் wrong output வரும்.</p>
+            </div>
+
+            <div class="lbl">Example</div>
+            <div class="cb">
+              <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">logical-error.js</span></div>
+              <pre><span class="kw">const</span> <span class="vr">result</span> = <span class="num">2</span> + <span class="num">2</span>
+
+<span class="obj">console</span>.<span class="fn">log</span>(<span class="vr">result</span> === <span class="num">5</span>)</pre>
+            </div>
+
+            <p class="note">Expected: 4<br/>But logic mistake இருந்தா output wrong.</p>
+
+            <div class="et-exp">
+              <div class="ee-lbl">Example explanation</div>
+              <p>2 + 2 = 4<br/>But program logic wrong → result incorrect</p>
+            </div>
+
+            <div class="et-point et-point-green">
+              <div>
+                <span class="ep-lbl">📌 Note</span>
+                <span class="ep-text">Logical errors debugging மூலம் கண்டுபிடிக்க வேண்டும்.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">4️⃣</span>
+      <h2>Board Comparison (Class Trick)</h2>
+      <span class="tag-right">Table</span>
+    </div>
+    <div class="step-body">
+      <div class="table-wrap">
+        <table class="err-table">
+          <thead>
+            <tr>
+              <th>Error Type</th>
+              <th>Meaning</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Syntax Error</td>
+              <td>Code mistake</td>
+              <td><span class="code-tag">const name =</span></td>
+            </tr>
+            <tr>
+              <td>Runtime Error</td>
+              <td>Error during execution</td>
+              <td><span class="code-tag">user.name when user undefined</span></td>
+            </tr>
+            <tr>
+              <td>Logical Error</td>
+              <td>Wrong output</td>
+              <td><span class="code-tag">Wrong calculation</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">5️⃣</span>
+      <h2>Real Project Errors (Important)</h2>
+      <span class="tag-right">Real World</span>
+    </div>
+    <div class="step-body">
+      <p class="note" style="margin-bottom:14px;">Real Node.js apps-ல் errors usually வரும்:</p>
+      <div class="real-grid">
+        <div class="real-card"><span class="ri">🗄️</span><span>Database connection failure</span></div>
+        <div class="real-card"><span class="ri">📡</span><span>Invalid API request</span></div>
+        <div class="real-card"><span class="ri">🔐</span><span>Authentication failure</span></div>
+        <div class="real-card"><span class="ri">📁</span><span>File read error</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">6️⃣</span>
+      <h2>Basic Error Handling Example</h2>
+      <span class="tag-right">Code</span>
+    </div>
+    <div class="step-body">
+      <p class="note" style="margin-bottom:10px;">Node.js-ல் errors handle பண்ண try...catch use பண்ணலாம்.</p>
+
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">try-catch.js</span></div>
+        <pre><span class="kw">try</span> {
+  <span class="kw">const</span> <span class="vr">user</span> = <span class="kw">undefined</span>
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="vr">user</span>.<span class="vr">name</span>)
+} <span class="kw">catch</span> (<span class="vr">error</span>) {
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Error occurred:"</span>, <span class="vr">error</span>.<span class="vr">message</span>)
+}</pre>
+      </div>
+
+      <div class="output-box">
+        <div class="out-lbl">Output</div>
+        Error occurred: Cannot read property 'name'
+      </div>
+
+      <div class="lbl">📌 Explanation</div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="ec-key">try</div>
+          <div class="ec-val">→ risky code</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">catch</div>
+          <div class="ec-val">→ error handle</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">7️⃣</span>
+      <h2>Error Handling Flow (Board Diagram)</h2>
+      <span class="tag-right">Visual</span>
+    </div>
+    <div class="step-body">
+      <div class="flow">
+        <div class="flow-node c1">Application Code</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node c2">Error Occurs</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node c3">Error Handling (try/catch)</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node c4">Graceful Response</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERVIEW ANSWERS -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num" style="font-size:18px;">⭐</span>
+      <h2>Interview Answers</h2>
+      <span class="tag-right">Interview</span>
+    </div>
+    <div class="step-body">
+      <div class="interview-stack">
+        <div class="int-card">
+          <div class="ic-top basic">⭐ Interview Sentence</div>
+          <div class="ic-body">Error handling is the process of detecting and managing errors that occur during program execution.</div>
+        </div>
+        <div class="int-card">
+          <div class="ic-top better">⭐ Better Interview Answer (Professional)</div>
+          <div class="ic-body">Error handling in Node.js ensures that runtime issues such as database failures, invalid requests, or server errors are properly detected and handled to prevent application crashes.</div>
+        </div>
+        <div class="int-card">
+          <div class="ic-top quick">⭐ 10-Second Interview Answer</div>
+          <div class="ic-body">Error handling is used to detect and manage errors in an application to prevent crashes.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Node.js Concepts – Env & Error Handling</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #13161e;
+      --surface2: #1a1e2a;
+      --border: #252836;
+      --accent: #f0c040;
+      --accent2: #4ecdc4;
+      --accent3: #ff6b6b;
+      --text: #e8eaf0;
+      --muted: #7c8099;
+      --green: #6bffb8;
+      --purple: #b47aff;
+      --code-bg: #0a0c10;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── BACKGROUND GRID ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(240,192,64,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(240,192,64,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .site-header .tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 4px 14px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+    }
+    .site-header h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1px;
+    }
+    .site-header h1 span { color: var(--accent); }
+    .site-header .subtitle {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 15px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── SECTION CARD ── */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 40px;
+      overflow: hidden;
+    }
+    .section-card + .section-card { }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .card-header .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 36px;
+    }
+    .card-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+    .card-header .icon {
+      margin-left: auto;
+      font-size: 22px;
+      opacity: .6;
+    }
+
+    .card-body { padding: 28px; }
+
+    /* ── CONCEPT BOX ── */
+    .concept-box {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent2);
+      border-radius: 0 8px 8px 0;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+    }
+    .concept-box .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 8px;
+    }
+    .concept-box p { font-size: 15px; color: var(--text); }
+
+    /* ── SUBSECTION TITLE ── */
+    .sub-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 28px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sub-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── EXAMPLE LIST ── */
+    .example-list {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .example-list li {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      padding: 6px 14px;
+      color: var(--green);
+    }
+    .example-list li::before {
+      content: '▸ ';
+      color: var(--accent);
+    }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+    .code-block .cb-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #111318;
+      border-bottom: 1px solid var(--border);
+    }
+    .cb-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: #28c840; }
+    .cb-header .filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+    .code-block pre {
+      padding: 18px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+      color: var(--text);
+    }
+
+    /* syntax tokens */
+    .kw  { color: var(--purple); }
+    .fn  { color: var(--accent2); }
+    .str { color: var(--green); }
+    .num { color: var(--accent); }
+    .cm  { color: var(--muted); font-style: italic; }
+    .var { color: #f9a8d4; }
+    .obj { color: var(--accent); }
+
+    /* ── INFO GRID ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .info-card {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .info-card .ic-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      margin-bottom: 4px;
+      letter-spacing: 1px;
+    }
+    .info-card .ic-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .info-card .ic-desc {
+      font-size: 12px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── WHY LIST ── */
+    .why-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .why-list li {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 14px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .why-list li .wi {
+      font-size: 18px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .why-list li strong { display: block; font-size: 13px; color: var(--accent2); margin-bottom: 2px; }
+    .why-list li span { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+    /* ── ENV EXAMPLES ── */
+    .env-examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .env-badge {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent2);
+    }
+
+    /* ── HTTP TABLE ── */
+    .http-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      margin: 16px 0;
+    }
+    .http-table th {
+      background: var(--surface2);
+      color: var(--accent);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--border);
+    }
+    .http-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    .http-table tr:last-child td { border-bottom: none; }
+    .http-table tr:hover td { background: rgba(240,192,64,.04); }
+    .code-tag {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      color: var(--accent3);
+      font-size: 12px;
+    }
+
+    /* ── INTERVIEW BOX ── */
+    .interview-box {
+      background: linear-gradient(135deg, rgba(240,192,64,.08), rgba(78,205,196,.06));
+      border: 1px solid rgba(240,192,64,.3);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-top: 24px;
+    }
+    .interview-box .ib-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .interview-box p {
+      font-size: 14px;
+      color: var(--text);
+      font-style: italic;
+    }
+    .interview-box p::before { content: '"'; color: var(--accent); font-size: 20px; line-height: 0; vertical-align: -4px; margin-right: 4px; }
+    .interview-box p::after  { content: '"'; color: var(--accent); font-size: 20px; line-height: 0; vertical-align: -4px; margin-left: 4px; }
+
+    /* ── Q&A ── */
+    .qa-list { list-style: none; margin-top: 12px; }
+    .qa-list li {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .qa-q {
+      background: var(--surface2);
+      padding: 13px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .qa-q .qn {
+      background: var(--accent);
+      color: var(--bg);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 3px;
+      padding: 2px 7px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .qa-a {
+      padding: 13px 18px;
+      font-size: 13px;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--code-bg);
+      border-top: 1px solid var(--border);
+      line-height: 1.7;
+    }
+    .qa-a::before {
+      content: '👉  ';
+    }
+
+    /* ── ERROR TYPES ── */
+    .error-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .error-card {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .error-card .ec-top {
+      padding: 10px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+    .ec-top.syntax  { background: rgba(255,107,107,.1); color: var(--accent3); border-bottom: 1px solid rgba(255,107,107,.2); }
+    .ec-top.runtime { background: rgba(240,192,64,.1);  color: var(--accent);  border-bottom: 1px solid rgba(240,192,64,.2); }
+    .ec-top.logical { background: rgba(107,255,184,.1); color: var(--green);   border-bottom: 1px solid rgba(107,255,184,.2); }
+    .error-card .ec-body {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .error-card .ec-body strong { display: block; color: var(--text); margin-bottom: 4px; font-size: 13px; }
+    .error-card .ec-body code {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 2px 8px;
+      margin-top: 6px;
+      color: var(--accent3);
+    }
+
+    /* ── METHODS ── */
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .method-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .method-card .mc-top {
+      background: var(--code-bg);
+      padding: 10px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .method-card .mc-num {
+      background: var(--purple);
+      color: var(--bg);
+      font-size: 10px;
+      font-weight: 800;
+      border-radius: 3px;
+      padding: 1px 6px;
+    }
+    .method-card .mc-body { padding: 14px 16px; }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 12px 0;
+    }
+
+    /* ── REAL EXAMPLE ── */
+    .real-example-banner {
+      background: linear-gradient(135deg, rgba(107,255,184,.06), rgba(180,122,255,.06));
+      border: 1px solid rgba(107,255,184,.2);
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+
+    <!-- ── SITE HEADER ── -->
+    <header class="site-header">
+      <div class="tag">Node.js · Express · MERN Stack</div>
+      <h1>Backend <span>Concepts</span></h1>
+      <p class="subtitle">// Environment Variables & Error Handling</p>
+    </header>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- SECTION 17 – ENVIRONMENT VARIABLES      -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="section-card">
+      <div class="card-header">
+        <span class="num">1️⃣7️⃣</span>
+        <h2>Environment Variables</h2>
+        <span class="icon">🔐</span>
+      </div>
+      <div class="card-body">
+
+        <!-- Concept -->
+        <div class="concept-box">
+          <div class="label">📌 Concept (Tamil)</div>
+          <p>Environment Variables என்பது 👉 application configuration values store பண்ணும் variables.<br>
+          இதுல usually secret values இருக்கும்.</p>
+        </div>
+
+        <!-- Examples -->
+        <div class="sub-title">Examples</div>
+        <ul class="example-list">
+          <li>Database URL</li>
+          <li>JWT Secret</li>
+          <li>Port number</li>
+          <li>API keys</li>
+        </ul>
+        <p style="font-size:14px;color:var(--muted);margin-top:10px;">இந்த values codeல direct எழுதக்கூடாது ❌ அதற்கு பதில் <code style="background:var(--code-bg);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);">.env</code> file use பண்ணுவோம்.</p>
+
+        <!-- .env file -->
+        <div class="sub-title">📌 Example `.env`</div>
+        <div class="code-block">
+          <div class="cb-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="filename">.env</span>
+          </div>
+          <pre><span class="var">PORT</span>=<span class="num">5000</span>
+<span class="var">MONGO_URL</span>=<span class="str">mongodb://localhost:27017/jobportal</span>
+<span class="var">JWT_SECRET</span>=<span class="str">mysecretkey</span></pre>
+        </div>
+
+        <!-- dotenv -->
+        <div class="sub-title">📌 dotenv package</div>
+        <div class="concept-box">
+          <div class="label">Info</div>
+          <p>Node.js-ல் <code style="font-family:'JetBrains Mono',monospace;color:var(--accent2);">.env</code> variables load பண்ண dotenv use பண்ணுவோம்.</p>
+        </div>
+        <div class="code-block">
+          <div class="cb-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="filename">terminal — Install</span>
+          </div>
+          <pre><span class="fn">npm</span> install <span class="str">dotenv</span></pre>
+        </div>
+
+        <!-- Server file -->
+        <div class="sub-title">📌 Server File</div>
+        <div class="code-block">
+          <div class="cb-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="filename">server.js</span>
+          </div>
+          <pre><span class="kw">import</span> <span class="var">dotenv</span> <span class="kw">from</span> <span class="str">"dotenv"</span>
+
+<span class="var">dotenv</span>.<span class="fn">config</span>()
+
+<span class="kw">const</span> <span class="var">port</span> = <span class="obj">process</span>.<span class="var">env</span>.<span class="var">PORT</span>
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="var">port</span>, ()=&gt;{
+ <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"Server running"</span>)
+})</pre>
+        </div>
+
+        <!-- Access -->
+        <div class="sub-title">📌 Access Environment Variable</div>
+        <div class="code-block">
+          <div class="cb-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="filename">access via process.env</span>
+          </div>
+          <pre><span class="obj">process</span>.<span class="var">env</span>.<span class="var">PORT</span>
+<span class="obj">process</span>.<span class="var">env</span>.<span class="var">JWT_SECRET</span>
+<span class="obj">process</span>.<span class="var">env</span>.<span class="var">MONGO_URL</span></pre>
+        </div>
+
+        <!-- Why -->
+        <div class="sub-title">📌 Why Environment Variables Used</div>
+        <ul class="why-list">
+          <li>
+            <span class="wi">🔒</span>
+            <div><strong>1️⃣ Security</strong><span>secret values safe</span></div>
+          </li>
+          <li>
+            <span class="wi">⚙️</span>
+            <div><strong>2️⃣ Configuration change easy</strong><span>no code change needed</span></div>
+          </li>
+          <li>
+            <span class="wi">🌐</span>
+            <div><strong>3️⃣ Different environments</strong><span>Development · Production · Testing</span></div>
+          </li>
+        </ul>
+
+        <!-- Interview sentence -->
+        <div class="interview-box">
+          <div class="ib-label">📌 Interview English Sentence</div>
+          <p>Environment variables are used to store configuration values like database URLs, API keys, and secrets outside the source code.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- SECTION 18 – ERROR HANDLING             -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="section-card">
+      <div class="card-header">
+        <span class="num">1️⃣8️⃣</span>
+        <h2>Error Handling</h2>
+        <span class="icon">🛡️</span>
+      </div>
+      <div class="card-body">
+
+        <!-- Concept -->
+        <div class="concept-box">
+          <div class="label">📌 Concept (Tamil)</div>
+          <p>Application run ஆகும்போது errors occur ஆகும்.<br>இந்த errors handle பண்ணுவது Error Handling.</p>
+        </div>
+
+        <!-- Error examples -->
+        <div class="sub-title">Examples</div>
+        <ul class="example-list">
+          <li>Database connection error</li>
+          <li>Invalid request</li>
+          <li>Server crash</li>
+          <li>API failure</li>
+        </ul>
+
+        <!-- Types of Errors -->
+        <div class="sub-title">Types of Errors</div>
+        <div class="error-types">
+          <div class="error-card">
+            <div class="ec-top syntax">1️⃣ Syntax Error</div>
+            <div class="ec-body">
+              <strong>Code mistake.</strong>
+              Node run ஆகாது.
+              <code>const name =</code>
+            </div>
+          </div>
+          <div class="error-card">
+            <div class="ec-top runtime">2️⃣ Runtime Error</div>
+            <div class="ec-body">
+              <strong>Program run ஆகும்போது error வரும்.</strong>
+              user undefined.
+              <code>user.name</code>
+            </div>
+          </div>
+          <div class="error-card">
+            <div class="ec-top logical">3️⃣ Logical Error</div>
+            <div class="ec-body">
+              <strong>Code run ஆகும் ஆனால் output wrong.</strong>
+              Wrong calculation.
+              <code>2 + 2 = 5</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Express Error Handling Methods -->
+        <div class="sub-title">Express Error Handling Methods</div>
+        <div class="methods-grid">
+
+          <!-- Try Catch -->
+          <div class="method-card">
+            <div class="mc-top"><span class="mc-num">1️⃣</span> Try Catch</div>
+            <div class="mc-body">
+              <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Async code error handle பண்ண.</p>
+              <div class="code-block">
+                <div class="cb-header">
+                  <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                  <span class="filename">try-catch</span>
+                </div>
+                <pre><span class="kw">try</span> {
+ <span class="kw">const</span> <span class="var">user</span> = <span class="kw">await</span> <span class="obj">User</span>.<span class="fn">find</span>()
+}
+<span class="kw">catch</span>(<span class="var">error</span>){
+ <span class="obj">console</span>.<span class="fn">log</span>(<span class="var">error</span>)
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Send Error Response -->
+          <div class="method-card">
+            <div class="mc-top"><span class="mc-num">2️⃣</span> Send Error Response</div>
+            <div class="mc-body">
+              <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Client-க்கு error response அனுப்பு.</p>
+              <div class="code-block">
+                <div class="cb-header">
+                  <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                  <span class="filename">error response</span>
+                </div>
+                <pre><span class="kw">catch</span>(<span class="var">error</span>){
+ <span class="var">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
+  <span class="var">message</span>:<span class="str">"Server Error"</span>
+ })
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Global Error Middleware -->
+          <div class="method-card" style="grid-column: 1 / -1;">
+            <div class="mc-top"><span class="mc-num">3️⃣</span> Global Error Middleware</div>
+            <div class="mc-body">
+              <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Express-ல் central error handler create பண்ணலாம்.</p>
+              <div class="code-block">
+                <div class="cb-header">
+                  <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+                  <span class="filename">middleware.js</span>
+                </div>
+                <pre><span class="var">app</span>.<span class="fn">use</span>((<span class="var">err</span>,<span class="var">req</span>,<span class="var">res</span>,<span class="var">next</span>)=&gt;{
+ <span class="var">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
+  <span class="var">message</span>: <span class="var">err</span>.<span class="var">message</span>
+ })
+})</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Example Controller -->
+        <div class="sub-title">📌 Example Controller</div>
+        <div class="code-block">
+          <div class="cb-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="filename">userController.js</span>
+          </div>
+          <pre><span class="kw">export const</span> <span class="fn">getUsers</span> = <span class="kw">async</span> (<span class="var">req</span>,<span class="var">res</span>)=&gt;{
+ <span class="kw">try</span>{
+   <span class="kw">const</span> <span class="var">users</span> = <span class="kw">await</span> <span class="obj">User</span>.<span class="fn">find</span>()
+   <span class="var">res</span>.<span class="fn">json</span>(<span class="var">users</span>)
+ }
+ <span class="kw">catch</span>(<span class="var">err</span>){
+   <span class="var">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({<span class="var">message</span>:<span class="str">"Error fetching users"</span>})
+ }
+}</pre>
+        </div>
+
+        <!-- Common HTTP Error Codes -->
+        <div class="sub-title">Common HTTP Error Codes</div>
+        <table class="http-table">
+          <thead>
+            <tr><th>Code</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="code-tag">400</span></td><td>Bad Request</td></tr>
+            <tr><td><span class="code-tag">401</span></td><td>Unauthorized</td></tr>
+            <tr><td><span class="code-tag">403</span></td><td>Forbidden</td></tr>
+            <tr><td><span class="code-tag">404</span></td><td>Not Found</td></tr>
+            <tr><td><span class="code-tag">500</span></td><td>Server Error</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Interview sentence -->
+        <div class="interview-box">
+          <div class="ib-label">📌 Interview English Sentence</div>
+          <p>Error handling is the process of managing errors in an application to prevent crashes and provide meaningful responses to users.</p>
+        </div>
+
+        <!-- Real MERN Example -->
+        <div class="sub-title">Real MERN Example (Interview Level)</div>
+        <span class="real-example-banner">⭐ Production Ready</span>
+        <div class="code-block">
+          <div class="cb-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="filename">authController.js</span>
+          </div>
+          <pre><span class="kw">export const</span> <span class="fn">register</span> = <span class="kw">async</span> (<span class="var">req</span>,<span class="var">res</span>)=&gt;{
+ <span class="kw">try</span>{
+
+  <span class="kw">const</span> <span class="var">user</span> = <span class="kw">await</span> <span class="obj">User</span>.<span class="fn">create</span>(<span class="var">req</span>.<span class="var">body</span>)
+
+  <span class="var">res</span>.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>(<span class="var">user</span>)
+
+ }
+ <span class="kw">catch</span>(<span class="var">error</span>){
+  <span class="var">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
+   <span class="var">message</span>:<span class="str">"Registration failed"</span>
+  })
+ }
+}</pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════ -->
+    <!-- COMMON INTERVIEW QUESTIONS              -->
+    <!-- ══════════════════════════════════════ -->
+    <div class="section-card">
+      <div class="card-header">
+        <span class="num" style="font-size:18px;">⭐</span>
+        <h2>Interviewer கேட்கும் Common Questions</h2>
+        <span class="icon">💬</span>
+      </div>
+      <div class="card-body">
+        <ul class="qa-list">
+          <li>
+            <div class="qa-q"><span class="qn">Q1</span>What are environment variables?</div>
+            <div class="qa-a">Environment variables store configuration values like database URLs and secret keys outside the source code.</div>
+          </li>
+          <li>
+            <div class="qa-q"><span class="qn">Q2</span>Why use dotenv?</div>
+            <div class="qa-a">We use dotenv to load environment variables from a .env file into process.env.</div>
+          </li>
+          <li>
+            <div class="qa-q"><span class="qn">Q3</span>How do you handle errors in Express?</div>
+            <div class="qa-a">We use try-catch blocks in async functions and also implement global error handling middleware.</div>
+          </li>
+          <li>
+            <div class="qa-q"><span class="qn">Q4</span>How do you access environment variables?</div>
+            <div class="qa-a">Environment variables are accessed using process.env.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

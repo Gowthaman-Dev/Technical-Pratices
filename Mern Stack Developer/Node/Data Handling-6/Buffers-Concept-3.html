@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streams vs Buffers - Node.js Class Teaching</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --accent-blue: #1f2937;
+            --accent-cyan: #06b6d4;
+            --accent-orange: #f97316;
+            --accent-purple: #7c3aed;
+            --accent-green: #10b981;
+            --light-bg: #f8fafc;
+            --dark-bg: #0f172a;
+            --card-white: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f5f3ff 50%, #fef3c7 100%);
+            color: var(--text-dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER SECTION ===== */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 100px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+            letter-spacing: -3px;
+            background: linear-gradient(135deg, #06b6d4, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            font-size: 1.4rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        /* ===== SECTION STYLING ===== */
+        section {
+            background: var(--card-white);
+            border-radius: 24px;
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section:nth-child(1) { animation-delay: 0.1s; border-color: rgba(6, 182, 212, 0.2); }
+        section:nth-child(2) { animation-delay: 0.2s; border-color: rgba(249, 115, 22, 0.2); }
+        section:nth-child(3) { animation-delay: 0.3s; border-color: rgba(124, 58, 237, 0.2); }
+        section:nth-child(4) { animation-delay: 0.4s; border-color: rgba(16, 185, 129, 0.2); }
+        section:nth-child(5) { animation-delay: 0.5s; border-color: rgba(6, 182, 212, 0.2); }
+        section:nth-child(6) { animation-delay: 0.6s; border-color: rgba(249, 115, 22, 0.2); }
+        section:nth-child(7) { animation-delay: 0.7s; border-color: rgba(124, 58, 237, 0.2); }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-orange), var(--accent-purple));
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== HEADING STYLES ===== */
+        h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.8rem;
+            color: var(--accent-blue);
+            margin-bottom: 25px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 5px;
+            height: 40px;
+            background: linear-gradient(180deg, var(--accent-cyan), var(--accent-orange));
+            border-radius: 3px;
+        }
+
+        h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin: 35px 0 18px 0;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        h4 {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--accent-cyan);
+            margin: 25px 0 12px 0;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        p {
+            color: var(--text-light);
+            margin-bottom: 18px;
+            font-weight: 500;
+            font-size: 1.05rem;
+        }
+
+        /* ===== QUESTION BOX ===== */
+        .question-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 3px solid #f59e0b;
+            border-radius: 16px;
+            padding: 35px;
+            margin: 30px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #92400e;
+            font-family: 'Syne', sans-serif;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(245, 158, 11, 0.2);
+        }
+
+        .question-box::before {
+            content: '🎓 ';
+            margin-right: 12px;
+            font-size: 1.4em;
+        }
+
+        /* ===== CASE STUDY CARDS ===== */
+        .case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            margin: 35px 0;
+        }
+
+        .case-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid var(--light-bg);
+            border-radius: 18px;
+            padding: 35px;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: all 0.5s ease;
+        }
+
+        .case-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 50px rgba(6, 182, 212, 0.15);
+            border-color: var(--accent-cyan);
+        }
+
+        .case-card:hover::before {
+            top: -20%;
+            right: -20%;
+        }
+
+        .case-card h3 {
+            margin-top: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .case-card .flow-diagram {
+            background: var(--card-white);
+            border: 2px dashed var(--accent-cyan);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        /* ===== DEFINITION BOXES ===== */
+        .definition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            margin: 35px 0;
+        }
+
+        .definition-card {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-left: 5px solid var(--accent-orange);
+            border-radius: 14px;
+            padding: 32px;
+            transition: all 0.4s ease;
+        }
+
+        .definition-card:nth-child(2) {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-left-color: var(--accent-green);
+        }
+
+        .definition-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .definition-card h3 {
+            margin-top: 0;
+            color: var(--accent-blue);
+            font-size: 1.3rem;
+        }
+
+        .definition-card p {
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .definition-list {
+            list-style: none;
+            padding: 15px 0;
+        }
+
+        .definition-list li {
+            padding: 10px 0 10px 35px;
+            position: relative;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .definition-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent-orange);
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .definition-card:nth-child(2) .definition-list li::before {
+            color: var(--accent-green);
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        .code-example {
+            background: var(--dark-bg);
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 28px;
+            margin: 25px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            line-height: 1.8;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .code-example::before {
+            content: '💻';
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 1.3rem;
+            opacity: 0.6;
+        }
+
+        .code-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        /* ===== EXPLANATION BOXES ===== */
+        .explanation {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 5px solid var(--accent-cyan);
+            border-radius: 12px;
+            padding: 26px;
+            margin: 20px 0;
+            color: #0c4a6e;
+            font-weight: 600;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .explanation::before {
+            content: '💡 ';
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .tamil-explanation {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-left: 5px solid var(--accent-purple);
+            border-radius: 12px;
+            padding: 26px;
+            margin: 20px 0;
+            color: #5b21b6;
+            font-style: italic;
+            font-weight: 500;
+            line-height: 1.9;
+        }
+
+        .tamil-explanation::before {
+            content: '🇮🇳 ';
+            margin-right: 10px;
+            font-style: normal;
+        }
+
+        /* ===== COMPARISON TABLE ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 35px 0;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-white);
+            font-size: 1rem;
+        }
+
+        table thead {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+        }
+
+        table th {
+            padding: 22px 20px;
+            text-align: left;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+            border-bottom: 3px solid var(--accent-cyan);
+        }
+
+        table td {
+            padding: 20px;
+            border-bottom: 2px solid var(--light-bg);
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        table tbody tr:hover {
+            background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+            transition: all 0.3s ease;
+        }
+
+        table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== USE CASES GRID ===== */
+        .usecase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 22px;
+            margin: 35px 0;
+        }
+
+        .usecase-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid var(--accent-orange);
+            border-radius: 14px;
+            padding: 28px;
+            text-align: center;
+            font-weight: 700;
+            color: #92400e;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .usecase-card:nth-child(odd) {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-color: var(--accent-green);
+            color: #065f46;
+        }
+
+        .usecase-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .usecase-card .emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ===== INTERVIEW ANSWERS ===== */
+        .interview-answer {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 3px solid var(--accent-green);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 35px 0;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #065f46;
+            font-family: 'Syne', sans-serif;
+            text-align: center;
+            line-height: 2;
+            box-shadow: 0 12px 40px rgba(16, 185, 129, 0.15);
+        }
+
+        .interview-answer::before {
+            content: '🎓 ';
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .super-short-answer {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 3px solid #22c55e;
+            border-radius: 16px;
+            padding: 40px;
+            margin: 35px 0;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #166534;
+            font-family: 'Syne', sans-serif;
+            text-align: center;
+            line-height: 2;
+            box-shadow: 0 12px 40px rgba(34, 197, 94, 0.15);
+            position: relative;
+        }
+
+        .super-short-answer::before {
+            content: '⭐ 10-SECOND ANSWER';
+            display: block;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+
+        /* ===== BONUS SECTION ===== */
+        .bonus-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
+            border: 3px dashed var(--accent-orange);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 35px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .bonus-section::before {
+            content: '✅ ';
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .bonus-section h3 {
+            color: var(--accent-orange);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .bonus-section p {
+            color: #92400e;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .bonus-highlight {
+            background: var(--card-white);
+            border-left: 4px solid var(--accent-orange);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            color: #92400e;
+            font-weight: 700;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            margin-top: 80px;
+            border-top: 3px solid var(--accent-cyan);
+        }
+
+        footer h3 {
+            color: var(--accent-cyan);
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+        }
+
+        footer p {
+            color: #cbd5e1;
+            font-weight: 400;
+            margin-bottom: 12px;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1024px) {
+            h2 {
+                font-size: 2.2rem;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            section {
+                padding: 35px;
+            }
+
+            .case-grid,
+            .definition-grid,
+            .usecase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 3rem;
+                letter-spacing: -2px;
+            }
+
+            header p {
+                font-size: 1.1rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+                padding-left: 15px;
+            }
+
+            h3 {
+                font-size: 1.15rem;
+            }
+
+            section {
+                padding: 25px 20px;
+                margin-bottom: 25px;
+            }
+
+            .container {
+                padding: 30px 15px;
+            }
+
+            .code-example {
+                font-size: 0.85rem;
+                padding: 20px;
+            }
+
+            .interview-answer,
+            .super-short-answer,
+            .bonus-section {
+                padding: 30px 20px;
+                font-size: 1rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            table th,
+            table td {
+                padding: 12px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2rem;
+                letter-spacing: -1px;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            .interview-answer::before,
+            .super-short-answer::before,
+            .bonus-section::before {
+                font-size: 1.8rem;
+            }
+
+            .usecase-card .emoji {
+                font-size: 2rem;
+            }
+        }
+
+        /* ===== PRINT STYLES ===== */
+        @media print {
+            body {
+                background: white;
+            }
+
+            section {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid var(--light-bg);
+            }
+
+            header {
+                page-break-after: avoid;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Streams vs Buffers</h1>
+        <p>Node.js Class Teaching Method - Complete Master Guide</p>
+    </header>
+
+    <div class="container">
+
+        <!-- Section 1: Real Life Example Hook -->
+        <section>
+            <h2>1️⃣ Start with Real Life Example (Best Hook)</h2>
+            <p>Teacher class-ல first question கேளுங்க.</p>
+
+            <div class="question-box">
+                1GB video file download பண்ணும்போது computer முழு file-யும் memory-ல load பண்ணுமா?
+            </div>
+
+            <p style="margin-top: 25px; font-style: italic; color: var(--text-light);">Students usually say Yes / No.</p>
+            <p style="font-style: italic; color: var(--text-light);">Then explain 👇</p>
+
+            <div class="case-grid">
+                <div class="case-card">
+                    <h3>📌 Case 1 – Buffer</h3>
+                    <div class="tamil-explanation">
+                        👉 Full data memory-ल store ஆகுது
+                        <br>👉 பிறகு process ஆகுது
+                    </div>
+                    <div class="flow-diagram">
+                        Internet → Buffer (store full data) → Process
+                    </div>
+                </div>
+
+                <div class="case-card">
+                    <h3>📌 Case 2 – Stream</h3>
+                    <div class="tamil-explanation">
+                        👉 Data small chunks-ஆ வரும்
+                        <br>👉 வந்தவுடன் process ஆகும்
+                    </div>
+                    <div class="flow-diagram">
+                        Internet → Chunk → Process<br>
+                        → Chunk → Process<br>
+                        → Chunk → Process
+                    </div>
+                </div>
+            </div>
+
+            <div class="tamil-explanation" style="margin-top: 25px; text-align: center; font-style: normal;">
+                📌 இதுதான் Stream concept
+            </div>
+        </section>
+
+        <!-- Section 2: Definition -->
+        <section>
+            <h2>2️⃣ Definition</h2>
+
+            <div class="definition-grid">
+                <div class="definition-card">
+                    <h3>Buffer</h3>
+                    <p style="color: var(--accent-orange); font-weight: 700;">📌 Buffer என்பது binary data store பண்ண temporary memory area</p>
+                    <ul class="definition-list">
+                        <li>files</li>
+                        <li>images</li>
+                        <li>videos</li>
+                        <li>network packets</li>
+                    </ul>
+                </div>
+
+                <div class="definition-card">
+                    <h3>Stream</h3>
+                    <p style="color: var(--accent-green); font-weight: 700;">📌 Stream என்பது data-வை small chunks-ஆ process பண்ணும் mechanism</p>
+                    <ul class="definition-list">
+                        <li>Full data memory-ல load ஆகாது</li>
+                        <li>Chunk by chunk processing</li>
+                        <li>More efficient</li>
+                        <li>Lower memory usage</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Simple Example -->
+        <section>
+            <h2>3️⃣ Simple Example</h2>
+
+            <h3>Buffer Example</h3>
+
+            <div class="code-example">
+                <span class="code-label">Buffer Approach</span>
+const fs = require("fs")
+
+fs.readFile("video.mp4",(err,data)=>{
+   console.log(data)
+})</div>
+
+            <div class="explanation">
+                👉 full file memory-ल load ஆகும்
+            </div>
+
+            <h3 style="margin-top: 40px;">Stream Example</h3>
+
+            <div class="code-example">
+                <span class="code-label">Stream Approach</span>
+const fs = require("fs")
+
+const stream = fs.createReadStream("video.mp4")
+
+stream.on("data",(chunk)=>{
+   console.log(chunk)
+})</div>
+
+            <div class="explanation">
+                👉 file chunk by chunk read ஆகும்
+            </div>
+        </section>
+
+        <!-- Section 4: Comparison Table -->
+        <section>
+            <h2>4️⃣ Comparison Table (Class Board)</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Streams</th>
+                            <th>Buffers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Data handling</strong></td>
+                            <td>Chunk by chunk</td>
+                            <td>Full memory storage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Purpose</strong></td>
+                            <td>Process data</td>
+                            <td>Store binary data</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Memory usage</strong></td>
+                            <td>Low</td>
+                            <td>Higher</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance</strong></td>
+                            <td>Fast for large files</td>
+                            <td>Not efficient for large data</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 5: Real World Usage -->
+        <section>
+            <h2>5️⃣ Real World Usage</h2>
+
+            <h3 style="color: var(--accent-orange); margin-top: 0;">Streams use cases</h3>
+            <div class="usecase-grid">
+                <div class="usecase-card">
+                    <span class="emoji">🎬</span>
+                    video streaming
+                </div>
+                <div class="usecase-card">
+                    <span class="emoji">📦</span>
+                    large file download
+                </div>
+                <div class="usecase-card">
+                    <span class="emoji">🌐</span>
+                    network data transfer
+                </div>
+            </div>
+
+            <h3 style="color: var(--accent-green); margin-top: 40px;">Buffers use cases</h3>
+            <div class="usecase-grid">
+                <div class="usecase-card">
+                    <span class="emoji">📄</span>
+                    file reading
+                </div>
+                <div class="usecase-card">
+                    <span class="emoji">🖼️</span>
+                    image processing
+                </div>
+                <div class="usecase-card">
+                    <span class="emoji">📦</span>
+                    binary data storage
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Important Concept -->
+        <section>
+            <h2>6️⃣ Important Concept (Very Interview Important)</h2>
+            <p>Teacher class-ल சொல்லணும்:</p>
+
+            <div class="explanation" style="font-size: 1.15rem; text-align: center;">
+                👉 Streams internally buffers use பண்ணும்
+            </div>
+
+            <h3>Explanation:</h3>
+            <div class="tamil-explanation">
+                Data chunk வரும்போது அது buffer-ல temporary store ஆகும்
+            </div>
+
+            <p style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left: 5px solid var(--accent-cyan); border-radius: 12px; color: #0c4a6e; font-weight: 700; font-size: 1.1rem;">
+                💡 Key Point: Streams are built on top of buffers for efficient data handling!
+            </p>
+        </section>
+
+        <!-- Section 7: Interview Answers -->
+        <section>
+            <h2>7️⃣ Final Interview Answer (Teach Students)</h2>
+            <p>Students memorize பண்ண easy-ஆ சொல்லுங்க:</p>
+
+            <div class="interview-answer">
+                In Node.js, streams and buffers are used for efficient data handling. Streams process data in small chunks without loading the entire data into memory, while buffers store binary data temporarily during data transfer.
+            </div>
+
+            <div class="super-short-answer">
+                Buffers store binary data temporarily, while streams process data chunk by chunk without loading the entire data into memory.
+            </div>
+        </section>
+
+        <!-- Bonus Section -->
+        <section>
+            <h2>✅ Bonus - Types of Streams Question</h2>
+
+            <div class="bonus-section">
+                <h3>Rocky, since you are preparing for MERN interviews, the interviewer usually asks one more question after this:</h3>
+                <p style="margin-top: 20px; font-size: 1.2rem;">👉 "Types of Streams in Node.js"</p>
+                
+                <div class="bonus-highlight">
+                    <strong>Be Ready with These 4 Types:</strong><br><br>
+                    1️⃣ Readable Streams - Reading data<br>
+                    2️⃣ Writable Streams - Writing data<br>
+                    3️⃣ Duplex Streams - Both read and write<br>
+                    4️⃣ Transform Streams - Transform data while processing
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <h3>Master Streams vs Buffers</h3>
+        <p><strong>Complete Class Teaching Flow for Node.js Interviews</strong></p>
+        <p>Excel in MERN interviews with complete stream and buffer knowledge</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>setImmediate() – Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080b0e;
+    --surface:#0c1014;
+    --card:#10141a;
+    --border:#181e28;
+    --green:#4ade80;
+    --cyan:#22d3ee;
+    --yellow:#fbbf24;
+    --orange:#fb923c;
+    --pink:#f472b6;
+    --purple:#a78bfa;
+    --red:#f87171;
+    --blue:#60a5fa;
+    --teal:#2dd4bf;
+    --text:#dde3f0;
+    --muted:#333d52;
+    --dim:#7a8aaa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Noto Sans Tamil','JetBrains Mono',monospace;
+    min-height:100vh;overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(45,212,191,.013) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(45,212,191,.013) 1px,transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;z-index:0;
+  }
+  .wrap{
+    position:relative;z-index:1;
+    max-width:980px;margin:0 auto;
+    padding:2rem 1.5rem 5rem;
+  }
+
+  /* ── HEADER ── */
+  .header{text-align:center;padding:3rem 0 2.5rem;animation:fadeDown .6s ease both;}
+  .badge{
+    display:inline-block;
+    background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.28);
+    color:var(--teal);font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    padding:.28rem 1rem;border-radius:100px;margin-bottom:1.1rem;
+  }
+  .header h1{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(1.8rem,4.2vw,2.7rem);
+    font-weight:700;color:#fff;line-height:1.15;margin-bottom:.5rem;
+  }
+  .header h1 span{color:var(--teal);}
+  .header p{font-size:.88rem;color:var(--dim);}
+
+  /* ── PART DIVIDER ── */
+  .part-div{
+    display:flex;align-items:center;gap:1rem;
+    margin:3rem 0 1.5rem;
+  }
+  .part-div-line{flex:1;height:1px;background:var(--border);}
+  .part-div-label{
+    font-family:'JetBrains Mono',monospace;font-size:.68rem;
+    letter-spacing:.15em;text-transform:uppercase;
+    padding:.3rem .9rem;border-radius:100px;white-space:nowrap;
+  }
+  .part-div-label.teal  {background:rgba(45,212,191,.1);  color:var(--teal);  border:1px solid rgba(45,212,191,.25);}
+  .part-div-label.purple{background:rgba(167,139,250,.1); color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+
+  /* ── STEP HEADER ── */
+  .shdr{
+    display:flex;align-items:center;gap:.9rem;
+    margin:2.2rem 0 .9rem;animation:fadeUp .45s ease both;
+  }
+  .snum{
+    font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:700;
+    padding:.24rem .6rem;border-radius:6px;white-space:nowrap;
+  }
+  .c1  .snum{background:rgba(96,165,250,.14); color:var(--blue);  border:1px solid rgba(96,165,250,.28);}
+  .c2  .snum{background:rgba(45,212,191,.14); color:var(--teal);  border:1px solid rgba(45,212,191,.28);}
+  .c3  .snum{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.28);}
+  .c4  .snum{background:rgba(34,211,238,.14); color:var(--cyan);  border:1px solid rgba(34,211,238,.28);}
+  .c5  .snum{background:rgba(167,139,250,.14);color:var(--purple);border:1px solid rgba(167,139,250,.28);}
+  .c6  .snum{background:rgba(251,146,60,.14); color:var(--orange);border:1px solid rgba(251,146,60,.28);}
+  .c7  .snum{background:rgba(251,191,36,.14); color:var(--yellow);border:1px solid rgba(251,191,36,.28);}
+  .c8  .snum{background:rgba(244,114,182,.14);color:var(--pink);  border:1px solid rgba(244,114,182,.28);}
+  .c9  .snum{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.28);}
+  .c10 .snum{background:rgba(45,212,191,.14); color:var(--teal);  border:1px solid rgba(45,212,191,.28);}
+  .stitle{font-family:'JetBrains Mono',monospace;font-size:1.02rem;font-weight:700;color:#fff;}
+
+  /* ── CARD ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:1.55rem 1.75rem;
+    margin-bottom:1rem;overflow:hidden;
+    animation:fadeUp .45s ease both;
+  }
+  .card.c1 {border-top:2px solid var(--blue);}
+  .card.c2 {border-top:2px solid var(--teal);}
+  .card.c3 {border-top:2px solid var(--green);}
+  .card.c4 {border-top:2px solid var(--cyan);}
+  .card.c5 {border-top:2px solid var(--purple);}
+  .card.c6 {border-top:2px solid var(--orange);}
+  .card.c7 {border-top:2px solid var(--yellow);}
+  .card.c8 {border-top:2px solid var(--pink);}
+  .card.c9 {border-top:2px solid var(--green);}
+  .card.c10{border-top:2px solid var(--teal);}
+
+  /* ── UTILS ── */
+  .tag{
+    display:inline-block;font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    background:var(--surface);border:1px solid var(--border);
+    padding:.18rem .6rem;border-radius:100px;margin-bottom:.75rem;letter-spacing:.05em;
+  }
+  .lbl{
+    font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.1em;margin:.85rem 0 .32rem;
+  }
+  .def{
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
+    padding:.82rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.85;margin-bottom:.85rem;
+  }
+  .def strong{color:var(--text);}
+  .point{
+    display:flex;align-items:flex-start;gap:.5rem;
+    font-size:.84rem;color:var(--dim);line-height:1.65;margin-bottom:.42rem;
+  }
+  .point .a{color:var(--teal);font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+
+  /* ── CODE ── */
+  pre{
+    background:#050810;border:1px solid var(--border);border-radius:8px;
+    padding:1rem 1.2rem;overflow-x:auto;margin-bottom:.82rem;tab-size:2;
+  }
+  code{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.9;color:#bec0e0;}
+  .kw {color:#f97316;}
+  .fn {color:#60a5fa;}
+  .str{color:#86efac;}
+  .num{color:#c084fc;}
+  .op {color:#dde3f0;}
+
+  /* ── OUTPUT ── */
+  .out-lbl{font-family:'JetBrains Mono',monospace;font-size:.61rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.28rem;}
+  .out{
+    background:#040710;border:1px solid var(--border);
+    border-left:3px solid var(--green);border-radius:6px;
+    padding:.7rem 1rem;
+    font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);line-height:1.9;
+    margin-bottom:.82rem;
+  }
+
+  /* ── FLOW ── */
+  .flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin:.72rem 0;}
+  .fb{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;
+    padding:.38rem .9rem;font-family:'JetBrains Mono',monospace;
+    font-size:.76rem;color:var(--text);min-width:185px;text-align:center;
+  }
+  .fa{color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:.84rem;padding:.14rem 0 .14rem 1.3rem;line-height:1;}
+  .fb.teal  {background:rgba(45,212,191,.07);border-color:rgba(45,212,191,.2);color:var(--teal);}
+  .fb.green {background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.2);color:var(--green);}
+  .fb.cyan  {background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.2);color:var(--cyan);}
+  .fb.blue  {background:rgba(96,165,250,.07);border-color:rgba(96,165,250,.2);color:var(--blue);}
+  .fb.purple{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.2);color:var(--purple);}
+  .fb.yellow{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.2);color:var(--yellow);}
+  .fb.orange{background:rgba(251,146,60,.07);border-color:rgba(251,146,60,.2);color:var(--orange);}
+
+  /* ── BOARD ── */
+  .board{
+    background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.15);
+    border-left:3px solid var(--teal);border-radius:8px;
+    padding:.82rem 1rem;margin:.72rem 0;
+    font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--teal);line-height:2;
+  }
+  .board .btitle{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;}
+
+  /* ── HINTS ── */
+  .hint{
+    background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.18);
+    border-left:3px solid var(--teal);border-radius:8px;
+    padding:.78rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.78rem 0;
+  }
+  .hint strong{color:var(--teal);}
+  .hint-green{
+    background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.18);
+    border-left:3px solid var(--green);border-radius:8px;
+    padding:.78rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.78rem 0;
+  }
+  .hint-green strong{color:var(--green);}
+
+  /* ── SPEECH ── */
+  .speech{
+    display:flex;align-items:flex-start;gap:.7rem;
+    background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.15);
+    border-left:3px solid var(--blue);border-radius:8px;
+    padding:.88rem 1.05rem;margin-bottom:.9rem;font-size:.87rem;color:var(--dim);line-height:1.75;
+  }
+  .speech .ico{font-size:1rem;flex-shrink:0;margin-top:.05rem;}
+
+  /* ── NUM EXPLAIN ── */
+  .num-list{display:flex;flex-direction:column;gap:.5rem;margin:.75rem 0;}
+  .num-item{
+    display:flex;align-items:flex-start;gap:.7rem;
+    font-size:.84rem;color:var(--dim);line-height:1.65;
+  }
+  .num-badge{
+    font-family:'JetBrains Mono',monospace;font-size:.64rem;
+    background:rgba(45,212,191,.1);color:var(--teal);
+    border:1px solid rgba(45,212,191,.2);
+    padding:.15rem .42rem;border-radius:5px;white-space:nowrap;flex-shrink:0;margin-top:.1rem;
+  }
+
+  /* ── TABLE ── */
+  table{width:100%;border-collapse:collapse;font-size:.82rem;margin:.72rem 0;}
+  th{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);
+    padding:.52rem 1rem;text-align:left;
+    font-family:'JetBrains Mono',monospace;font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  }
+  td{border:1px solid var(--border);padding:.52rem 1rem;color:var(--dim);line-height:1.55;}
+  td:first-child{font-family:'JetBrains Mono',monospace;font-weight:600;}
+  .t-io td:first-child{color:var(--cyan);}
+  .t-io td:last-child{color:var(--teal);}
+  tr:hover td{background:rgba(255,255,255,.018);}
+
+  /* ── COMPARE BOX ── */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:.78rem 0;}
+  .cmp-col{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:9px;padding:1rem 1.05rem;}
+  .cmp-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;}
+  .cmp-col:first-child .cmp-title{color:var(--yellow);}
+  .cmp-col:last-child  .cmp-title{color:var(--teal);}
+
+  /* ── CHIPS ── */
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0;}
+  .chip{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:.24rem .68rem;font-size:.74rem;color:var(--dim);}
+
+  /* ── EXEC STEPS ── */
+  .exec-list{display:flex;flex-direction:column;gap:.55rem;margin:.75rem 0;}
+  .exec-item{background:rgba(255,255,255,.022);border:1px solid var(--border);border-radius:9px;padding:.9rem 1.05rem;}
+  .exec-step-lbl{font-family:'JetBrains Mono',monospace;font-size:.61rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.45rem;}
+
+  /* ── RESTAURANT ── */
+  .rest{
+    background:rgba(251,146,60,.04);border:1px solid rgba(251,146,60,.15);border-radius:10px;
+    padding:1.05rem 1.25rem;margin:.78rem 0;
+  }
+  .rest-title{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--orange);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem;}
+  .rest-flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-bottom:.8rem;}
+  .rest-step{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.18);border-radius:7px;padding:.36rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--orange);min-width:140px;text-align:center;}
+  .rest-arr{color:var(--orange);font-size:.84rem;padding:.14rem 0 .14rem 1.2rem;line-height:1;font-family:'JetBrains Mono',monospace;}
+
+  /* ── COMP GRID (call stack / node api etc) ── */
+  .comp-grid{display:flex;flex-direction:column;gap:.65rem;margin:.78rem 0;}
+  .comp{border:1px solid var(--border);border-radius:10px;padding:.95rem 1.1rem;}
+  .comp.cs  {background:rgba(96,165,250,.05); border-left:3px solid var(--blue);}
+  .comp.na  {background:rgba(251,146,60,.05); border-left:3px solid var(--orange);}
+  .comp.cq  {background:rgba(167,139,250,.05);border-left:3px solid var(--purple);}
+  .comp.el  {background:rgba(74,222,128,.05); border-left:3px solid var(--green);}
+  .comp-hdr{display:flex;align-items:center;gap:.65rem;margin-bottom:.55rem;}
+  .comp-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;padding:.18rem .52rem;border-radius:5px;white-space:nowrap;}
+  .cs .comp-badge  {background:rgba(96,165,250,.15); color:var(--blue);  border:1px solid rgba(96,165,250,.25);}
+  .na .comp-badge  {background:rgba(251,146,60,.15); color:var(--orange);border:1px solid rgba(251,146,60,.25);}
+  .cq .comp-badge  {background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+  .el .comp-badge  {background:rgba(74,222,128,.15); color:var(--green); border:1px solid rgba(74,222,128,.25);}
+  .comp-ttl{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;color:#fff;}
+  .comp p{font-size:.83rem;color:var(--dim);line-height:1.6;margin-bottom:.4rem;}
+  .comp .point .a{color:var(--teal);}
+
+  /* check block */
+  .check-block{
+    background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);border-radius:7px;
+    padding:.5rem .85rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--green);margin:.45rem 0;
+  }
+
+  /* ── INTERVIEW ── */
+  .interview{background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.2);border-left:3px solid var(--purple);border-radius:8px;padding:1rem 1.12rem;margin-top:1.05rem;}
+  .int-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.48rem;}
+  .interview p{font-size:.87rem;color:var(--dim);line-height:1.8;font-style:italic;}
+  .followup{background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.15);border-left:3px solid var(--teal);border-radius:8px;padding:.78rem 1rem;margin-top:.78rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--teal);line-height:1.7;}
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}}
+
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  @media(max-width:600px){
+    .card{padding:1.2rem}
+    .wrap{padding:1rem 1rem 3.5rem}
+    .cmp{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Class Teaching Notes</div>
+    <h1><span>setImmediate()</span> – Class Guide</h1>
+    <p>Step-by-step teaching · Tamil + English</p>
+  </div>
+
+  <!-- ════ PART 1 DIVIDER ════ -->
+  <div class="part-div">
+    <div class="part-div-line"></div>
+    <span class="part-div-label teal">Part 1 · setImmediate()</span>
+    <div class="part-div-line"></div>
+  </div>
+
+
+  <!-- ════ STEP 1 ════ -->
+  <div class="shdr c1">
+    <span class="snum">1️⃣ Step 1</span>
+    <span class="stitle">Start With Question</span>
+  </div>
+
+  <div class="card c1">
+    <div class="tag">Class start பண்ணும்போது கேள்:</div>
+    <div class="speech">
+      <span class="ico">🗣️</span>
+      <span>"Code finish ஆன உடனே next task run பண்ணணும்னா எப்படி?"</span>
+    </div>
+
+    <div class="lbl">Example:</div>
+    <div class="flow">
+      <div class="fb teal">current task finish</div>
+      <div class="fa">↓</div>
+      <div class="fb green">next task run immediately</div>
+    </div>
+
+    <div class="hint">
+      <strong>👉 Node.js-ல அதற்கு setImmediate() use பண்ணலாம்.</strong>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 2 ════ -->
+  <div class="shdr c2">
+    <span class="snum">2️⃣ Step 2</span>
+    <span class="stitle">Simple Definition</span>
+  </div>
+
+  <div class="card c2">
+    <div class="tag">Board-ல எழுதணும்:</div>
+    <div class="board">
+      <div class="btitle">Definition</div>
+      👉 setImmediate() = current I/O operations முடிந்த உடனே callback execute பண்ணும்
+    </div>
+
+    <div class="lbl">Simple meaning:</div>
+    <div class="flow">
+      <div class="fb teal">Current task finish</div>
+      <div class="fa">↓</div>
+      <div class="fb green">Immediate callback run</div>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 3 ════ -->
+  <div class="shdr c3">
+    <span class="snum">3️⃣ Step 3</span>
+    <span class="stitle">Basic Syntax</span>
+  </div>
+
+  <div class="card c3">
+    <pre><code><span class="fn">setImmediate</span>(<span class="op">function</span>)</code></pre>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="fn">setImmediate</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Immediate task"</span>)
+})</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <div class="point"><span class="a">👉</span> event loop next cycle-ல run ஆகும்.</div>
+  </div>
+
+
+  <!-- ════ STEP 4 ════ -->
+  <div class="shdr c4">
+    <span class="snum">4️⃣ Step 4</span>
+    <span class="stitle">Simple Example</span>
+  </div>
+
+  <div class="card c4">
+    <pre><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="fn">setImmediate</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Immediate"</span>)
+})
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"End"</span>)</code></pre>
+
+    <div class="out-lbl">Output:</div>
+    <div class="out">Start<br>End<br>Immediate</div>
+
+    <div class="lbl">Explain:</div>
+    <div class="num-list">
+      <div class="num-item"><span class="num-badge">1️⃣</span> Start run</div>
+      <div class="num-item"><span class="num-badge">2️⃣</span> setImmediate register ஆகும்</div>
+      <div class="num-item"><span class="num-badge">3️⃣</span> End run</div>
+      <div class="num-item"><span class="num-badge">4️⃣</span> Event loop → Immediate callback run</div>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 5 ════ -->
+  <div class="shdr c5">
+    <span class="snum">5️⃣ Step 5</span>
+    <span class="stitle">Event Loop Connection</span>
+  </div>
+
+  <div class="card c5">
+    <div class="lbl">Diagram explain:</div>
+    <div class="flow" style="margin-bottom:1.2rem;">
+      <div class="fb blue">Call Stack</div>
+      <div class="fa">↓</div>
+      <div class="fb orange">Node APIs</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">Callback Queue</div>
+      <div class="fa">↓</div>
+      <div class="fb green">Event Loop</div>
+    </div>
+
+    <div class="lbl">Flow:</div>
+    <div class="flow">
+      <div class="fb teal">setImmediate()</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">Callback queue</div>
+      <div class="fa">↓</div>
+      <div class="fb green">Event loop</div>
+      <div class="fa">↓</div>
+      <div class="fb green">execute</div>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 6 ════ -->
+  <div class="shdr c6">
+    <span class="snum">6️⃣ Step 6</span>
+    <span class="stitle">Real Life Example</span>
+  </div>
+
+  <div class="card c6">
+    <div class="tag">Restaurant example:</div>
+    <div class="rest">
+      <div class="rest-title">🍽️ Restaurant Example</div>
+      <div class="rest-flow">
+        <div class="rest-step">Customer bill paid</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">Waiter immediately next order take</div>
+      </div>
+    </div>
+    <div class="point"><span class="a">👉</span> delay இல்லாமல் next task run.</div>
+  </div>
+
+
+  <!-- ════ STEP 7 ════ -->
+  <div class="shdr c7">
+    <span class="snum">7️⃣ Step 7</span>
+    <span class="stitle">Compare With setTimeout(0)</span>
+  </div>
+
+  <div class="card c7">
+    <div class="tag">Important interview point.</div>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="fn">setTimeout</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Timeout"</span>)
+},<span class="num">0</span>)
+
+<span class="fn">setImmediate</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Immediate"</span>)
+})</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <div class="point"><span class="a">👉</span> execution order environment-ஐ பொறுத்து change ஆகலாம்.</div>
+
+    <div class="def">But normally:</div>
+    <div class="out">Immediate<br>Timeout</div>
+
+    <div class="lbl">Reason:</div>
+    <div class="point"><span class="a">👉</span> <code style="font-family:'JetBrains Mono',monospace;color:var(--teal);">setImmediate</code> I/O phase after execute ஆகும்.</div>
+  </div>
+
+
+  <!-- ════ STEP 8 ════ -->
+  <div class="shdr c8">
+    <span class="snum">8️⃣ When setImmediate Used</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c8">
+    <div class="lbl">Examples:</div>
+    <div class="chips">
+      <span class="chip">after I/O operations</span>
+      <span class="chip">background tasks</span>
+      <span class="chip">event loop scheduling</span>
+    </div>
+  </div>
+
+
+  <!-- ════ STEP 9 ════ -->
+  <div class="shdr c9">
+    <span class="snum">9️⃣ Interview Sentence</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c9">
+    <div class="tag">Students memorize:</div>
+    <div class="interview">
+      <div class="int-lbl">⭐ Interview Sentence</div>
+      <p>"setImmediate executes a callback immediately after the current I/O operations are completed."</p>
+    </div>
+    <div class="followup">
+      Difference between process.nextTick() and setImmediate()?
+    </div>
+  </div>
+
+
+  <!-- ════ PART 2 DIVIDER ════ -->
+  <div class="part-div">
+    <div class="part-div-line"></div>
+    <span class="part-div-label purple">Part 2 · I/O & Event Loop Deep Dive</span>
+    <div class="part-div-line"></div>
+  </div>
+
+
+  <!-- ════ 1st — I/O என்ன ════ -->
+  <div class="shdr c1">
+    <span class="snum">1️⃣ First</span>
+    <span class="stitle">I/O என்ன?</span>
+  </div>
+
+  <div class="card c1">
+    <div class="def">I/O = Input / Output<br>Computer வெளியுலகத்துடன் communicate பண்ணும் operations.</div>
+
+    <div class="lbl">Examples:</div>
+    <table>
+      <tr><th>Operation</th><th>Type</th></tr>
+      <tr class="t-io"><td>File read</td>    <td>I/O</td></tr>
+      <tr class="t-io"><td>Database query</td><td>I/O</td></tr>
+      <tr class="t-io"><td>API request</td>  <td>I/O</td></tr>
+      <tr class="t-io"><td>Network request</td><td>I/O</td></tr>
+    </table>
+
+    <div class="lbl">Example code:</div>
+    <pre><code><span class="kw">const</span> <span class="op">fs</span> = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="op">fs</span>.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>,<span class="str">"utf8"</span>,(<span class="op">err</span>,<span class="op">data</span>)=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+})</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <div class="flow" style="margin-bottom:.8rem;">
+      <div class="fb teal">File read → I/O operation</div>
+    </div>
+    <div class="def">ஏன்?</div>
+    <div class="point"><span class="a">👉</span> Node.js disk-ல இருந்து data read பண்ணுது.</div>
+  </div>
+
+
+  <!-- ════ 2nd — Event Loop Flow ════ -->
+  <div class="shdr c2">
+    <span class="snum">2️⃣ Event Loop Flow</span>
+    <span class="stitle">(Simple)</span>
+  </div>
+
+  <div class="card c2">
+    <div class="tag">Board-ல இந்த diagram students-க்கு explain பண்ணு:</div>
+    <div class="flow" style="margin-bottom:1rem;">
+      <div class="fb blue">Call Stack</div>
+      <div class="fa">↓</div>
+      <div class="fb orange">Node APIs</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">Callback Queue</div>
+      <div class="fa">↓</div>
+      <div class="fb green">Event Loop</div>
+    </div>
+    <div class="def">Now step-by-step explain.</div>
+  </div>
+
+
+  <!-- ════ 3rd — Call Stack ════ -->
+  <div class="shdr c3">
+    <span class="snum">3️⃣ Call Stack</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c3">
+    <div class="comp-grid">
+      <div class="comp cs">
+        <div class="comp-hdr">
+          <span class="comp-badge">Call Stack</span>
+          <span class="comp-ttl"></span>
+        </div>
+        <div class="point"><span class="a">👉</span> Current code run ஆகும் place.</div>
+        <div class="lbl">Example:</div>
+        <pre style="margin-bottom:.5rem;"><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello"</span>)</code></pre>
+        <div class="lbl">Flow:</div>
+        <div class="flow">
+          <div class="fb">console.log</div>
+          <div class="fa">↓</div>
+          <div class="fb blue">Call stack execute</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ 4th — Node APIs ════ -->
+  <div class="shdr c4">
+    <span class="snum">4️⃣ Node APIs</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c4">
+    <div class="comp-grid">
+      <div class="comp na">
+        <div class="comp-hdr">
+          <span class="comp-badge">Node APIs</span>
+        </div>
+        <p>Async operations run ஆகும் place.</p>
+        <div class="lbl">Examples:</div>
+        <div class="chips">
+          <span class="chip">setTimeout</span>
+          <span class="chip">fs.readFile</span>
+          <span class="chip">API request</span>
+        </div>
+        <div class="lbl">Example:</div>
+        <pre style="margin-bottom:.5rem;"><code><span class="fn">setTimeout</span>(()=>{},<span class="num">2000</span>)</code></pre>
+        <div class="lbl">Flow:</div>
+        <div class="flow">
+          <div class="fb">setTimeout</div>
+          <div class="fa">↓</div>
+          <div class="fb orange">Node API timer start</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ 5th — Callback Queue ════ -->
+  <div class="shdr c5">
+    <span class="snum">5️⃣ Callback Queue</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c5">
+    <div class="comp-grid">
+      <div class="comp cq">
+        <div class="comp-hdr">
+          <span class="comp-badge">Callback Queue</span>
+        </div>
+        <p>Async task complete ஆன பிறகு<br>callback queue-ல wait பண்ணும்.</p>
+        <div class="lbl">Example callback:</div>
+        <pre style="margin-bottom:.5rem;"><code>()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Async task"</span>)
+}</code></pre>
+        <div class="lbl">Flow:</div>
+        <div class="flow">
+          <div class="fb">Timer finished</div>
+          <div class="fa">↓</div>
+          <div class="fb purple">Callback queue</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ 6th — Event Loop ════ -->
+  <div class="shdr c6">
+    <span class="snum">6️⃣ Event Loop</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c6">
+    <div class="comp-grid">
+      <div class="comp el">
+        <div class="comp-hdr">
+          <span class="comp-badge">Event Loop</span>
+        </div>
+        <p>Event loop continuously check பண்ணும்:</p>
+        <div class="check-block">Call stack empty ?</div>
+        <div class="lbl">If YES:</div>
+        <div class="flow">
+          <div class="fb purple">Queue → Call stack</div>
+        </div>
+        <div class="point" style="margin-top:.6rem;"><span class="a"></span> callback execute ஆகும்.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ 7th — Example Code ════ -->
+  <div class="shdr c7">
+    <span class="snum">7️⃣ Example Code</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c7">
+    <pre><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="fn">setTimeout</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Timer done"</span>)
+},<span class="num">2000</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"End"</span>)</code></pre>
+
+    <div class="lbl">Execution:</div>
+    <div class="exec-list">
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 1</div>
+        <div class="out" style="margin-bottom:0;">Start</div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 2</div>
+        <div class="hint" style="margin:0;"><strong>setTimeout → Node API</strong></div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 3</div>
+        <div class="out" style="margin-bottom:0;">End</div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 4 (2 seconds later)</div>
+        <div class="hint" style="margin:0;"><strong>callback → queue</strong></div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 5</div>
+        <div class="hint-green" style="margin:0;"><strong>event loop → execute</strong></div>
+      </div>
+    </div>
+
+    <div class="lbl" style="margin-top:.9rem;">Output:</div>
+    <div class="out">Start<br>End<br>Timer done</div>
+  </div>
+
+
+  <!-- ════ 8th — setImmediate Flow ════ -->
+  <div class="shdr c8">
+    <span class="snum">8️⃣ Now setImmediate Flow</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c8">
+    <div class="lbl">Code:</div>
+    <pre><code><span class="fn">setImmediate</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Immediate task"</span>)
+})</code></pre>
+
+    <div class="lbl">Flow:</div>
+    <div class="flow">
+      <div class="fb teal">setImmediate registered</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">callback queue</div>
+      <div class="fa">↓</div>
+      <div class="fb cyan">event loop check</div>
+      <div class="fa">↓</div>
+      <div class="fb green">execute</div>
+    </div>
+
+    <div class="lbl">Meaning:</div>
+    <div class="point"><span class="a">👉</span> current code finish ஆன உடனே next cycle-ல run ஆகும்.</div>
+  </div>
+
+
+  <!-- ════ 9th — Visual Flow ════ -->
+  <div class="shdr c9">
+    <span class="snum">9️⃣ Visual Flow</span>
+    <span class="stitle">(Students Easy)</span>
+  </div>
+
+  <div class="card c9">
+    <div class="flow">
+      <div class="fb green">Code run</div>
+      <div class="fa">↓</div>
+      <div class="fb orange">Async task → Node API</div>
+      <div class="fa">↓</div>
+      <div class="fb teal">Task complete</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">Callback queue</div>
+      <div class="fa">↓</div>
+      <div class="fb cyan">Event loop</div>
+      <div class="fa">↓</div>
+      <div class="fb green">Execute</div>
+    </div>
+  </div>
+
+
+  <!-- ════ 10th — Real Life ════ -->
+  <div class="shdr c10">
+    <span class="snum">🔟 Simple Real Life Example</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c10">
+    <div class="tag">Restaurant:</div>
+    <div class="rest">
+      <div class="rest-title">🍽️ Restaurant Example</div>
+      <div class="rest-flow">
+        <div class="rest-step">Customer order</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">Chef cooking</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">Food ready</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">Waiter serve</div>
+      </div>
+      <div class="point"><span class="a"></span> Waiter cooking wait பண்ண மாட்டான்.</div>
+      <div class="point"><span class="a">👉</span> next customer attend பண்ணுவான்.</div>
+    </div>
+    <div class="hint-green">
+      <strong>இதுதான் Node.js event loop idea.</strong>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

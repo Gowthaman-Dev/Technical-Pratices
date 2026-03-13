@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Promises – Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0d12;
+    --surface: #0f1117;
+    --card: #14171f;
+    --border: #1e2232;
+    --green:  #4ade80;
+    --cyan:   #22d3ee;
+    --yellow: #fbbf24;
+    --orange: #fb923c;
+    --pink:   #f472b6;
+    --purple: #a78bfa;
+    --red:    #f87171;
+    --blue:   #60a5fa;
+    --teal:   #2dd4bf;
+    --text:   #dde3f0;
+    --muted:  #424868;
+    --dim:    #8490b0;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans Tamil','JetBrains Mono',monospace;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:'';
+    position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(74,222,128,0.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(74,222,128,0.018) 1px,transparent 1px);
+    background-size:38px 38px;
+    pointer-events:none;z-index:0;
+  }
+
+  .wrap{
+    position:relative;z-index:1;
+    max-width:980px;margin:0 auto;
+    padding:2rem 1.5rem 5rem;
+  }
+
+  /* ── HEADER ── */
+  .header{
+    text-align:center;
+    padding:3rem 0 2.5rem;
+    animation:fadeDown .6s ease both;
+  }
+  .badge{
+    display:inline-block;
+    background:rgba(74,222,128,.1);
+    border:1px solid rgba(74,222,128,.25);
+    color:var(--green);
+    font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    padding:.28rem 1rem;border-radius:100px;margin-bottom:1.1rem;
+  }
+  .header h1{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(1.9rem,4.5vw,2.8rem);
+    font-weight:700;color:#fff;line-height:1.1;margin-bottom:.5rem;
+  }
+  .header h1 span{color:var(--yellow);}
+  .header p{font-size:.88rem;color:var(--dim);}
+
+  /* ── STEP HEADER ── */
+  .step-hdr{
+    display:flex;align-items:center;gap:.9rem;
+    margin:2.4rem 0 1rem;
+    animation:fadeUp .45s ease both;
+  }
+  .step-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.64rem;font-weight:700;
+    padding:.24rem .6rem;border-radius:6px;white-space:nowrap;
+  }
+  .s1 .step-num{background:rgba(248,113,113,.14);color:var(--red);   border:1px solid rgba(248,113,113,.25);}
+  .s2 .step-num{background:rgba(251,191,36,.14); color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+  .s3 .step-num{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.25);}
+  .s4 .step-num{background:rgba(96,165,250,.14); color:var(--blue);  border:1px solid rgba(96,165,250,.25);}
+  .s5 .step-num{background:rgba(34,211,238,.14); color:var(--cyan);  border:1px solid rgba(34,211,238,.25);}
+  .s6 .step-num{background:rgba(251,146,60,.14); color:var(--orange);border:1px solid rgba(251,146,60,.25);}
+  .s7 .step-num{background:rgba(167,139,250,.14);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+  .s8 .step-num{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.25);}
+
+  .step-title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:1.05rem;font-weight:700;color:#fff;
+  }
+
+  /* ── CARD ── */
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1.6rem 1.8rem;
+    margin-bottom:1rem;
+    animation:fadeUp .45s ease both;
+    overflow:hidden;
+  }
+  .card.s1{border-top:2px solid var(--red);}
+  .card.s2{border-top:2px solid var(--yellow);}
+  .card.s3{border-top:2px solid var(--green);}
+  .card.s4{border-top:2px solid var(--blue);}
+  .card.s5{border-top:2px solid var(--cyan);}
+  .card.s6{border-top:2px solid var(--orange);}
+  .card.s7{border-top:2px solid var(--purple);}
+  .card.s8{border-top:2px solid var(--green);}
+
+  /* ── HELPERS ── */
+  .tag{
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    background:var(--surface);border:1px solid var(--border);
+    padding:.18rem .6rem;border-radius:100px;margin-bottom:.75rem;
+    letter-spacing:.05em;
+  }
+
+  .def{
+    background:rgba(255,255,255,.025);
+    border:1px solid var(--border);border-radius:8px;
+    padding:.85rem 1.05rem;
+    font-size:.86rem;color:var(--dim);line-height:1.85;
+    margin-bottom:.9rem;
+  }
+  .def strong{color:var(--text);}
+  .def .arr{color:var(--green);font-family:'JetBrains Mono',monospace;}
+
+  .point{
+    display:flex;align-items:flex-start;gap:.5rem;
+    font-size:.84rem;color:var(--dim);line-height:1.65;
+    margin-bottom:.45rem;
+  }
+  .point .a{color:var(--green);font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+  .point .icon{flex-shrink:0;}
+
+  .lbl{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.1em;
+    margin:.9rem 0 .35rem;
+  }
+
+  /* ── CODE ── */
+  pre{
+    background:#07090f;
+    border:1px solid var(--border);border-radius:8px;
+    padding:1.05rem 1.25rem;
+    overflow-x:auto;margin-bottom:.85rem;tab-size:2;
+  }
+  code{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.8rem;line-height:1.9;color:#bec8e0;
+  }
+  .kw {color:#f97316;}
+  .fn {color:#60a5fa;}
+  .str{color:#86efac;}
+  .num{color:#c084fc;}
+  .op {color:#dde3f0;}
+  .cm {color:#323a55;font-style:italic;}
+
+  /* ── OUTPUT ── */
+  .out-lbl{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.61rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.1em;
+    margin-bottom:.28rem;
+  }
+  .out{
+    background:#060810;
+    border:1px solid var(--border);
+    border-left:3px solid var(--green);
+    border-radius:6px;
+    padding:.7rem 1.05rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.8rem;color:var(--green);line-height:1.9;
+    margin-bottom:.85rem;
+  }
+
+  /* ── FLOW (vertical) ── */
+  .flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin:.75rem 0;}
+  .fb{
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);border-radius:7px;
+    padding:.4rem .95rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.77rem;color:var(--text);min-width:160px;text-align:center;
+  }
+  .fa{
+    color:var(--green);font-family:'JetBrains Mono',monospace;
+    font-size:.85rem;padding:.15rem 0 .15rem 1.3rem;line-height:1;
+  }
+
+  /* flow with colour */
+  .fb.yellow{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.2);color:var(--yellow);}
+  .fb.green {background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.2);color:var(--green);}
+  .fb.red   {background:rgba(248,113,113,.07);border-color:rgba(248,113,113,.2);color:var(--red);}
+  .fb.cyan  {background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.2);color:var(--cyan);}
+
+  /* ── STATE TABLE ── */
+  table{
+    width:100%;border-collapse:collapse;
+    font-size:.82rem;margin:.75rem 0;
+  }
+  th{
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);
+    padding:.55rem 1rem;text-align:left;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.65rem;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted);
+  }
+  td{
+    border:1px solid var(--border);
+    padding:.55rem 1rem;color:var(--dim);line-height:1.55;
+  }
+  td:first-child{font-family:'JetBrains Mono',monospace;font-weight:600;}
+
+  /* state colours */
+  .t-pending td:first-child{color:var(--yellow);}
+  .t-fulfilled td:first-child{color:var(--green);}
+  .t-rejected td:first-child{color:var(--red);}
+
+  /* word table */
+  .t-word td:first-child{color:var(--cyan);}
+
+  /* method table */
+  .t-method td:first-child{color:var(--blue);}
+
+  tr:hover td{background:rgba(255,255,255,.018);}
+
+  /* ── PROBLEM BOX ── */
+  .prob{
+    background:rgba(248,113,113,.05);
+    border:1px solid rgba(248,113,113,.18);border-radius:8px;
+    padding:1rem 1.1rem;margin:.8rem 0;
+  }
+  .prob-item{
+    display:flex;align-items:center;gap:.5rem;
+    font-size:.83rem;color:var(--dim);line-height:1.7;
+  }
+  .prob-item::before{content:'✗';color:var(--red);font-family:'JetBrains Mono';flex-shrink:0;}
+
+  /* ── HINT ── */
+  .hint{
+    background:rgba(74,222,128,.05);
+    border:1px solid rgba(74,222,128,.18);
+    border-left:3px solid var(--green);
+    border-radius:8px;
+    padding:.8rem 1rem;
+    font-size:.86rem;color:var(--dim);line-height:1.75;
+    margin:.8rem 0;
+  }
+  .hint strong{color:var(--green);}
+
+  /* ── FOOD ORDER ── */
+  .food{
+    background:rgba(251,191,36,.04);
+    border:1px solid rgba(251,191,36,.15);
+    border-radius:10px;padding:1.1rem 1.3rem;margin:.8rem 0;
+  }
+  .food-title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.63rem;color:var(--yellow);
+    text-transform:uppercase;letter-spacing:.1em;margin-bottom:.9rem;
+  }
+  .food-flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-bottom:.9rem;}
+  .food-step{
+    background:rgba(251,191,36,.08);
+    border:1px solid rgba(251,191,36,.18);border-radius:7px;
+    padding:.38rem .9rem;
+    font-family:'JetBrains Mono',monospace;font-size:.77rem;color:var(--yellow);
+    min-width:130px;text-align:center;
+  }
+  .food-arr{color:var(--yellow);font-size:.85rem;padding:.14rem 0 .14rem 1.2rem;line-height:1;font-family:'JetBrains Mono',monospace;}
+
+  /* ── ORDER STATES ── */
+  .order-states{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0;}
+  .os{
+    display:flex;align-items:center;gap:.45rem;
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--border);border-radius:7px;
+    padding:.4rem .8rem;font-size:.8rem;color:var(--dim);
+  }
+  .os .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .os.pending .dot{background:var(--yellow);}
+  .os.fulfilled .dot{background:var(--green);}
+  .os.rejected .dot{background:var(--red);}
+
+  /* ── COMPARISON ── */
+  .cmp{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1rem;margin:.8rem 0;
+  }
+  .cmp-col{
+    background:rgba(255,255,255,.025);
+    border:1px solid var(--border);border-radius:9px;
+    padding:1rem 1.1rem;
+  }
+  .cmp-title{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.08em;
+    margin-bottom:.8rem;
+  }
+  .cmp-col:first-child .cmp-title{color:var(--red);}
+  .cmp-col:last-child  .cmp-title{color:var(--green);}
+
+  /* ── ADV GRID ── */
+  .adv{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+    gap:.5rem;margin:.75rem 0;
+  }
+  .adv-card{
+    background:rgba(255,255,255,.03);
+    border:1px solid var(--border);border-radius:8px;
+    padding:.75rem .9rem;font-size:.81rem;color:var(--dim);line-height:1.5;
+  }
+  .adv-card .ico{font-size:1rem;display:block;margin-bottom:.28rem;}
+
+  /* ── INTERVIEW ── */
+  .interview{
+    background:rgba(167,139,250,.05);
+    border:1px solid rgba(167,139,250,.2);
+    border-left:3px solid var(--purple);
+    border-radius:8px;padding:1rem 1.15rem;margin-top:1.1rem;
+  }
+  .int-lbl{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--purple);
+    letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;
+  }
+  .interview p{font-size:.87rem;color:var(--dim);line-height:1.8;font-style:italic;}
+
+  /* follow-up */
+  .followup{
+    background:rgba(34,211,238,.05);
+    border:1px solid rgba(34,211,238,.18);
+    border-left:3px solid var(--cyan);
+    border-radius:8px;padding:.8rem 1rem;margin-top:.8rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.78rem;color:var(--cyan);line-height:1.7;
+  }
+
+  /* ── DIVIDER ── */
+  hr{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}}
+
+  /* delay stagger */
+  .card:nth-child(1){animation-delay:.04s}
+  .card:nth-child(2){animation-delay:.08s}
+  .card:nth-child(3){animation-delay:.12s}
+  .card:nth-child(4){animation-delay:.16s}
+  .card:nth-child(5){animation-delay:.20s}
+  .card:nth-child(6){animation-delay:.24s}
+  .card:nth-child(7){animation-delay:.28s}
+  .card:nth-child(8){animation-delay:.32s}
+
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  @media(max-width:600px){
+    .card{padding:1.2rem}
+    .wrap{padding:1rem 1rem 3.5rem}
+    .cmp{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Class Teaching Notes</div>
+    <h1><span>Promises</span> – Class Guide</h1>
+    <p>Step-by-step teaching · Tamil + English</p>
+  </div>
+
+  <!-- ══════════════════════════
+       STEP 1 – Callback Problem Recall
+       ══════════════════════════ -->
+  <div class="step-hdr s1">
+    <span class="step-num">1️⃣ Step 1</span>
+    <span class="step-title">Callback Problem Recall</span>
+  </div>
+
+  <div class="card s1">
+    <div class="tag">First students-க்கு இந்த code remind பண்ணு.</div>
+
+    <pre><code><span class="fn">login</span>(<span class="op">user</span>,<span class="kw">function</span>(){
+  <span class="fn">getData</span>(<span class="kw">function</span>(){
+    <span class="fn">updateData</span>(<span class="kw">function</span>(){
+      <span class="fn">saveData</span>(<span class="kw">function</span>(){
+      })
+    })
+  })
+})</code></pre>
+
+    <div class="tag">Board-ல diagram draw பண்ணு:</div>
+    <div class="flow" style="margin-bottom:1rem;">
+      <div class="fb">login</div>
+      <div class="fa">↓</div>
+      <div class="fb">getData</div>
+      <div class="fa">↓</div>
+      <div class="fb">updateData</div>
+      <div class="fa">↓</div>
+      <div class="fb">saveData</div>
+    </div>
+
+    <div class="lbl">Explain:</div>
+    <div class="point"><span class="a">👉</span> இது Callback Hell</div>
+
+    <div class="lbl">Problems:</div>
+    <div class="prob">
+      <div class="prob-item">code messy</div>
+      <div class="prob-item">debugging difficult</div>
+      <div class="prob-item">maintain difficult</div>
+    </div>
+
+    <div class="hint">
+      <span class="a">👉</span> <strong>இதை solve பண்ண Promises use பண்ணுறோம்.</strong>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 2 – Simple Meaning
+       ══════════════════════════ -->
+  <div class="step-hdr s2">
+    <span class="step-num">2️⃣ Step 2</span>
+    <span class="step-title">Simple Meaning</span>
+  </div>
+
+  <div class="card s2">
+    <div class="tag">Board-ல simple definition:</div>
+    <div class="def">
+      <strong class="arr">👉</strong> Promise = future result
+    </div>
+
+    <div class="tag">Real life example: Food order example</div>
+    <div class="food">
+      <div class="food-title">🍽️ Food Order Example</div>
+      <div class="food-flow">
+        <div class="food-step">Order food</div>
+        <div class="food-arr">↓</div>
+        <div class="food-step">Wait</div>
+        <div class="food-arr">↓</div>
+        <div class="food-step">Food ready</div>
+      </div>
+    </div>
+
+    <div class="lbl">States explain:</div>
+    <table>
+      <tr><th>State</th><th>Meaning</th></tr>
+      <tr class="t-pending">  <td>Pending</td>  <td>operation running</td></tr>
+      <tr class="t-fulfilled"><td>Fulfilled</td><td>success</td></tr>
+      <tr class="t-rejected"> <td>Rejected</td> <td>error</td></tr>
+    </table>
+
+    <div class="lbl">Example:</div>
+    <div class="order-states">
+      <div class="os pending">  <span class="dot"></span> Order placed → Pending</div>
+      <div class="os fulfilled"><span class="dot"></span> Food delivered → Fulfilled</div>
+      <div class="os rejected"> <span class="dot"></span> Restaurant closed → Rejected</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 3 – Promise Syntax
+       ══════════════════════════ -->
+  <div class="step-hdr s3">
+    <span class="step-num">3️⃣ Step 3</span>
+    <span class="step-title">Promise Syntax</span>
+  </div>
+
+  <div class="card s3">
+    <div class="tag">Students-க்கு basic syntax show பண்ணு.</div>
+
+    <pre><code><span class="kw">const</span> <span class="op">promise</span> = <span class="kw">new</span> <span class="fn">Promise</span>((<span class="op">resolve</span>,<span class="op">reject</span>)=>{
+  <span class="kw">if</span>(<span class="kw">true</span>){
+    <span class="fn">resolve</span>(<span class="str">"Success"</span>)
+  }
+  <span class="kw">else</span>{
+    <span class="fn">reject</span>(<span class="str">"Error"</span>)
+  }
+})</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <table>
+      <tr><th>Word</th><th>Meaning</th></tr>
+      <tr class="t-word"><td>Promise</td> <td>async task</td></tr>
+      <tr class="t-word"><td>resolve</td> <td>success result</td></tr>
+      <tr class="t-word"><td>reject</td>  <td>error</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 4 – Using Promise
+       ══════════════════════════ -->
+  <div class="step-hdr s4">
+    <span class="step-num">4️⃣ Step 4</span>
+    <span class="step-title">Using Promise</span>
+  </div>
+
+  <div class="card s4">
+    <pre><code><span class="op">promise</span>
+.<span class="fn">then</span>(<span class="op">result</span>=>{
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">result</span>)
+})
+.<span class="fn">catch</span>(<span class="op">error</span>=>{
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">error</span>)
+})</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <table>
+      <tr><th>Method</th><th>Purpose</th></tr>
+      <tr class="t-method"><td>then()</td> <td>success handle</td></tr>
+      <tr class="t-method"><td>catch()</td><td>error handle</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 5 – Real Async Example
+       ══════════════════════════ -->
+  <div class="step-hdr s5">
+    <span class="step-num">5️⃣ Step 5</span>
+    <span class="step-title">Real Async Example</span>
+  </div>
+
+  <div class="card s5">
+    <pre><code><span class="kw">const</span> <span class="op">fetchData</span> = <span class="kw">new</span> <span class="fn">Promise</span>((<span class="op">resolve</span>,<span class="op">reject</span>)=>{
+  <span class="fn">setTimeout</span>(()=>{
+    <span class="fn">resolve</span>(<span class="str">"Data received"</span>)
+  },<span class="num">2000</span>)
+})
+
+<span class="op">fetchData</span>
+.<span class="fn">then</span>(<span class="op">data</span>=><span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>))
+.<span class="fn">catch</span>(<span class="op">err</span>=><span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>))</code></pre>
+
+    <div class="lbl">Explain flow:</div>
+    <div class="flow">
+      <div class="fb cyan">start</div>
+      <div class="fa">↓</div>
+      <div class="fb">2 seconds wait</div>
+      <div class="fa">↓</div>
+      <div class="fb green">resolve()</div>
+      <div class="fa">↓</div>
+      <div class="fb green">then() run</div>
+      <div class="fa">↓</div>
+      <div class="fb green">Data received</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 6 – Promise vs Callback
+       ══════════════════════════ -->
+  <div class="step-hdr s6">
+    <span class="step-num">6️⃣ Step 6</span>
+    <span class="step-title">Promise vs Callback</span>
+  </div>
+
+  <div class="card s6">
+    <div class="tag">Board-ல comparison எழுதணும்.</div>
+
+    <table>
+      <tr><th>Callback</th><th>Promise</th></tr>
+      <tr><td style="color:var(--red);">nested functions</td><td style="color:var(--green);">chaining</td></tr>
+      <tr><td style="color:var(--red);">messy code</td>     <td style="color:var(--green);">clean code</td></tr>
+      <tr><td style="color:var(--red);">hard debugging</td> <td style="color:var(--green);">easy debugging</td></tr>
+    </table>
+
+    <div class="lbl">Example:</div>
+    <div class="cmp">
+      <div class="cmp-col">
+        <div class="cmp-title">Callback:</div>
+        <pre style="margin-bottom:0;"><code><span class="fn">login</span>(()=>{
+ <span class="fn">getData</span>(()=>{
+  <span class="fn">updateData</span>(()=>{
+  })
+ })
+})</code></pre>
+      </div>
+      <div class="cmp-col">
+        <div class="cmp-title">Promise:</div>
+        <pre style="margin-bottom:0;"><code><span class="fn">login</span>()
+.<span class="fn">then</span>(<span class="op">getData</span>)
+.<span class="fn">then</span>(<span class="op">updateData</span>)
+.<span class="fn">then</span>(<span class="op">saveData</span>)</code></pre>
+      </div>
+    </div>
+
+    <div class="hint"><strong>👉 Code clean ஆகும்.</strong></div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 7 – Advantages
+       ══════════════════════════ -->
+  <div class="step-hdr s7">
+    <span class="step-num">7️⃣ Advantages</span>
+    <span class="step-title"></span>
+  </div>
+
+  <div class="card s7">
+    <div class="tag">Students-க்கு short-ஆ சொல்லு.</div>
+    <div class="adv">
+      <div class="adv-card"><span class="ico">✅</span>Callback hell avoid</div>
+      <div class="adv-card"><span class="ico">📖</span>Code readable</div>
+      <div class="adv-card"><span class="ico">🛡️</span>Better error handling</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 8 – Interview Sentence
+       ══════════════════════════ -->
+  <div class="step-hdr s8">
+    <span class="step-num">8️⃣ Interview Sentence</span>
+    <span class="step-title"></span>
+  </div>
+
+  <div class="card s8">
+    <div class="tag">Students memorize:</div>
+    <div class="interview">
+      <div class="int-lbl">⭐ Interview Sentence</div>
+      <p>"A Promise is an object that represents the eventual completion or failure of an asynchronous operation."</p>
+    </div>
+
+    <div class="followup">
+      👉 "Difference between Promise and Async/Await?"
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>setTimeout / setInterval – Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#09080e;
+    --surface:#0e0c15;
+    --card:#121019;
+    --border:#1c1929;
+    --green:#4ade80;
+    --cyan:#22d3ee;
+    --yellow:#fbbf24;
+    --orange:#fb923c;
+    --pink:#f472b6;
+    --purple:#a78bfa;
+    --red:#f87171;
+    --blue:#60a5fa;
+    --teal:#2dd4bf;
+    --text:#dde3f0;
+    --muted:#3a3550;
+    --dim:#7d7da8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Noto Sans Tamil','JetBrains Mono',monospace;
+    min-height:100vh;overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(167,139,250,.015) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(167,139,250,.015) 1px,transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;z-index:0;
+  }
+  .wrap{
+    position:relative;z-index:1;
+    max-width:980px;margin:0 auto;
+    padding:2rem 1.5rem 5rem;
+  }
+
+  /* ── HEADER ── */
+  .header{text-align:center;padding:3rem 0 2.5rem;animation:fadeDown .6s ease both;}
+  .badge{
+    display:inline-block;
+    background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.28);
+    color:var(--purple);font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    padding:.28rem 1rem;border-radius:100px;margin-bottom:1.1rem;
+  }
+  .header h1{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(1.7rem,4vw,2.7rem);
+    font-weight:700;color:#fff;line-height:1.15;margin-bottom:.5rem;
+  }
+  .header h1 .t1{color:var(--orange);}
+  .header h1 .t2{color:var(--pink);}
+  .header p{font-size:.88rem;color:var(--dim);}
+
+  /* ── STEP HEADER ── */
+  .shdr{
+    display:flex;align-items:center;gap:.9rem;
+    margin:2.4rem 0 1rem;animation:fadeUp .45s ease both;
+  }
+  .snum{
+    font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:700;
+    padding:.24rem .6rem;border-radius:6px;white-space:nowrap;
+  }
+  .c1  .snum{background:rgba(96,165,250,.14); color:var(--blue);  border:1px solid rgba(96,165,250,.28);}
+  .c2  .snum{background:rgba(251,146,60,.14); color:var(--orange);border:1px solid rgba(251,146,60,.28);}
+  .c3  .snum{background:rgba(34,211,238,.14); color:var(--cyan);  border:1px solid rgba(34,211,238,.28);}
+  .c4  .snum{background:rgba(244,114,182,.14);color:var(--pink);  border:1px solid rgba(244,114,182,.28);}
+  .c5  .snum{background:rgba(248,113,113,.14);color:var(--red);   border:1px solid rgba(248,113,113,.28);}
+  .c6  .snum{background:rgba(251,191,36,.14); color:var(--yellow);border:1px solid rgba(251,191,36,.28);}
+  .c7  .snum{background:rgba(45,212,191,.14); color:var(--teal);  border:1px solid rgba(45,212,191,.28);}
+  .c8  .snum{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.28);}
+  .c9  .snum{background:rgba(167,139,250,.14);color:var(--purple);border:1px solid rgba(167,139,250,.28);}
+  .stitle{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;color:#fff;}
+
+  /* ── CARD ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:1.6rem 1.8rem;
+    margin-bottom:1rem;overflow:hidden;
+    animation:fadeUp .45s ease both;
+  }
+  .card.c1{border-top:2px solid var(--blue);}
+  .card.c2{border-top:2px solid var(--orange);}
+  .card.c3{border-top:2px solid var(--cyan);}
+  .card.c4{border-top:2px solid var(--pink);}
+  .card.c5{border-top:2px solid var(--red);}
+  .card.c6{border-top:2px solid var(--yellow);}
+  .card.c7{border-top:2px solid var(--teal);}
+  .card.c8{border-top:2px solid var(--green);}
+  .card.c9{border-top:2px solid var(--purple);}
+
+  /* ── UTILS ── */
+  .tag{
+    display:inline-block;font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    background:var(--surface);border:1px solid var(--border);
+    padding:.18rem .6rem;border-radius:100px;margin-bottom:.75rem;letter-spacing:.05em;
+  }
+  .lbl{
+    font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.1em;margin:.9rem 0 .35rem;
+  }
+  .def{
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
+    padding:.85rem 1.05rem;font-size:.86rem;color:var(--dim);line-height:1.85;margin-bottom:.9rem;
+  }
+  .def strong{color:var(--text);}
+  .point{
+    display:flex;align-items:flex-start;gap:.5rem;
+    font-size:.84rem;color:var(--dim);line-height:1.65;margin-bottom:.45rem;
+  }
+  .point .a{color:var(--orange);font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+
+  /* ── CODE ── */
+  pre{
+    background:#060510;border:1px solid var(--border);border-radius:8px;
+    padding:1.05rem 1.25rem;overflow-x:auto;margin-bottom:.85rem;tab-size:2;
+  }
+  code{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.9;color:#bec0e0;}
+  .kw {color:#f97316;}
+  .fn {color:#60a5fa;}
+  .str{color:#86efac;}
+  .num{color:#c084fc;}
+  .op {color:#dde3f0;}
+  .cm {color:#343050;font-style:italic;}
+
+  /* ── OUTPUT ── */
+  .out-lbl{font-family:'JetBrains Mono',monospace;font-size:.61rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.28rem;}
+  .out{
+    background:#040410;border:1px solid var(--border);
+    border-left:3px solid var(--green);border-radius:6px;
+    padding:.7rem 1.05rem;
+    font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);line-height:1.9;
+    margin-bottom:.85rem;
+  }
+  .out .repeat{color:var(--dim);}
+
+  /* ── HINT / BOARD ── */
+  .hint{
+    background:rgba(251,146,60,.05);border:1px solid rgba(251,146,60,.18);
+    border-left:3px solid var(--orange);border-radius:8px;
+    padding:.8rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.8rem 0;
+  }
+  .hint strong{color:var(--orange);}
+  .hint-green{
+    background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.18);
+    border-left:3px solid var(--green);border-radius:8px;
+    padding:.8rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.8rem 0;
+  }
+  .hint-green strong{color:var(--green);}
+
+  .board{
+    background:rgba(251,146,60,.04);border:1px solid rgba(251,146,60,.15);
+    border-left:3px solid var(--orange);border-radius:8px;
+    padding:.85rem 1.05rem;margin:.75rem 0;
+    font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--orange);line-height:2;
+  }
+  .board .btitle{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;}
+
+  .board-pink{
+    background:rgba(244,114,182,.04);border:1px solid rgba(244,114,182,.15);
+    border-left:3px solid var(--pink);border-radius:8px;
+    padding:.85rem 1.05rem;margin:.75rem 0;
+    font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--pink);line-height:2;
+  }
+  .board-pink .btitle{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;}
+
+  /* ── SPEECH ── */
+  .speech{
+    display:flex;align-items:flex-start;gap:.7rem;
+    background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.15);
+    border-left:3px solid var(--blue);border-radius:8px;
+    padding:.9rem 1.1rem;margin-bottom:1rem;font-size:.87rem;color:var(--dim);line-height:1.75;
+  }
+  .speech .ico{font-size:1rem;flex-shrink:0;margin-top:.05rem;}
+
+  /* ── CHIPS ── */
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0;}
+  .chip{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;
+    padding:.25rem .7rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--dim);
+  }
+
+  /* ── TABLE ── */
+  table{width:100%;border-collapse:collapse;font-size:.82rem;margin:.75rem 0;}
+  th{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);
+    padding:.55rem 1rem;text-align:left;
+    font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  }
+  td{border:1px solid var(--border);padding:.55rem 1rem;color:var(--dim);line-height:1.55;}
+  td:first-child{font-family:'JetBrains Mono',monospace;font-weight:600;}
+  .t-part  td:first-child{color:var(--orange);}
+  .t-diff1 td:first-child{color:var(--orange);}
+  .t-diff2 td:first-child{color:var(--pink);}
+  tr:hover td{background:rgba(255,255,255,.018);}
+
+  /* ── MS BOX ── */
+  .ms-box{
+    display:flex;gap:.5rem;flex-wrap:wrap;margin:.75rem 0;
+  }
+  .ms-pill{
+    background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);
+    border-radius:7px;padding:.4rem 1rem;
+    font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--purple);
+    text-align:center;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline{
+    display:flex;flex-direction:column;gap:0;margin:.8rem 0;
+  }
+  .tl-row{
+    display:flex;align-items:center;gap:.75rem;
+    padding:.45rem 0;
+    border-bottom:1px solid var(--border);
+  }
+  .tl-row:last-child{border-bottom:none;}
+  .tl-sec{
+    font-family:'JetBrains Mono',monospace;font-size:.72rem;
+    background:rgba(244,114,182,.1);color:var(--pink);
+    border:1px solid rgba(244,114,182,.2);
+    padding:.18rem .55rem;border-radius:5px;
+    min-width:90px;text-align:center;flex-shrink:0;
+  }
+  .tl-stop{
+    background:rgba(248,113,113,.1);color:var(--red);
+    border:1px solid rgba(248,113,113,.2);
+  }
+  .tl-label{font-size:.83rem;color:var(--dim);}
+  .tl-label code{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--green);}
+  .tl-label .stop-txt{color:var(--red);}
+
+  /* ── FLOW (vertical) ── */
+  .flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin:.75rem 0;}
+  .fb{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;
+    padding:.4rem .95rem;font-family:'JetBrains Mono',monospace;
+    font-size:.77rem;color:var(--text);min-width:180px;text-align:center;
+  }
+  .fa{color:var(--purple);font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.15rem 0 .15rem 1.3rem;line-height:1;}
+  .fb.orange{background:rgba(251,146,60,.07);border-color:rgba(251,146,60,.2);color:var(--orange);}
+  .fb.green {background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.2);color:var(--green);}
+  .fb.purple{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.2);color:var(--purple);}
+  .fb.cyan  {background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.2);color:var(--cyan);}
+  .fb.pink  {background:rgba(244,114,182,.07);border-color:rgba(244,114,182,.2);color:var(--pink);}
+
+  /* ── COMPARISON ── */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.8rem 0;}
+  .cmp-col{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:9px;padding:1rem 1.1rem;}
+  .cmp-title{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;}
+  .cmp-col:first-child .cmp-title{color:var(--orange);}
+  .cmp-col:last-child  .cmp-title{color:var(--pink);}
+
+  /* ── ALARM ── */
+  .alarm{
+    background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.15);border-radius:10px;
+    padding:1.1rem 1.3rem;margin:.8rem 0;
+  }
+  .alarm-title{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--teal);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.9rem;}
+  .alarm-row{display:flex;flex-direction:column;gap:.5rem;}
+  .alarm-item{
+    display:flex;align-items:center;gap:.75rem;
+    background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.12);border-radius:7px;
+    padding:.5rem .9rem;
+  }
+  .alarm-icon{font-size:1.1rem;flex-shrink:0;}
+  .alarm-item span{font-size:.84rem;color:var(--dim);}
+  .alarm-item code{font-family:'JetBrains Mono',monospace;font-size:.79rem;color:var(--teal);}
+
+  /* ── EVENT LOOP CONNECTION ── */
+  .elc{
+    background:rgba(74,222,128,.04);border:1px solid rgba(74,222,128,.15);border-radius:10px;
+    padding:1.1rem 1.3rem;margin:.8rem 0;
+  }
+  .elc-title{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--green);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.9rem;}
+
+  /* ── INTERVIEW ── */
+  .interview{background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.2);border-left:3px solid var(--purple);border-radius:8px;padding:1rem 1.15rem;margin-top:1.1rem;}
+  .int-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
+  .interview p{font-size:.87rem;color:var(--dim);line-height:1.8;font-style:italic;}
+
+  .followup{
+    background:rgba(251,146,60,.04);border:1px solid rgba(251,146,60,.15);
+    border-left:3px solid var(--orange);border-radius:8px;
+    padding:.8rem 1rem;margin-top:.8rem;
+    font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--orange);line-height:1.7;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}}
+
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  @media(max-width:600px){
+    .card{padding:1.2rem}
+    .wrap{padding:1rem 1rem 3.5rem}
+    .cmp{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Class Teaching Notes</div>
+    <h1><span class="t1">setTimeout</span> / <span class="t2">setInterval</span></h1>
+    <p>Step-by-step teaching · Tamil + English</p>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 1 – Start With Real Question
+       ════════════════════════════ -->
+  <div class="shdr c1">
+    <span class="snum">1️⃣ Step 1</span>
+    <span class="stitle">Start With Real Question</span>
+  </div>
+
+  <div class="card c1">
+    <div class="tag">Class-ல first question கேள்:</div>
+    <div class="speech">
+      <span class="ico">🗣️</span>
+      <span>"ஒரு function-ஐ 5 seconds கழித்து run பண்ணணும்னா எப்படி?"</span>
+    </div>
+
+    <div class="def">Students usually answer தெரியாது.</div>
+
+    <div class="hint">
+      <strong>👉 JavaScript / Node.js-ல Timer Functions use பண்ணுவோம்.</strong>
+    </div>
+
+    <div class="lbl">Two main timers:</div>
+    <div class="chips">
+      <span class="chip" style="color:var(--orange);border-color:rgba(251,146,60,.25);">setTimeout</span>
+      <span class="chip" style="color:var(--pink);border-color:rgba(244,114,182,.25);">setInterval</span>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 2 – Introduce setTimeout
+       ════════════════════════════ -->
+  <div class="shdr c2">
+    <span class="snum">2️⃣ Step 2</span>
+    <span class="stitle">Introduce setTimeout</span>
+  </div>
+
+  <div class="card c2">
+    <div class="tag">Board-ல definition:</div>
+    <div class="board">
+      <div class="btitle">Definition</div>
+      👉 setTimeout = delay செய்து function run பண்ணும்
+    </div>
+
+    <div class="lbl">Syntax:</div>
+    <pre><code><span class="fn">setTimeout</span>(<span class="op">function</span>, <span class="op">delay</span>)</code></pre>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="fn">setTimeout</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello"</span>)
+},<span class="num">2000</span>)</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <table>
+      <tr><th>Part</th><th>Meaning</th></tr>
+      <tr class="t-part"><td>function</td><td>run ஆகும் code</td></tr>
+      <tr class="t-part"><td>2000</td>    <td>milliseconds delay</td></tr>
+    </table>
+
+    <div class="lbl">Important:</div>
+    <div class="ms-box">
+      <div class="ms-pill">1000 ms = 1 second</div>
+    </div>
+    <div class="def">So:</div>
+    <div class="ms-box">
+      <div class="ms-pill">2000 ms = 2 seconds</div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 3 – Execution Flow
+       ════════════════════════════ -->
+  <div class="shdr c3">
+    <span class="snum">3️⃣ Step 3</span>
+    <span class="stitle">Execution Flow</span>
+  </div>
+
+  <div class="card c3">
+    <div class="lbl">Code:</div>
+    <pre><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="fn">setTimeout</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello"</span>)
+},<span class="num">2000</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"End"</span>)</code></pre>
+
+    <div class="out-lbl">Output:</div>
+    <div class="out">Start<br>End<br>Hello</div>
+
+    <div class="lbl">Explain:</div>
+    <div class="point"><span class="a">👉</span> <code style="font-family:'JetBrains Mono',monospace;color:var(--orange);">setTimeout</code> asynchronous</div>
+    <div class="point"><span class="a">👉</span> event loop later execute பண்ணும்.</div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 4 – Introduce setInterval
+       ════════════════════════════ -->
+  <div class="shdr c4">
+    <span class="snum">4️⃣ Step 4</span>
+    <span class="stitle">Introduce setInterval</span>
+  </div>
+
+  <div class="card c4">
+    <div class="tag">Board-ல definition:</div>
+    <div class="board-pink">
+      <div class="btitle">Definition</div>
+      👉 setInterval = repeated interval-ல function run பண்ணும்
+    </div>
+
+    <div class="lbl">Syntax:</div>
+    <pre><code><span class="fn">setInterval</span>(<span class="op">function</span>, <span class="op">delay</span>)</code></pre>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="fn">setInterval</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Running..."</span>)
+},<span class="num">2000</span>)</code></pre>
+
+    <div class="out-lbl">Output:</div>
+    <div class="out">Running...<br>Running...<br>Running...</div>
+
+    <div class="hint" style="background:rgba(244,114,182,.05);border-color:rgba(244,114,182,.18);border-left-color:var(--pink);">
+      <strong style="color:var(--pink);">Every 2 seconds repeat ஆகும்.</strong>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 5 – Stop Interval
+       ════════════════════════════ -->
+  <div class="shdr c5">
+    <span class="snum">5️⃣ Step 5</span>
+    <span class="stitle">Stop Interval (Important)</span>
+  </div>
+
+  <div class="card c5">
+    <div class="tag">Students-க்கு இது miss ஆகக்கூடாது.</div>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">timer</span> = <span class="fn">setInterval</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello"</span>)
+},<span class="num">1000</span>)
+
+<span class="fn">setTimeout</span>(()=>{
+ <span class="fn">clearInterval</span>(<span class="op">timer</span>)
+},<span class="num">5000</span>)</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <div class="timeline">
+      <div class="tl-row">
+        <span class="tl-sec">1 second</span>
+        <span class="tl-label"><code>Hello</code></span>
+      </div>
+      <div class="tl-row">
+        <span class="tl-sec">2 second</span>
+        <span class="tl-label"><code>Hello</code></span>
+      </div>
+      <div class="tl-row">
+        <span class="tl-sec">3 second</span>
+        <span class="tl-label"><code>Hello</code></span>
+      </div>
+      <div class="tl-row">
+        <span class="tl-sec">4 second</span>
+        <span class="tl-label"><code>Hello</code></span>
+      </div>
+      <div class="tl-row">
+        <span class="tl-sec tl-stop">5 second</span>
+        <span class="tl-label"><span class="stop-txt">stop</span></span>
+      </div>
+    </div>
+
+    <div class="hint" style="background:rgba(248,113,113,.05);border-color:rgba(248,113,113,.18);border-left-color:var(--red);">
+      <strong style="color:var(--red);"><code style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">clearInterval()</code></strong> → interval stop பண்ணும்.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 6 – Difference
+       ════════════════════════════ -->
+  <div class="shdr c6">
+    <span class="snum">6️⃣ Step 6</span>
+    <span class="stitle">Difference</span>
+  </div>
+
+  <div class="card c6">
+    <div class="tag">Board-ல table.</div>
+    <table>
+      <tr><th>setTimeout</th><th>setInterval</th></tr>
+      <tr>
+        <td class="t-diff1" style="color:var(--orange);">run once</td>
+        <td style="color:var(--pink);">repeat</td>
+      </tr>
+      <tr>
+        <td style="color:var(--orange);">delay execution</td>
+        <td style="color:var(--pink);">repeated execution</td>
+      </tr>
+    </table>
+
+    <div class="lbl">Example:</div>
+    <div class="cmp">
+      <div class="cmp-col">
+        <div class="cmp-title">setTimeout</div>
+        <div class="def" style="margin-bottom:0;">setTimeout → run one time</div>
+      </div>
+      <div class="cmp-col">
+        <div class="cmp-title">setInterval</div>
+        <div class="def" style="margin-bottom:0;">setInterval → run many times</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 7 – Real Life Example
+       ════════════════════════════ -->
+  <div class="shdr c7">
+    <span class="snum">7️⃣ Step 7</span>
+    <span class="stitle">Real Life Example</span>
+  </div>
+
+  <div class="card c7">
+    <div class="tag">Alarm example:</div>
+    <div class="alarm">
+      <div class="alarm-title">⏰ Alarm Examples</div>
+      <div class="alarm-row">
+        <div class="alarm-item">
+          <span class="alarm-icon">⏱️</span>
+          <span><code>setTimeout</code> → alarm after 5 seconds</span>
+        </div>
+        <div class="alarm-item">
+          <span class="alarm-icon">🕐</span>
+          <span><code>setInterval</code> → clock tick every second</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 8 – Event Loop Connection
+       ════════════════════════════ -->
+  <div class="shdr c8">
+    <span class="snum">8️⃣ Event Loop Connection</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c8">
+    <div class="lbl">Explain:</div>
+    <div class="elc">
+      <div class="elc-title">🔄 Event Loop Flow</div>
+      <div class="point" style="margin-bottom:.7rem;">
+        <span class="a">👉</span>
+        <code style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--orange);">setTimeout</code>
+        &nbsp;and&nbsp;
+        <code style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--pink);">setInterval</code>
+        &nbsp;Node APIs → Callback Queue → Event Loop.
+      </div>
+      <div class="flow">
+        <div class="fb orange">setTimeout / setInterval</div>
+        <div class="fa">↓</div>
+        <div class="fb purple">Node APIs</div>
+        <div class="fa">↓</div>
+        <div class="fb cyan">Callback Queue</div>
+        <div class="fa">↓</div>
+        <div class="fb green">Event Loop</div>
+      </div>
+    </div>
+
+    <div class="hint-green">
+      <strong>So they are asynchronous timers.</strong>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       STEP 9 – Interview Sentence
+       ════════════════════════════ -->
+  <div class="shdr c9">
+    <span class="snum">9️⃣ Interview Sentence</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c9">
+    <div class="tag">Students memorize:</div>
+    <div class="interview">
+      <div class="int-lbl">⭐ Interview Sentence</div>
+      <p>"setTimeout and setInterval are timer functions used to schedule asynchronous execution in Node.js."</p>
+    </div>
+
+    <div class="followup">
+      👉 "What is the difference between setTimeout(fn,0) and normal function execution?"
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

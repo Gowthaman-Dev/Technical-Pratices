@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js Streams - Complete Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e3a5f;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --accent5: #ef4444;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --code-bg: #0d1117;
+    --glow: rgba(0,212,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', 'Noto Sans Tamil', sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 80px 0 60px;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(124,58,237,0.1));
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    animation: pulse-border 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-border {
+    0%,100% { border-color: rgba(0,212,255,0.3); box-shadow: 0 0 0 0 rgba(0,212,255,0); }
+    50% { border-color: rgba(0,212,255,0.7); box-shadow: 0 0 20px rgba(0,212,255,0.2); }
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 50%, #10b981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 40px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 64px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .section-num {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .num-blue { background: rgba(0,212,255,0.15); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+  .num-purple { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+  .num-green { background: rgba(16,185,129,0.15); color: var(--accent3); border: 1px solid rgba(16,185,129,0.3); }
+  .num-amber { background: rgba(245,158,11,0.15); color: var(--accent4); border: 1px solid rgba(245,158,11,0.3); }
+  .num-red { background: rgba(239,68,68,0.15); color: var(--accent5); border: 1px solid rgba(239,68,68,0.3); }
+  .num-cyan { background: rgba(6,182,212,0.15); color: #22d3ee; border: 1px solid rgba(6,182,212,0.3); }
+  .num-pink { background: rgba(236,72,153,0.15); color: #f472b6; border: 1px solid rgba(236,72,153,0.3); }
+  .num-teal { background: rgba(20,184,166,0.15); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.3); }
+
+  .section-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .section-title span {
+    color: var(--accent);
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+
+  .card:hover {
+    border-color: rgba(0,212,255,0.3);
+    transform: translateY(-2px);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: #e2e8f0;
+    overflow-x: auto;
+    position: relative;
+    margin: 16px 0;
+  }
+
+  .code-block::before {
+    content: 'Node.js';
+    position: absolute;
+    top: 10px; right: 14px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: rgba(0,212,255,0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  .code-block .kw { color: #7c3aed; }
+  .code-block .fn { color: #00d4ff; }
+  .code-block .str { color: #10b981; }
+  .code-block .cm { color: #475569; }
+  .code-block .ev { color: #f59e0b; }
+  .code-block .num { color: #f472b6; }
+
+  /* DIAGRAM */
+  .diagram {
+    background: var(--code-bg);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 16px 0;
+  }
+
+  .diagram .node {
+    display: inline-block;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin: 4px;
+  }
+
+  .diagram .node-green {
+    background: rgba(16,185,129,0.1);
+    border-color: rgba(16,185,129,0.3);
+    color: var(--accent3);
+  }
+
+  .diagram .node-purple {
+    background: rgba(124,58,237,0.1);
+    border-color: rgba(124,58,237,0.3);
+    color: #a78bfa;
+  }
+
+  .diagram .node-amber {
+    background: rgba(245,158,11,0.1);
+    border-color: rgba(245,158,11,0.3);
+    color: var(--accent4);
+  }
+
+  .diagram .node-red {
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.3);
+    color: var(--accent5);
+  }
+
+  .arrow {
+    display: block;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    margin: 4px 0;
+    animation: flow-down 2s ease-in-out infinite;
+  }
+
+  @keyframes flow-down {
+    0%,100% { opacity: 0.4; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(3px); }
+  }
+
+  /* GRID LAYOUTS */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  }
+
+  /* COMPARISON */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 16px 0;
+  }
+
+  @media (max-width: 600px) { .compare { grid-template-columns: 1fr; } }
+
+  .compare-bad {
+    background: rgba(239,68,68,0.05);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .compare-good {
+    background: rgba(16,185,129,0.05);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .compare-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .compare-bad .compare-label { color: var(--accent5); }
+  .compare-good .compare-label { color: var(--accent3); }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin: 16px 0;
+  }
+
+  .data-table th {
+    background: rgba(0,212,255,0.08);
+    color: var(--accent);
+    padding: 12px 16px;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(30,58,95,0.5);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+
+  .data-table tr:hover td {
+    background: rgba(0,212,255,0.03);
+    color: var(--text);
+  }
+
+  .data-table code {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight {
+    border-left: 3px solid var(--accent);
+    background: rgba(0,212,255,0.05);
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .highlight-green {
+    border-color: var(--accent3);
+    background: rgba(16,185,129,0.05);
+  }
+
+  .highlight-amber {
+    border-color: var(--accent4);
+    background: rgba(245,158,11,0.05);
+  }
+
+  .highlight-purple {
+    border-color: #a78bfa;
+    background: rgba(124,58,237,0.05);
+  }
+
+  /* INTERVIEW BOX */
+  .interview-box {
+    background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(0,212,255,0.1));
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .interview-box::before {
+    content: '🎯 Interview Answer';
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--bg);
+    padding: 0 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #a78bfa;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .interview-box p {
+    color: var(--text);
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  /* MEMORY TRICK */
+  .memory-trick {
+    background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(16,185,129,0.1));
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 20px 0;
+    text-align: center;
+    position: relative;
+  }
+
+  .memory-trick::before {
+    content: '🔥 Memory Trick';
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: var(--bg);
+    padding: 0 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent4);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .memory-trick code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: var(--accent4);
+    display: block;
+    white-space: pre;
+    text-align: left;
+    display: inline-block;
+  }
+
+  /* STREAM TYPE CARDS */
+  .stream-type {
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .stream-type:hover {
+    transform: translateY(-4px);
+  }
+
+  .stream-type h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .stream-type .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .st-readable { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); }
+  .st-readable h3 { color: var(--accent); }
+  .st-readable .tag { background: rgba(0,212,255,0.12); color: var(--accent); }
+  .st-readable:hover { box-shadow: 0 8px 32px rgba(0,212,255,0.1); }
+
+  .st-writable { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.3); }
+  .st-writable h3 { color: var(--accent3); }
+  .st-writable .tag { background: rgba(16,185,129,0.12); color: var(--accent3); }
+  .st-writable:hover { box-shadow: 0 8px 32px rgba(16,185,129,0.1); }
+
+  .st-duplex { background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.3); }
+  .st-duplex h3 { color: #a78bfa; }
+  .st-duplex .tag { background: rgba(124,58,237,0.12); color: #a78bfa; }
+  .st-duplex:hover { box-shadow: 0 8px 32px rgba(124,58,237,0.1); }
+
+  .st-transform { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.3); }
+  .st-transform h3 { color: var(--accent4); }
+  .st-transform .tag { background: rgba(245,158,11,0.12); color: var(--accent4); }
+  .st-transform:hover { box-shadow: 0 8px 32px rgba(245,158,11,0.1); }
+
+  .stream-type p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; }
+  .stream-type ul { color: var(--text-muted); font-size: 0.85rem; padding-left: 16px; }
+  .stream-type li { margin-bottom: 4px; }
+
+  /* ADVANTAGE CARDS */
+  .adv-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+
+  .adv-card:hover { transform: translateY(-3px); }
+
+  .adv-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .adv-card h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .adv-card p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* EVENT CARDS */
+  .event-card {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .event-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .ev-data .event-name { background: rgba(0,212,255,0.12); color: var(--accent); }
+  .ev-end .event-name { background: rgba(16,185,129,0.12); color: var(--accent3); }
+  .ev-error .event-name { background: rgba(239,68,68,0.12); color: var(--accent5); }
+  .ev-finish .event-name { background: rgba(245,158,11,0.12); color: var(--accent4); }
+
+  .event-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; }
+
+  /* MODE CARDS */
+  .mode-card {
+    border-radius: 16px;
+    padding: 28px;
+    border: 1px solid;
+  }
+
+  .mode-flowing {
+    background: rgba(0,212,255,0.05);
+    border-color: rgba(0,212,255,0.25);
+  }
+
+  .mode-flowing h3 { color: var(--accent); }
+
+  .mode-paused {
+    background: rgba(124,58,237,0.05);
+    border-color: rgba(124,58,237,0.25);
+  }
+
+  .mode-paused h3 { color: #a78bfa; }
+
+  .mode-card h3 { font-size: 1.2rem; margin-bottom: 8px; }
+  .mode-card p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; }
+
+  /* PIPE DIAGRAM */
+  .pipe-flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+  }
+
+  .pipe-node {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .pipe-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    animation: flow-right 1.5s ease-in-out infinite;
+  }
+
+  @keyframes flow-right {
+    0%,100% { opacity: 0.4; transform: translateX(0); }
+    50% { opacity: 1; transform: translateX(4px); }
+  }
+
+  .pipe-node.green {
+    background: rgba(16,185,129,0.1);
+    border-color: rgba(16,185,129,0.3);
+    color: var(--accent3);
+  }
+
+  /* HWM card */
+  .hwm-visual {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .chunk-block {
+    background: rgba(0,212,255,0.12);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    animation: chunk-appear 0.5s ease-out;
+  }
+
+  .chunk-block:nth-child(2) { animation-delay: 0.2s; }
+  .chunk-block:nth-child(3) { animation-delay: 0.4s; }
+  .chunk-block:nth-child(4) { animation-delay: 0.6s; }
+
+  @keyframes chunk-appear {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* SUMMARY TABLE */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  @media (max-width: 700px) { .summary-grid { grid-template-columns: 1fr 1fr; } }
+
+  .sum-card {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .sum-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .sum-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+    opacity: 0.5;
+  }
+
+  /* inline code */
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+
+  /* LIST STYLE */
+  ul.styled {
+    list-style: none;
+    padding: 0;
+  }
+
+  ul.styled li {
+    padding: 6px 0 6px 20px;
+    position: relative;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+  }
+
+  ul.styled li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  /* TAG */
+  .tag-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+
+  .tag-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+
+  .tag-blue { background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); color: var(--accent); }
+  .tag-green { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.3); color: var(--accent3); }
+  .tag-purple { background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.3); color: #a78bfa; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 48px 0 32px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+  }
+
+  footer .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 48px;
+  }
+
+  .toc h2 {
+    font-size: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  @media (max-width: 700px) { .toc-grid { grid-template-columns: 1fr 1fr; } }
+
+  .toc-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .toc-item:hover {
+    border-color: rgba(0,212,255,0.3);
+    color: var(--accent);
+    background: rgba(0,212,255,0.05);
+  }
+
+  .toc-item span {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">Node.js · Complete Guide</div>
+    <h1>Streams</h1>
+    <p>Data-ஐ small chunks ஆக process பண்ணும் Node.js-இன் powerful mechanism — Memory efficient, Fast, Real-time</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">4</span>
+        <span class="stat-label">Stream Types</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">4</span>
+        <span class="stat-label">Key Events</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">3</span>
+        <span class="stat-label">Core Methods</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">8</span>
+        <span class="stat-label">Concepts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h2>// Table of Contents</h2>
+    <div class="toc-grid">
+      <div class="toc-item"><span>01</span>Problem & Solution</div>
+      <div class="toc-item"><span>02</span>Stream Types</div>
+      <div class="toc-item"><span>03</span>Methods</div>
+      <div class="toc-item"><span>04</span>Advantages</div>
+      <div class="toc-item"><span>05</span>Events</div>
+      <div class="toc-item"><span>06</span>Backpressure</div>
+      <div class="toc-item"><span>07</span>Flowing / Paused</div>
+      <div class="toc-item"><span>08</span>HighWaterMark</div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: PROBLEM -->
+  <div class="section" id="s1">
+    <div class="section-header">
+      <div class="section-num num-blue">1️⃣</div>
+      <h2 class="section-title">First Problem <span>(Without Stream)</span></h2>
+    </div>
+
+    <div class="card">
+      <p style="margin-bottom:16px;">நீ ஒரு <strong style="color:var(--accent)">5GB movie file</strong> read பண்ணணும்.</p>
+      <p style="margin-bottom:16px; color:var(--text-muted)"><strong style="color:var(--text)">Normal method:</strong></p>
+
+      <div class="compare">
+        <div class="compare-bad">
+          <div class="compare-label">❌ Normal Method</div>
+          <div class="diagram">
+            <div class="node node-red">File (5GB)</div>
+            <span class="arrow">↓</span>
+            <div class="node node-red">Memory (5GB load)</div>
+            <span class="arrow">↓</span>
+            <div class="node node-red">Process</div>
+          </div>
+        </div>
+        <div class="compare-good">
+          <div class="compare-label">✅ Stream Method</div>
+          <div class="diagram">
+            <div class="node">File</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Chunk (64KB)</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Process</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Chunk (64KB)</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Process</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight" style="border-color:var(--accent5); background:rgba(239,68,68,0.05);">
+        <strong style="color:var(--accent5)">👉 Problem என்ன?</strong><br>
+        • 5GB memory வேண்டும் &nbsp;&nbsp;• System slow ஆகும் &nbsp;&nbsp;• Sometimes crash ஆகும்<br>
+        <span style="color:var(--text-muted)">அதனால இது efficient இல்லை.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>2️⃣ Streams Solution</h3>
+      <p style="margin-bottom:12px;">Streams என்ன பண்ணும்? File முழுவதையும் ஒரே நேரம் load பண்ணாது. Instead:</p>
+      <div class="diagram">
+        <div class="node">File</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Chunk 1 → 64KB</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Process</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Chunk 2 → 64KB</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Process</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Chunk 3 → 64KB</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Process</div>
+      </div>
+      <p style="margin-top:12px; color:var(--text-muted)">👉 small pieces ஆக process ஆகும்.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>🚰 Water Pipe Example</h3>
+        <div class="diagram">
+          <div class="node">Tank</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">Pipe</div>
+          <span class="arrow">↓</span>
+          <div class="node">Glass</div>
+        </div>
+        <p>Water ஒரே நேரம் எல்லாம் வராது. Slow-ஆ flow ஆகும்.<br><span style="color:var(--accent)">👉 Streams = data flow</span></p>
+      </div>
+      <div class="card">
+        <h3>📺 YouTube Video Streaming</h3>
+        <div class="diagram">
+          <div class="node node-purple">Video part 1</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">play</div>
+          <span class="arrow">↓</span>
+          <div class="node node-purple">Video part 2</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">play</div>
+        </div>
+        <p>Video முழுவதும் download ஆகாதே. Instead parts ஆக play ஆகும்.<br><span style="color:var(--accent)">👉 அதுதான் streaming.</span></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>5️⃣ Very Simple Definition</h3>
+      <div class="highlight">
+        <strong>Simple English</strong><br>
+        "Streams process data in small chunks instead of loading the entire data into memory."
+      </div>
+      <div class="highlight highlight-green">
+        <strong>Tamil</strong><br>
+        Stream என்பது 👉 data-ஐ small pieces ஆக process பண்ணும் method.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>6️⃣ One Small Node.js Example</h3>
+      <div class="code-block"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="kw">const</span> stream = fs.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>)
+
+stream.<span class="fn">on</span>(<span class="str">"data"</span>, (chunk) => {
+  console.<span class="fn">log</span>(chunk)
+})</div>
+      <div class="diagram" style="margin-top:12px;">
+        <div class="node">File</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Small chunk</div>
+        <span class="arrow">↓</span>
+        <div class="node">Console print</div>
+      </div>
+    </div>
+
+    <div class="memory-trick">
+      <code>Normal file read → Full data memory
+Streams          → Data small chunks</code>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 2: STREAM TYPES -->
+  <div class="section" id="s2">
+    <div class="section-header">
+      <div class="section-num num-purple">2️⃣</div>
+      <h2 class="section-title">Streams Types <span>— Simple Logic</span></h2>
+    </div>
+
+    <div class="card">
+      <p style="margin-bottom:16px;">Streams types data எங்கு போகுது என்பதைப் பொறுத்து decide ஆகும்.</p>
+      <div class="diagram">
+        <div class="node">READ</div>
+        &nbsp;&nbsp;<span style="color:var(--accent4); font-size:1.5rem;">→</span>&nbsp;&nbsp;
+        <div class="node node-green">WRITE</div>
+      </div>
+      <p style="margin-top:12px; color:var(--text-muted)">அதிலிருந்து தான் 4 types வந்தது.</p>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="stream-type st-readable">
+        <span class="tag">01 · READABLE</span>
+        <h3>Readable Stream</h3>
+        <p>👉 Data read பண்ண use பண்ணும் stream.</p>
+        <div class="diagram">
+          <div class="node">data.txt</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">Node.js read</div>
+        </div>
+        <ul class="styled">
+          <li>File reading</li>
+          <li>HTTP request</li>
+          <li>Video streaming</li>
+        </ul>
+        <div class="code-block" style="margin-top:16px;"><span class="kw">const</span> readStream = fs.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>, <span class="str">"utf8"</span>)
+readStream.<span class="fn">on</span>(<span class="str">"data"</span>, (chunk) => {
+  console.<span class="fn">log</span>(chunk)
+})</div>
+      </div>
+      <div class="stream-type st-writable">
+        <span class="tag">02 · WRITABLE</span>
+        <h3>Writable Stream</h3>
+        <p>👉 Data write பண்ண use பண்ணும் stream.</p>
+        <div class="diagram">
+          <div class="node">Node.js</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">output.txt</div>
+        </div>
+        <ul class="styled">
+          <li>File writing</li>
+          <li>HTTP response</li>
+          <li>Logging</li>
+        </ul>
+        <div class="code-block" style="margin-top:16px;"><span class="kw">const</span> writeStream = fs.<span class="fn">createWriteStream</span>(<span class="str">"output.txt"</span>)
+writeStream.<span class="fn">write</span>(<span class="str">"Hello Node.js"</span>)</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="stream-type st-duplex">
+        <span class="tag">03 · DUPLEX</span>
+        <h3>Duplex Stream</h3>
+        <p>👉 Read + Write இரண்டும் செய்யும் stream.</p>
+        <div class="diagram">
+          <div class="node">Read</div>
+          <span class="arrow">↓</span>
+          <div class="node node-purple">Process</div>
+          <span class="arrow">↓</span>
+          <div class="node">Write</div>
+        </div>
+        <ul class="styled">
+          <li>Chat application</li>
+          <li>TCP socket</li>
+          <li>WebSocket</li>
+        </ul>
+        <p style="margin-top:12px;">You: send message + receive message</p>
+      </div>
+      <div class="stream-type st-transform">
+        <span class="tag">04 · TRANSFORM</span>
+        <h3>Transform Stream</h3>
+        <p>👉 Read → Modify → Write</p>
+        <div class="diagram">
+          <div class="node">Read</div>
+          <span class="arrow">↓</span>
+          <div class="node node-amber">Transform</div>
+          <span class="arrow">↓</span>
+          <div class="node">Write</div>
+        </div>
+        <ul class="styled">
+          <li>File compression</li>
+          <li>Encryption</li>
+          <li>Data conversion</li>
+        </ul>
+        <p style="margin-top:12px;">File → Compress → New file</p>
+      </div>
+    </div>
+
+    <div class="memory-trick" style="margin-top:24px;">
+      <code>Readable   → Read data
+Writable   → Write data
+Duplex     → Read + Write
+Transform  → Read + Change + Write
+
+Remember: Read → Write → Both → Change</code>
+    </div>
+
+    <div class="interview-box">
+      <p>"Node.js provides four types of streams: Readable, Writable, Duplex, and Transform. Readable streams are used to read data, Writable streams are used to write data, Duplex streams support both reading and writing, and Transform streams modify the data while reading and writing."</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 3: METHODS -->
+  <div class="section" id="s3">
+    <div class="section-header">
+      <div class="section-num num-green">⭐</div>
+      <h2 class="section-title">Stream Methods <span>(Important)</span></h2>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <p style="margin-bottom:16px;">Streams work using <strong style="color:var(--accent)">methods + events</strong>.</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>pipe()</code></td>
+            <td>streams connect பண்ண</td>
+          </tr>
+          <tr>
+            <td><code>on("data")</code></td>
+            <td>data receive பண்ண</td>
+          </tr>
+          <tr>
+            <td><code>on("end")</code></td>
+            <td>stream finish</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- on("data") -->
+    <div class="event-card ev-data">
+      <div class="event-name">on("data")</div>
+      <p>👉 Stream-ல இருந்து data chunk வந்ததும் run ஆகும்.</p>
+      <div class="diagram">
+        <div class="node">File</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Chunk</div>
+        <span class="arrow">↓</span>
+        <div class="node">Program</div>
+      </div>
+      <div class="code-block"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="kw">const</span> readStream = fs.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>, <span class="str">"utf8"</span>)
+
+readStream.<span class="fn">on</span>(<span class="str">"data"</span>, (chunk) => {
+  console.<span class="fn">log</span>(chunk)
+})</div>
+      <div class="highlight" style="margin-top:12px;">
+        data event → file small chunk வந்ததும் trigger ஆகும்<br>
+        Chunk1 → data event &nbsp;|&nbsp; Chunk2 → data event &nbsp;|&nbsp; Chunk3 → data event
+      </div>
+    </div>
+
+    <!-- on("end") -->
+    <div class="event-card ev-end">
+      <div class="event-name">on("end")</div>
+      <p>👉 File reading finish ஆன பிறகு run ஆகும்.</p>
+      <div class="code-block">readStream.<span class="fn">on</span>(<span class="str">"end"</span>, () => {
+  console.<span class="fn">log</span>(<span class="str">"File reading finished"</span>)
+})</div>
+      <div class="diagram" style="margin-top:12px;">
+        <div class="node node-green">Chunk1</div>&nbsp;
+        <div class="node node-green">Chunk2</div>&nbsp;
+        <div class="node node-green">Chunk3</div>
+        <span class="arrow">↓</span>
+        <div class="node">end event</div>
+      </div>
+    </div>
+
+    <!-- pipe() -->
+    <div class="event-card">
+      <div class="event-name" style="background:rgba(245,158,11,0.12);color:var(--accent4);">pipe() — Very Important</div>
+      <p>👉 Readable stream → Writable stream connect பண்ணும்</p>
+      <div style="margin:16px 0;">
+        <div class="pipe-flow">
+          <div class="pipe-node">File</div>
+          <span class="pipe-arrow">→</span>
+          <div class="pipe-node">Read Stream</div>
+          <span class="pipe-arrow">→</span>
+          <div class="pipe-node" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.4);color:var(--accent4);">pipe()</div>
+          <span class="pipe-arrow">→</span>
+          <div class="pipe-node green">Write Stream</div>
+          <span class="pipe-arrow">→</span>
+          <div class="pipe-node green">New File</div>
+        </div>
+      </div>
+      <div class="code-block"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="kw">const</span> readStream  = fs.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>)
+<span class="kw">const</span> writeStream = fs.<span class="fn">createWriteStream</span>(<span class="str">"copy.txt"</span>)
+
+readStream.<span class="fn">pipe</span>(writeStream)</div>
+      <div class="highlight highlight-green" style="margin-top:12px;">
+        👉 data.txt → copy.txt &nbsp;|&nbsp; File copy ஆகும்.
+      </div>
+
+      <div class="compare" style="margin-top:16px;">
+        <div class="compare-bad">
+          <div class="compare-label">❌ Without pipe</div>
+          <div style="color:var(--text-muted); font-size:0.9rem; font-family:'JetBrains Mono',monospace; line-height:2;">
+            Read chunk<br>Write chunk<br>Read chunk<br>Write chunk<br>
+            <span style="color:var(--accent5)">Complex code.</span>
+          </div>
+        </div>
+        <div class="compare-good">
+          <div class="compare-label">✅ With pipe</div>
+          <div class="code-block" style="margin:0;">readStream.<span class="fn">pipe</span>(writeStream)</div>
+          <p style="margin-top:8px; color:var(--accent3);">👉 One line solution.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="memory-trick">
+      <code>on("data")  → data receive
+on("end")   → reading finish
+pipe()      → connect streams</code>
+    </div>
+
+    <div class="interview-box">
+      <p>"pipe() is used to connect a readable stream to a writable stream, allowing data to flow automatically between them."</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 4: ADVANTAGES -->
+  <div class="section" id="s4">
+    <div class="section-header">
+      <div class="section-num num-amber">4️⃣</div>
+      <h2 class="section-title">Advantages <span>of Streams</span></h2>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <p>Students-க்கு question கேளுங்கள்: <strong style="color:var(--accent)">"10GB file read பண்ணணும்னா என்ன ஆகும்?"</strong></p>
+      <div class="compare" style="margin-top:16px;">
+        <div class="compare-bad">
+          <div class="compare-label">❌ Without Stream</div>
+          <div class="diagram">
+            <div class="node node-red">File (10GB)</div>
+            <span class="arrow">↓</span>
+            <div class="node node-red">Memory (10GB load)</div>
+            <span class="arrow">↓</span>
+            <div class="node node-red">Process</div>
+          </div>
+          <ul class="styled" style="margin-top:12px;">
+            <li>Memory full ஆகும்</li>
+            <li>Program slow ஆகும்</li>
+            <li>Sometimes crash ஆகும்</li>
+          </ul>
+        </div>
+        <div class="compare-good">
+          <div class="compare-label">✅ With Stream</div>
+          <div class="diagram">
+            <div class="node">File</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Chunk</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Process</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Chunk</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Process</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-4">
+      <div class="adv-card">
+        <span class="adv-icon">💾</span>
+        <h4>1. Memory Efficient</h4>
+        <p>Full file load ஆகாது. Memory usage குறையும்.</p>
+      </div>
+      <div class="adv-card">
+        <span class="adv-icon">⚡</span>
+        <h4>2. Fast Processing</h4>
+        <p>Chunk வந்தவுடன் process start. Waiting time குறையும்.</p>
+      </div>
+      <div class="adv-card">
+        <span class="adv-icon">🗂️</span>
+        <h4>3. Large Data Handle</h4>
+        <p>Netflix, YouTube, File upload — Large data handle பண்ணும்.</p>
+      </div>
+      <div class="adv-card">
+        <span class="adv-icon">🔴</span>
+        <h4>4. Real-Time Processing</h4>
+        <p>Live video, Chat app, Stock market — Data வந்தவுடன் process ஆகும்.</p>
+      </div>
+    </div>
+
+    <div class="memory-trick" style="margin-top:24px;">
+      <code>Streams = Chunk Processing
+
+Advantages:
+1. Memory efficient
+2. Fast processing
+3. Large data handle
+4. Real-time processing</code>
+    </div>
+
+    <div class="interview-box">
+      <p>"Streams allow Node.js to process large amounts of data efficiently by reading and writing data in small chunks instead of loading the entire data into memory."</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 5: EVENTS -->
+  <div class="section" id="s5">
+    <div class="section-header">
+      <div class="section-num num-cyan">5️⃣</div>
+      <h2 class="section-title">Stream Events <span>— Event-Based System</span></h2>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <p style="margin-bottom:16px;">Node.js streams <strong style="color:var(--accent)">event-based system</strong>.</p>
+      <div class="highlight">
+        Stream-ல் ஏதாவது action நடந்தா event trigger ஆகும்.<br>
+        Data வந்தது → <code>data</code> event &nbsp;|&nbsp; Reading முடிந்தது → <code>end</code> event<br>
+        Error வந்தது → <code>error</code> event &nbsp;|&nbsp; Writing முடிந்தது → <code>finish</code> event
+      </div>
+      <table class="data-table" style="margin-top:16px;">
+        <thead>
+          <tr><th>Event</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>data</code></td><td>chunk receive</td></tr>
+          <tr><td><code>end</code></td><td>reading finished</td></tr>
+          <tr><td><code>error</code></td><td>error handling</td></tr>
+          <tr><td><code>finish</code></td><td>writing finished</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- data event -->
+    <div class="event-card ev-data">
+      <div class="event-name">data Event — Most Important</div>
+      <p>👉 File-ல இருந்து chunk வந்ததும் run ஆகும்.</p>
+      <div class="code-block"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+<span class="kw">const</span> readStream = fs.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>)
+
+readStream.<span class="fn">on</span>(<span class="str">"data"</span>, (chunk) => {
+  console.<span class="fn">log</span>(chunk)
+})</div>
+      <div class="highlight" style="margin-top:12px;">
+        Chunk1 → data event &nbsp;|&nbsp; Chunk2 → data event &nbsp;|&nbsp; Chunk3 → data event
+      </div>
+    </div>
+
+    <!-- end event -->
+    <div class="event-card ev-end">
+      <div class="event-name">end Event</div>
+      <p>👉 File reading complete ஆன பிறகு run ஆகும்.</p>
+      <div class="code-block">readStream.<span class="fn">on</span>(<span class="str">"end"</span>, () => {
+  console.<span class="fn">log</span>(<span class="str">"File reading finished"</span>)
+})</div>
+      <div class="diagram" style="margin-top:12px;">
+        <div class="node node-green">Chunk1</div>&nbsp;
+        <div class="node node-green">Chunk2</div>&nbsp;
+        <div class="node node-green">Chunk3</div>
+        <span class="arrow">↓</span>
+        <div class="node">end event → Stream reading finished</div>
+      </div>
+    </div>
+
+    <!-- error event -->
+    <div class="event-card ev-error">
+      <div class="event-name">error Event</div>
+      <p>👉 File read செய்யும்போது error வந்தா run ஆகும்.</p>
+      <div class="tag-row">
+        <span class="tag-item" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3);color:var(--accent5);">File இல்லை</span>
+        <span class="tag-item" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3);color:var(--accent5);">Permission issue</span>
+        <span class="tag-item" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3);color:var(--accent5);">Disk problem</span>
+      </div>
+      <div class="code-block">readStream.<span class="fn">on</span>(<span class="str">"error"</span>, (err) => {
+  console.<span class="fn">log</span>(err)
+})</div>
+    </div>
+
+    <!-- finish event -->
+    <div class="event-card ev-finish">
+      <div class="event-name">finish Event</div>
+      <p>👉 இது Writable Stream-க்கு use ஆகும். Writing complete.</p>
+      <div class="code-block">writeStream.<span class="fn">on</span>(<span class="str">"finish"</span>, () => {
+  console.<span class="fn">log</span>(<span class="str">"Writing finished"</span>)
+})</div>
+    </div>
+
+    <!-- Full Example -->
+    <div class="card">
+      <h3>7️⃣ Full Example (Best Teaching Code)</h3>
+      <div class="code-block"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="kw">const</span> readStream = fs.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>)
+
+readStream.<span class="fn">on</span>(<span class="str">"data"</span>, (chunk) => {
+  console.<span class="fn">log</span>(<span class="str">"Chunk:"</span>, chunk)
+})
+
+readStream.<span class="fn">on</span>(<span class="str">"end"</span>, () => {
+  console.<span class="fn">log</span>(<span class="str">"File reading finished"</span>)
+})
+
+readStream.<span class="fn">on</span>(<span class="str">"error"</span>, (err) => {
+  console.<span class="fn">log</span>(<span class="str">"Error:"</span>, err)
+})</div>
+      <div class="diagram" style="margin-top:16px;">
+        <div class="node">File</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Chunk → data event</div>
+        <span class="arrow">↓</span>
+        <div class="node node-green">Chunk → data event</div>
+        <span class="arrow">↓</span>
+        <div class="node">Reading complete → end event</div>
+      </div>
+    </div>
+
+    <div class="memory-trick">
+      <code>data   → receive
+end    → read finish
+error  → problem
+finish → write finish</code>
+    </div>
+
+    <div class="interview-box">
+      <p>"Streams in Node.js are event-based. Important stream events include data, end, error, and finish. The data event is triggered when a chunk of data is received, end indicates reading completion, error handles failures, and finish indicates writing completion."</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 6: BACKPRESSURE -->
+  <div class="section" id="s6">
+    <div class="section-header">
+      <div class="section-num num-red">6️⃣</div>
+      <h2 class="section-title">Backpressure <span>— Flow Control</span></h2>
+    </div>
+
+    <div class="card">
+      <h3>🚰 Water Pipe Example</h3>
+      <div class="diagram">
+        <div class="node node-red">Water Tank (fast)</div>
+        <span class="arrow">↓</span>
+        <div class="node">Pipe</div>
+        <span class="arrow">↓</span>
+        <div class="node node-amber">Glass (slow)</div>
+      </div>
+      <div class="highlight" style="border-color:var(--accent5); background:rgba(239,68,68,0.05); margin-top:16px;">
+        Problem: Tank fast-ஆ water send பண்ணுது → Glass slow-ஆ fill ஆகுது → Water overflow ஆகும்.<br>
+        <strong style="color:var(--accent5)">இதுதான் Backpressure concept.</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>2️⃣ Technical Explanation</h3>
+      <p style="margin-bottom:16px;">Backpressure என்பது:</p>
+      <div class="compare">
+        <div class="compare-bad">
+          <div class="compare-label">👉 Data producer</div>
+          <div class="diagram">
+            <div class="node node-red">Fast Data Source</div>
+          </div>
+        </div>
+        <div class="compare-good">
+          <div class="compare-label">👉 Data consumer</div>
+          <div class="diagram">
+            <div class="node node-amber">Slow Destination</div>
+          </div>
+        </div>
+      </div>
+      <div class="diagram" style="margin-top:16px;">
+        <div class="node">File</div>
+        <span class="arrow">↓</span>
+        <div class="node node-red">Read Stream (fast)</div>
+        <span class="arrow">↓</span>
+        <div class="node node-amber">Write Stream (slow)</div>
+        <span class="arrow">↓</span>
+        <div class="node">Disk</div>
+      </div>
+      <div class="highlight" style="margin-top:16px;">
+        👉 Write slow இருந்தா data accumulate ஆகும். இதுதான் Backpressure.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>4️⃣ Streams Solution</h3>
+      <p style="margin-bottom:16px;">Node.js streams automatically control flow. Two solutions:</p>
+
+      <div class="grid-2">
+        <div>
+          <div class="highlight highlight-amber" style="margin-bottom:0;">
+            <strong>1️⃣ Buffering</strong><br>
+            Extra data temporary memory-ல store ஆகும்
+          </div>
+          <div class="diagram" style="margin-top:12px;">
+            <div class="node node-red">Fast Source</div>
+            <span class="arrow">↓</span>
+            <div class="node node-amber">Buffer</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Slow Destination</div>
+          </div>
+        </div>
+        <div>
+          <div class="highlight highlight-green" style="margin-bottom:0;">
+            <strong>2️⃣ pipe() Flow Control</strong><br>
+            pipe() automatically manage பண்ணும்.
+          </div>
+          <div class="code-block" style="margin-top:12px;">readStream.<span class="fn">pipe</span>(writeStream)
+<span class="cm">// pipe() automatically pause/resume streams</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="memory-trick">
+      <code>Producer fast
+Consumer slow
+= Backpressure
+
+Solution: Buffer + pipe() + Flow control</code>
+    </div>
+
+    <div class="interview-box">
+      <p>"Backpressure occurs when the data producer is faster than the consumer. Node.js streams handle this situation using buffering and flow control mechanisms like pipe()."</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 7: FLOWING / PAUSED -->
+  <div class="section" id="s7">
+    <div class="section-header">
+      <div class="section-num num-pink">7️⃣</div>
+      <h2 class="section-title">Flowing / Paused <span>Mode</span></h2>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <p>Readable Streams <strong style="color:var(--accent)">2 modes</strong> இருக்கும்.</p>
+      <div class="compare" style="margin-top:16px;">
+        <div style="background:rgba(0,212,255,0.05); border:1px solid rgba(0,212,255,0.2); border-radius:12px; padding:16px;">
+          <div class="compare-label" style="color:var(--accent);">1️⃣ Flowing Mode</div>
+          <p style="color:var(--text-muted); font-size:0.9rem;">data <strong style="color:var(--accent)">automatically</strong> வரும்</p>
+        </div>
+        <div style="background:rgba(124,58,237,0.05); border:1px solid rgba(124,58,237,0.2); border-radius:12px; padding:16px;">
+          <div class="compare-label" style="color:#a78bfa;">2️⃣ Paused Mode</div>
+          <p style="color:var(--text-muted); font-size:0.9rem;">data <strong style="color:#a78bfa;">manually</strong> read பண்ண வேண்டும்</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="mode-card mode-flowing">
+        <h3>Flowing Mode</h3>
+        <p>stream automatic-ஆ data send பண்ணும்.</p>
+        <div class="diagram">
+          <div class="node">File</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">Stream</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">data event automatically</div>
+          <span class="arrow">↓</span>
+          <div class="node">Program</div>
+        </div>
+        <div class="code-block" style="margin-top:16px;"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+<span class="kw">const</span> readStream = fs.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>)
+
+readStream.<span class="fn">on</span>(<span class="str">"data"</span>, (chunk) => {
+  console.<span class="fn">log</span>(chunk)
+})</div>
+        <div class="highlight" style="margin-top:12px;">
+          data event attach பண்ணினால் stream automatically flowing mode-க்கு போகும்<br>
+          Chunk1 → console | Chunk2 → console | Chunk3 → console
+        </div>
+      </div>
+
+      <div class="mode-card mode-paused">
+        <h3>Paused Mode</h3>
+        <p>data automatic-ஆ வராது. Program தான் control பண்ணும்.</p>
+        <div class="diagram">
+          <div class="node">File</div>
+          <span class="arrow">↓</span>
+          <div class="node node-purple">Stream (paused)</div>
+          <span class="arrow">↓</span>
+          <div class="node node-purple">Program request</div>
+          <span class="arrow">↓</span>
+          <div class="node">Data read</div>
+        </div>
+        <div class="code-block" style="margin-top:16px;"><span class="cm">// Stream stop reading temporarily</span>
+readStream.<span class="fn">pause</span>()
+
+<span class="cm">// Paused stream மீண்டும் start பண்ண</span>
+readStream.<span class="fn">resume</span>()</div>
+        <div class="diagram" style="margin-top:12px;">
+          <div class="node node-purple">pause()</div>
+          <span class="arrow">↓</span>
+          <div class="node node-red">Data stop</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">resume()</div>
+          <span class="arrow">↓</span>
+          <div class="node node-green">Data continue</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+      <h3>🚰 Tap Water Example</h3>
+      <div class="grid-2">
+        <div>
+          <p style="color:var(--accent); margin-bottom:8px;"><strong>Flowing Mode:</strong></p>
+          <div class="diagram">
+            <div class="node node-green">Tap open</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Water automatically flow</div>
+          </div>
+        </div>
+        <div>
+          <p style="color:#a78bfa; margin-bottom:8px;"><strong>Paused Mode:</strong></p>
+          <div class="diagram">
+            <div class="node node-purple">Tap close</div>
+            <span class="arrow">↓</span>
+            <div class="node node-red">Water stop</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">Tap open again → continue</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="memory-trick">
+      <code>Flowing = automatic data
+Paused  = manual control</code>
+    </div>
+
+    <div class="interview-box">
+      <p>"Readable streams in Node.js have two modes: flowing mode and paused mode. In flowing mode, data is automatically read and emitted as events, while in paused mode the program manually controls when to read the data."</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- SECTION 8: HIGHWATERMARK -->
+  <div class="section" id="s8">
+    <div class="section-header">
+      <div class="section-num num-teal">8️⃣</div>
+      <h2 class="section-title">HighWaterMark <span>— Buffer Size Control</span></h2>
+    </div>
+
+    <div class="card">
+      <h3>1️⃣ Buffer Concept</h3>
+      <p style="margin-bottom:16px;">File read பண்ணும்போது data ஒரே நேரம் வராது — small chunks. அந்த chunks temporary-ஆ store ஆகும் இடம்: <strong style="color:var(--accent)">Buffer</strong></p>
+      <div class="diagram">
+        <div class="node">File</div>
+        <span class="arrow">↓</span>
+        <div class="node node-amber">Buffer</div>
+        <span class="arrow">↓</span>
+        <div class="node">Program</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>2️⃣ HighWaterMark Meaning</h3>
+      <div class="highlight highlight-amber">
+        <strong>HighWaterMark</strong> = chunk size limit<br>
+        👉 Stream buffer-ல maximum data size எவ்வளவு இருக்கணும் என்று control பண்ணும் option.
+      </div>
+
+      <div style="margin-top:16px;">
+        <p style="margin-bottom:12px; color:var(--text-muted);">Example: <code>highWaterMark = 16KB</code></p>
+        <div class="hwm-visual">
+          <div class="chunk-block">16KB chunk 1</div>
+          <div class="chunk-block">16KB chunk 2</div>
+          <div class="chunk-block">16KB chunk 3</div>
+          <div class="chunk-block">16KB chunk 4</div>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;">👉 file small pieces ஆக split ஆகும்.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>4️⃣ Code Example</h3>
+      <div class="code-block"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="kw">const</span> stream = fs.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>, {
+  highWaterMark: <span class="num">16</span> * <span class="num">1024</span>  <span class="cm">// 16KB</span>
+})
+
+<span class="cm">// Each chunk size = 16KB</span></div>
+
+      <div class="compare" style="margin-top:16px;">
+        <div class="compare-bad">
+          <div class="compare-label">❌ Without control</div>
+          <div class="diagram">
+            <div class="node">File</div>
+            <span class="arrow">↓</span>
+            <div class="node node-red">Random chunk size</div>
+          </div>
+        </div>
+        <div class="compare-good">
+          <div class="compare-label">✅ With HighWaterMark</div>
+          <div class="diagram">
+            <div class="node">File</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">16KB</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">16KB</div>
+            <span class="arrow">↓</span>
+            <div class="node node-green">16KB</div>
+          </div>
+        </div>
+      </div>
+      <div class="highlight highlight-green" style="margin-top:16px;">
+        👉 Stream predictable size-ல data process பண்ணும்.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>6️⃣ Why HighWaterMark Important</h3>
+      <div class="grid-4">
+        <div class="adv-card">
+          <span class="adv-icon">🛡️</span>
+          <h4>Buffer overflow avoid</h4>
+        </div>
+        <div class="adv-card">
+          <span class="adv-icon">💾</span>
+          <h4>Memory control</h4>
+        </div>
+        <div class="adv-card">
+          <span class="adv-icon">⚡</span>
+          <h4>Better performance</h4>
+        </div>
+        <div class="adv-card">
+          <span class="adv-icon">🔄</span>
+          <h4>Flow control help</h4>
+        </div>
+      </div>
+      <div class="tag-row" style="margin-top:16px;">
+        <span class="tag-item tag-blue">Video streaming</span>
+        <span class="tag-item tag-green">File upload</span>
+        <span class="tag-item tag-purple">Network data transfer</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- FINAL SUMMARY -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num num-blue">⭐</div>
+      <h2 class="section-title">Final Streams <span>Concept Summary</span></h2>
+    </div>
+
+    <div class="summary-grid">
+      <div class="sum-card">
+        <div class="sum-num">1</div>
+        <div class="sum-label">Stream Basics</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-num">2</div>
+        <div class="sum-label">Why Streams</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-num">3</div>
+        <div class="sum-label">Stream Types</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-num">4</div>
+        <div class="sum-label">Stream Methods</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-num">5</div>
+        <div class="sum-label">Stream Events</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-num">6</div>
+        <div class="sum-label">Backpressure</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-num">7</div>
+        <div class="sum-label">Flowing / Paused</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-num">8</div>
+        <div class="sum-label">HighWaterMark</div>
+      </div>
+    </div>
+
+    <p style="text-align:center; color:var(--accent3); font-size:1rem; margin-bottom:24px; font-weight:600;">👉 இப்போ Streams 100% complete.</p>
+
+    <div class="interview-box">
+      <p>"Streams in Node.js are used to handle large data efficiently by processing it in small chunks instead of loading the entire data into memory. There are four types of streams: readable, writable, duplex, and transform. Streams are event-based and use events like data, end, and error. They also manage flow control using mechanisms like backpressure."</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <span class="brand">Node.js Streams — Complete Guide</span>
+    <p>Tamil · Interview Ready · 100% Complete</p>
+    <p style="margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:rgba(148,163,184,0.5);">Readable · Writable · Duplex · Transform</p>
+  </div>
+</footer>
+
+</body>
+</html>

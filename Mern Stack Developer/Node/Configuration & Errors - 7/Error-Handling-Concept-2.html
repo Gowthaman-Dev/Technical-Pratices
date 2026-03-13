@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Express Error Handling Methods – Full Class Teaching</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #0b0d12;
+      --surface: #111420;
+      --surf2:   #171b28;
+      --surf3:   #1c2132;
+      --border:  #242840;
+      --accent:  #f0c040;
+      --teal:    #4ecdc4;
+      --red:     #ff6b6b;
+      --green:   #6bffb8;
+      --purple:  #b47aff;
+      --blue:    #60a5fa;
+      --text:    #e8eaf2;
+      --muted:   #6b7280;
+      --codebg:  #090b10;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      background:var(--bg);
+      color:var(--text);
+      font-family:'Syne',sans-serif;
+      line-height:1.7;
+    }
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(78,205,196,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(78,205,196,.025) 1px,transparent 1px);
+      background-size:44px 44px;
+      pointer-events:none; z-index:0;
+    }
+
+    .page { position:relative; z-index:1; max-width:940px; margin:0 auto; padding:56px 22px 90px; }
+
+    /* ── HERO ── */
+    .hero { text-align:center; margin-bottom:62px; }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:3px; text-transform:uppercase;
+      color:var(--teal); border:1px solid rgba(78,205,196,.35);
+      padding:5px 16px; border-radius:2px; margin-bottom:22px;
+    }
+    .hero h1 { font-size:clamp(2rem,5vw,3.4rem); font-weight:800; letter-spacing:-1.5px; line-height:1.08; }
+    .hero h1 em { color:var(--teal); font-style:normal; }
+    .hero .sub { margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); }
+
+    /* ── STEP CARD ── */
+    .step { background:var(--surface); border:1px solid var(--border); border-radius:14px; margin-bottom:36px; overflow:hidden; }
+    .step-head {
+      display:flex; align-items:center; gap:14px;
+      padding:20px 28px; background:var(--surf2);
+      border-bottom:1px solid var(--border);
+    }
+    .step-num { font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; color:var(--accent); min-width:38px; }
+    .step-head h2 { font-size:18px; font-weight:800; letter-spacing:-.4px; }
+    .tag-right {
+      margin-left:auto;
+      font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); border:1px solid var(--border); padding:3px 10px; border-radius:20px;
+    }
+    .step-body { padding:26px 28px; }
+
+    /* ── HOOK BOX ── */
+    .hook-box {
+      background:linear-gradient(135deg,rgba(255,107,107,.08),rgba(240,192,64,.05));
+      border:1px solid rgba(255,107,107,.28);
+      border-radius:10px; padding:18px 22px; margin-bottom:18px; font-size:15px;
+    }
+    .hook-box strong { color:var(--red); }
+
+    /* ── LABEL ── */
+    .lbl {
+      font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2.5px; text-transform:uppercase;
+      color:var(--teal); margin:22px 0 8px; display:flex; align-items:center; gap:8px;
+    }
+    .lbl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* ── CONCEPT ── */
+    .concept {
+      background:var(--surf2); border-left:3px solid var(--teal);
+      border-radius:0 8px 8px 0; padding:14px 18px; font-size:14px; margin-bottom:14px;
+    }
+
+    /* ── CHIPS ── */
+    .chips { display:flex; flex-wrap:wrap; gap:9px; margin:10px 0; }
+    .chip {
+      background:var(--codebg); border:1px solid var(--border); border-radius:20px;
+      font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--red); padding:5px 14px;
+    }
+    .chip::before { content:'▸ '; color:var(--accent); }
+
+    /* ── CODE BLOCK ── */
+    .cb { background:var(--codebg); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin:14px 0; }
+    .cb-top {
+      display:flex; align-items:center; gap:7px; padding:9px 15px;
+      background:#0d0f15; border-bottom:1px solid var(--border);
+    }
+    .dot { width:10px; height:10px; border-radius:50%; }
+    .r{background:#ff5f57;} .y{background:#febc2e;} .g{background:#28c840;}
+    .fname { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-left:4px; }
+    .cb pre {
+      padding:18px 20px; font-family:'JetBrains Mono',monospace;
+      font-size:13px; line-height:1.85; overflow-x:auto; color:var(--text); white-space:pre;
+    }
+    .kw  { color:var(--purple); }
+    .fn  { color:var(--teal); }
+    .str { color:var(--green); }
+    .num { color:var(--accent); }
+    .vr  { color:#f9a8d4; }
+    .obj { color:var(--accent); }
+    .cm  { color:var(--muted); font-style:italic; }
+
+    /* ── EXP GRID ── */
+    .exp-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:14px 0; }
+    .exp-card { background:var(--codebg); border:1px solid var(--border); border-radius:8px; padding:14px 16px; }
+    .exp-card .ec-key { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); margin-bottom:4px; font-weight:700; }
+    .exp-card .ec-val { font-size:13px; color:var(--muted); }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow { display:flex; flex-direction:column; align-items:center; margin:18px 0; }
+    .fn-box {
+      background:var(--surf2); border:1px solid var(--border); border-radius:8px;
+      padding:12px 36px; font-family:'JetBrains Mono',monospace;
+      font-size:13px; font-weight:700; text-align:center; min-width:240px;
+    }
+    .fn-box.c1 { border-color:var(--red);    color:var(--red); }
+    .fn-box.c2 { border-color:var(--accent); color:var(--accent); }
+    .fn-box.c3 { border-color:var(--purple); color:var(--purple); }
+    .fn-box.c4 { border-color:var(--teal);   color:var(--teal); }
+    .fn-box.c5 { border-color:var(--green);  color:var(--green); }
+    .fn-box.c6 { border-color:var(--blue);   color:var(--blue); }
+    .flow-arr { font-size:20px; color:var(--accent); line-height:1; margin:4px 0; }
+
+    /* ── FORK FLOW ── */
+    .fork-flow { display:flex; flex-direction:column; align-items:center; margin:18px 0; }
+    .fork-row { display:flex; align-items:flex-start; gap:24px; justify-content:center; }
+    .fork-branch { display:flex; flex-direction:column; align-items:center; }
+    .fork-label {
+      font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:1px;
+      text-transform:uppercase; padding:4px 12px; border-radius:4px; margin-bottom:6px;
+    }
+    .fork-label.success { background:rgba(107,255,184,.1); color:var(--green); border:1px solid rgba(107,255,184,.3); }
+    .fork-label.error   { background:rgba(255,107,107,.1); color:var(--red);   border:1px solid rgba(255,107,107,.3); }
+
+    /* ── OUTPUT BOX ── */
+    .output-box {
+      background:#07090e; border:1px solid rgba(107,255,184,.15);
+      border-left:3px solid var(--green); border-radius:0 8px 8px 0;
+      padding:13px 18px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--green); margin:12px 0;
+    }
+    .output-box .out-lbl { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+
+    /* ── ADVANTAGE BOX ── */
+    .adv-box {
+      background:rgba(107,255,184,.05); border:1px solid rgba(107,255,184,.2);
+      border-radius:8px; padding:13px 18px; font-size:14px; color:var(--text); margin:14px 0;
+    }
+    .adv-box .av-arrow { color:var(--accent); font-weight:700; }
+
+    /* ── IMPORTANT BOX ── */
+    .imp-box {
+      background:rgba(255,107,107,.06); border:1px solid rgba(255,107,107,.2);
+      border-radius:8px; padding:13px 18px; font-size:14px; color:var(--muted); margin:14px 0;
+    }
+    .imp-box strong { color:var(--red); }
+
+    /* ── HTTP TABLE ── */
+    .table-wrap { overflow-x:auto; margin:16px 0; border-radius:10px; border:1px solid var(--border); }
+    .http-table { width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:13px; }
+    .http-table th {
+      background:var(--surf2); color:var(--accent);
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      text-align:left; padding:13px 18px; border-bottom:2px solid var(--border);
+    }
+    .http-table td { padding:12px 18px; border-bottom:1px solid var(--border); }
+    .http-table tr:last-child td { border-bottom:none; }
+    .http-table tr:hover td { background:rgba(240,192,64,.03); }
+    .code-tag { background:var(--codebg); border:1px solid var(--border); border-radius:4px; padding:2px 8px; color:var(--teal); font-size:12px; }
+    .http-table tr:nth-child(1) td:first-child { color:var(--blue); }
+    .http-table tr:nth-child(2) td:first-child { color:var(--accent); }
+    .http-table tr:nth-child(3) td:first-child { color:var(--purple); }
+    .http-table tr:nth-child(4) td:first-child { color:var(--teal); }
+    .http-table tr:nth-child(5) td:first-child { color:var(--red); }
+
+    /* ── METHOD BADGE ── */
+    .method-badge {
+      display:inline-block;
+      font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      padding:4px 12px; border-radius:4px; margin-bottom:14px;
+    }
+    .mb-trycatch { background:rgba(180,122,255,.1); color:var(--purple); border:1px solid rgba(180,122,255,.3); }
+    .mb-response { background:rgba(78,205,196,.1);  color:var(--teal);   border:1px solid rgba(78,205,196,.3); }
+    .mb-global   { background:rgba(96,165,250,.1);  color:var(--blue);   border:1px solid rgba(96,165,250,.3); }
+
+    /* ── BOARD BANNER ── */
+    .board-banner {
+      display:inline-block;
+      background:rgba(180,122,255,.08); border:1px solid rgba(180,122,255,.25);
+      border-radius:4px; font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--purple); padding:4px 12px; margin-bottom:14px;
+    }
+
+    /* ── INTERVIEW ── */
+    .interview-stack { display:flex; flex-direction:column; gap:16px; margin-top:6px; }
+    .int-card { border-radius:10px; overflow:hidden; border:1px solid var(--border); }
+    .int-card .ic-top {
+      padding:10px 18px; font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px;
+    }
+    .ic-top.basic  { background:rgba(240,192,64,.08); color:var(--accent); }
+    .ic-top.better { background:rgba(78,205,196,.08); color:var(--teal); }
+    .ic-top.quick  { background:rgba(107,255,184,.08);color:var(--green); }
+    .int-card .ic-body {
+      background:var(--codebg); padding:16px 20px;
+      font-size:14px; font-style:italic; color:var(--text); line-height:1.7;
+    }
+    .ic-body::before { content:'"'; color:var(--accent); font-size:22px; line-height:0; vertical-align:-5px; margin-right:4px; }
+    .ic-body::after  { content:'"'; color:var(--accent); font-size:22px; line-height:0; vertical-align:-5px; margin-left:4px; }
+
+    .note { font-size:14px; color:var(--muted); margin:8px 0; }
+    .note strong { color:var(--text); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">🛡️ Express Error Handling Methods</div>
+    <h1>Error Handling <em>Methods</em></h1>
+    <p class="sub">// Full Class Teaching · Express.js · MERN Stack · Interview Ready</p>
+  </div>
+
+  <!-- STEP 1 – HOOK -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">1️⃣</span>
+      <h2>Start with Real Problem (Hook)</h2>
+      <span class="tag-right">Hook</span>
+    </div>
+    <div class="step-body">
+      <div class="hook-box">
+        <strong>Teacher question கேளுங்க:</strong><br/>
+        "API call பண்ணும்போது database fail ஆனா என்ன ஆகும்?"
+      </div>
+
+      <div class="lbl">Example</div>
+      <div class="chips">
+        <span class="chip">DB connection fail</span>
+        <span class="chip">Invalid request</span>
+        <span class="chip">Server crash</span>
+      </div>
+
+      <div class="imp-box" style="margin-top:16px;">
+        <strong>📌</strong> இந்த errors handle பண்ணவில்லை என்றால் server crash ஆகும்.<br/>
+        அதனால Express-ல் Error Handling methods use பண்ணுறோம்.
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 – TRY CATCH -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">2️⃣</span>
+      <h2>Method 1 – Try Catch</h2>
+      <span class="tag-right">Method 1</span>
+    </div>
+    <div class="step-body">
+      <span class="method-badge mb-trycatch">try...catch</span>
+
+      <div class="concept">
+        <strong>📌 Purpose</strong><br/>
+        Async operations errors handle பண்ண.
+      </div>
+
+      <div class="lbl">Example</div>
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">try-catch.js</span></div>
+        <pre><span class="kw">try</span> {
+ <span class="kw">const</span> <span class="vr">user</span> = <span class="kw">await</span> <span class="obj">User</span>.<span class="fn">find</span>()
+}
+<span class="kw">catch</span>(<span class="vr">error</span>){
+ <span class="obj">console</span>.<span class="fn">log</span>(<span class="vr">error</span>)
+}</pre>
+      </div>
+
+      <div class="lbl">Explanation (Class-ல சொல்ல)</div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="ec-key">try</div>
+          <div class="ec-val">→ risky code</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">catch</div>
+          <div class="ec-val">→ error handle</div>
+        </div>
+      </div>
+
+      <div class="lbl">Example flow</div>
+      <div class="flow">
+        <div class="fn-box c1">Database Query</div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c2">Error Occurs</div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c4">Catch Block Handles</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 – SEND ERROR RESPONSE -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">3️⃣</span>
+      <h2>Method 2 – Send Error Response</h2>
+      <span class="tag-right">Method 2</span>
+    </div>
+    <div class="step-body">
+      <span class="method-badge mb-response">HTTP Response</span>
+
+      <p class="note" style="margin-bottom:12px;">Server error வந்தா client-க்கு proper response அனுப்பணும்.</p>
+
+      <div class="lbl">Example</div>
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">error-response.js</span></div>
+        <pre><span class="kw">catch</span>(<span class="vr">error</span>){
+ <span class="vr">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({<span class="vr">message</span>:<span class="str">"Server Error"</span>})
+}</pre>
+      </div>
+
+      <div class="lbl">Explanation</div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="ec-key">status(500)</div>
+          <div class="ec-val">→ server error</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">json()</div>
+          <div class="ec-val">→ response send</div>
+        </div>
+      </div>
+
+      <div class="lbl">Client side output</div>
+      <div class="output-box">
+        <div class="out-lbl">Output</div>
+        {<br/>
+        &nbsp;"message": "Server Error"<br/>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 – GLOBAL ERROR MIDDLEWARE -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">4️⃣</span>
+      <h2>Method 3 – Global Error Middleware</h2>
+      <span class="tag-right">Method 3</span>
+    </div>
+    <div class="step-body">
+      <span class="method-badge mb-global">Global Middleware</span>
+
+      <p class="note" style="margin-bottom:12px;">Express-ல் central error handler create பண்ணலாம்.</p>
+
+      <div class="lbl">Example</div>
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">errorMiddleware.js</span></div>
+        <pre><span class="vr">app</span>.<span class="fn">use</span>((<span class="vr">err</span>,<span class="vr">req</span>,<span class="vr">res</span>,<span class="vr">next</span>)=&gt;{
+ <span class="vr">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
+  <span class="vr">message</span>: <span class="vr">err</span>.<span class="vr">message</span>
+ })
+})</pre>
+      </div>
+
+      <div class="lbl">Explanation</div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="ec-key">err</div>
+          <div class="ec-val">→ error object</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">req</div>
+          <div class="ec-val">→ request</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">res</div>
+          <div class="ec-val">→ response</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">next</div>
+          <div class="ec-val">→ next middleware</div>
+        </div>
+      </div>
+
+      <div class="lbl">Flow</div>
+      <div class="flow">
+        <div class="fn-box c1">Controller Error</div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c6">Global Middleware</div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c4">Response Send</div>
+      </div>
+
+      <div class="adv-box">
+        <strong>📌 Advantage</strong><br/>
+        <span class="av-arrow">👉</span> All errors one place-ல handle ஆகும்
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5 – CONTROLLER EXAMPLE -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">5️⃣</span>
+      <h2>Controller Example (Class)</h2>
+      <span class="tag-right">Code</span>
+    </div>
+    <div class="step-body">
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">userController.js</span></div>
+        <pre><span class="kw">export const</span> <span class="fn">getUsers</span> = <span class="kw">async</span> (<span class="vr">req</span>,<span class="vr">res</span>)=&gt;{
+ <span class="kw">try</span>{
+   <span class="kw">const</span> <span class="vr">users</span> = <span class="kw">await</span> <span class="obj">User</span>.<span class="fn">find</span>()
+   <span class="vr">res</span>.<span class="fn">json</span>(<span class="vr">users</span>)
+ }
+ <span class="kw">catch</span>(<span class="vr">err</span>){
+   <span class="vr">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({<span class="vr">message</span>:<span class="str">"Error fetching users"</span>})
+ }
+}</pre>
+      </div>
+
+      <div class="lbl">Explanation</div>
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="ec-key">try</div>
+          <div class="ec-val">→ database query</div>
+        </div>
+        <div class="exp-card">
+          <div class="ec-key">catch</div>
+          <div class="ec-val">→ error response</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6 – REAL MERN EXAMPLE -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">6️⃣</span>
+      <h2>Real MERN Example (Interview Level)</h2>
+      <span class="tag-right">Interview</span>
+    </div>
+    <div class="step-body">
+      <p class="note" style="margin-bottom:10px;">User registration API:</p>
+
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">authController.js</span></div>
+        <pre><span class="kw">export const</span> <span class="fn">register</span> = <span class="kw">async</span> (<span class="vr">req</span>,<span class="vr">res</span>)=&gt;{
+ <span class="kw">try</span>{
+
+  <span class="kw">const</span> <span class="vr">user</span> = <span class="kw">await</span> <span class="obj">User</span>.<span class="fn">create</span>(<span class="vr">req</span>.<span class="vr">body</span>)
+
+  <span class="vr">res</span>.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>(<span class="vr">user</span>)
+
+ }
+ <span class="kw">catch</span>(<span class="vr">error</span>){
+  <span class="vr">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({
+   <span class="vr">message</span>:<span class="str">"Registration failed"</span>
+  })
+ }
+}</pre>
+      </div>
+
+      <div class="lbl">Flow</div>
+      <div class="fork-flow">
+        <div class="fn-box c6" style="margin-bottom:0;">Client Request</div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c2" style="margin-bottom:0;">Controller</div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c3" style="margin-bottom:0;">Database</div>
+        <div class="flow-arr">↓</div>
+        <div class="fork-row" style="width:100%; max-width:440px;">
+          <div class="fork-branch" style="flex:1; align-items:center;">
+            <div class="fork-label success">Success</div>
+            <div class="fn-box c5" style="min-width:unset; padding:10px 18px; width:100%; text-align:center;">→ response</div>
+          </div>
+          <div class="fork-branch" style="flex:1; align-items:center;">
+            <div class="fork-label error">Error</div>
+            <div class="fn-box c1" style="min-width:unset; padding:10px 18px; width:100%; text-align:center;">→ catch block</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 7 – HTTP CODES -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">7️⃣</span>
+      <h2>Common HTTP Error Codes</h2>
+      <span class="tag-right">Table</span>
+    </div>
+    <div class="step-body">
+      <div class="board-banner">📋 Class board-ல table draw பண்ணுங்க</div>
+
+      <div class="table-wrap">
+        <table class="http-table">
+          <thead>
+            <tr><th>Code</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>400</td><td>Bad Request</td></tr>
+            <tr><td>401</td><td>Unauthorized</td></tr>
+            <tr><td>403</td><td>Forbidden</td></tr>
+            <tr><td>404</td><td>Not Found</td></tr>
+            <tr><td>500</td><td>Server Error</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lbl">Explanation example</div>
+      <div class="cb">
+        <div class="cb-top"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="fname">http-codes</span></div>
+        <pre><span class="num">400</span> → invalid input
+<span class="num">401</span> → login required
+<span class="num">404</span> → route not found
+<span class="num">500</span> → server failure</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 8 – FULL FLOW -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">8️⃣</span>
+      <h2>Error Handling Flow (Important)</h2>
+      <span class="tag-right">Board Diagram</span>
+    </div>
+    <div class="step-body">
+      <div class="board-banner">📋 Board diagram</div>
+
+      <div class="fork-flow">
+        <div class="fn-box c6" style="margin-bottom:0;">Client Request</div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c2" style="margin-bottom:0;">Controller</div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c3" style="margin-bottom:0;">Try Block</div>
+        <div class="flow-arr">↓</div>
+        <div class="fork-row" style="width:100%; max-width:460px;">
+          <div class="fork-branch" style="flex:1; align-items:center;">
+            <div class="fork-label success">Success</div>
+            <div class="fn-box c5" style="min-width:unset; padding:10px 18px; width:100%; text-align:center;">→ Response</div>
+          </div>
+          <div class="fork-branch" style="flex:1; align-items:center;">
+            <div class="fork-label error">Error</div>
+            <div class="fn-box c1" style="min-width:unset; padding:10px 18px; width:100%; text-align:center;">→ Catch Block</div>
+          </div>
+        </div>
+        <div class="flow-arr">↓</div>
+        <div class="fn-box c4">Error Response</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERVIEW ANSWERS -->
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num" style="font-size:18px;">⭐</span>
+      <h2>Interview Answers</h2>
+      <span class="tag-right">Interview</span>
+    </div>
+    <div class="step-body">
+      <div class="interview-stack">
+        <div class="int-card">
+          <div class="ic-top basic">⭐ Interview Sentence</div>
+          <div class="ic-body">Error handling is the process of managing errors in an application to prevent crashes and provide meaningful responses to users.</div>
+        </div>
+        <div class="int-card">
+          <div class="ic-top better">⭐ Better Interview Answer (Professional)</div>
+          <div class="ic-body">In Express.js, error handling is implemented using try-catch blocks, sending proper HTTP responses, and global error middleware to manage application errors effectively.</div>
+        </div>
+        <div class="int-card">
+          <div class="ic-top quick">⭐ 10-Second Interview Answer</div>
+          <div class="ic-body">Express handles errors using try-catch blocks, proper HTTP responses, and global error middleware.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

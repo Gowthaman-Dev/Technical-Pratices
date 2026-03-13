@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Callback Functions – Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0e13;
+    --surface: #111318;
+    --card: #161920;
+    --card2: #1b1f2b;
+    --border: #222636;
+    --green: #4ade80;
+    --cyan: #22d3ee;
+    --yellow: #fbbf24;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --purple: #a78bfa;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --text: #dde3f0;
+    --muted: #4b5470;
+    --dim: #8b93b0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans Tamil', 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(96,165,250,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(96,165,250,0.025) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5rem;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    padding: 3rem 0 2.5rem;
+    text-align: center;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(96,165,250,0.1);
+    border: 1px solid rgba(96,165,250,0.25);
+    color: var(--blue);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.28rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.2rem;
+  }
+
+  .header h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .header h1 span { color: var(--blue); }
+  .header p { font-size: 0.88rem; color: var(--dim); }
+
+  /* ── PART HEADER BAR ── */
+  .part-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2.5rem 0 1.2rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .part-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .p1 .part-num { background: rgba(96,165,250,0.15); color: var(--blue); border: 1px solid rgba(96,165,250,0.25); }
+  .p2 .part-num { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+  .p3 .part-num { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.25); }
+  .p4 .part-num { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+  .p5 .part-num { background: rgba(251,146,60,0.15); color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+  .p6 .part-num { background: rgba(167,139,250,0.15); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+  .p7 .part-num { background: rgba(34,211,238,0.15); color: var(--cyan); border: 1px solid rgba(34,211,238,0.25); }
+  .p8 .part-num { background: rgba(244,114,182,0.15); color: var(--pink); border: 1px solid rgba(244,114,182,0.25); }
+  .p9 .part-num { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+
+  .part-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.45s ease both;
+  }
+
+  .card.p1 { border-top: 2px solid var(--blue); }
+  .card.p2 { border-top: 2px solid var(--green); }
+  .card.p3 { border-top: 2px solid var(--yellow); }
+  .card.p4 { border-top: 2px solid var(--red); }
+  .card.p5 { border-top: 2px solid var(--orange); }
+  .card.p6 { border-top: 2px solid var(--purple); }
+  .card.p7 { border-top: 2px solid var(--cyan); }
+  .card.p8 { border-top: 2px solid var(--pink); }
+  .card.p9 { border-top: 2px solid var(--green); }
+
+  /* ── TEXT HELPERS ── */
+  .def {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.87rem;
+    color: var(--dim);
+    line-height: 1.85;
+    margin-bottom: 1rem;
+  }
+
+  .def strong { color: var(--text); }
+  .def .arr { color: var(--green); font-family: 'JetBrains Mono', monospace; }
+
+  .speech {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    background: rgba(96,165,250,0.05);
+    border: 1px solid rgba(96,165,250,0.15);
+    border-left: 3px solid var(--blue);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1rem;
+    font-size: 0.87rem;
+    color: var(--dim);
+    line-height: 1.75;
+  }
+
+  .speech .ico { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
+
+  /* examples chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 1rem; }
+  .chip {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.28rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--dim);
+  }
+
+  /* pointer line */
+  .point {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    font-size: 0.85rem;
+    color: var(--dim);
+    line-height: 1.65;
+    margin-bottom: 0.5rem;
+  }
+
+  .point .arr { color: var(--green); font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+  .point .icon { flex-shrink: 0; }
+
+  .label-sm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+    margin-top: 0.9rem;
+  }
+
+  /* ── CODE BLOCKS ── */
+  .file-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.18rem 0.6rem;
+    border-radius: 5px;
+    margin-bottom: 0.4rem;
+    margin-top: 0.8rem;
+  }
+
+  pre {
+    background: #080a10;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.1rem 1.3rem;
+    overflow-x: auto;
+    margin-bottom: 0.9rem;
+    tab-size: 2;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.81rem;
+    line-height: 1.9;
+    color: #c2cbdf;
+  }
+
+  .kw  { color: #f97316; }
+  .fn  { color: #60a5fa; }
+  .str { color: #86efac; }
+  .cmt { color: #3d4560; font-style: italic; }
+  .num { color: #c084fc; }
+  .op  { color: #dde3f0; }
+  .err { color: #f87171; }
+
+  /* ── OUTPUT ── */
+  .out-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.3rem;
+    margin-top: 0.5rem;
+  }
+
+  .out {
+    background: #060810;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 6px;
+    padding: 0.75rem 1.1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.81rem;
+    color: var(--green);
+    line-height: 1.9;
+    margin-bottom: 0.9rem;
+  }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    margin: 0.8rem 0;
+  }
+
+  .flow-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.45rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text);
+    min-width: 180px;
+    text-align: center;
+  }
+
+  .flow-arrow {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--green);
+    font-size: 0.9rem;
+    padding: 0.18rem 0 0.18rem 1.4rem;
+    line-height: 1;
+  }
+
+  /* horizontal flow */
+  .flow-h {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0.8rem 0;
+  }
+
+  .flow-h .flow-box { min-width: 80px; }
+  .flow-h .flow-arrow { padding: 0; }
+
+  /* ── NUMBERED EXPLAIN LIST ── */
+  .num-list { display: flex; flex-direction: column; gap: 0.55rem; margin: 0.8rem 0; }
+
+  .num-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    font-size: 0.84rem;
+    color: var(--dim);
+    line-height: 1.65;
+  }
+
+  .num-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    background: rgba(96,165,250,0.12);
+    color: var(--blue);
+    border: 1px solid rgba(96,165,250,0.2);
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  /* ── BOARD STYLE ── */
+  .board {
+    background: rgba(74,222,128,0.04);
+    border: 1px solid rgba(74,222,128,0.18);
+    border-left: 3px solid var(--green);
+    border-radius: 8px;
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.83rem;
+    color: var(--green);
+    line-height: 2;
+  }
+
+  .board .board-title {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── PROBLEM BOX ── */
+  .prob {
+    background: rgba(248,113,113,0.05);
+    border: 1px solid rgba(248,113,113,0.18);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    margin: 0.8rem 0;
+  }
+
+  .prob-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--red);
+    margin-bottom: 0.7rem;
+  }
+
+  .prob-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.83rem;
+    color: var(--dim);
+    line-height: 1.7;
+  }
+
+  .prob-item::before { content: '✗'; color: var(--red); font-family: 'JetBrains Mono'; flex-shrink: 0; }
+
+  /* nesting visual */
+  .nest-vis {
+    background: #080a10;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.3rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--dim);
+    line-height: 2;
+    margin: 0.8rem 0;
+  }
+
+  .nest-vis .l0 { color: var(--blue); }
+  .nest-vis .l1 { color: var(--cyan); }
+  .nest-vis .l2 { color: var(--green); }
+  .nest-vis .l3 { color: var(--yellow); }
+
+  /* ── SOLUTION BOX ── */
+  .sol {
+    background: rgba(167,139,250,0.05);
+    border: 1px solid rgba(167,139,250,0.18);
+    border-left: 3px solid var(--purple);
+    border-radius: 8px;
+    padding: 1rem 1.1rem;
+    margin: 0.8rem 0;
+  }
+
+  .sol-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.7rem;
+  }
+
+  .sol-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.8rem; }
+
+  .sol-pill {
+    background: rgba(167,139,250,0.1);
+    border: 1px solid rgba(167,139,250,0.2);
+    color: var(--purple);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+  }
+
+  /* ── RESTAURANT EXAMPLE ── */
+  .restaurant {
+    background: rgba(251,146,60,0.04);
+    border: 1px solid rgba(251,146,60,0.15);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    margin: 0.8rem 0;
+  }
+
+  .rest-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.9rem;
+  }
+
+  .rest-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 1rem;
+  }
+
+  .rest-step {
+    background: rgba(251,146,60,0.08);
+    border: 1px solid rgba(251,146,60,0.18);
+    border-radius: 7px;
+    padding: 0.4rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--orange);
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .rest-arr {
+    color: var(--orange);
+    font-size: 0.85rem;
+    padding: 0.15rem 0 0.15rem 1.2rem;
+    line-height: 1;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── BEST FLOW ── */
+  .teach-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.8rem 0;
+  }
+
+  .teach-step {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+  }
+
+  .teach-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    background: rgba(34,211,238,0.1);
+    color: var(--cyan);
+    border: 1px solid rgba(34,211,238,0.2);
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .teach-step span { font-size: 0.84rem; color: var(--dim); }
+
+  /* ── INTERVIEW BOX ── */
+  .interview {
+    background: rgba(167,139,250,0.05);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-left: 3px solid var(--purple);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin-top: 1.1rem;
+  }
+
+  .int-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--purple);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.55rem;
+  }
+
+  .interview p {
+    font-size: 0.87rem;
+    color: var(--dim);
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  /* ── MEANING BOX ── */
+  .meaning {
+    background: rgba(74,222,128,0.05);
+    border: 1px solid rgba(74,222,128,0.18);
+    border-left: 3px solid var(--green);
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.86rem;
+    color: var(--dim);
+    line-height: 1.75;
+    margin: 0.8rem 0;
+  }
+
+  .meaning strong { color: var(--green); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── PART SECTION GROUPS ── */
+  .part-group { margin-bottom: 0.5rem; }
+
+  /* ── TEACH SECTION TAG ── */
+  .section-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.7rem;
+    border-radius: 100px;
+    margin-bottom: 0.6rem;
+  }
+
+  /* grid for problems */
+  .prob-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin: 0.8rem 0;
+  }
+
+  .prob-card {
+    background: rgba(248,113,113,0.05);
+    border: 1px solid rgba(248,113,113,0.15);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.82rem;
+    color: var(--dim);
+    line-height: 1.55;
+  }
+
+  .prob-card .pnum {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--red);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    .card { padding: 1.2rem; }
+    .wrap { padding: 1rem 1rem 3.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Class Teaching Notes</div>
+    <h1>Callback <span>Functions</span></h1>
+    <p>Step-by-step class guide · Tamil + English</p>
+  </div>
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 1: Simple Question
+       ════════════════════════════════ -->
+  <div class="part-header p1">
+    <span class="part-num">1️⃣ Step 1</span>
+    <span class="part-title">Simple Question</span>
+  </div>
+
+  <div class="card p1">
+    <div class="section-tag">Class start பண்ணும்போது கேள்:</div>
+    <div class="speech">
+      <span class="ico">🗣️</span>
+      <span>"ஒரு task முடிந்த பிறகு next task run ஆகணும்னா எப்படி?"</span>
+    </div>
+
+    <div class="label-sm">Example:</div>
+    <div class="chips">
+      <span class="chip">file read முடிந்த பிறகு log print</span>
+      <span class="chip">database query முடிந்த பிறகு response send</span>
+    </div>
+
+    <div class="meaning">
+      <span class="point"><span class="arr">👉</span> இதற்கு <strong>Callback Function</strong> use பண்ணுவோம்.</span>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 2: Definition
+       ════════════════════════════════ -->
+  <div class="part-header p2">
+    <span class="part-num">2️⃣ Step 2</span>
+    <span class="part-title">Definition</span>
+  </div>
+
+  <div class="card p2">
+    <div class="section-tag">Board-ல எழுதணும்:</div>
+    <div class="board">
+      <div class="board-title">Definition</div>
+      👉 Callback = Function inside another function
+    </div>
+    <div class="def">
+      <strong>Simple meaning:</strong><br>
+      <span class="arr">👉</span> ஒரு function-க்கு argument ஆக pass பண்ணப்படும் function.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 3: Simple Example
+       ════════════════════════════════ -->
+  <div class="part-header p3">
+    <span class="part-num">3️⃣ Step 3</span>
+    <span class="part-title">Simple Example</span>
+  </div>
+
+  <div class="card p3">
+    <div class="section-tag">Students-க்கு easy example காட்டணும்.</div>
+
+    <pre><code><span class="kw">function</span> <span class="fn">greet</span>(<span class="op">name</span>,<span class="op">callback</span>){
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello "</span> + <span class="op">name</span>)
+ <span class="fn">callback</span>()
+}
+
+<span class="kw">function</span> <span class="fn">done</span>(){
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Task completed"</span>)
+}
+
+<span class="fn">greet</span>(<span class="str">"Gowtham"</span>,<span class="op">done</span>)</code></pre>
+
+    <div class="label-sm">Explain:</div>
+    <div class="num-list">
+      <div class="num-item"><span class="num-badge">1️⃣</span> greet() function run ஆகும்</div>
+      <div class="num-item"><span class="num-badge">2️⃣</span> "Hello Gowtham" print ஆகும்</div>
+      <div class="num-item"><span class="num-badge">3️⃣</span> callback() run ஆகும்</div>
+      <div class="num-item"><span class="num-badge">4️⃣</span> done() execute ஆகும்</div>
+    </div>
+
+    <div class="out-label">Output:</div>
+    <div class="out">Hello Gowtham<br>Task completed</div>
+  </div>
+
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 4: Real Node.js Example
+       ════════════════════════════════ -->
+  <div class="part-header p1">
+    <span class="part-num">4️⃣ Step 4</span>
+    <span class="part-title">Real Node.js Example</span>
+  </div>
+
+  <div class="card p1">
+    <div class="section-tag">Node.js-ல callbacks அதிகமாக use ஆகும்.</div>
+    <div class="label-sm">Example:</div>
+
+    <pre><code><span class="kw">const</span> <span class="op">fs</span> = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="op">fs</span>.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>,<span class="str">"utf8"</span>,(<span class="op">err</span>,<span class="op">data</span>)=>{
+ <span class="kw">if</span>(<span class="op">err</span>){
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>)
+ }
+ <span class="kw">else</span>{
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+ }
+})</code></pre>
+
+    <div class="label-sm">Explain:</div>
+    <div class="point" style="margin-bottom:0.8rem;"><span class="arr">👉</span> fs.readFile() asynchronous operation.</div>
+
+    <div class="label-sm">Meaning:</div>
+    <div class="num-list">
+      <div class="num-item"><span class="num-badge">1️⃣</span> file read start ஆகும்</div>
+      <div class="num-item"><span class="num-badge">2️⃣</span> file read complete ஆன பிறகு</div>
+      <div class="num-item"><span class="num-badge">3️⃣</span> callback function run ஆகும்.</div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 5: Callback Hell
+       ════════════════════════════════ -->
+  <div class="part-header p4">
+    <span class="part-num">5️⃣ Step 5</span>
+    <span class="part-title">Callback Hell</span>
+  </div>
+
+  <div class="card p4">
+    <div class="section-tag">Class-ல biggest problem explain பண்ணணும்.</div>
+
+    <div class="label-sm">Example:</div>
+    <pre><code><span class="fn">login</span>(<span class="op">user</span>,<span class="kw">function</span>(){
+ <span class="fn">getData</span>(<span class="kw">function</span>(){
+  <span class="fn">updateData</span>(<span class="kw">function</span>(){
+   <span class="fn">saveData</span>(<span class="kw">function</span>(){
+   })
+  })
+ })
+})</code></pre>
+
+    <div class="label-sm">Explain:</div>
+    <div class="point" style="margin-bottom:1rem;"><span class="arr">👉</span> function inside function inside function.</div>
+
+    <div class="label-sm">Diagram:</div>
+    <div class="flow">
+      <div class="flow-box">login</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">getData</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">updateData</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">saveData</div>
+    </div>
+
+    <div class="meaning"><strong>இதுதான் Callback Hell.</strong></div>
+  </div>
+
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 6: Problems
+       ════════════════════════════════ -->
+  <div class="part-header p4">
+    <span class="part-num">6️⃣ Problems of Callback Hell</span>
+    <span class="part-title"></span>
+  </div>
+
+  <div class="card p4">
+    <div class="section-tag">Board-ல எழுதணும்:</div>
+    <div class="prob">
+      <div class="prob-item">code readability குறையும்</div>
+      <div class="prob-item">debugging difficult</div>
+      <div class="prob-item">maintain difficult</div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 7: Solution
+       ════════════════════════════════ -->
+  <div class="part-header p6">
+    <span class="part-num">7️⃣ Solution</span>
+    <span class="part-title"></span>
+  </div>
+
+  <div class="card p6">
+    <div class="sol">
+      <div class="sol-title">Modern Solution</div>
+      <div class="sol-row">
+        <span class="sol-pill">👉 Promises</span>
+        <span class="sol-pill">👉 Async/Await</span>
+      </div>
+      <div class="def">Modern Node.js mostly Promises / Async Await use பண்ணும்.</div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 8: Real Life
+       ════════════════════════════════ -->
+  <div class="part-header p5">
+    <span class="part-num">8️⃣ Real Life Example</span>
+    <span class="part-title"></span>
+  </div>
+
+  <div class="card p5">
+    <div class="restaurant">
+      <div class="rest-title">🍽️ Restaurant Example</div>
+      <div class="def" style="margin-bottom:0.9rem;">Customer order → cook food → waiter serve.</div>
+      <div class="label-sm">Sequence:</div>
+      <div class="rest-flow">
+        <div class="rest-step">order</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">cook</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">serve</div>
+      </div>
+      <div class="point"><span class="arr">👉</span> ஒவ்வொரு step முடிந்த பிறகு next step run ஆகும். இதுதான் callback idea.</div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════
+       PART 1 – STEP 9: Interview
+       ════════════════════════════════ -->
+  <div class="part-header p9">
+    <span class="part-num">9️⃣ Interview Sentence</span>
+    <span class="part-title"></span>
+  </div>
+
+  <div class="card p9">
+    <div class="section-tag">Students memorize this:</div>
+    <div class="interview">
+      <div class="int-label">⭐ Interview Sentence</div>
+      <p>"A callback function is a function passed as an argument to another function and executed after the operation completes."</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ══════════════════════════════════════════════
+       SECOND PART: Detailed Teaching Content
+       ══════════════════════════════════════════════ -->
+
+  <!-- 1st Concept -->
+  <div class="part-header p1">
+    <span class="part-num">1️⃣</span>
+    <span class="part-title">First Concept – Callback என்ன?</span>
+  </div>
+
+  <div class="card p1">
+    <div class="section-tag">Students-க்கு first இந்த simple code காட்டணும்.</div>
+
+    <pre><code><span class="kw">function</span> <span class="fn">greet</span>(<span class="op">name</span>, <span class="op">callback</span>){
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello "</span> + <span class="op">name</span>)
+  <span class="fn">callback</span>()
+}
+
+<span class="kw">function</span> <span class="fn">done</span>(){
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Task completed"</span>)
+}
+
+<span class="fn">greet</span>(<span class="str">"Rocky"</span>, <span class="op">done</span>)</code></pre>
+
+    <div class="label-sm">Flow explain:</div>
+    <div class="flow">
+      <div class="flow-box">greet() run</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">Hello Rocky print</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">callback() run</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">done() execute</div>
+    </div>
+
+    <div class="out-label">Output:</div>
+    <div class="out">Hello Rocky<br>Task completed</div>
+
+    <div class="meaning">
+      <span class="arr">👉</span> <strong>Meaning:</strong> ஒரு function முடிந்த பிறகு next function run ஆகுது.<br>
+      இதுதான் callback.
+    </div>
+  </div>
+
+
+  <!-- 2nd Concept -->
+  <div class="part-header p2">
+    <span class="part-num">2️⃣</span>
+    <span class="part-title">Real Node.js Example (fs.readFile)</span>
+  </div>
+
+  <div class="card p2">
+    <div class="label-sm">Code:</div>
+    <pre><code><span class="kw">const</span> <span class="op">fs</span> = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="op">fs</span>.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>,<span class="str">"utf8"</span>,(<span class="op">err</span>,<span class="op">data</span>)=>{
+  <span class="kw">if</span>(<span class="op">err</span>){
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>)
+  }
+  <span class="kw">else</span>{
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+  }
+})</code></pre>
+
+    <div class="section-tag" style="margin-top:0.8rem;">Students-க்கு step by step explain:</div>
+
+    <div class="label-sm">Step 1</div>
+    <pre><code><span class="op">fs</span>.<span class="fn">readFile</span>()</code></pre>
+    <div class="point"><span class="arr"></span>Node.js file read start பண்ணும்.</div>
+
+    <div class="label-sm" style="margin-top:0.8rem;">Step 2</div>
+    <div class="def">File read ஆக time ஆகும்.<br>Node.js wait பண்ணாது.</div>
+
+    <div class="label-sm">Step 3</div>
+    <div class="def">File read complete ஆன பிறகு</div>
+    <pre><code>(<span class="op">err</span>,<span class="op">data</span>)=>{}</code></pre>
+    <div class="point"><span class="arr"></span>இந்த callback function run ஆகும்.</div>
+
+    <div class="label-sm" style="margin-top:0.8rem;">Diagram:</div>
+    <div class="flow">
+      <div class="flow-box">readFile start</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">file reading</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">file read complete</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">callback function run</div>
+    </div>
+
+    <div class="meaning"><span class="arr">👉</span> அதனால் தான் callback use பண்ணுறோம்.</div>
+  </div>
+
+
+  <!-- 3rd Concept -->
+  <div class="part-header p3">
+    <span class="part-num">3️⃣</span>
+    <span class="part-title">Callback Hell என்ன?</span>
+  </div>
+
+  <div class="card p3">
+    <div class="section-tag">Students-க்கு இந்த question கேள்:</div>
+    <div class="speech">
+      <span class="ico">🗣️</span>
+      <span>"ஒரு task முடிந்த பிறகு next task run ஆகணும்னா?"</span>
+    </div>
+
+    <div class="label-sm">Example:</div>
+    <div class="flow">
+      <div class="flow-box">login</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">getData</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">updateData</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box">saveData</div>
+    </div>
+
+    <div class="label-sm">Code:</div>
+    <pre><code><span class="fn">login</span>(<span class="op">user</span>,<span class="kw">function</span>(){
+  <span class="fn">getData</span>(<span class="kw">function</span>(){
+    <span class="fn">updateData</span>(<span class="kw">function</span>(){
+      <span class="fn">saveData</span>(<span class="kw">function</span>(){
+      })
+    })
+  })
+})</code></pre>
+
+    <div class="label-sm">Diagram:</div>
+    <div class="nest-vis">
+      <span class="l0">login(</span><br>
+      &nbsp;&nbsp;&nbsp;<span class="l1">getData(</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="l2">updateData(</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="l3">saveData()</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="l2">)</span><br>
+      &nbsp;&nbsp;&nbsp;<span class="l1">)</span><br>
+      <span class="l0">)</span>
+    </div>
+
+    <div class="point"><span class="arr">👉</span> function inside function inside function.</div>
+    <div class="meaning"><strong>இதுதான் Callback Hell.</strong></div>
+  </div>
+
+
+  <!-- 4th Concept -->
+  <div class="part-header p4">
+    <span class="part-num">4️⃣</span>
+    <span class="part-title">Why Callback Hell Problem?</span>
+  </div>
+
+  <div class="card p4">
+    <div class="label-sm">Problems:</div>
+
+    <div class="num-list" style="margin-bottom:1rem;">
+      <div class="num-item"><span class="num-badge">1️⃣</span> Code deep nesting</div>
+    </div>
+
+    <div class="nest-vis">
+      <span class="l0">{</span><br>
+      &nbsp;<span class="l1">{</span><br>
+      &nbsp;&nbsp;<span class="l2">{</span><br>
+      &nbsp;&nbsp;&nbsp;<span class="l3">{</span><br>
+      &nbsp;&nbsp;&nbsp;<span class="l3">}</span><br>
+      &nbsp;&nbsp;<span class="l2">}</span><br>
+      &nbsp;<span class="l1">}</span><br>
+      <span class="l0">}</span>
+    </div>
+
+    <div class="prob-grid">
+      <div class="prob-card"><span class="pnum">2️⃣</span>Read பண்ண difficult</div>
+      <div class="prob-card"><span class="pnum">3️⃣</span>Debug difficult</div>
+      <div class="prob-card"><span class="pnum">4️⃣</span>Maintain difficult</div>
+    </div>
+  </div>
+
+
+  <!-- 5th Concept -->
+  <div class="part-header p5">
+    <span class="part-num">5️⃣</span>
+    <span class="part-title">Real Life Example</span>
+  </div>
+
+  <div class="card p5">
+    <div class="restaurant">
+      <div class="rest-title">🍽️ Restaurant Example</div>
+      <div class="rest-flow">
+        <div class="rest-step">order</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">cook</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">serve</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">payment</div>
+      </div>
+      <div class="point"><span class="arr">👉</span> ஒவ்வொரு step முடிந்த பிறகு next step run ஆகும்.</div>
+      <div class="point"><span class="arr">👉</span> Code-ல இதை callbacks use பண்ணினா nested ஆகும்.</div>
+    </div>
+  </div>
+
+
+  <!-- 6th Concept -->
+  <div class="part-header p6">
+    <span class="part-num">6️⃣</span>
+    <span class="part-title">Solution</span>
+  </div>
+
+  <div class="card p6">
+    <div class="def">Callback Hell avoid பண்ண modern JavaScript use பண்ணும்:</div>
+
+    <div class="sol">
+      <div class="sol-title">Modern Alternatives</div>
+      <div class="sol-row">
+        <span class="sol-pill">👉 Promises</span>
+        <span class="sol-pill">👉 Async / Await</span>
+      </div>
+    </div>
+
+    <div class="label-sm">Example:</div>
+    <pre><code><span class="fn">login</span>()
+.<span class="fn">then</span>(<span class="op">getData</span>)
+.<span class="fn">then</span>(<span class="op">updateData</span>)
+.<span class="fn">then</span>(<span class="op">saveData</span>)</code></pre>
+
+    <div class="meaning"><strong>Code clean ஆகும்.</strong></div>
+  </div>
+
+
+  <!-- 7th Concept -->
+  <div class="part-header p7">
+    <span class="part-num">7️⃣</span>
+    <span class="part-title">Class-ல எப்படி teach பண்ணணும் (Best Flow)</span>
+  </div>
+
+  <div class="card p7">
+    <div class="teach-flow">
+      <div class="teach-step"><span class="teach-num">1️⃣</span><span>Simple callback example</span></div>
+      <div class="teach-step"><span class="teach-num">2️⃣</span><span><code style="font-size:0.8rem;color:var(--cyan);">fs.readFile</code> example</span></div>
+      <div class="teach-step"><span class="teach-num">3️⃣</span><span>Sequential tasks example</span></div>
+      <div class="teach-step"><span class="teach-num">4️⃣</span><span>Callback hell code</span></div>
+      <div class="teach-step"><span class="teach-num">5️⃣</span><span>Problems explain</span></div>
+      <div class="teach-step"><span class="teach-num">6️⃣</span><span>Promises solution</span></div>
+    </div>
+  </div>
+
+
+  <!-- Interview Final -->
+  <div class="part-header p9">
+    <span class="part-num">⭐</span>
+    <span class="part-title">Interview One Line</span>
+  </div>
+
+  <div class="card p9">
+    <div class="interview">
+      <div class="int-label">⭐ Interview One Line</div>
+      <p>"Callback hell occurs when multiple callbacks are nested inside each other, making the code difficult to read and maintain."</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

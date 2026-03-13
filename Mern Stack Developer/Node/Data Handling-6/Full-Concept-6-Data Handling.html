@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streams & Buffers – Node.js Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07090d;
+    --surface:#0b0e15;
+    --card:#0f1219;
+    --border:#171d28;
+    --green:#4ade80;
+    --cyan:#22d3ee;
+    --yellow:#fbbf24;
+    --orange:#fb923c;
+    --pink:#f472b6;
+    --purple:#a78bfa;
+    --red:#f87171;
+    --blue:#60a5fa;
+    --teal:#2dd4bf;
+    --sky:#38bdf8;
+    --text:#dde3f0;
+    --muted:#2e3648;
+    --dim:#7888a8;
+    /* stream accent */
+    --sa:#22d3ee;
+    /* buffer accent */
+    --ba:#f472b6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Noto Sans Tamil','JetBrains Mono',monospace;
+    min-height:100vh;overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(34,211,238,.012) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(34,211,238,.012) 1px,transparent 1px);
+    background-size:42px 42px;pointer-events:none;z-index:0;
+  }
+  .wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:2rem 1.5rem 5rem;}
+
+  /* ── HEADER ── */
+  .header{text-align:center;padding:3rem 0 2.5rem;animation:fadeDown .6s ease both;}
+  .badge{
+    display:inline-block;
+    background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.28);
+    color:var(--cyan);font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    padding:.28rem 1rem;border-radius:100px;margin-bottom:1rem;
+  }
+  .header h1{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(1.8rem,4vw,2.7rem);font-weight:700;color:#fff;line-height:1.15;margin-bottom:.5rem;
+  }
+  .header h1 .s{color:var(--cyan);}
+  .header h1 .b{color:var(--pink);}
+  .header p{font-size:.88rem;color:var(--dim);}
+
+  /* ── PART DIVIDER ── */
+  .pdiv{
+    display:flex;align-items:center;gap:1rem;
+    margin:3rem 0 1.8rem;
+  }
+  .pdiv-line{flex:1;height:1px;}
+  .pdiv-label{
+    font-family:'JetBrains Mono',monospace;font-size:.7rem;
+    letter-spacing:.15em;text-transform:uppercase;
+    padding:.32rem 1rem;border-radius:100px;white-space:nowrap;
+  }
+  .pdiv.stream .pdiv-line{background:rgba(34,211,238,.2);}
+  .pdiv.stream .pdiv-label{background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.25);}
+  .pdiv.buffer .pdiv-line{background:rgba(244,114,182,.2);}
+  .pdiv.buffer .pdiv-label{background:rgba(244,114,182,.1);color:var(--pink);border:1px solid rgba(244,114,182,.25);}
+
+  /* ── SECTION HEADER (⭐) ── */
+  .sec{
+    display:flex;align-items:center;gap:.75rem;
+    margin:2rem 0 .85rem;
+  }
+  .sec-star{font-size:1rem;}
+  .sec-title{
+    font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.12em;
+  }
+  .sec-title.stream{color:var(--cyan);}
+  .sec-title.buffer{color:var(--pink);}
+  .sec-line{flex:1;height:1px;}
+  .stream .sec-line,.sec.stream .sec-line{background:rgba(34,211,238,.15);}
+  .buffer .sec-line,.sec.buffer .sec-line{background:rgba(244,114,182,.15);}
+
+  /* ── CARD ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:1.55rem 1.75rem;
+    margin-bottom:1rem;overflow:hidden;
+    animation:fadeUp .45s ease both;
+  }
+  .card.stream{border-top:2px solid var(--cyan);}
+  .card.buffer{border-top:2px solid var(--pink);}
+  .card.neutral{border-top:2px solid var(--purple);}
+
+  /* ── TYPE CARDS (4 stream types) ── */
+  .type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.7rem;margin:.78rem 0;}
+  .type-card{border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;}
+  .type-card.rd{background:rgba(34,211,238,.05); border-left:3px solid var(--cyan);}
+  .type-card.wr{background:rgba(74,222,128,.05);  border-left:3px solid var(--green);}
+  .type-card.du{background:rgba(251,191,36,.05);  border-left:3px solid var(--yellow);}
+  .type-card.tr{background:rgba(167,139,250,.05); border-left:3px solid var(--purple);}
+  .type-badge{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;
+    padding:.18rem .52rem;border-radius:5px;margin-bottom:.55rem;
+  }
+  .rd .type-badge{background:rgba(34,211,238,.15); color:var(--cyan);  border:1px solid rgba(34,211,238,.25);}
+  .wr .type-badge{background:rgba(74,222,128,.15); color:var(--green); border:1px solid rgba(74,222,128,.25);}
+  .du .type-badge{background:rgba(251,191,36,.15); color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+  .tr .type-badge{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+  .type-name{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;color:#fff;margin-bottom:.4rem;display:block;}
+  .type-desc{font-size:.81rem;color:var(--dim);line-height:1.6;margin-bottom:.45rem;}
+  .type-chips{display:flex;flex-wrap:wrap;gap:.3rem;}
+  .tchip{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;padding:.18rem .55rem;font-size:.72rem;color:var(--dim);}
+
+  /* ── UTILS ── */
+  .tag{
+    display:inline-block;font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    background:var(--surface);border:1px solid var(--border);
+    padding:.18rem .6rem;border-radius:100px;margin-bottom:.75rem;letter-spacing:.05em;
+  }
+  .lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:.85rem 0 .32rem;}
+  .def{
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
+    padding:.82rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.85;margin-bottom:.85rem;
+  }
+  .def strong{color:var(--text);}
+  .point{display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem;color:var(--dim);line-height:1.65;margin-bottom:.42rem;}
+  .point .a{font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+  .point .a.s{color:var(--cyan);}
+  .point .a.b{color:var(--pink);}
+  .point .a.g{color:var(--green);}
+
+  /* ── CODE ── */
+  pre{background:#05080f;border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin-bottom:.82rem;tab-size:2;}
+  code{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.9;color:#bec0e0;}
+  .kw {color:#f97316;}.fn {color:#60a5fa;}.str{color:#86efac;}.num{color:#c084fc;}.op {color:#dde3f0;}.prop{color:#22d3ee;}
+
+  /* ── OUTPUT ── */
+  .out-lbl{font-family:'JetBrains Mono',monospace;font-size:.61rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.28rem;}
+  .out{background:#040710;border:1px solid var(--border);border-left:3px solid var(--green);border-radius:6px;padding:.7rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);line-height:1.9;margin-bottom:.82rem;}
+
+  /* ── FLOW ── */
+  .flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin:.72rem 0;}
+  .fb{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;padding:.38rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--text);min-width:200px;text-align:center;}
+  .fa{font-family:'JetBrains Mono',monospace;font-size:.84rem;padding:.14rem 0 .14rem 1.3rem;line-height:1;}
+  .fa.s{color:var(--cyan);}.fa.b{color:var(--pink);}.fa.g{color:var(--green);}
+  .fb.cyan  {background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.22);color:var(--cyan);}
+  .fb.green {background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.22);color:var(--green);}
+  .fb.pink  {background:rgba(244,114,182,.07);border-color:rgba(244,114,182,.22);color:var(--pink);}
+  .fb.purple{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.22);color:var(--purple);}
+  .fb.yellow{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.22);color:var(--yellow);}
+  .fb.orange{background:rgba(251,146,60,.07);border-color:rgba(251,146,60,.22);color:var(--orange);}
+
+  /* ── FLOW COMPARE ── */
+  .flow-cmp{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.78rem 0;}
+  .flow-cmp-col{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:9px;padding:1rem 1.05rem;}
+  .flow-cmp-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;}
+  .flow-cmp-col:first-child .flow-cmp-title{color:var(--orange);}
+  .flow-cmp-col:last-child  .flow-cmp-title{color:var(--cyan);}
+
+  /* ── ADV GRID ── */
+  .adv{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.5rem;margin:.72rem 0;}
+  .adv-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:.72rem .85rem;font-size:.8rem;color:var(--dim);line-height:1.5;}
+  .adv-card .ico{font-size:.95rem;display:block;margin-bottom:.25rem;}
+
+  /* ── TABLE ── */
+  table{width:100%;border-collapse:collapse;font-size:.81rem;margin:.72rem 0;}
+  th{background:rgba(255,255,255,.04);border:1px solid var(--border);padding:.52rem 1rem;text-align:left;font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
+  td{border:1px solid var(--border);padding:.52rem 1rem;color:var(--dim);line-height:1.5;}
+  td:first-child{font-family:'JetBrains Mono',monospace;font-weight:600;}
+  .ts  td:first-child{color:var(--cyan);}
+  .tb  td:first-child{color:var(--pink);}
+  .tev td:first-child{color:var(--green);}
+  .tm  td:first-child{color:var(--blue);}
+  tr:hover td{background:rgba(255,255,255,.018);}
+
+  /* compare table header accents */
+  .cmp-th-s{color:var(--cyan) !important;}
+  .cmp-th-b{color:var(--pink) !important;}
+
+  /* ── HINT ── */
+  .hint-s{background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.18);border-left:3px solid var(--cyan);border-radius:8px;padding:.78rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.78rem 0;}
+  .hint-s strong{color:var(--cyan);}
+  .hint-b{background:rgba(244,114,182,.05);border:1px solid rgba(244,114,182,.18);border-left:3px solid var(--pink);border-radius:8px;padding:.78rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.78rem 0;}
+  .hint-b strong{color:var(--pink);}
+  .hint-g{background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.18);border-left:3px solid var(--green);border-radius:8px;padding:.78rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.78rem 0;}
+  .hint-g strong{color:var(--green);}
+
+  /* ── INTERVIEW ── */
+  .interview{background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.2);border-left:3px solid var(--purple);border-radius:8px;padding:1rem 1.12rem;margin-top:1.05rem;}
+  .int-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.48rem;}
+  .interview p{font-size:.86rem;color:var(--dim);line-height:1.82;font-style:italic;}
+
+  /* ── FINAL ANSWER ── */
+  .final{
+    border:1px solid var(--border);border-radius:12px;
+    padding:1.5rem 1.75rem;margin:.8rem 0;
+  }
+  .final.stream{background:rgba(34,211,238,.04);border-color:rgba(34,211,238,.18);}
+  .final.buffer{background:rgba(244,114,182,.04);border-color:rgba(244,114,182,.18);}
+  .final-lbl{font-family:'JetBrains Mono',monospace;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem;}
+  .final.stream .final-lbl{color:var(--cyan);}
+  .final.buffer .final-lbl{color:var(--pink);}
+  .final p{font-size:.87rem;color:var(--dim);line-height:1.85;font-style:italic;}
+
+  /* ── COMPLETE LIST ── */
+  .clist{display:flex;flex-direction:column;gap:.45rem;margin:.75rem 0;}
+  .cl-item{
+    display:flex;align-items:center;gap:.7rem;
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
+    padding:.55rem .9rem;font-size:.83rem;color:var(--dim);
+  }
+  .cl-num{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:.15rem .45rem;border-radius:5px;flex-shrink:0;}
+  .stream .cl-num{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.22);}
+  .buffer .cl-num{background:rgba(244,114,182,.12);color:var(--pink);border:1px solid rgba(244,114,182,.22);}
+  .cl-done{font-family:'JetBrains Mono',monospace;font-size:.7rem;margin-left:auto;color:var(--green);}
+
+  /* ── BUFFER METHOD CARDS ── */
+  .buf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.7rem;margin:.78rem 0;}
+  .buf-card{border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;}
+  .buf-card.from{background:rgba(244,114,182,.05);border-left:3px solid var(--pink);}
+  .buf-card.alloc{background:rgba(167,139,250,.05);border-left:3px solid var(--purple);}
+  .buf-card.tos{background:rgba(74,222,128,.05);border-left:3px solid var(--green);}
+  .buf-card.wrt{background:rgba(251,191,36,.05);border-left:3px solid var(--yellow);}
+  .buf-card.slc{background:rgba(34,211,238,.05);border-left:3px solid var(--cyan);}
+  .buf-card.cat{background:rgba(251,146,60,.05);border-left:3px solid var(--orange);}
+  .buf-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;padding:.18rem .52rem;border-radius:5px;margin-bottom:.5rem;}
+  .from  .buf-badge{background:rgba(244,114,182,.15);color:var(--pink);  border:1px solid rgba(244,114,182,.25);}
+  .alloc .buf-badge{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+  .tos   .buf-badge{background:rgba(74,222,128,.15); color:var(--green); border:1px solid rgba(74,222,128,.25);}
+  .wrt   .buf-badge{background:rgba(251,191,36,.15); color:var(--yellow);border:1px solid rgba(251,191,36,.25);}
+  .slc   .buf-badge{background:rgba(34,211,238,.15); color:var(--cyan);  border:1px solid rgba(34,211,238,.25);}
+  .cat   .buf-badge{background:rgba(251,146,60,.15); color:var(--orange);border:1px solid rgba(251,146,60,.25);}
+  .buf-name{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:700;color:#fff;display:block;margin-bottom:.35rem;}
+  .buf-desc{font-size:.81rem;color:var(--dim);line-height:1.6;margin-bottom:.5rem;}
+
+  /* ── BACKPRESSURE BOX ── */
+  .bp{background:rgba(248,113,113,.04);border:1px solid rgba(248,113,113,.18);border-radius:10px;padding:1.1rem 1.3rem;margin:.78rem 0;}
+  .bp-title{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--red);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem;}
+  .bp-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0;}
+  .bp-chip{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:6px;padding:.25rem .7rem;font-size:.78rem;color:var(--red);}
+
+  /* ── MODE TABLE ── */
+  .mode-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:.72rem 0;}
+  .mode-col{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:9px;padding:.9rem 1rem;}
+  .mode-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;}
+  .mode-col:first-child .mode-title{color:var(--cyan);}
+  .mode-col:last-child  .mode-title{color:var(--yellow);}
+  .mode-col p{font-size:.82rem;color:var(--dim);}
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}}
+
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  @media(max-width:640px){
+    .card{padding:1.2rem}
+    .wrap{padding:1rem 1rem 3.5rem}
+    .flow-cmp,.mode-row{grid-template-columns:1fr}
+    .type-grid{grid-template-columns:1fr}
+    .buf-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Node.js · Data Handling Concepts</div>
+    <h1>✅ <span class="s">Streams</span> &amp; <span class="b">Buffers</span></h1>
+    <p>Complete class notes · Tamil + English · Interview Ready</p>
+  </div>
+
+
+  <!-- ════════════════════════════════════
+       PART 1 · STREAMS
+       ════════════════════════════════════ -->
+  <div class="pdiv stream">
+    <div class="pdiv-line"></div>
+    <span class="pdiv-label">1️⃣ Streams</span>
+    <div class="pdiv-line"></div>
+  </div>
+
+  <!-- Tamil Explanation -->
+  <div class="card stream">
+    <div class="tag">📌 Tamil Explanation</div>
+    <div class="def">
+      Stream என்பது <span style="color:var(--cyan);">👉</span> data-ஐ small chunks (பகுதிகள்) ஆக process பண்ணும் method.<br>
+      Large files handle பண்ணும்போது முழு file memory-க்கு load பண்ணாமல் piece by piece process பண்ணும்.<br>
+      அதனால தான் Node.js high performance.
+    </div>
+    <div class="lbl">Example:</div>
+    <div class="adv">
+      <div class="adv-card"><span class="ico">🎬</span>Video streaming</div>
+      <div class="adv-card"><span class="ico">📄</span>File reading</div>
+      <div class="adv-card"><span class="ico">🌐</span>Network data transfer</div>
+    </div>
+  </div>
+
+  <!-- Why Streams Important -->
+  <div class="sec stream">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title stream">Why Streams Important</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card stream">
+    <div class="flow-cmp">
+      <div class="flow-cmp-col">
+        <div class="flow-cmp-title">Normal file read:</div>
+        <div class="flow">
+          <div class="fb orange">File</div>
+          <div class="fa s">↓</div>
+          <div class="fb orange">Memory</div>
+          <div class="fa s">↓</div>
+          <div class="fb orange">Process</div>
+        </div>
+      </div>
+      <div class="flow-cmp-col">
+        <div class="flow-cmp-title">Streams:</div>
+        <div class="flow">
+          <div class="fb cyan">File</div>
+          <div class="fa s">↓</div>
+          <div class="fb cyan">Chunk</div>
+          <div class="fa s">↓</div>
+          <div class="fb green">Process</div>
+          <div class="fa s">↓</div>
+          <div class="fb cyan">Chunk</div>
+          <div class="fa s">↓</div>
+          <div class="fb green">Process</div>
+        </div>
+      </div>
+    </div>
+    <div class="hint-s">
+      <strong>👉 Memory usage குறையும்</strong> &nbsp;·&nbsp; <strong>👉 Fast processing</strong>
+    </div>
+  </div>
+
+  <!-- Types of Streams -->
+  <div class="sec stream">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title stream">Types of Streams (Interview Important)</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card stream">
+    <div class="type-grid">
+
+      <div class="type-card rd">
+        <span class="type-badge">1️⃣</span>
+        <span class="type-name">Readable Stream</span>
+        <p class="type-desc">Data read பண்ண use பண்ணும்.</p>
+        <div class="type-chips">
+          <span class="tchip">reading file</span>
+          <span class="tchip">HTTP request</span>
+        </div>
+      </div>
+
+      <div class="type-card wr">
+        <span class="type-badge">2️⃣</span>
+        <span class="type-name">Writable Stream</span>
+        <p class="type-desc">Data write பண்ண use பண்ணும்.</p>
+        <div class="type-chips">
+          <span class="tchip">writing file</span>
+          <span class="tchip">HTTP response</span>
+        </div>
+      </div>
+
+      <div class="type-card du">
+        <span class="type-badge">3️⃣</span>
+        <span class="type-name">Duplex Stream</span>
+        <p class="type-desc"><span style="color:var(--yellow);">👉</span> Read + Write இரண்டும் செய்யும்.</p>
+        <div class="type-chips">
+          <span class="tchip">TCP socket</span>
+        </div>
+      </div>
+
+      <div class="type-card tr">
+        <span class="type-badge">4️⃣</span>
+        <span class="type-name">Transform Stream</span>
+        <p class="type-desc"><span style="color:var(--purple);">👉</span> data read பண்ணி transform செய்து write பண்ணும்.</p>
+        <div class="type-chips">
+          <span class="tchip">file compression</span>
+          <span class="tchip">encryption</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Readable code -->
+    <div class="lbl" style="margin-top:1.2rem;">1️⃣ Readable Stream — Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">fs</span> = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="kw">const</span> <span class="op">readStream</span> = <span class="op">fs</span>.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>,<span class="str">"utf8"</span>)
+
+<span class="op">readStream</span>.<span class="fn">on</span>(<span class="str">"data"</span>,(<span class="op">chunk</span>)=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">chunk</span>)
+})</code></pre>
+
+    <!-- Writable code -->
+    <div class="lbl">2️⃣ Writable Stream — Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">fs</span> = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="kw">const</span> <span class="op">writeStream</span> = <span class="op">fs</span>.<span class="fn">createWriteStream</span>(<span class="str">"output.txt"</span>)
+
+<span class="op">writeStream</span>.<span class="fn">write</span>(<span class="str">"Hello Node.js"</span>)</code></pre>
+  </div>
+
+  <!-- Stream Methods -->
+  <div class="sec stream">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title stream">Stream Methods</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card stream">
+    <table>
+      <tr><th>Method</th><th>Purpose</th></tr>
+      <tr class="tm"><td>pipe()</td>      <td>connect streams</td></tr>
+      <tr class="tm"><td>on("data")</td>  <td>receive data</td></tr>
+      <tr class="tm"><td>on("end")</td>   <td>stream finished</td></tr>
+    </table>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">fs</span> = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="kw">const</span> <span class="op">readStream</span>  = <span class="op">fs</span>.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>)
+<span class="kw">const</span> <span class="op">writeStream</span> = <span class="op">fs</span>.<span class="fn">createWriteStream</span>(<span class="str">"copy.txt"</span>)
+
+<span class="op">readStream</span>.<span class="fn">pipe</span>(<span class="op">writeStream</span>)</code></pre>
+  </div>
+
+  <!-- Stream Advantages -->
+  <div class="sec stream">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title stream">Stream Advantages</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card stream">
+    <div class="adv">
+      <div class="adv-card"><span class="ico">✅</span>Memory efficient</div>
+      <div class="adv-card"><span class="ico">✅</span>Fast processing</div>
+      <div class="adv-card"><span class="ico">✅</span>Large data handle</div>
+      <div class="adv-card"><span class="ico">✅</span>Real-time data processing</div>
+    </div>
+  </div>
+
+  <!-- Stream Interview Sentence -->
+  <div class="sec stream">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title stream">Interview Sentence</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card stream">
+    <div class="interview">
+      <div class="int-lbl">⭐ Interview Sentence</div>
+      <p>"Streams allow Node.js to process large amounts of data efficiently by reading and writing data in small chunks instead of loading the entire data into memory."</p>
+    </div>
+  </div>
+
+  <!-- Missing Small Concepts -->
+  <div class="sec stream">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title stream">Missing Small Concepts (Interview Important)</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <!-- 1. Stream Events -->
+  <div class="card stream">
+    <div class="tag">1️⃣ Stream Events</div>
+    <div class="def">Streams event-based system.</div>
+    <div class="lbl">Important events:</div>
+    <table>
+      <tr><th>Event</th><th>Purpose</th></tr>
+      <tr class="tev"><td>data</td>  <td>chunk receive</td></tr>
+      <tr class="tev"><td>end</td>   <td>reading finished</td></tr>
+      <tr class="tev"><td>error</td> <td>error handling</td></tr>
+      <tr class="tev"><td>finish</td><td>writing finished</td></tr>
+    </table>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="op">readStream</span>.<span class="fn">on</span>(<span class="str">"end"</span>,()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"File reading finished"</span>)
+})
+
+<span class="op">readStream</span>.<span class="fn">on</span>(<span class="str">"error"</span>,(<span class="op">err</span>)=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>)
+})</code></pre>
+  </div>
+
+  <!-- 2. Backpressure -->
+  <div class="card stream">
+    <div class="tag">2️⃣ Backpressure (Very Important Interview Question)</div>
+    <div class="lbl">Tamil Explanation</div>
+    <div class="def">
+      Backpressure என்பது <span style="color:var(--red);">👉</span> data producer fast-ஆ send பண்ணும் போது consumer slow-ஆ process பண்ணும் situation.<br>
+      Streams automatically flow control handle பண்ணும்.
+    </div>
+    <div class="bp">
+      <div class="bp-title">⚡ Backpressure Flow</div>
+      <div class="flow" style="margin-bottom:.9rem;">
+        <div class="fb orange">Fast Data Source</div>
+        <div class="fa s">↓</div>
+        <div class="fb yellow">Slow Destination</div>
+      </div>
+      <div class="lbl">Solution:</div>
+      <div class="bp-chips">
+        <span class="bp-chip">👉 stream buffering</span>
+        <span class="bp-chip">👉 pipe() flow control</span>
+      </div>
+    </div>
+    <div class="interview" style="margin-top:.8rem;">
+      <div class="int-lbl">English sentence</div>
+      <p>"Backpressure occurs when the data producer is faster than the consumer, and streams handle it using flow control."</p>
+    </div>
+  </div>
+
+  <!-- 3. Flowing Mode vs Paused Mode -->
+  <div class="card stream">
+    <div class="tag">3️⃣ Flowing Mode vs Paused Mode</div>
+    <div class="def">Readable streams 2 modes இருக்கும்.</div>
+    <div class="mode-row">
+      <div class="mode-col">
+        <div class="mode-title">Flowing</div>
+        <p>data automatically flow</p>
+      </div>
+      <div class="mode-col">
+        <div class="mode-title">Paused</div>
+        <p>manual reading</p>
+      </div>
+    </div>
+    <div class="lbl">Example:</div>
+    <pre><code><span class="op">readStream</span>.<span class="fn">pause</span>()
+<span class="op">readStream</span>.<span class="fn">resume</span>()</code></pre>
+  </div>
+
+  <!-- 4. HighWaterMark -->
+  <div class="card stream">
+    <div class="tag">4️⃣ HighWaterMark (Advanced but interview useful)</div>
+    <div class="lbl">Tamil Explanation</div>
+    <div class="def">Stream buffer size control பண்ணும் option.</div>
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">stream</span> = <span class="op">fs</span>.<span class="fn">createReadStream</span>(<span class="str">"data.txt"</span>,{
+  <span class="prop">highWaterMark</span>: <span class="num">16</span> * <span class="num">1024</span>
+})</code></pre>
+    <div class="point"><span class="a s">👉</span> 16KB chunk size.</div>
+  </div>
+
+  <!-- Final Stream Concepts Complete List -->
+  <div class="sec stream">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title stream">Final Stream Concepts (Complete List)</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card stream">
+    <div class="def">Node.js Streams include:</div>
+    <div class="clist stream">
+      <div class="cl-item"><span class="cl-num">1️⃣</span> Stream Basics       <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">2️⃣</span> Why Streams         <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">3️⃣</span> Stream Types        <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">4️⃣</span> Stream Methods      <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">5️⃣</span> Stream Events       <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">6️⃣</span> Backpressure        <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">7️⃣</span> Flowing / Paused mode <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">8️⃣</span> HighWaterMark       <span class="cl-done">✓</span></div>
+    </div>
+    <div class="hint-s" style="margin-top:.9rem;"><strong>👉 இப்போ 100% Streams concept cover 🎯</strong></div>
+  </div>
+
+  <!-- Final Interview Answer Stream -->
+  <div class="sec stream">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title stream">Final Interview Answer (Perfect)</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card stream">
+    <div class="def">நீ interview-ல் இப்படிச் சொல்லலாம்:</div>
+    <div class="final stream">
+      <div class="final-lbl">English</div>
+      <p>"Streams in Node.js are used to handle large data efficiently by processing data in small chunks instead of loading the entire data into memory. There are four types of streams: readable, writable, duplex, and transform. Streams use events like data, end, and error, and they manage flow control using mechanisms like backpressure."</p>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════
+       PART 2 · BUFFERS
+       ════════════════════════════════════ -->
+  <div class="pdiv buffer">
+    <div class="pdiv-line"></div>
+    <span class="pdiv-label">2️⃣ Buffers</span>
+    <div class="pdiv-line"></div>
+  </div>
+
+  <!-- Tamil Explanation -->
+  <div class="card buffer">
+    <div class="tag">📌 Tamil Explanation</div>
+    <div class="def">
+      Buffer என்பது <span style="color:var(--pink);">👉</span> binary data store பண்ணும் temporary memory area.<br>
+      Node.js-ல் binary data handle பண்ண buffers use பண்ணப்படும்.
+    </div>
+    <div class="lbl">Example:</div>
+    <div class="adv">
+      <div class="adv-card"><span class="ico">📁</span>file reading</div>
+      <div class="adv-card"><span class="ico">🖼️</span>image processing</div>
+      <div class="adv-card"><span class="ico">📦</span>network packets</div>
+    </div>
+  </div>
+
+  <!-- Why Buffers Used -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Why Buffers Used</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card buffer">
+    <div class="def">Binary data handle பண்ண:</div>
+    <div class="adv">
+      <div class="adv-card"><span class="ico">🖼️</span>images</div>
+      <div class="adv-card"><span class="ico">🎬</span>videos</div>
+      <div class="adv-card"><span class="ico">📄</span>files</div>
+      <div class="adv-card"><span class="ico">🌐</span>network data</div>
+    </div>
+  </div>
+
+  <!-- Buffer Creation -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Buffer Creation</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card buffer">
+    <div class="buf-grid">
+
+      <!-- Buffer.from -->
+      <div class="buf-card from">
+        <span class="buf-badge">1️⃣</span>
+        <span class="buf-name">Buffer.from()</span>
+        <p class="buf-desc"></p>
+        <pre style="margin-bottom:.5rem;"><code><span class="kw">const</span> <span class="op">buffer</span> = <span class="fn">Buffer</span>.<span class="fn">from</span>(<span class="str">"Hello"</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">buffer</span>)</code></pre>
+        <div class="out-lbl">Output:</div>
+        <div class="out" style="margin-bottom:0;">&lt;Buffer 48 65 6c 6c 6f&gt;</div>
+      </div>
+
+      <!-- Buffer.alloc -->
+      <div class="buf-card alloc">
+        <span class="buf-badge">2️⃣</span>
+        <span class="buf-name">Buffer.alloc()</span>
+        <p class="buf-desc">Memory allocate பண்ணும்.</p>
+        <pre style="margin-bottom:.5rem;"><code><span class="kw">const</span> <span class="op">buffer</span> = <span class="fn">Buffer</span>.<span class="fn">alloc</span>(<span class="num">10</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">buffer</span>)</code></pre>
+      </div>
+
+      <!-- Buffer.toString -->
+      <div class="buf-card tos">
+        <span class="buf-badge">3️⃣</span>
+        <span class="buf-name">Buffer.toString()</span>
+        <p class="buf-desc">Buffer data convert to string.</p>
+        <pre style="margin-bottom:.5rem;"><code><span class="kw">const</span> <span class="op">buffer</span> = <span class="fn">Buffer</span>.<span class="fn">from</span>(<span class="str">"Node"</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">buffer</span>.<span class="fn">toString</span>())</code></pre>
+        <div class="out-lbl">Output:</div>
+        <div class="out" style="margin-bottom:0;">Node</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Buffer Example -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Buffer Example</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card buffer">
+    <pre><code><span class="kw">const</span> <span class="op">buffer</span> = <span class="fn">Buffer</span>.<span class="fn">from</span>(<span class="str">"Hello"</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">buffer</span>.<span class="prop">length</span>)
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">buffer</span>.<span class="fn">toString</span>())</code></pre>
+    <div class="out-lbl">Output:</div>
+    <div class="out">5<br>Hello</div>
+  </div>
+
+  <!-- Buffer Advantages -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Buffer Advantages</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card buffer">
+    <div class="adv">
+      <div class="adv-card"><span class="ico">✅</span>Binary data handling</div>
+      <div class="adv-card"><span class="ico">✅</span>Fast memory operations</div>
+      <div class="adv-card"><span class="ico">✅</span>Network communication</div>
+      <div class="adv-card"><span class="ico">✅</span>File processing</div>
+    </div>
+  </div>
+
+  <!-- Buffer Interview Sentence -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Interview Sentence</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card buffer">
+    <div class="interview">
+      <div class="int-lbl">⭐ Interview Sentence</div>
+      <p>"A buffer is a temporary memory area used in Node.js to store binary data while it is being transferred between different processes."</p>
+    </div>
+  </div>
+
+  <!-- Streams vs Buffers -->
+  <div class="sec neutral">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title" style="color:var(--purple);">Streams vs Buffers (Interview Question)</span>
+    <div class="sec-line" style="background:rgba(167,139,250,.15);"></div>
+  </div>
+
+  <div class="card neutral">
+    <table>
+      <tr>
+        <th>Feature</th>
+        <th class="cmp-th-s">Streams</th>
+        <th class="cmp-th-b">Buffers</th>
+      </tr>
+      <tr>
+        <td style="color:var(--dim);">Data handling</td>
+        <td style="color:var(--cyan);">Chunk by chunk</td>
+        <td style="color:var(--pink);">Memory storage</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim);">Purpose</td>
+        <td style="color:var(--cyan);">Process data</td>
+        <td style="color:var(--pink);">Store binary data</td>
+      </tr>
+      <tr>
+        <td style="color:var(--dim);">Memory usage</td>
+        <td style="color:var(--cyan);">Low</td>
+        <td style="color:var(--pink);">Higher</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Final Interview Answer Buffer (1st) -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Final Interview Answer (Perfect)</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card buffer">
+    <div class="def">Interview-ல நீ இப்படிச் சொல்லலாம்:</div>
+    <div class="final buffer">
+      <div class="final-lbl">English Answer</div>
+      <p>"In Node.js, streams and buffers are used for efficient data handling. Streams process data in small chunks without loading the entire data into memory, while buffers are used to store binary data temporarily during data transfer."</p>
+    </div>
+  </div>
+
+  <!-- Missing Important Buffer Concepts -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Missing Important Buffer Concepts</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <!-- 1. Buffer Length -->
+  <div class="card buffer">
+    <div class="tag">1️⃣ Buffer Length</div>
+    <div class="lbl">Tamil Explanation</div>
+    <div class="def">Buffer-ல store பண்ணிய data size-ஐ check பண்ண use பண்ணுறோம்.</div>
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">buffer</span> = <span class="fn">Buffer</span>.<span class="fn">from</span>(<span class="str">"Hello"</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">buffer</span>.<span class="prop">length</span>)</code></pre>
+    <div class="out-lbl">Output:</div>
+    <div class="out">5</div>
+    <div class="interview">
+      <div class="int-lbl">Interview Sentence</div>
+      <p>"Buffer length represents the size of the stored binary data."</p>
+    </div>
+  </div>
+
+  <!-- 2. Buffer Write Method -->
+  <div class="card buffer">
+    <div class="tag">2️⃣ Buffer Write Method</div>
+    <div class="lbl">Tamil Explanation</div>
+    <div class="def">Buffer-க்கு new data write பண்ண use பண்ணப்படும்.</div>
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">buffer</span> = <span class="fn">Buffer</span>.<span class="fn">alloc</span>(<span class="num">10</span>)
+
+<span class="op">buffer</span>.<span class="fn">write</span>(<span class="str">"Node"</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">buffer</span>.<span class="fn">toString</span>())</code></pre>
+    <div class="out-lbl">Output:</div>
+    <div class="out">Node</div>
+    <div class="interview">
+      <div class="int-lbl">Interview Sentence</div>
+      <p>"The write method is used to write data into a buffer."</p>
+    </div>
+  </div>
+
+  <!-- 3. Buffer Slice -->
+  <div class="card buffer">
+    <div class="tag">3️⃣ Buffer Slice</div>
+    <div class="lbl">Tamil Explanation</div>
+    <div class="def">Buffer-ல இருக்கும் data-வின் ஒரு பகுதியை extract பண்ண use பண்ணப்படும்.</div>
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">buffer</span> = <span class="fn">Buffer</span>.<span class="fn">from</span>(<span class="str">"Hello Node"</span>)
+
+<span class="kw">const</span> <span class="op">slice</span> = <span class="op">buffer</span>.<span class="fn">slice</span>(<span class="num">0</span>,<span class="num">5</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">slice</span>.<span class="fn">toString</span>())</code></pre>
+    <div class="out-lbl">Output:</div>
+    <div class="out">Hello</div>
+    <div class="interview">
+      <div class="int-lbl">Interview Sentence</div>
+      <p>"Buffer slice is used to extract a portion of the buffer without copying the original data."</p>
+    </div>
+  </div>
+
+  <!-- 4. Buffer Concatenation -->
+  <div class="card buffer">
+    <div class="tag">4️⃣ Buffer Concatenation</div>
+    <div class="lbl">Tamil Explanation</div>
+    <div class="def">Multiple buffers-ஐ ஒரே buffer-ஆ combine பண்ண use பண்ணப்படும்.</div>
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">const</span> <span class="op">buffer1</span> = <span class="fn">Buffer</span>.<span class="fn">from</span>(<span class="str">"Hello "</span>)
+<span class="kw">const</span> <span class="op">buffer2</span> = <span class="fn">Buffer</span>.<span class="fn">from</span>(<span class="str">"Node"</span>)
+
+<span class="kw">const</span> <span class="op">result</span> = <span class="fn">Buffer</span>.<span class="fn">concat</span>([<span class="op">buffer1</span>,<span class="op">buffer2</span>])
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="op">result</span>.<span class="fn">toString</span>())</code></pre>
+    <div class="out-lbl">Output:</div>
+    <div class="out">Hello Node</div>
+    <div class="interview">
+      <div class="int-lbl">Interview Sentence</div>
+      <p>"Buffer.concat is used to combine multiple buffers into a single buffer."</p>
+    </div>
+  </div>
+
+  <!-- Complete Buffer Concepts -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Complete Buffer Concepts (Interview List)</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card buffer">
+    <div class="def">Node.js Buffers include:</div>
+    <div class="clist buffer">
+      <div class="cl-item"><span class="cl-num">1️⃣</span> Buffer Basics        <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">2️⃣</span> Binary Data Handling  <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">3️⃣</span> Buffer Creation — Buffer.from() · Buffer.alloc() <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">4️⃣</span> Buffer Methods — toString() · write() · slice() · concat() <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">5️⃣</span> Buffer Length        <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">6️⃣</span> Buffer Advantages    <span class="cl-done">✓</span></div>
+      <div class="cl-item"><span class="cl-num">7️⃣</span> Streams vs Buffers   <span class="cl-done">✓</span></div>
+    </div>
+    <div class="hint-b" style="margin-top:.9rem;"><strong>👉 இப்போ Node.js Buffers – 100% covered 🎯</strong></div>
+  </div>
+
+  <!-- Final Buffer Interview Answer -->
+  <div class="sec buffer">
+    <span class="sec-star">⭐</span>
+    <span class="sec-title buffer">Final Interview Answer</span>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="card buffer">
+    <div class="def">Interview-ல நீ short-ஆ இப்படிச் சொல்லலாம்:</div>
+    <div class="final buffer">
+      <div class="final-lbl">English Answer</div>
+      <p>"Buffers in Node.js are used to store binary data temporarily in memory. They are commonly used when working with streams, file systems, and network operations. Buffers support operations like creation, writing data, slicing, and concatenation."</p>
+    </div>
+  </div>
+
+  <!-- COMPLETE CHECKMARK -->
+  <div class="card neutral" style="text-align:center;padding:2rem;">
+    <div style="font-size:1.5rem;margin-bottom:.8rem;">✅</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;color:#fff;margin-bottom:.6rem;">இப்போ Node.js Data Handling முழுமையாக complete</div>
+    <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+      <span style="background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.3rem .9rem;border-radius:100px;">Streams ✅</span>
+      <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25);color:var(--pink);font-family:'JetBrains Mono',monospace;font-size:.78rem;padding:.3rem .9rem;border-radius:100px;">Buffers ✅</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

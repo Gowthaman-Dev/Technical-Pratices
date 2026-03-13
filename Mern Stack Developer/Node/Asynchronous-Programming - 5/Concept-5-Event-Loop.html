@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Loop – Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#09090e;
+    --surface:#0d0e15;
+    --card:#111319;
+    --border:#1a1d2a;
+    --green:#4ade80;
+    --cyan:#22d3ee;
+    --yellow:#fbbf24;
+    --orange:#fb923c;
+    --pink:#f472b6;
+    --purple:#a78bfa;
+    --red:#f87171;
+    --blue:#60a5fa;
+    --text:#dde3f0;
+    --muted:#383d55;
+    --dim:#7d88a8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Noto Sans Tamil','JetBrains Mono',monospace;
+    min-height:100vh;overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(251,191,36,.014) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(251,191,36,.014) 1px,transparent 1px);
+    background-size:38px 38px;
+    pointer-events:none;z-index:0;
+  }
+  .wrap{
+    position:relative;z-index:1;
+    max-width:980px;margin:0 auto;
+    padding:2rem 1.5rem 5rem;
+  }
+
+  /* ── HEADER ── */
+  .header{text-align:center;padding:3rem 0 2.5rem;animation:fadeDown .6s ease both;}
+  .badge{
+    display:inline-block;
+    background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.28);
+    color:var(--yellow);font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    padding:.28rem 1rem;border-radius:100px;margin-bottom:1.1rem;
+  }
+  .header h1{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(1.9rem,4.5vw,2.8rem);
+    font-weight:700;color:#fff;line-height:1.1;margin-bottom:.5rem;
+  }
+  .header h1 span{color:var(--yellow);}
+  .header p{font-size:.88rem;color:var(--dim);}
+
+  /* ── STEP HEADER ── */
+  .shdr{
+    display:flex;align-items:center;gap:.9rem;
+    margin:2.4rem 0 1rem;
+    animation:fadeUp .45s ease both;
+  }
+  .snum{
+    font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:700;
+    padding:.24rem .6rem;border-radius:6px;white-space:nowrap;
+  }
+  .c1  .snum{background:rgba(96,165,250,.14); color:var(--blue);  border:1px solid rgba(96,165,250,.28);}
+  .c2  .snum{background:rgba(251,191,36,.14); color:var(--yellow);border:1px solid rgba(251,191,36,.28);}
+  .c3  .snum{background:rgba(34,211,238,.14); color:var(--cyan);  border:1px solid rgba(34,211,238,.28);}
+  .c4  .snum{background:rgba(167,139,250,.14);color:var(--purple);border:1px solid rgba(167,139,250,.28);}
+  .c5  .snum{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.28);}
+  .c6  .snum{background:rgba(251,146,60,.14); color:var(--orange);border:1px solid rgba(251,146,60,.28);}
+  .c7  .snum{background:rgba(248,113,113,.14);color:var(--red);   border:1px solid rgba(248,113,113,.28);}
+  .c8  .snum{background:rgba(34,211,238,.14); color:var(--cyan);  border:1px solid rgba(34,211,238,.28);}
+  .c9  .snum{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.28);}
+  .c10 .snum{background:rgba(244,114,182,.14);color:var(--pink);  border:1px solid rgba(244,114,182,.28);}
+  .c11 .snum{background:rgba(167,139,250,.14);color:var(--purple);border:1px solid rgba(167,139,250,.28);}
+
+  .stitle{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;color:#fff;}
+
+  /* ── CARD ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:1.6rem 1.8rem;
+    margin-bottom:1rem;overflow:hidden;
+    animation:fadeUp .45s ease both;
+  }
+  .card.c1 {border-top:2px solid var(--blue);}
+  .card.c2 {border-top:2px solid var(--yellow);}
+  .card.c3 {border-top:2px solid var(--cyan);}
+  .card.c4 {border-top:2px solid var(--purple);}
+  .card.c5 {border-top:2px solid var(--green);}
+  .card.c6 {border-top:2px solid var(--orange);}
+  .card.c7 {border-top:2px solid var(--red);}
+  .card.c8 {border-top:2px solid var(--cyan);}
+  .card.c9 {border-top:2px solid var(--green);}
+  .card.c10{border-top:2px solid var(--pink);}
+  .card.c11{border-top:2px solid var(--purple);}
+
+  /* ── UTILS ── */
+  .tag{
+    display:inline-block;font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    background:var(--surface);border:1px solid var(--border);
+    padding:.18rem .6rem;border-radius:100px;margin-bottom:.75rem;letter-spacing:.05em;
+  }
+  .lbl{
+    font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.1em;margin:.9rem 0 .35rem;
+  }
+  .def{
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
+    padding:.85rem 1.05rem;font-size:.86rem;color:var(--dim);line-height:1.85;margin-bottom:.9rem;
+  }
+  .def strong{color:var(--text);}
+  .point{
+    display:flex;align-items:flex-start;gap:.5rem;
+    font-size:.84rem;color:var(--dim);line-height:1.65;margin-bottom:.45rem;
+  }
+  .point .a{color:var(--yellow);font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+
+  /* ── CODE ── */
+  pre{
+    background:#06070d;border:1px solid var(--border);border-radius:8px;
+    padding:1.05rem 1.25rem;overflow-x:auto;margin-bottom:.85rem;tab-size:2;
+  }
+  code{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.9;color:#bec8e0;}
+  .kw {color:#f97316;}
+  .fn {color:#60a5fa;}
+  .str{color:#86efac;}
+  .num{color:#c084fc;}
+  .op {color:#dde3f0;}
+
+  /* ── OUTPUT ── */
+  .out-lbl{font-family:'JetBrains Mono',monospace;font-size:.61rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.28rem;}
+  .out{
+    background:#050610;border:1px solid var(--border);
+    border-left:3px solid var(--green);border-radius:6px;
+    padding:.7rem 1.05rem;
+    font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);line-height:1.9;
+    margin-bottom:.85rem;
+  }
+
+  /* ── FLOW (vertical) ── */
+  .flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin:.75rem 0;}
+  .fb{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;
+    padding:.4rem .95rem;font-family:'JetBrains Mono',monospace;
+    font-size:.77rem;color:var(--text);min-width:180px;text-align:center;
+  }
+  .fa{color:var(--yellow);font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.15rem 0 .15rem 1.3rem;line-height:1;}
+  .fb.yellow{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.2);color:var(--yellow);}
+  .fb.green {background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.2);color:var(--green);}
+  .fb.cyan  {background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.2);color:var(--cyan);}
+  .fb.blue  {background:rgba(96,165,250,.07);border-color:rgba(96,165,250,.2);color:var(--blue);}
+  .fb.purple{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.2);color:var(--purple);}
+  .fb.orange{background:rgba(251,146,60,.07);border-color:rgba(251,146,60,.2);color:var(--orange);}
+
+  /* ── BOARD ── */
+  .board{
+    background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.15);
+    border-left:3px solid var(--yellow);border-radius:8px;
+    padding:.85rem 1.05rem;margin:.75rem 0;
+    font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--yellow);line-height:2;
+  }
+  .board .btitle{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;}
+
+  /* ── SPEECH ── */
+  .speech{
+    display:flex;align-items:flex-start;gap:.7rem;
+    background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.15);
+    border-left:3px solid var(--blue);border-radius:8px;
+    padding:.9rem 1.1rem;margin-bottom:1rem;font-size:.87rem;color:var(--dim);line-height:1.75;
+  }
+  .speech .ico{font-size:1rem;flex-shrink:0;margin-top:.05rem;}
+
+  /* ── HINT ── */
+  .hint{
+    background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.18);
+    border-left:3px solid var(--yellow);border-radius:8px;
+    padding:.8rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.8rem 0;
+  }
+  .hint strong{color:var(--yellow);}
+  .hint-green{
+    background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.18);
+    border-left:3px solid var(--green);border-radius:8px;
+    padding:.8rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.8rem 0;
+  }
+  .hint-green strong{color:var(--green);}
+
+  /* ── COMPONENT CARDS ── */
+  .comp-grid{display:flex;flex-direction:column;gap:.7rem;margin:.8rem 0;}
+  .comp{
+    border:1px solid var(--border);border-radius:10px;
+    padding:1rem 1.2rem;
+  }
+  .comp.callstack {background:rgba(96,165,250,.05); border-left:3px solid var(--blue);}
+  .comp.nodeapi   {background:rgba(251,146,60,.05);  border-left:3px solid var(--orange);}
+  .comp.cbqueue   {background:rgba(167,139,250,.05); border-left:3px solid var(--purple);}
+  .comp.evtloop   {background:rgba(74,222,128,.05);  border-left:3px solid var(--green);}
+
+  .comp-header{
+    display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;
+  }
+  .comp-badge{
+    font-family:'JetBrains Mono',monospace;font-size:.63rem;font-weight:700;
+    padding:.2rem .55rem;border-radius:5px;white-space:nowrap;
+  }
+  .callstack .comp-badge{background:rgba(96,165,250,.15); color:var(--blue);  border:1px solid rgba(96,165,250,.25);}
+  .nodeapi   .comp-badge{background:rgba(251,146,60,.15); color:var(--orange);border:1px solid rgba(251,146,60,.25);}
+  .cbqueue   .comp-badge{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.25);}
+  .evtloop   .comp-badge{background:rgba(74,222,128,.15); color:var(--green); border:1px solid rgba(74,222,128,.25);}
+
+  .comp-title{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#fff;}
+  .comp p{font-size:.84rem;color:var(--dim);line-height:1.65;margin-bottom:.5rem;}
+  .comp .point{margin-bottom:.3rem;}
+  .comp .point .a{color:var(--yellow);}
+
+  /* chips */
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0 .5rem;}
+  .chip{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;
+    padding:.25rem .7rem;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--dim);
+  }
+
+  /* check block */
+  .check-block{
+    background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.15);border-radius:7px;
+    padding:.6rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);
+    margin:.5rem 0;
+  }
+
+  /* ── EXECUTION STEPS ── */
+  .exec-list{display:flex;flex-direction:column;gap:.6rem;margin:.8rem 0;}
+  .exec-item{
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:9px;
+    padding:1rem 1.1rem;
+  }
+  .exec-step-lbl{
+    font-family:'JetBrains Mono',monospace;font-size:.62rem;
+    color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem;
+  }
+  .exec-item .point .a{color:var(--yellow);}
+
+  /* ── WHY IMPORTANT ── */
+  .why-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.5rem;margin:.75rem 0;}
+  .why-card{
+    background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;
+    padding:.75rem .9rem;
+  }
+  .why-card .chk{color:var(--green);font-size:.9rem;display:block;margin-bottom:.3rem;}
+  .why-card .wtitle{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text);display:block;margin-bottom:.15rem;}
+  .why-card .wdesc{font-size:.78rem;color:var(--dim);}
+
+  /* ── RESTAURANT ── */
+  .rest{
+    background:rgba(251,146,60,.04);border:1px solid rgba(251,146,60,.15);border-radius:10px;
+    padding:1.1rem 1.3rem;margin:.8rem 0;
+  }
+  .rest-title{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--orange);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.9rem;}
+  .rest-flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-bottom:.85rem;}
+  .rest-step{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.18);border-radius:7px;padding:.38rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.77rem;color:var(--orange);min-width:140px;text-align:center;}
+  .rest-arr{color:var(--orange);font-size:.85rem;padding:.14rem 0 .14rem 1.2rem;line-height:1;font-family:'JetBrains Mono',monospace;}
+  .rest p{font-size:.84rem;color:var(--dim);line-height:1.7;margin-bottom:.4rem;}
+
+  /* ── INTERVIEW ── */
+  .interview{background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.2);border-left:3px solid var(--purple);border-radius:8px;padding:1rem 1.15rem;margin-top:1.1rem;}
+  .int-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
+  .interview p{font-size:.87rem;color:var(--dim);line-height:1.8;font-style:italic;}
+
+  /* follow-up */
+  .followup{
+    background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.15);
+    border-left:3px solid var(--yellow);border-radius:8px;
+    padding:.8rem 1rem;margin-top:.8rem;
+    font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--yellow);line-height:1.7;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}}
+
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  @media(max-width:600px){
+    .card{padding:1.2rem}
+    .wrap{padding:1rem 1rem 3.5rem}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Class Teaching Notes</div>
+    <h1><span>Event Loop</span> – Class Guide</h1>
+    <p>Step-by-step teaching · Tamil + English</p>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 1 – Start With Question
+       ══════════════════════════ -->
+  <div class="shdr c1">
+    <span class="snum">1️⃣ Step 1</span>
+    <span class="stitle">Start With Question</span>
+  </div>
+
+  <div class="card c1">
+    <div class="tag">Class start பண்ணும்போது கேள்:</div>
+    <div class="speech">
+      <span class="ico">🗣️</span>
+      <span>"Node.js single thread தான்… அப்போ எப்படி thousands of users handle பண்ணும்?"</span>
+    </div>
+
+    <div class="def">Students usually answer தெரியாது.</div>
+
+    <div class="hint">
+      <strong>👉 இதற்கு reason Event Loop.</strong>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 2 – Simple Definition
+       ══════════════════════════ -->
+  <div class="shdr c2">
+    <span class="snum">2️⃣ Step 2</span>
+    <span class="stitle">Simple Definition</span>
+  </div>
+
+  <div class="card c2">
+    <div class="tag">Board-ல எழுதணும்:</div>
+    <div class="board">
+      <div class="btitle">Definition</div>
+      👉 Event Loop = Node.js asynchronous tasks manage பண்ணும் system
+    </div>
+
+    <div class="lbl">Simple meaning:</div>
+    <div class="hint">
+      <strong>👉 Node.js single thread இருந்தாலும் multiple tasks handle பண்ண உதவும் mechanism.</strong>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 3 – Event Loop Components
+       ══════════════════════════ -->
+  <div class="shdr c3">
+    <span class="snum">3️⃣ Step 3</span>
+    <span class="stitle">Event Loop Components</span>
+  </div>
+
+  <div class="card c3">
+    <div class="tag">Board-ல diagram draw பண்ணு.</div>
+    <div class="flow">
+      <div class="fb blue">Call Stack</div>
+      <div class="fa">↓</div>
+      <div class="fb orange">Node APIs</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">Callback Queue</div>
+      <div class="fa">↓</div>
+      <div class="fb green">Event Loop</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 4 – Each Component Explain
+       ══════════════════════════ -->
+  <div class="shdr c4">
+    <span class="snum">4️⃣ Step 4</span>
+    <span class="stitle">Each Component Explain</span>
+  </div>
+
+  <div class="card c4">
+    <div class="comp-grid">
+
+      <!-- Call Stack -->
+      <div class="comp callstack">
+        <div class="comp-header">
+          <span class="comp-badge">1️⃣</span>
+          <span class="comp-title">Call Stack</span>
+        </div>
+        <div class="point"><span class="a">👉</span> Current code execute ஆகும் place.</div>
+        <div class="lbl">Example:</div>
+        <pre style="margin-bottom:.4rem;"><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello"</span>)</code></pre>
+        <p>இந்த code Call Stack-ல run ஆகும்.</p>
+      </div>
+
+      <!-- Node APIs -->
+      <div class="comp nodeapi">
+        <div class="comp-header">
+          <span class="comp-badge">2️⃣</span>
+          <span class="comp-title">Node APIs</span>
+        </div>
+        <p>Async tasks run ஆகும் place.</p>
+        <div class="lbl">Examples:</div>
+        <div class="chips">
+          <span class="chip">setTimeout</span>
+          <span class="chip">fs.readFile</span>
+          <span class="chip">API request</span>
+        </div>
+        <div class="lbl">Example:</div>
+        <pre style="margin-bottom:.4rem;"><code><span class="fn">setTimeout</span>(()=>{},<span class="num">2000</span>)</code></pre>
+        <div class="point"><span class="a">👉</span> இது Node API-க்கு போகும்.</div>
+      </div>
+
+      <!-- Callback Queue -->
+      <div class="comp cbqueue">
+        <div class="comp-header">
+          <span class="comp-badge">3️⃣</span>
+          <span class="comp-title">Callback Queue</span>
+        </div>
+        <p>Async task complete ஆன பிறகு callback wait பண்ணும் place.</p>
+        <div class="lbl">Example callback:</div>
+        <pre style="margin-bottom:0;"><code>()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Async task"</span>)
+}</code></pre>
+      </div>
+
+      <!-- Event Loop -->
+      <div class="comp evtloop">
+        <div class="comp-header">
+          <span class="comp-badge">4️⃣</span>
+          <span class="comp-title">Event Loop</span>
+        </div>
+        <p>Event loop continuously check பண்ணும்:</p>
+        <div class="check-block">Call stack empty ?</div>
+        <div class="lbl">If yes:</div>
+        <div class="point"><span class="a">👉</span> Callback queue → call stack move பண்ணும்</div>
+        <div class="point"><span class="a"></span> அப்புறம் execute ஆகும்.</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 5 – Code Example
+       ══════════════════════════ -->
+  <div class="shdr c5">
+    <span class="snum">5️⃣ Step 5</span>
+    <span class="stitle">Code Example</span>
+  </div>
+
+  <div class="card c5">
+    <div class="tag">Students-க்கு இந்த code காட்டணும்.</div>
+    <pre><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="fn">setTimeout</span>(()=>{
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Async task"</span>)
+},<span class="num">2000</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"End"</span>)</code></pre>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 6 – Execution Flow
+       ══════════════════════════ -->
+  <div class="shdr c6">
+    <span class="snum">6️⃣ Step 6</span>
+    <span class="stitle">Execution Flow</span>
+  </div>
+
+  <div class="card c6">
+    <div class="tag">Step-by-step explain:</div>
+
+    <div class="exec-list">
+
+      <!-- Step 1 -->
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 1</div>
+        <pre style="margin-bottom:.5rem;"><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Start"</span>)</code></pre>
+        <div class="out-lbl">Output:</div>
+        <div class="out">Start</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 2</div>
+        <pre style="margin-bottom:.5rem;"><code><span class="fn">setTimeout</span>()</code></pre>
+        <div class="point"><span class="a">👉</span> Node API-க்கு போகும்.</div>
+        <div class="point"><span class="a"></span> Timer start ஆகும்.</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 3</div>
+        <pre style="margin-bottom:.5rem;"><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"End"</span>)</code></pre>
+        <div class="out-lbl">Output:</div>
+        <div class="out">End</div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 4</div>
+        <div class="def">2 seconds பிறகு<br>callback queue-க்கு வரும்.</div>
+        <pre style="margin-bottom:0;"><code>() => <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Async task"</span>)</code></pre>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="exec-item">
+        <div class="exec-step-lbl">Step 5</div>
+        <div class="def">Event loop check:</div>
+        <div class="check-block" style="border-color:rgba(74,222,128,.25);background:rgba(74,222,128,.06);color:var(--green);">Call stack empty ✔</div>
+        <div class="point" style="margin-top:.5rem;"><span class="a"></span> Callback run ஆகும்.</div>
+        <div class="out-lbl" style="margin-top:.5rem;">Output:</div>
+        <div class="out">Async task</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 7 – Final Output
+       ══════════════════════════ -->
+  <div class="shdr c7">
+    <span class="snum">7️⃣ Final Output</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c7">
+    <div class="out-lbl">Output</div>
+    <div class="out">Start<br>End<br>Async task</div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 8 – Visual Flow
+       ══════════════════════════ -->
+  <div class="shdr c8">
+    <span class="snum">8️⃣ Visual Flow</span>
+    <span class="stitle">(Students புரிய)</span>
+  </div>
+
+  <div class="card c8">
+    <div class="flow">
+      <div class="fb green">Start</div>
+      <div class="fa">↓</div>
+      <div class="fb orange">setTimeout → Node API</div>
+      <div class="fa">↓</div>
+      <div class="fb green">End</div>
+      <div class="fa">↓</div>
+      <div class="fb yellow">timer finish</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">callback queue</div>
+      <div class="fa">↓</div>
+      <div class="fb cyan">event loop</div>
+      <div class="fa">↓</div>
+      <div class="fb green">Async task</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 9 – Why Event Loop Important
+       ══════════════════════════ -->
+  <div class="shdr c9">
+    <span class="snum">9️⃣ Why Event Loop Important</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c9">
+    <div class="tag">Board-ல explain:</div>
+    <div class="why-grid">
+      <div class="why-card">
+        <span class="chk">✅</span>
+        <span class="wtitle">Scalable</span>
+        <span class="wdesc">Node.js scalable</span>
+      </div>
+      <div class="why-card">
+        <span class="chk">✅</span>
+        <span class="wtitle">Non-Blocking</span>
+        <span class="wdesc">non-blocking operations</span>
+      </div>
+      <div class="why-card">
+        <span class="chk">✅</span>
+        <span class="wtitle">High Volume</span>
+        <span class="wdesc">thousands of users handle</span>
+      </div>
+    </div>
+    <div class="hint-green">
+      <strong>இதனால தான் Node.js high performance server.</strong>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 10 – Real Life Example
+       ══════════════════════════ -->
+  <div class="shdr c10">
+    <span class="snum">🔟 Real Life Example</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c10">
+    <div class="tag">Restaurant example:</div>
+    <div class="rest">
+      <div class="rest-title">🍽️ Restaurant Example</div>
+      <div class="rest-flow">
+        <div class="rest-step">Customer order</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">Chef cooking</div>
+        <div class="rest-arr">↓</div>
+        <div class="rest-step">Waiter serve</div>
+      </div>
+      <p>Waiter order wait பண்ண மாட்டான்.</p>
+      <div class="point"><span class="a">👉</span> next customer order take பண்ணுவான்.</div>
+    </div>
+    <div class="hint">
+      <strong>இதுதான் event loop concept.</strong>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 11 – Interview Sentence
+       ══════════════════════════ -->
+  <div class="shdr c11">
+    <span class="snum">1️⃣1️⃣ Interview Sentence</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c11">
+    <div class="tag">Students memorize:</div>
+    <div class="interview">
+      <div class="int-lbl">⭐ Interview Sentence</div>
+      <p>"The event loop is the mechanism that allows Node.js to perform non-blocking asynchronous operations by handling callbacks from the event queue."</p>
+    </div>
+    <div class="followup">
+      👉 "What is the difference between Call Stack and Callback Queue?"
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

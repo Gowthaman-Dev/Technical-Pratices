@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --card: #1a1e2a;
+    --border: #252a38;
+    --green: #4ade80;
+    --cyan: #22d3ee;
+    --yellow: #fbbf24;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --purple: #a78bfa;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --dim: #94a3b8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans Tamil', 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(74,222,128,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,222,128,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    padding: 3rem 0 2.5rem;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .header-badge {
+    display: inline-block;
+    background: rgba(74,222,128,0.12);
+    border: 1px solid rgba(74,222,128,0.3);
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.3rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1.2rem;
+  }
+
+  .header h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .header h1 span { color: var(--green); }
+
+  .header-sub {
+    font-size: 0.9rem;
+    color: var(--dim);
+    margin-bottom: 2rem;
+  }
+
+  .topics-bar {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .topic-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 100px;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 1rem;
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--dim);
+    font-size: 0.85rem;
+  }
+
+  .toc-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    background: rgba(74,222,128,0.1);
+    color: var(--green);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    min-width: 30px;
+    text-align: center;
+  }
+
+  /* ── SECTION CARDS ── */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .s1::before { background: linear-gradient(90deg, var(--cyan), transparent); }
+  .s2::before { background: linear-gradient(90deg, var(--yellow), transparent); }
+  .s3::before { background: linear-gradient(90deg, var(--purple), transparent); }
+  .s4::before { background: linear-gradient(90deg, var(--orange), transparent); }
+  .s5::before { background: linear-gradient(90deg, var(--pink), transparent); }
+  .s6::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .s7::before { background: linear-gradient(90deg, var(--red), transparent); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .s1 .section-num { background: rgba(34,211,238,0.15); color: var(--cyan); border: 1px solid rgba(34,211,238,0.25); }
+  .s2 .section-num { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.25); }
+  .s3 .section-num { background: rgba(167,139,250,0.15); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+  .s4 .section-num { background: rgba(251,146,60,0.15); color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+  .s5 .section-num { background: rgba(244,114,182,0.15); color: var(--pink); border: 1px solid rgba(244,114,182,0.25); }
+  .s6 .section-num { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+  .s7 .section-num { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* ── BODY CONTENT ── */
+  .def-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.2rem;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--dim);
+  }
+
+  .def-box strong { color: var(--text); }
+  .def-box .arrow { color: var(--green); font-family: 'JetBrains Mono', monospace; }
+
+  /* Examples list */
+  .examples-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .ex-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--dim);
+  }
+
+  /* Code blocks */
+  .code-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .code-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.2rem 0.65rem;
+    border-radius: 5px;
+  }
+
+  pre {
+    background: #0a0c12;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.85;
+    color: #c9d1d9;
+  }
+
+  .kw { color: #f97316; }
+  .fn { color: #60a5fa; }
+  .str { color: #86efac; }
+  .cmt { color: #4b5563; font-style: italic; }
+  .num { color: #c084fc; }
+  .op { color: #e2e8f0; }
+
+  /* Output box */
+  .output-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.3rem;
+    margin-top: 0.8rem;
+  }
+
+  .output-box {
+    background: #07090e;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    border-radius: 6px;
+    padding: 0.8rem 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--green);
+    line-height: 1.9;
+  }
+
+  /* Explanation row */
+  .explain-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 1rem 0;
+  }
+
+  .explain-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.84rem;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+
+  .explain-item .arr { color: var(--green); font-family: 'JetBrains Mono', monospace; flex-shrink: 0; }
+
+  /* State table */
+  .state-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.83rem;
+  }
+
+  .state-table th {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .state-table td {
+    border: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    color: var(--dim);
+  }
+
+  .state-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+  }
+
+  tr:nth-child(1) td:first-child { color: var(--yellow); }
+  tr:nth-child(2) td:first-child { color: var(--green); }
+  tr:nth-child(3) td:first-child { color: var(--red); }
+
+  /* Advantages */
+  .adv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.6rem;
+    margin: 1rem 0;
+  }
+
+  .adv-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 0.82rem;
+    color: var(--dim);
+    line-height: 1.5;
+  }
+
+  .adv-card .icon { font-size: 1.1rem; display: block; margin-bottom: 0.3rem; }
+
+  /* Event loop flow */
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 1rem 0;
+  }
+
+  .flow-step {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .flow-step .snum {
+    display: block;
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  .flow-arrow {
+    color: var(--green);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+  }
+
+  /* Step descriptions */
+  .step-list { display: flex; flex-direction: column; gap: 0.7rem; margin: 1rem 0; }
+
+  .step-item {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+  }
+
+  .step-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    background: rgba(251,146,60,0.15);
+    color: var(--orange);
+    border: 1px solid rgba(251,146,60,0.25);
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+
+  .step-content { font-size: 0.84rem; color: var(--dim); line-height: 1.6; }
+  .step-content strong { color: var(--text); display: block; margin-bottom: 0.2rem; }
+  .step-sub { font-size: 0.78rem; color: var(--muted); }
+
+  /* Why important */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.6rem;
+    margin: 1rem 0;
+  }
+
+  .why-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.8rem;
+  }
+
+  .why-card .check { color: var(--green); font-size: 0.9rem; display: block; margin-bottom: 0.3rem; }
+  .why-card .why-title { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text); display: block; margin-bottom: 0.2rem; }
+  .why-card .why-desc { font-size: 0.78rem; color: var(--muted); }
+
+  /* Interview box */
+  .interview-box {
+    background: rgba(167,139,250,0.06);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-left: 3px solid var(--purple);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin-top: 1.2rem;
+  }
+
+  .interview-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--purple);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .interview-box p {
+    font-size: 0.86rem;
+    color: var(--dim);
+    line-height: 1.75;
+    font-style: italic;
+  }
+
+  /* Hell problem */
+  .problem-box {
+    background: rgba(248,113,113,0.05);
+    border: 1px solid rgba(248,113,113,0.2);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+  }
+
+  .problem-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--red);
+    margin-bottom: 0.8rem;
+  }
+
+  .problem-list { display: flex; flex-direction: column; gap: 0.35rem; }
+  .problem-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--dim); }
+  .problem-item::before { content: '✗'; color: var(--red); font-family: 'JetBrains Mono'; flex-shrink: 0; }
+
+  .solution-hint {
+    margin-top: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--green);
+  }
+
+  /* ── FINAL ANSWER ── */
+  .final-card {
+    background: linear-gradient(135deg, rgba(74,222,128,0.08), rgba(34,211,238,0.05));
+    border: 1px solid rgba(74,222,128,0.25);
+    border-radius: 14px;
+    padding: 2rem;
+    margin-top: 2.5rem;
+    text-align: center;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .final-star {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .final-card h2 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: var(--green);
+    margin-bottom: 1rem;
+  }
+
+  .final-quote {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.85;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+  }
+
+  /* ── SUMMARY TABLE ── */
+  .summary-section { margin-top: 2.5rem; animation: fadeUp 0.5s 0.1s ease both; }
+
+  .summary-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .summary-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+  }
+
+  .summary-table th {
+    background: rgba(74,222,128,0.08);
+    border: 1px solid var(--border);
+    padding: 0.7rem 1.2rem;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .summary-table td {
+    border: 1px solid var(--border);
+    padding: 0.7rem 1.2rem;
+    color: var(--dim);
+    line-height: 1.5;
+  }
+
+  .summary-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .summary-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section:nth-child(2) { animation-delay: 0.05s; }
+  .section:nth-child(3) { animation-delay: 0.1s; }
+  .section:nth-child(4) { animation-delay: 0.15s; }
+  .section:nth-child(5) { animation-delay: 0.2s; }
+  .section:nth-child(6) { animation-delay: 0.25s; }
+  .section:nth-child(7) { animation-delay: 0.3s; }
+  .section:nth-child(8) { animation-delay: 0.35s; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    .section { padding: 1.4rem; }
+    .wrapper { padding: 1rem 1rem 3rem; }
+    .flow { flex-direction: column; align-items: flex-start; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-badge">Class Notes</div>
+    <h1>Node.js <span>Async</span> Programming</h1>
+    <p class="header-sub">Callbacks · Promises · Async/Await · Event Loop</p>
+    <p class="header-sub">Node.js asynchronous programming-ஐ master பண்ணுவோம்</p>
+    <div class="topics-bar">
+      <span class="topic-pill">1️⃣1️⃣ Callback Functions</span>
+      <span class="topic-pill">1️⃣2️⃣ Promises</span>
+      <span class="topic-pill">1️⃣3️⃣ Async / Await</span>
+      <span class="topic-pill">1️⃣4️⃣ Event Loop</span>
+      <span class="topic-pill">5️⃣ setTimeout / setInterval</span>
+      <span class="topic-pill">6️⃣ setImmediate()</span>
+      <span class="topic-pill">7️⃣ process.nextTick()</span>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">📋 Topics Covered</div>
+    <div class="toc-grid">
+      <div class="toc-item"><span class="toc-num">1️⃣1️⃣</span> Callback Functions</div>
+      <div class="toc-item"><span class="toc-num">1️⃣2️⃣</span> Promises</div>
+      <div class="toc-item"><span class="toc-num">1️⃣3️⃣</span> Async / Await</div>
+      <div class="toc-item"><span class="toc-num">1️⃣4️⃣</span> Event Loop</div>
+      <div class="toc-item"><span class="toc-num">5️⃣</span> setTimeout / setInterval</div>
+      <div class="toc-item"><span class="toc-num">6️⃣</span> setImmediate()</div>
+      <div class="toc-item"><span class="toc-num">7️⃣</span> process.nextTick()</div>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 1: CALLBACKS ── -->
+  <div class="section s1">
+    <div class="section-header">
+      <span class="section-num">1️⃣1️⃣</span>
+      <span class="section-title">Callback Functions</span>
+    </div>
+
+    <div class="def-box">
+      <strong>Tamil Explanation</strong><br>
+      Callback function என்றால் <span class="arrow">👉</span> ஒரு function முடிந்த பிறகு execute ஆகும் function.<br>
+      Node.js-ல asynchronous operations handle பண்ண callbacks அதிகமாக use பண்ணப்பட்டது.
+    </div>
+
+    <div class="def-box">
+      <strong>Examples:</strong>
+    </div>
+    <div class="examples-row">
+      <span class="ex-pill">📄 File read</span>
+      <span class="ex-pill">🌐 API call</span>
+      <span class="ex-pill">🗄️ Database query</span>
+    </div>
+
+    <div class="code-label"><span class="code-filename">callback.js</span></div>
+    <pre><code><span class="kw">function</span> <span class="fn">greet</span>(<span class="op">name</span>,<span class="op">callback</span>){
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello "</span> + <span class="op">name</span>)
+  <span class="fn">callback</span>()
+}
+
+<span class="kw">function</span> <span class="fn">done</span>(){
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Task completed"</span>)
+}
+
+<span class="fn">greet</span>(<span class="str">"Gowtham"</span>,<span class="op">done</span>)</code></pre>
+
+    <div class="output-label">Output</div>
+    <div class="output-box">Hello Gowtham<br>Task completed</div>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin:1rem 0 0.3rem;">Real Node.js Example</p>
+    <div class="code-label"><span class="code-filename">readFile.js</span></div>
+    <pre><code><span class="kw">const</span> <span class="op">fs</span> = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="op">fs</span>.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>,<span class="str">"utf8"</span>,(<span class="op">err</span>,<span class="op">data</span>)=>{
+  <span class="kw">if</span>(<span class="op">err</span>){
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>)
+  }
+  <span class="kw">else</span>{
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+  }
+})</code></pre>
+
+    <div class="explain-row">
+      <div class="explain-item"><span class="arr">→</span> fs.readFile asynchronous</div>
+      <div class="explain-item"><span class="arr">→</span> file read முடிந்த பிறகு callback run ஆகும்</div>
+    </div>
+
+    <div class="problem-box">
+      <div class="problem-title">⚠️ Callback Hell Problem</div>
+      <p style="font-size:0.83rem;color:var(--dim);margin-bottom:0.8rem;">Multiple callbacks nested ஆகும் போது code messy ஆகும்.</p>
+
+      <div class="code-label"><span class="code-filename">callbackHell.js</span></div>
+      <pre><code><span class="fn">login</span>(<span class="op">user</span>,<span class="kw">function</span>(){
+  <span class="fn">getData</span>(<span class="kw">function</span>(){
+    <span class="fn">updateData</span>(<span class="kw">function</span>(){
+      <span class="fn">saveData</span>(<span class="kw">function</span>(){
+      })
+    })
+  })
+})</code></pre>
+
+      <p style="font-size:0.8rem;color:var(--dim);margin-bottom:0.6rem;">இதுதான் Callback Hell. Problems:</p>
+      <div class="problem-list">
+        <div class="problem-item">code readability குறையும்</div>
+        <div class="problem-item">debugging difficult</div>
+        <div class="problem-item">maintain difficult</div>
+      </div>
+      <div class="solution-hint">→ இதற்கு solution → Promises</div>
+    </div>
+
+    <div class="interview-box">
+      <div class="interview-label">⭐ English Sentence (Interview)</div>
+      <p>"A callback function is a function passed as an argument to another function and executed after the operation completes."</p>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 2: PROMISES ── -->
+  <div class="section s2">
+    <div class="section-header">
+      <span class="section-num">1️⃣2️⃣</span>
+      <span class="section-title">Promises</span>
+    </div>
+
+    <div class="def-box">
+      <strong>Tamil Explanation</strong><br>
+      Promise என்பது asynchronous operation-ஐ handle பண்ண modern method.<br>
+      Promise future-ல் success அல்லது failure result return பண்ணும் object.
+    </div>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin-bottom:0.7rem;text-transform:uppercase;letter-spacing:0.1em;">Promise States — Promise-க்கு 3 states இருக்கும்.</p>
+    <table class="state-table">
+      <tr><th>State</th><th>Meaning</th></tr>
+      <tr><td>Pending</td><td>operation running</td></tr>
+      <tr><td>Fulfilled</td><td>success</td></tr>
+      <tr><td>Rejected</td><td>error</td></tr>
+    </table>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin:1rem 0 0.3rem;">Promise Syntax</p>
+    <div class="code-label"><span class="code-filename">promise-syntax.js</span></div>
+    <pre><code><span class="kw">const</span> <span class="op">promise</span> = <span class="kw">new</span> <span class="fn">Promise</span>((<span class="op">resolve</span>,<span class="op">reject</span>)=>{
+  <span class="kw">if</span>(<span class="kw">true</span>){
+    <span class="fn">resolve</span>(<span class="str">"Success"</span>)
+  }
+  <span class="kw">else</span>{
+    <span class="fn">reject</span>(<span class="str">"Error"</span>)
+  }
+})</code></pre>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin:1rem 0 0.3rem;">Using Promise</p>
+    <div class="code-label"><span class="code-filename">using-promise.js</span></div>
+    <pre><code><span class="op">promise</span>
+.<span class="fn">then</span>(<span class="op">result</span>=>{
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">result</span>)
+})
+.<span class="fn">catch</span>(<span class="op">error</span>=>{
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">error</span>)
+})</code></pre>
+
+    <div class="code-label"><span class="code-filename">fetchData.js</span></div>
+    <pre><code><span class="kw">const</span> <span class="op">fetchData</span> = <span class="kw">new</span> <span class="fn">Promise</span>((<span class="op">resolve</span>,<span class="op">reject</span>)=>{
+  <span class="fn">setTimeout</span>(()=>{
+    <span class="fn">resolve</span>(<span class="str">"Data received"</span>)
+  },<span class="num">2000</span>)
+})
+
+<span class="op">fetchData</span>
+.<span class="fn">then</span>(<span class="op">data</span>=><span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>))
+.<span class="fn">catch</span>(<span class="op">err</span>=><span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>))</code></pre>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin:1rem 0 0.5rem;text-transform:uppercase;letter-spacing:0.1em;">Advantages of Promises</p>
+    <div class="adv-grid">
+      <div class="adv-card"><span class="icon">✅</span>Callback hell avoid</div>
+      <div class="adv-card"><span class="icon">📖</span>Code readable</div>
+      <div class="adv-card"><span class="icon">🛡️</span>Better error handling</div>
+    </div>
+
+    <div class="interview-box">
+      <div class="interview-label">⭐ English Sentence (Interview)</div>
+      <p>"A Promise is an object that represents the eventual completion or failure of an asynchronous operation."</p>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 3: ASYNC/AWAIT ── -->
+  <div class="section s3">
+    <div class="section-header">
+      <span class="section-num">1️⃣3️⃣</span>
+      <span class="section-title">Async / Await</span>
+    </div>
+
+    <div class="def-box">
+      <strong>Tamil Explanation</strong><br>
+      Async/Await என்பது Promises-ஐ simple syntax-ல handle பண்ண modern method.<br>
+      இது code-ஐ synchronous style போல readable-ஆ எழுத உதவும்.
+    </div>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Async Function</p>
+    <div class="def-box">async keyword use பண்ணும் function always promise return பண்ணும்.</div>
+
+    <div class="code-label"><span class="code-filename">async-fn.js</span></div>
+    <pre><code><span class="kw">async function</span> <span class="fn">getData</span>(){
+  <span class="kw">return</span> <span class="str">"Hello"</span>
+}</code></pre>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin:1rem 0 0.5rem;">Await Keyword</p>
+    <div class="def-box">await promise resolve ஆகும் வரை wait பண்ணும்.</div>
+
+    <div class="code-label"><span class="code-filename">await.js</span></div>
+    <pre><code><span class="kw">async function</span> <span class="fn">fetchData</span>(){
+
+  <span class="kw">const</span> <span class="op">data</span> = <span class="kw">await</span> <span class="op">Promise</span>.<span class="fn">resolve</span>(<span class="str">"Data received"</span>)
+
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+}
+
+<span class="fn">fetchData</span>()</code></pre>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin:1rem 0 0.5rem;">Example with API</p>
+    <div class="code-label"><span class="code-filename">api-call.js</span></div>
+    <pre><code><span class="kw">async function</span> <span class="fn">getUsers</span>(){
+
+  <span class="kw">try</span>{
+    <span class="kw">const</span> <span class="op">res</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.example.com/users"</span>)
+    <span class="kw">const</span> <span class="op">data</span> = <span class="kw">await</span> <span class="op">res</span>.<span class="fn">json</span>()
+
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+  }
+
+  <span class="kw">catch</span>(<span class="op">err</span>){
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>)
+  }
+
+}</code></pre>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin:1rem 0 0.5rem;text-transform:uppercase;letter-spacing:0.1em;">Advantages</p>
+    <div class="adv-grid">
+      <div class="adv-card"><span class="icon">✨</span>clean syntax</div>
+      <div class="adv-card"><span class="icon">🐛</span>easy debugging</div>
+      <div class="adv-card"><span class="icon">📖</span>readable code</div>
+    </div>
+
+    <div class="interview-box">
+      <div class="interview-label">⭐ English Sentence (Interview)</div>
+      <p>"Async/Await is a modern syntax built on top of promises that allows writing asynchronous code in a synchronous style."</p>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 4: EVENT LOOP ── -->
+  <div class="section s4">
+    <div class="section-header">
+      <span class="section-num">1️⃣4️⃣</span>
+      <span class="section-title">Event Loop</span>
+    </div>
+
+    <div class="def-box">
+      <strong>Tamil Explanation</strong><br>
+      Event Loop என்பது Node.js-ல் asynchronous operations handle பண்ணும் core mechanism.
+    </div>
+
+    <div class="adv-grid" style="margin-bottom:1rem;">
+      <div class="adv-card"><span class="icon">⚡</span>Single thread</div>
+      <div class="adv-card"><span class="icon">🔄</span>Event driven</div>
+      <div class="adv-card"><span class="icon">🚀</span>multiple requests handle</div>
+    </div>
+
+    <div class="def-box">ஆனா multiple requests handle பண்ண event loop use பண்ணும்.</div>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin:1rem 0 0.7rem;text-transform:uppercase;letter-spacing:0.1em;">How Event Loop Works — Flow:</p>
+
+    <div class="flow">
+      <div class="flow-step"><span class="snum">1</span>Call Stack</div>
+      <span class="flow-arrow">↓</span>
+      <div class="flow-step"><span class="snum">2</span>Node APIs</div>
+      <span class="flow-arrow">↓</span>
+      <div class="flow-step"><span class="snum">3</span>Callback Queue</div>
+      <span class="flow-arrow">↓</span>
+      <div class="flow-step"><span class="snum">4</span>Event Loop</div>
+    </div>
+
+    <div class="step-list">
+      <div class="step-item">
+        <span class="step-badge">1️⃣</span>
+        <div class="step-content">
+          <strong>Call Stack</strong>
+          Current function execution.
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="step-badge">2️⃣</span>
+        <div class="step-content">
+          <strong>Node APIs</strong>
+          Async operations run ஆகும்.
+          <div class="step-sub">Examples: setTimeout · file system · network request</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="step-badge">3️⃣</span>
+        <div class="step-content">
+          <strong>Callback Queue</strong>
+          Completed callbacks wait ஆகும்.
+        </div>
+      </div>
+      <div class="step-item">
+        <span class="step-badge">4️⃣</span>
+        <div class="step-content">
+          <strong>Event Loop</strong>
+          Call stack empty ஆனதும் queue-ல இருக்கும் callback execute பண்ணும்.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-label"><span class="code-filename">eventLoop.js</span></div>
+    <pre><code><span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="fn">setTimeout</span>(()=>{
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Async task"</span>)
+},<span class="num">2000</span>)
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"End"</span>)</code></pre>
+
+    <div class="output-label">Output</div>
+    <div class="output-box">Start<br>End<br>Async task</div>
+
+    <div class="explain-row" style="margin-top:1rem;">
+      <div class="explain-item"><span class="arr">→</span> setTimeout asynchronous</div>
+      <div class="explain-item"><span class="arr">→</span> event loop later execute பண்ணும்</div>
+    </div>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);margin:1rem 0 0.5rem;text-transform:uppercase;letter-spacing:0.1em;">Why Event Loop Important</p>
+    <p style="font-size:0.83rem;color:var(--dim);margin-bottom:0.8rem;">Event loop காரணம்:</p>
+    <div class="why-grid">
+      <div class="why-card">
+        <span class="check">✅</span>
+        <span class="why-title">Scalable</span>
+        <span class="why-desc">Node.js scalable</span>
+      </div>
+      <div class="why-card">
+        <span class="check">✅</span>
+        <span class="why-title">High Volume</span>
+        <span class="why-desc">thousands of requests handle</span>
+      </div>
+      <div class="why-card">
+        <span class="check">✅</span>
+        <span class="why-title">Non-Blocking</span>
+        <span class="why-desc">non blocking operations</span>
+      </div>
+    </div>
+
+    <div class="interview-box">
+      <div class="interview-label">⭐ English Sentence (Interview)</div>
+      <p>"The event loop is the mechanism that allows Node.js to perform non-blocking asynchronous operations by handling callbacks in the event queue."</p>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 5: setTimeout / setInterval ── -->
+  <div class="section s5">
+    <div class="section-header">
+      <span class="section-num">5️⃣</span>
+      <span class="section-title">setTimeout / setInterval</span>
+    </div>
+
+    <div class="def-box">
+      <strong>Tamil Explanation</strong><br>
+      setTimeout <span class="arrow">👉</span> ஒரு function-ஐ delay செய்து execute பண்ணும்.<br>
+      setInterval <span class="arrow">👉</span> repeated interval-ல execute பண்ணும்.
+    </div>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin-bottom:0.5rem;">Example</p>
+    <pre><code><span class="fn">setTimeout</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello"</span>)
+},<span class="num">2000</span>)</code></pre>
+
+    <div class="interview-box">
+      <div class="interview-label">⭐ Interview Sentence</div>
+      <p>"setTimeout and setInterval are timer functions used to schedule asynchronous execution in Node.js."</p>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 6: setImmediate ── -->
+  <div class="section s6">
+    <div class="section-header">
+      <span class="section-num">6️⃣</span>
+      <span class="section-title">setImmediate()</span>
+    </div>
+
+    <div class="def-box">
+      <strong>Tamil Explanation</strong><br>
+      setImmediate என்பது <span class="arrow">👉</span> event loop-ல் current I/O phase முடிந்த உடனே execute ஆகும் function.
+    </div>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin-bottom:0.5rem;">Example</p>
+    <pre><code><span class="fn">setImmediate</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Immediate task"</span>)
+})</code></pre>
+
+    <div class="interview-box">
+      <div class="interview-label">⭐ Interview Sentence</div>
+      <p>"setImmediate executes a callback immediately after the current I/O operations are completed."</p>
+    </div>
+  </div>
+
+
+  <!-- ── SECTION 7: process.nextTick ── -->
+  <div class="section s7">
+    <div class="section-header">
+      <span class="section-num">7️⃣</span>
+      <span class="section-title">process.nextTick()</span>
+    </div>
+
+    <div class="def-box">
+      <strong>Tamil Explanation</strong><br>
+      process.nextTick என்பது <span class="arrow">👉</span> event loop-க்கு முன்னாடியே execute ஆகும் callback.<br>
+      அதாவது queue-க்கு போகாமல் next tick-ல run ஆகும்.
+    </div>
+
+    <p style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--muted);margin-bottom:0.5rem;">Example</p>
+    <pre><code><span class="op">process</span>.<span class="fn">nextTick</span>(()=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Next tick"</span>)
+})</code></pre>
+
+    <div class="interview-box">
+      <div class="interview-label">⭐ Interview Sentence</div>
+      <p>"process.nextTick schedules a callback to be executed immediately after the current operation before the event loop continues."</p>
+    </div>
+  </div>
+
+
+  <!-- ── FINAL INTERVIEW ANSWER ── -->
+  <div class="final-card">
+    <div class="final-star">⭐</div>
+    <h2>Ultimate Interview Summary</h2>
+    <p style="font-size:0.83rem;color:var(--dim);margin-bottom:1rem;">Interview-ல நீ இப்படிச் சொல்லலாம்:</p>
+    <div class="final-quote">
+      "Node.js handles asynchronous programming using callbacks, promises, and async/await. The event loop manages these tasks by processing callbacks from the queue without blocking the main thread. Additional mechanisms like setTimeout, setImmediate, and process.nextTick help schedule asynchronous execution."
+    </div>
+  </div>
+
+
+  <!-- ── SUMMARY TABLE ── -->
+  <div class="summary-section">
+    <div class="summary-title">⭐ Quick Summary</div>
+    <table class="summary-table">
+      <tr>
+        <th>Concept</th>
+        <th>Purpose</th>
+      </tr>
+      <tr>
+        <td>Callbacks</td>
+        <td>function after task</td>
+      </tr>
+      <tr>
+        <td>Promises</td>
+        <td>async result handling</td>
+      </tr>
+      <tr>
+        <td>Async/Await</td>
+        <td>cleaner promise syntax</td>
+      </tr>
+      <tr>
+        <td>Event Loop</td>
+        <td>manage async tasks</td>
+      </tr>
+      <tr>
+        <td>setTimeout / setInterval</td>
+        <td>timer functions used to schedule asynchronous execution</td>
+      </tr>
+      <tr>
+        <td>setImmediate()</td>
+        <td>executes callback after current I/O operations</td>
+      </tr>
+      <tr>
+        <td>process.nextTick()</td>
+        <td>executes callback before event loop continues</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

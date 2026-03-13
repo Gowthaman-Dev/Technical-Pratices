@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Node.js – File System Module</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: #111827;
+      --card: #1a2235;
+      --border: #1e2d45;
+      --accent: #00d4aa;
+      --accent2: #3b82f6;
+      --accent3: #f59e0b;
+      --accent4: #f43f5e;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --code-bg: #0d1117;
+      --code-border: #21303f;
+      --green: #22c55e;
+      --purple: #a78bfa;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ANIMATED GRID BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO HEADER */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 48px;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(0,212,170,0.15), rgba(59,130,246,0.15));
+      border: 1px solid rgba(0,212,170,0.3);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 6px 16px;
+      border-radius: 100px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      animation: fadeDown 0.7s ease both 0.1s;
+    }
+
+    .hero h1 span.highlight {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 300;
+      animation: fadeDown 0.8s ease both 0.2s;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 300px;
+      background: radial-gradient(ellipse at center, rgba(0,212,170,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* STEP SECTIONS */
+    .step {
+      margin-bottom: 40px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .step:nth-child(1) { animation-delay: 0.1s; }
+    .step:nth-child(2) { animation-delay: 0.2s; }
+    .step:nth-child(3) { animation-delay: 0.3s; }
+    .step:nth-child(4) { animation-delay: 0.4s; }
+    .step:nth-child(5) { animation-delay: 0.5s; }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .step-num {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #000;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(0,212,170,0.25);
+    }
+
+    .step-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .step-title .emoji { margin-right: 6px; }
+
+    /* CARDS */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.5;
+    }
+
+    /* SPEECH BUBBLE */
+    .speech-bubble {
+      background: linear-gradient(135deg, rgba(0,212,170,0.1), rgba(59,130,246,0.08));
+      border: 1px solid rgba(0,212,170,0.25);
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+      font-size: 1rem;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .speech-bubble::before {
+      content: '🗣️';
+      font-size: 1.2rem;
+      margin-right: 8px;
+    }
+
+    /* HIGHLIGHT BOXES */
+    .info-box {
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-left: 3px solid var(--accent2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 12px 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .info-box .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .note-box {
+      background: rgba(0,212,170,0.06);
+      border: 1px solid rgba(0,212,170,0.2);
+      border-left: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 12px 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .note-box .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .warn-box {
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-left: 3px solid var(--accent3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 12px 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    /* ARROW POINTER */
+    .arrow-text {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 10px 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .arrow-text .arrow {
+      color: var(--accent);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* CODE BLOCKS */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .code-header {
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid var(--code-border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .code-dots {
+      display: flex; gap: 6px;
+    }
+
+    .code-dots span {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    .code-dots span:nth-child(1) { background: #ff5f57; }
+    .code-dots span:nth-child(2) { background: #febc2e; }
+    .code-dots span:nth-child(3) { background: #28c840; }
+
+    .code-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .code-block pre {
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.75;
+      overflow-x: auto;
+      color: #e2e8f0;
+    }
+
+    .code-block pre .kw { color: #c792ea; }
+    .code-block pre .fn { color: #82aaff; }
+    .code-block pre .str { color: #c3e88d; }
+    .code-block pre .cm { color: #546e7a; font-style: italic; }
+    .code-block pre .var { color: #f78c6c; }
+    .code-block pre .num { color: #f78c6c; }
+    .code-block pre .op { color: #89ddff; }
+    .code-block pre .obj { color: #ffcb6b; }
+    .code-block pre .bool { color: #ff9cac; }
+
+    .output-block {
+      background: rgba(34,197,94,0.06);
+      border: 1px solid rgba(34,197,94,0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--green);
+      margin: 8px 0;
+    }
+
+    .output-block::before {
+      content: '▶ Output';
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green);
+      opacity: 0.6;
+      margin-bottom: 8px;
+    }
+
+    /* METHOD CARDS GRID */
+    .methods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 12px;
+    }
+
+    .method-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .method-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .method-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      background: rgba(0,212,170,0.1);
+      border: 1px solid rgba(0,212,170,0.25);
+      color: var(--accent);
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .method-num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .method-card h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .method-card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* SYNC VS ASYNC TABLE */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .compare-table th {
+      background: rgba(0,212,170,0.1);
+      padding: 14px 20px;
+      text-align: left;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-table td {
+      padding: 14px 20px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.6;
+    }
+
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    .tag-rec {
+      display: inline-block;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: var(--green);
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 100px;
+      margin-left: 8px;
+      font-weight: 600;
+    }
+
+    .tag-avoid {
+      display: inline-block;
+      background: rgba(244,63,94,0.12);
+      border: 1px solid rgba(244,63,94,0.25);
+      color: var(--accent4);
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 100px;
+      margin-left: 8px;
+      font-weight: 600;
+    }
+
+    /* DIAGRAM */
+    .diagram {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .diagram-node {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(0,212,170,0.15), rgba(59,130,246,0.1));
+      border: 1px solid rgba(0,212,170,0.35);
+      border-radius: 12px;
+      padding: 12px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--accent);
+      box-shadow: 0 0 24px rgba(0,212,170,0.15);
+    }
+
+    .diagram-arrow {
+      display: block;
+      text-align: center;
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin: 8px 0;
+    }
+
+    .diagram-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 24px;
+      display: inline-block;
+      min-width: 220px;
+    }
+
+    .diagram-box ul {
+      list-style: none;
+      text-align: left;
+    }
+
+    .diagram-box ul li {
+      font-size: 0.88rem;
+      padding: 5px 0;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .diagram-box ul li::before {
+      content: '▸';
+      color: var(--accent);
+      font-size: 0.8rem;
+    }
+
+    /* INTERVIEW BOX */
+    .interview-box {
+      background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(59,130,246,0.08));
+      border: 1px solid rgba(167,139,250,0.3);
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin-top: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .interview-box::before {
+      content: '💼';
+      font-size: 2rem;
+      position: absolute;
+      right: 24px;
+      top: 24px;
+      opacity: 0.3;
+    }
+
+    .interview-box h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--purple);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .interview-quote {
+      font-size: 1.05rem;
+      font-style: italic;
+      line-height: 1.75;
+      color: var(--text);
+      border-left: 3px solid var(--purple);
+      padding-left: 18px;
+    }
+
+    /* REAL PROJECT CHIPS */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 0.85rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip span { font-size: 1rem; }
+
+    /* CONFIG SECTION */
+    .config-section {
+      margin-top: 60px;
+      border-top: 1px solid var(--border);
+      padding-top: 50px;
+    }
+
+    .config-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .config-header h2 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 800;
+    }
+
+    .config-header h2 .accent { color: var(--accent3); }
+
+    .config-header p {
+      color: var(--muted);
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    /* DEFINITION CARD */
+    .def-card {
+      background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(244,63,94,0.05));
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 16px;
+      padding: 22px 26px;
+      margin-bottom: 24px;
+    }
+
+    .def-card h3 {
+      font-size: 1rem;
+      color: var(--accent3);
+      margin-bottom: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.06em;
+    }
+
+    .def-card p {
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .def-card ul {
+      margin-top: 12px;
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .def-card ul li {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 8px;
+      padding: 5px 14px;
+      font-size: 0.85rem;
+      color: var(--accent3);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* WHY TABLE */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .why-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .why-item strong {
+      display: block;
+      color: var(--accent);
+      margin-bottom: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    /* ENV BADGE */
+    .env-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .env-chip {
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .env-chip.dev {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: var(--green);
+    }
+
+    .env-chip.prod {
+      background: rgba(244,63,94,0.1);
+      border: 1px solid rgba(244,63,94,0.25);
+      color: var(--accent4);
+    }
+
+    .env-chip.test {
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.25);
+      color: var(--accent2);
+    }
+
+    /* ONE LINE */
+    .one-line {
+      background: linear-gradient(135deg, rgba(0,212,170,0.12), rgba(59,130,246,0.08));
+      border: 1px solid rgba(0,212,170,0.3);
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .one-line .icon { font-size: 1.4rem; flex-shrink: 0; }
+
+    .one-line p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    /* MERN BADGE */
+    .mern-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-top: 16px;
+    }
+
+    .mern-section p { font-size: 0.9rem; color: var(--muted); margin-bottom: 12px; }
+
+    .mern-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mern-chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+
+    /* DIVIDER */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 36px 0 28px;
+    }
+
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-divider span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* KEYFRAMES */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .methods-grid { grid-template-columns: 1fr; }
+      .why-grid { grid-template-columns: 1fr; }
+      .code-block pre { font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-badge">Node.js Class Notes</div>
+      <h1>File System <span class="highlight">Module (fs)</span></h1>
+      <p class="hero-sub">Node.js-ல files மற்றும் folders handle பண்ண கற்றுக்கொள்வோம்</p>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">01</div>
+        <div class="step-title"><span class="emoji">🌟</span> Step 1 – Real Life Question</div>
+      </div>
+      <div class="card">
+        <p style="margin-bottom:14px; color:var(--muted); font-size:0.9rem;">Class start பண்ணும்போது கேள்:</p>
+        <div class="speech-bubble">
+          "Server-ல ஒரு file save பண்ணணும் என்றால் எப்படி?"
+        </div>
+        <p style="font-size:0.9rem; color:var(--muted); margin-bottom:12px;">Example situations:</p>
+        <div class="chips">
+          <div class="chip"><span>🖼️</span> User upload image</div>
+          <div class="chip"><span>📝</span> Logs store பண்ண</div>
+          <div class="chip"><span>⚙️</span> Configuration file read பண்ண</div>
+        </div>
+        <div class="note-box" style="margin-top:16px;">
+          <span class="label">👉 Answer</span>
+          Node.js-ல File System module (fs) use பண்ணுவோம்.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">02</div>
+        <div class="step-title"><span class="emoji">📋</span> Step 2 – Definition</div>
+      </div>
+      <div class="card">
+        <div class="info-box">
+          <span class="label">👉 Board-ல எழுதணும்</span>
+          <strong style="font-family:'JetBrains Mono',monospace; font-size:1rem; color:var(--accent);">fs = File System module</strong>
+        </div>
+        <p style="font-size:0.95rem; line-height:1.7; margin:14px 0 16px;">
+          <strong>Meaning:</strong> Node.js server-ல files மற்றும் folders-ஐ handle பண்ண உதவும் module.
+        </p>
+        <p style="font-size:0.9rem; color:var(--muted); margin-bottom:12px;"><strong style="color:var(--text);">Examples:</strong></p>
+        <div class="methods-grid">
+          <div class="method-card">
+            <div class="method-num">01</div>
+            <h4>📄 file read</h4>
+            <p>Server-ல உள்ள file-ஐ read பண்ணலாம்</p>
+          </div>
+          <div class="method-card">
+            <div class="method-num">02</div>
+            <h4>✍️ file write</h4>
+            <p>New file create அல்லது content write பண்ணலாம்</p>
+          </div>
+          <div class="method-card">
+            <div class="method-num">03</div>
+            <h4>🗑️ file delete</h4>
+            <p>Existing file-ஐ remove பண்ணலாம்</p>
+          </div>
+          <div class="method-card">
+            <div class="method-num">04</div>
+            <h4>📁 folder create</h4>
+            <p>New directory/folder create பண்ணலாம்</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">03</div>
+        <div class="step-title"><span class="emoji">📦</span> Step 3 – Import fs Module</div>
+      </div>
+      <div class="card">
+        <p style="margin-bottom:14px; font-size:0.95rem;">Students-க்கு first காட்டணும்:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-label">index.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="var">fs</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">"fs"</span>)</pre>
+        </div>
+        <div class="chips" style="margin-top:16px;">
+          <div class="chip"><span>✅</span> <code style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;">fs</code> என்பது built-in module</div>
+          <div class="chip"><span>🚫</span> install செய்ய வேண்டாம்</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">04</div>
+        <div class="step-title"><span class="emoji">⚙️</span> Step 4 – Important Methods</div>
+      </div>
+
+      <!-- 1. Read File -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="method-badge">1️⃣ Read File</div>
+        <p style="font-size:0.9rem; color:var(--muted); margin-bottom:14px;">File content read பண்ண.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-label">readFile.js</span>
+          </div>
+          <pre><span class="kw">const</span> <span class="var">fs</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="var">fs</span>.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>,<span class="str">"utf8"</span>,(<span class="var">err</span>,<span class="var">data</span>)<span class="op">=></span>{
+  <span class="kw">if</span>(<span class="var">err</span>) <span class="kw">throw</span> <span class="var">err</span>
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="var">data</span>)
+})</pre>
+        </div>
+        <div class="info-box">
+          <span class="label">Explain</span>
+          <div class="arrow-text"><span class="arrow">→</span> <span><code style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--accent)">readFile</code> → file open</span></div>
+          <div class="arrow-text"><span class="arrow">→</span> <span><code style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--accent)">data</code> → file content</span></div>
+        </div>
+        <div class="output-block">file content console-ல print ஆகும்</div>
+      </div>
+
+      <!-- 2. Write File -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="method-badge">2️⃣ Write File</div>
+        <p style="font-size:0.9rem; color:var(--muted); margin-bottom:14px;">New file create அல்லது content write.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-label">writeFile.js</span>
+          </div>
+          <pre><span class="var">fs</span>.<span class="fn">writeFile</span>(<span class="str">"data.txt"</span>,<span class="str">"Hello Node.js"</span>,(<span class="var">err</span>)<span class="op">=></span>{
+  <span class="kw">if</span>(<span class="var">err</span>) <span class="kw">throw</span> <span class="var">err</span>
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"File created"</span>)
+})</pre>
+        </div>
+        <div class="note-box">
+          <span class="label">Meaning</span>
+          <div class="arrow-text"><span class="arrow">👉</span> <span>data.txt file create ஆகும்.</span></div>
+        </div>
+      </div>
+
+      <!-- 3. Append File -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="method-badge">3️⃣ Append File</div>
+        <p style="font-size:0.9rem; color:var(--muted); margin-bottom:14px;">Existing file-க்கு new content add.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-label">appendFile.js</span>
+          </div>
+          <pre><span class="var">fs</span>.<span class="fn">appendFile</span>(<span class="str">"data.txt"</span>,<span class="str">"New content"</span>,(<span class="var">err</span>)<span class="op">=></span>{
+  <span class="kw">if</span>(<span class="var">err</span>) <span class="kw">throw</span> <span class="var">err</span>
+})</pre>
+        </div>
+      </div>
+
+      <!-- 4. Delete File -->
+      <div class="card" style="margin-bottom:20px;">
+        <div class="method-badge">4️⃣ Delete File</div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-label">deleteFile.js</span>
+          </div>
+          <pre><span class="var">fs</span>.<span class="fn">unlink</span>(<span class="str">"data.txt"</span>,(<span class="var">err</span>)<span class="op">=></span>{
+  <span class="kw">if</span>(<span class="var">err</span>) <span class="kw">throw</span> <span class="var">err</span>
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="str">"File deleted"</span>)
+})</pre>
+        </div>
+        <div class="note-box">
+          <span class="label">Meaning</span>
+          <div class="arrow-text"><span class="arrow">👉</span> <span>file remove ஆகும்.</span></div>
+        </div>
+      </div>
+
+      <!-- 5. Create Folder -->
+      <div class="card">
+        <div class="method-badge">5️⃣ Create Folder</div>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-label">createFolder.js</span>
+          </div>
+          <pre><span class="var">fs</span>.<span class="fn">mkdir</span>(<span class="str">"testFolder"</span>,(<span class="var">err</span>)<span class="op">=></span>{
+  <span class="kw">if</span>(<span class="var">err</span>) <span class="kw">throw</span> <span class="var">err</span>
+})</pre>
+        </div>
+        <div class="note-box">
+          <span class="label">Meaning</span>
+          <div class="arrow-text"><span class="arrow">👉</span> <span>new folder create ஆகும்.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">05</div>
+        <div class="step-title"><span class="emoji">⚡</span> Step 5 – Sync vs Async (Important Concept)</div>
+      </div>
+      <div class="card">
+        <p style="font-size:0.95rem; margin-bottom:16px;">Node.js-ல 2 types methods இருக்கும்.</p>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Method Example</th>
+              <th>Meaning</th>
+              <th>Behavior</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Async</strong> <span class="tag-rec">Recommended</span></td>
+              <td><code style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--accent);">fs.readFile()</code></td>
+              <td>Non-blocking</td>
+              <td>Server wait பண்ணாது.</td>
+            </tr>
+            <tr>
+              <td><strong>Sync</strong> <span class="tag-avoid">Avoid</span></td>
+              <td><code style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:var(--accent4);">fs.readFileSync()</code></td>
+              <td>Blocking</td>
+              <td>File read ஆகும் வரை server wait பண்ணும்.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note-box" style="margin-top:16px;">
+          <span class="label">Important</span>
+          Node.js-ல mostly <strong>Async methods</strong> use பண்ணுவோம்.
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">06</div>
+        <div class="step-title"><span class="emoji">🚀</span> Step 6 – Real Project Examples</div>
+      </div>
+      <div class="card">
+        <p style="font-size:0.95rem; margin-bottom:16px;">fs module use பண்ணும் situations:</p>
+        <div class="chips">
+          <div class="chip"><span>📊</span> logs save பண்ண</div>
+          <div class="chip"><span>⚙️</span> config files read பண்ண</div>
+          <div class="chip"><span>🖼️</span> uploaded images store பண்ண</div>
+          <div class="chip"><span>📄</span> reports generate பண்ண</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 7 - DIAGRAM -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">07</div>
+        <div class="step-title"><span class="emoji">📊</span> Step 7 – Simple Diagram</div>
+      </div>
+      <div class="card">
+        <p style="font-size:0.9rem; color:var(--muted); margin-bottom:16px;">Students புரிய:</p>
+        <div class="diagram">
+          <div class="diagram-node">Node.js Server</div>
+          <span class="diagram-arrow">│<br>▼</span>
+          <div class="diagram-node">File System (fs)</div>
+          <span class="diagram-arrow">│</span>
+          <div class="diagram-box">
+            <ul>
+              <li>Read File</li>
+              <li>Write File</li>
+              <li>Delete File</li>
+              <li>Create Folder</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 8 - INTERVIEW -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">08</div>
+        <div class="step-title"><span class="emoji">💼</span> Step 8 – Interview Sentence</div>
+      </div>
+      <div class="interview-box">
+        <h3>Students memorize this</h3>
+        <div class="interview-quote">
+          "The File System module allows Node.js applications to read, write, update, and delete files on the server."
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURATION FILE SECTION -->
+    <div class="config-section">
+      <div class="config-header">
+        <h2>⚙️ Configuration File <span class="accent">என்றால் என்ன?</span></h2>
+        <p>Application settings save பண்ணும் file பற்றி கற்றுக்கொள்வோம்</p>
+      </div>
+
+      <!-- DEFINITION -->
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num" style="background:linear-gradient(135deg,var(--accent3),var(--accent4));">1️⃣</div>
+          <div class="step-title">Configuration File என்றால் என்ன?</div>
+        </div>
+        <div class="card">
+          <div class="def-card">
+            <h3>Configuration file</h3>
+            <p>Configuration file = application settings save பண்ணும் file</p>
+          </div>
+          <p style="font-size:0.95rem; margin-bottom:12px;">இதில் இருக்கும்:</p>
+          <ul style="list-style:none; display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+            <li class="chip"><span>🔌</span> server port</li>
+            <li class="chip"><span>🗄️</span> database URL</li>
+            <li class="chip"><span>🔑</span> API keys</li>
+            <li class="chip"><span>🌍</span> environment settings</li>
+          </ul>
+          <p style="font-size:0.9rem; color:var(--muted); margin-bottom:12px;">Example file:</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-label">config.json</span>
+            </div>
+            <pre>{
+  <span class="str">"port"</span>: <span class="num">5000</span>,
+  <span class="str">"db"</span>: <span class="str">"mongodb://localhost:27017/app"</span>
+}</pre>
+          </div>
+          <div class="note-box">
+            <span class="label">Meaning</span>
+            <div class="arrow-text"><span class="arrow">👉</span> <span>application run ஆக தேவையான settings.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><span>Node.js read</span></div>
+
+      <!-- HOW NODE READS -->
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num" style="background:linear-gradient(135deg,var(--accent3),var(--accent4));">2️⃣</div>
+          <div class="step-title">Node.js எப்படி read பண்ணும்?</div>
+        </div>
+        <div class="card">
+          <p style="font-size:0.95rem; margin-bottom:14px;">Node.js இந்த file-ஐ fs module use பண்ணி read பண்ணும்.</p>
+          <p style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;">Example:</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-label">readConfig.js</span>
+            </div>
+            <pre><span class="kw">const</span> <span class="var">fs</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="var">fs</span>.<span class="fn">readFile</span>(<span class="str">"config.json"</span>,<span class="str">"utf8"</span>,(<span class="var">err</span>,<span class="var">data</span>)<span class="op">=></span>{
+  <span class="kw">if</span>(<span class="var">err</span>) <span class="kw">throw</span> <span class="var">err</span>
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="var">data</span>)
+})</pre>
+          </div>
+          <div class="output-block">{
+  "port": 5000,
+  "db": "mongodb://localhost:27017/app"
+}</div>
+          <div class="note-box">
+            <span class="label">Meaning</span>
+            <div class="arrow-text"><span class="arrow">👉</span> <span>program settings read பண்ணுது.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><span>Real Example</span></div>
+
+      <!-- REAL EXAMPLE -->
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num" style="background:linear-gradient(135deg,var(--accent3),var(--accent4));">3️⃣</div>
+          <div class="step-title">Real Example</div>
+        </div>
+        <div class="card">
+          <p style="font-size:0.95rem; margin-bottom:16px;"><strong>Imagine பண்ணு:</strong> server எந்த port-ல run ஆகணும்?</p>
+          <p style="font-size:0.85rem; color:var(--muted); margin-bottom:8px;">config file:</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-label">config.json</span>
+            </div>
+            <pre>{
+  <span class="str">"port"</span>: <span class="num">5000</span>
+}</pre>
+          </div>
+          <p style="font-size:0.85rem; color:var(--muted); margin: 14px 0 8px;">Node.js code:</p>
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-label">server.js</span>
+            </div>
+            <pre><span class="kw">const</span> <span class="var">fs</span> <span class="op">=</span> <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+<span class="var">fs</span>.<span class="fn">readFile</span>(<span class="str">"config.json"</span>,<span class="str">"utf8"</span>,(<span class="var">err</span>,<span class="var">data</span>)<span class="op">=></span>{
+  <span class="kw">const</span> <span class="var">config</span> <span class="op">=</span> <span class="obj">JSON</span>.<span class="fn">parse</span>(<span class="var">data</span>)
+  <span class="obj">console</span>.<span class="fn">log</span>(<span class="var">config</span>.<span class="var">port</span>)
+})</pre>
+          </div>
+          <div class="output-block">5000</div>
+          <div class="note-box">
+            <span class="label">Result</span>
+            Server port value file-ல இருந்து வந்தது.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><span>Why Use Config Files?</span></div>
+
+      <!-- WHY -->
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num" style="background:linear-gradient(135deg,var(--accent3),var(--accent4));">4️⃣</div>
+          <div class="step-title">Why Configuration Files?</div>
+        </div>
+        <div class="card">
+          <p style="font-size:0.9rem; color:var(--muted); margin-bottom:16px;">Advantages:</p>
+          <div class="why-grid">
+            <div class="why-item">
+              <strong>✅ Easy Change</strong>
+              settings change easy
+            </div>
+            <div class="why-item">
+              <strong>✅ No Code Edit</strong>
+              code modify செய்ய வேண்டாம்
+            </div>
+            <div class="why-item">
+              <strong>✅ Env Control</strong>
+              environment control easy
+            </div>
+          </div>
+          <p style="font-size:0.9rem; margin-top:20px; margin-bottom:12px;"><strong>Example:</strong></p>
+          <div class="env-chips">
+            <span class="env-chip dev">development</span>
+            <span class="env-chip prod">production</span>
+            <span class="env-chip test">testing</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><span>One Line Summary</span></div>
+
+      <!-- ONE LINE -->
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num" style="background:linear-gradient(135deg,var(--accent3),var(--accent4));">5️⃣</div>
+          <div class="step-title">Simple One Line</div>
+        </div>
+        <div class="one-line">
+          <span class="icon">👉</span>
+          <p>Configuration file = application settings store பண்ணும் file. Node.js அதை read பண்ணி use பண்ணும்.</p>
+        </div>
+      </div>
+
+      <!-- MERN NOTE -->
+      <div class="step">
+        <div class="step-header">
+          <div class="step-num" style="background:linear-gradient(135deg,var(--green),var(--accent2));">✅</div>
+          <div class="step-title">Rocky, MERN project-ல mostly configuration files:</div>
+        </div>
+        <div class="mern-section">
+          <p>இதிலிருந்து values read பண்ணுவோம்.</p>
+          <div class="mern-chips">
+            <span class="mern-chip" style="color:var(--accent);border-color:rgba(0,212,170,0.3);">.env</span>
+            <span class="mern-chip" style="color:var(--accent3);border-color:rgba(245,158,11,0.3);">config.json</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Async / Await – Class Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0c11;
+    --surface:#0f1016;
+    --card:#13151d;
+    --border:#1c1f2e;
+    --green:#4ade80;
+    --cyan:#22d3ee;
+    --yellow:#fbbf24;
+    --orange:#fb923c;
+    --pink:#f472b6;
+    --purple:#a78bfa;
+    --red:#f87171;
+    --blue:#60a5fa;
+    --teal:#2dd4bf;
+    --text:#dde3f0;
+    --muted:#3e4462;
+    --dim:#8490b0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Noto Sans Tamil','JetBrains Mono',monospace;
+    min-height:100vh;overflow-x:hidden;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(34,211,238,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(34,211,238,.016) 1px,transparent 1px);
+    background-size:38px 38px;
+    pointer-events:none;z-index:0;
+  }
+  .wrap{
+    position:relative;z-index:1;
+    max-width:980px;margin:0 auto;
+    padding:2rem 1.5rem 5rem;
+  }
+
+  /* ── HEADER ── */
+  .header{text-align:center;padding:3rem 0 2.5rem;animation:fadeDown .6s ease both;}
+  .badge{
+    display:inline-block;
+    background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);
+    color:var(--cyan);font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;
+    padding:.28rem 1rem;border-radius:100px;margin-bottom:1.1rem;
+  }
+  .header h1{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(1.9rem,4.5vw,2.8rem);
+    font-weight:700;color:#fff;line-height:1.1;margin-bottom:.5rem;
+  }
+  .header h1 span{color:var(--cyan);}
+  .header p{font-size:.88rem;color:var(--dim);}
+
+  /* ── STEP HEADER ── */
+  .shdr{
+    display:flex;align-items:center;gap:.9rem;
+    margin:2.4rem 0 1rem;
+    animation:fadeUp .45s ease both;
+  }
+  .snum{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.64rem;font-weight:700;
+    padding:.24rem .6rem;border-radius:6px;white-space:nowrap;
+  }
+  .c1 .snum{background:rgba(251,191,36,.14); color:var(--yellow);border:1px solid rgba(251,191,36,.28);}
+  .c2 .snum{background:rgba(34,211,238,.14); color:var(--cyan);  border:1px solid rgba(34,211,238,.28);}
+  .c3 .snum{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.28);}
+  .c4 .snum{background:rgba(96,165,250,.14); color:var(--blue);  border:1px solid rgba(96,165,250,.28);}
+  .c5 .snum{background:rgba(167,139,250,.14);color:var(--purple);border:1px solid rgba(167,139,250,.28);}
+  .c6 .snum{background:rgba(248,113,113,.14);color:var(--red);   border:1px solid rgba(248,113,113,.28);}
+  .c7 .snum{background:rgba(251,146,60,.14); color:var(--orange);border:1px solid rgba(251,146,60,.28);}
+  .c8 .snum{background:rgba(244,114,182,.14);color:var(--pink);  border:1px solid rgba(244,114,182,.28);}
+  .c9 .snum{background:rgba(74,222,128,.14); color:var(--green); border:1px solid rgba(74,222,128,.28);}
+  .c10 .snum{background:rgba(34,211,238,.14);color:var(--cyan);  border:1px solid rgba(34,211,238,.28);}
+
+  .stitle{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;color:#fff;}
+
+  /* ── CARD ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:12px;padding:1.6rem 1.8rem;
+    margin-bottom:1rem;overflow:hidden;
+    animation:fadeUp .45s ease both;
+  }
+  .card.c1 {border-top:2px solid var(--yellow);}
+  .card.c2 {border-top:2px solid var(--cyan);}
+  .card.c3 {border-top:2px solid var(--green);}
+  .card.c4 {border-top:2px solid var(--blue);}
+  .card.c5 {border-top:2px solid var(--purple);}
+  .card.c6 {border-top:2px solid var(--red);}
+  .card.c7 {border-top:2px solid var(--orange);}
+  .card.c8 {border-top:2px solid var(--pink);}
+  .card.c9 {border-top:2px solid var(--green);}
+  .card.c10{border-top:2px solid var(--cyan);}
+
+  /* ── UTILS ── */
+  .tag{
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    background:var(--surface);border:1px solid var(--border);
+    padding:.18rem .6rem;border-radius:100px;
+    margin-bottom:.75rem;letter-spacing:.05em;
+  }
+  .lbl{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.62rem;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.1em;
+    margin:.9rem 0 .35rem;
+  }
+  .def{
+    background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:8px;
+    padding:.85rem 1.05rem;font-size:.86rem;color:var(--dim);line-height:1.85;
+    margin-bottom:.9rem;
+  }
+  .def strong{color:var(--text);}
+  .point{
+    display:flex;align-items:flex-start;gap:.5rem;
+    font-size:.84rem;color:var(--dim);line-height:1.65;margin-bottom:.45rem;
+  }
+  .point .a{color:var(--cyan);font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+
+  /* ── CODE ── */
+  pre{
+    background:#070810;border:1px solid var(--border);border-radius:8px;
+    padding:1.05rem 1.25rem;overflow-x:auto;margin-bottom:.85rem;tab-size:2;
+  }
+  code{font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.9;color:#bec8e0;}
+  .kw {color:#f97316;}
+  .fn {color:#60a5fa;}
+  .str{color:#86efac;}
+  .num{color:#c084fc;}
+  .op {color:#dde3f0;}
+
+  /* ── OUTPUT ── */
+  .out-lbl{font-family:'JetBrains Mono',monospace;font-size:.61rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.28rem;}
+  .out{
+    background:#060810;border:1px solid var(--border);
+    border-left:3px solid var(--green);border-radius:6px;
+    padding:.7rem 1.05rem;
+    font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--green);line-height:1.9;
+    margin-bottom:.85rem;
+  }
+
+  /* ── FLOW (vertical) ── */
+  .flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin:.75rem 0;}
+  .fb{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;
+    padding:.4rem .95rem;
+    font-family:'JetBrains Mono',monospace;font-size:.77rem;color:var(--text);
+    min-width:170px;text-align:center;
+  }
+  .fa{color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:.15rem 0 .15rem 1.3rem;line-height:1;}
+  .fb.cyan  {background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.2);color:var(--cyan);}
+  .fb.green {background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.2);color:var(--green);}
+  .fb.purple{background:rgba(167,139,250,.07);border-color:rgba(167,139,250,.2);color:var(--purple);}
+  .fb.yellow{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.2);color:var(--yellow);}
+  .fb.pink  {background:rgba(244,114,182,.07);border-color:rgba(244,114,182,.2);color:var(--pink);}
+
+  /* ── TABLE ── */
+  table{width:100%;border-collapse:collapse;font-size:.82rem;margin:.75rem 0;}
+  th{
+    background:rgba(255,255,255,.04);border:1px solid var(--border);
+    padding:.55rem 1rem;text-align:left;
+    font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  }
+  td{border:1px solid var(--border);padding:.55rem 1rem;color:var(--dim);line-height:1.55;}
+  td:first-child{font-family:'JetBrains Mono',monospace;font-weight:600;}
+  .t-kw   td:first-child{color:var(--cyan);}
+  .t-code td:first-child{color:var(--blue);}
+  .t-pm   td:first-child{color:var(--yellow);}
+  .t-aw   td:first-child{color:var(--green);}
+  tr:hover td{background:rgba(255,255,255,.018);}
+
+  /* ── HINT ── */
+  .hint{
+    background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.18);
+    border-left:3px solid var(--cyan);border-radius:8px;
+    padding:.8rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.8rem 0;
+  }
+  .hint strong{color:var(--cyan);}
+
+  .hint-green{
+    background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.18);
+    border-left:3px solid var(--green);border-radius:8px;
+    padding:.8rem 1rem;font-size:.86rem;color:var(--dim);line-height:1.75;margin:.8rem 0;
+  }
+  .hint-green strong{color:var(--green);}
+
+  /* ── TRY/CATCH BOX ── */
+  .trycatch{
+    background:rgba(248,113,113,.04);border:1px solid rgba(248,113,113,.15);border-radius:10px;
+    padding:1.1rem 1.3rem;margin:.8rem 0;
+  }
+  .tc-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--red);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.8rem;}
+  .tc-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem;}
+  .tc-pill{
+    font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:700;
+    background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);
+    color:var(--red);padding:.28rem .8rem;border-radius:6px;
+  }
+
+  /* ── COMPARISON ── */
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:.8rem 0;}
+  .cmp-col{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:9px;padding:1rem 1.1rem;}
+  .cmp-title{font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem;}
+  .cmp-col:first-child .cmp-title{color:var(--yellow);}
+  .cmp-col:last-child  .cmp-title{color:var(--cyan);}
+
+  /* ── ADV GRID ── */
+  .adv{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.5rem;margin:.75rem 0;}
+  .adv-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:.75rem .9rem;font-size:.81rem;color:var(--dim);line-height:1.5;}
+  .adv-card .ico{font-size:1rem;display:block;margin-bottom:.28rem;}
+
+  /* ── FOOD BOX ── */
+  .food{
+    background:rgba(244,114,182,.04);border:1px solid rgba(244,114,182,.15);border-radius:10px;
+    padding:1.1rem 1.3rem;margin:.8rem 0;
+  }
+  .food-title{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--pink);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.9rem;}
+  .food-flow{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-bottom:.9rem;}
+  .food-step{background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.18);border-radius:7px;padding:.38rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.77rem;color:var(--pink);min-width:140px;text-align:center;}
+  .food-arr{color:var(--pink);font-size:.85rem;padding:.14rem 0 .14rem 1.2rem;line-height:1;font-family:'JetBrains Mono',monospace;}
+
+  /* ── INTERVIEW ── */
+  .interview{background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.2);border-left:3px solid var(--purple);border-radius:8px;padding:1rem 1.15rem;margin-top:1.1rem;}
+  .int-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;}
+  .interview p{font-size:.87rem;color:var(--dim);line-height:1.8;font-style:italic;}
+
+  /* ── QUESTIONS ── */
+  .q-list{display:flex;flex-direction:column;gap:.5rem;margin-top:.9rem;}
+  .q-item{
+    display:flex;align-items:flex-start;gap:.7rem;
+    background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.15);border-radius:8px;
+    padding:.65rem .95rem;font-size:.84rem;color:var(--dim);line-height:1.6;
+  }
+  .q-num{font-family:'JetBrains Mono',monospace;font-size:.65rem;background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.2);padding:.15rem .42rem;border-radius:5px;flex-shrink:0;margin-top:.1rem;}
+
+  /* ── BOARD ── */
+  .board{background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.15);border-left:3px solid var(--cyan);border-radius:8px;padding:.85rem 1.05rem;margin:.75rem 0;font-family:'JetBrains Mono',monospace;font-size:.84rem;color:var(--cyan);line-height:2;}
+  .board .btitle{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;}
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeUp  {from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)}}
+
+  ::-webkit-scrollbar{width:5px;height:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  @media(max-width:600px){
+    .card{padding:1.2rem}
+    .wrap{padding:1rem 1rem 3.5rem}
+    .cmp{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">Class Teaching Notes</div>
+    <h1>Async / <span>Await</span> – Class Guide</h1>
+    <p>Step-by-step teaching · Tamil + English</p>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 1 – Start With Problem
+       ══════════════════════════ -->
+  <div class="shdr c1">
+    <span class="snum">1️⃣ Step 1</span>
+    <span class="stitle">Start With Problem (Promises Code)</span>
+  </div>
+
+  <div class="card c1">
+    <div class="tag">First students-க்கு Promise code remind பண்ணு.</div>
+
+    <pre><code><span class="fn">login</span>()
+.<span class="fn">then</span>(<span class="op">getData</span>)
+.<span class="fn">then</span>(<span class="op">updateData</span>)
+.<span class="fn">then</span>(<span class="op">saveData</span>)
+.<span class="fn">catch</span>(<span class="op">err</span>=><span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>))</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <div class="point"><span class="a">👉</span> இது Promise chaining</div>
+    <div class="point"><span class="a">👉</span> Code readable ஆனாலும் இன்னும் .then() .then() இருக்கும்.</div>
+
+    <div class="hint">
+      <strong>👉 இதை இன்னும் simple ஆ எழுத Async / Await வந்தது.</strong>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 2 – Simple Meaning
+       ══════════════════════════ -->
+  <div class="shdr c2">
+    <span class="snum">2️⃣ Step 2</span>
+    <span class="stitle">Simple Meaning</span>
+  </div>
+
+  <div class="card c2">
+    <div class="tag">Board-ல எழுதணும்:</div>
+    <div class="board">
+      <div class="btitle">Definition</div>
+      👉 Async / Await = Promises-ஐ easy syntax-ல handle பண்ண method
+    </div>
+
+    <div class="lbl">Important idea:</div>
+    <table>
+      <tr><th>Keyword</th><th>Meaning</th></tr>
+      <tr class="t-kw"><td>async</td><td>function promise return பண்ணும்</td></tr>
+      <tr class="t-kw"><td>await</td><td>promise resolve ஆகும் வரை wait பண்ணும்</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 3 – Async Function
+       ══════════════════════════ -->
+  <div class="shdr c3">
+    <span class="snum">3️⃣ Step 3</span>
+    <span class="stitle">Async Function</span>
+  </div>
+
+  <div class="card c3">
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">async function</span> <span class="fn">getData</span>(){
+  <span class="kw">return</span> <span class="str">"Hello"</span>
+}</code></pre>
+
+    <div class="point"><span class="a">👉</span> <code style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--cyan);">async</code> function always Promise return பண்ணும்.</div>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="fn">getData</span>().<span class="fn">then</span>(<span class="op">data</span>=>{
+ <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+})</code></pre>
+
+    <div class="out-lbl">Output:</div>
+    <div class="out">Hello</div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 4 – Await Keyword
+       ══════════════════════════ -->
+  <div class="shdr c4">
+    <span class="snum">4️⃣ Step 4</span>
+    <span class="stitle">Await Keyword</span>
+  </div>
+
+  <div class="card c4">
+    <div class="tag">Students-க்கு most important concept இது.</div>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">async function</span> <span class="fn">fetchData</span>(){
+
+  <span class="kw">const</span> <span class="op">data</span> = <span class="kw">await</span> <span class="op">Promise</span>.<span class="fn">resolve</span>(<span class="str">"Data received"</span>)
+
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+}
+
+<span class="fn">fetchData</span>()</code></pre>
+
+    <div class="lbl">Explain step by step:</div>
+    <div class="flow">
+      <div class="fb cyan">fetchData start</div>
+      <div class="fa">↓</div>
+      <div class="fb">await promise</div>
+      <div class="fa">↓</div>
+      <div class="fb green">promise resolve</div>
+      <div class="fa">↓</div>
+      <div class="fb green">data received</div>
+      <div class="fa">↓</div>
+      <div class="fb green">console.log</div>
+    </div>
+
+    <div class="lbl">Meaning:</div>
+    <div class="point"><span class="a">👉</span> await promise complete ஆகும் வரை wait பண்ணும்.</div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 5 – Real Example (API Call)
+       ══════════════════════════ -->
+  <div class="shdr c5">
+    <span class="snum">5️⃣ Step 5</span>
+    <span class="stitle">Real Example (API Call)</span>
+  </div>
+
+  <div class="card c5">
+    <pre><code><span class="kw">async function</span> <span class="fn">getUsers</span>(){
+
+  <span class="kw">try</span>{
+    <span class="kw">const</span> <span class="op">res</span>  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.example.com/users"</span>)
+    <span class="kw">const</span> <span class="op">data</span> = <span class="kw">await</span> <span class="op">res</span>.<span class="fn">json</span>()
+
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">data</span>)
+  }
+
+  <span class="kw">catch</span>(<span class="op">err</span>){
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>)
+  }
+
+}</code></pre>
+
+    <div class="lbl">Explain flow:</div>
+    <div class="flow">
+      <div class="fb cyan">API request</div>
+      <div class="fa">↓</div>
+      <div class="fb">response wait</div>
+      <div class="fa">↓</div>
+      <div class="fb purple">data convert JSON</div>
+      <div class="fa">↓</div>
+      <div class="fb green">print data</div>
+    </div>
+
+    <div class="lbl">Important:</div>
+    <table>
+      <tr><th>Code</th><th>Meaning</th></tr>
+      <tr class="t-code"><td>await fetch()</td>   <td>API response wait</td></tr>
+      <tr class="t-code"><td>await res.json()</td><td>JSON convert</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 6 – Error Handling
+       ══════════════════════════ -->
+  <div class="shdr c6">
+    <span class="snum">6️⃣ Step 6</span>
+    <span class="stitle">Error Handling</span>
+  </div>
+
+  <div class="card c6">
+    <div class="def">Async/Await-ல் errors handle பண்ண:</div>
+
+    <div class="trycatch">
+      <div class="tc-title">⚠️ Error Handling Keywords</div>
+      <div class="tc-row">
+        <span class="tc-pill">try</span>
+        <span class="tc-pill">catch</span>
+      </div>
+    </div>
+
+    <div class="lbl">Example:</div>
+    <pre><code><span class="kw">try</span>{
+  <span class="kw">const</span> <span class="op">data</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="op">url</span>)
+}
+<span class="kw">catch</span>(<span class="op">err</span>){
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="op">err</span>)
+}</code></pre>
+
+    <div class="lbl">Explain:</div>
+    <div class="point"><span class="a">👉</span> promise reject ஆனால் catch block run ஆகும்.</div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 7 – Promise vs Async/Await
+       ══════════════════════════ -->
+  <div class="shdr c7">
+    <span class="snum">7️⃣ Step 7</span>
+    <span class="stitle">Promise vs Async/Await</span>
+  </div>
+
+  <div class="card c7">
+    <div class="tag">Board-ல comparison.</div>
+
+    <table>
+      <tr><th>Promise</th><th>Async/Await</th></tr>
+      <tr>
+        <td class="t-pm" style="color:var(--yellow);">.then()</td>
+        <td class="t-aw" style="color:var(--green);">await</td>
+      </tr>
+      <tr>
+        <td style="color:var(--yellow);">chaining</td>
+        <td style="color:var(--green);">sequential code</td>
+      </tr>
+      <tr>
+        <td style="color:var(--yellow);">less readable</td>
+        <td style="color:var(--green);">very readable</td>
+      </tr>
+    </table>
+
+    <div class="lbl">Example:</div>
+    <div class="cmp">
+      <div class="cmp-col">
+        <div class="cmp-title">Promise:</div>
+        <pre style="margin-bottom:0;"><code><span class="fn">login</span>()
+.<span class="fn">then</span>(<span class="op">getData</span>)
+.<span class="fn">then</span>(<span class="op">updateData</span>)
+.<span class="fn">then</span>(<span class="op">saveData</span>)</code></pre>
+      </div>
+      <div class="cmp-col">
+        <div class="cmp-title">Async/Await:</div>
+        <pre style="margin-bottom:0;"><code><span class="kw">async function</span> <span class="fn">process</span>(){
+ <span class="kw">await</span> <span class="fn">login</span>()
+ <span class="kw">await</span> <span class="fn">getData</span>()
+ <span class="kw">await</span> <span class="fn">updateData</span>()
+ <span class="kw">await</span> <span class="fn">saveData</span>()
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="hint-green">
+      <strong>👉 Code normal synchronous code போல இருக்கும்.</strong>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 8 – Real Life Example
+       ══════════════════════════ -->
+  <div class="shdr c8">
+    <span class="snum">8️⃣ Real Life Example</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c8">
+    <div class="tag">Food order example:</div>
+    <div class="food">
+      <div class="food-title">🍽️ Food Order Example</div>
+      <div class="food-flow">
+        <div class="food-step">order food</div>
+        <div class="food-arr">↓</div>
+        <div class="food-step">await cooking</div>
+        <div class="food-arr">↓</div>
+        <div class="food-step">eat food</div>
+      </div>
+    </div>
+    <div class="hint">இதுதான் async / await concept.</div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 9 – Advantages
+       ══════════════════════════ -->
+  <div class="shdr c9">
+    <span class="snum">9️⃣ Advantages</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c9">
+    <div class="tag">Board-ல short points:</div>
+    <div class="adv">
+      <div class="adv-card"><span class="ico">✨</span>clean syntax</div>
+      <div class="adv-card"><span class="ico">🐛</span>easy debugging</div>
+      <div class="adv-card"><span class="ico">📖</span>readable code</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════
+       STEP 10 – Interview Sentence
+       ══════════════════════════ -->
+  <div class="shdr c10">
+    <span class="snum">🔟 Interview Sentence</span>
+    <span class="stitle"></span>
+  </div>
+
+  <div class="card c10">
+    <div class="tag">Students memorize:</div>
+    <div class="interview">
+      <div class="int-lbl">⭐ Interview Sentence</div>
+      <p>"Async/Await is a modern syntax built on top of promises that allows writing asynchronous code in a synchronous style."</p>
+    </div>
+
+    <div class="lbl" style="margin-top:1rem;">Follow-up Questions:</div>
+    <div class="q-list">
+      <div class="q-item"><span class="q-num">1️⃣</span> Can we use await without async?</div>
+      <div class="q-item"><span class="q-num">2️⃣</span> What happens if we forget await?</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

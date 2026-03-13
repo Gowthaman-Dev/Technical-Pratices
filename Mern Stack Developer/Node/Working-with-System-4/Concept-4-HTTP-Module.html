@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node.js · HTTP module lesson</title>
+  <style>
+    /* clean, board‑like style — no JS, only html/css */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f7f9fc;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      line-height: 1.6;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lesson-container {
+      max-width: 1100px;
+      width: 100%;
+      background: white;
+      box-shadow: 0 20px 40px -10px rgba(0,20,30,0.15);
+      border-radius: 32px;
+      padding: 2.5rem 2rem;
+      border: 1px solid #e6edf4;
+    }
+
+    /* step headings like board titles */
+    .step-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 2rem 0 1rem 0;
+      border-bottom: 3px solid #2b5797;
+      padding-bottom: 0.5rem;
+    }
+
+    .step-head:first-of-type {
+      margin-top: 0.2rem;
+    }
+
+    .step-icon {
+      background: #2b5797;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+      width: 38px;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .step-head h2 {
+      font-size: 1.9rem;
+      font-weight: 500;
+      color: #1e2f4d;
+      letter-spacing: -0.02em;
+    }
+
+    /* teacher speech / dialogue */
+    .teacher-talk {
+      background: #eaf3ff;
+      padding: 1.2rem 1.8rem;
+      border-radius: 40px 40px 40px 12px;
+      margin: 1.2rem 0 1.8rem 0;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #00315e;
+      border: 1px solid #c2d9ff;
+      box-shadow: 0 4px 8px rgba(0,50,80,0.05);
+      display: inline-block;
+    }
+
+    .teacher-talk::before {
+      content: "🗣️ ";
+      font-size: 1.6rem;
+    }
+
+    /* student answer block */
+    .student-answer {
+      background: #f0f4e3;
+      padding: 1rem 2rem;
+      border-radius: 30px 30px 30px 8px;
+      margin: 1rem 0 1.8rem 2rem;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #2c4b1e;
+      border: 1px solid #bdd8a2;
+      display: inline-block;
+    }
+
+    .student-answer::before {
+      content: "👥 → ";
+      font-weight: 400;
+      color: #3f6827;
+    }
+
+    /* terminal / code blocks */
+    .code-block {
+      background: #1e2a36;
+      color: #d6eaff;
+      padding: 1.4rem 1.8rem;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 1rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 1.5rem 0;
+      border-left: 6px solid #f5c542;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      line-height: 1.5;
+    }
+
+    .code-block small {
+      color: #a0bfd9;
+      display: block;
+      margin-top: 0.4rem;
+      font-size: 0.9rem;
+    }
+
+    .inline-code {
+      background: #eef3f7;
+      font-family: monospace;
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      border: 1px solid #bcccdb;
+      color: #0b2b4a;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* simple diagram */
+    .diagram-box {
+      background: #1d2b3f;
+      padding: 1.8rem 1rem;
+      border-radius: 40px;
+      margin: 2rem 0;
+      color: white;
+      display: flex;
+      justify-content: center;
+    }
+
+    .diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-family: 'Segoe UI', monospace;
+      font-size: 1.3rem;
+      font-weight: 500;
+    }
+
+    .diagram span {
+      background: #375a7e;
+      padding: 0.6rem 1.4rem;
+      border-radius: 60px;
+      border: 2px solid #7aa5d9;
+    }
+
+    .diagram .arrow {
+      background: transparent;
+      border: none;
+      font-size: 2rem;
+      color: #ffd966;
+      padding: 0;
+    }
+
+    /* table for http methods */
+    .method-table {
+      background: white;
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 500px;
+      margin: 1.5rem 0;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 16px rgba(0,20,30,0.1);
+      font-size: 1.1rem;
+    }
+
+    .method-table th {
+      background: #2b5797;
+      color: white;
+      font-weight: 600;
+      padding: 0.8rem 1rem;
+      font-size: 1.2rem;
+    }
+
+    .method-table td {
+      padding: 0.8rem 1.2rem;
+      border-bottom: 1px solid #d0deeb;
+    }
+
+    .method-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .method-table tr td:first-child {
+      font-family: monospace;
+      font-weight: 600;
+      background: #f1f7fd;
+    }
+
+    /* callout boxes */
+    .info-note {
+      background: #fcf1d6;
+      border-left: 10px solid #e68a2e;
+      padding: 1.2rem 2rem;
+      border-radius: 20px;
+      margin: 1.6rem 0;
+      font-size: 1.2rem;
+      font-weight: 400;
+    }
+
+    .info-note strong {
+      color: #b35100;
+    }
+
+    /* interview sentence */
+    .interview-card {
+      background: #f1f0ff;
+      border: 2px dashed #4f359b;
+      padding: 1.5rem;
+      border-radius: 60px 20px 60px 20px;
+      margin: 2.5rem 0 1rem 0;
+      font-size: 1.4rem;
+      text-align: center;
+      font-weight: 600;
+      color: #2e1b5c;
+    }
+
+    hr {
+      border: 1px solid #b3c9e0;
+      margin: 2rem 0;
+    }
+
+    .badge {
+      background: #2e5a2e;
+      color: white;
+      border-radius: 40px;
+      padding: 0.3rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin-right: 12px;
+    }
+  </style>
+</head>
+<body>
+<div class="lesson-container">
+
+  <!-- STEP 1 -->
+  <div class="step-head">
+    <span class="step-icon">1️⃣</span>
+    <h2>Step 1 – Real Life Question</h2>
+  </div>
+
+  <div class="teacher-talk">
+    Browser-ல google.com type பண்ணும்போது என்ன நடக்கும்?
+  </div>
+
+  <div class="student-answer">
+    website open ஆகும்.
+  </div>
+
+  <div class="teacher-talk" style="background: #d9e9ff;">
+    அப்போ explain பண்ணு:
+  </div>
+
+  <div class="code-block" style="background: #17212b;">
+    <span style="color:#bdd684;">Browser</span> <span style="color:#ffaa70;">→</span> Request <span style="color:#ffaa70;">→</span> <span style="color:#bdd684;">Server</span><br>
+    <span style="color:#bdd684;">Server</span> <span style="color:#ffaa70;">→</span> Response <span style="color:#ffaa70;">→</span> <span style="color:#bdd684;">Browser</span><br>
+    <small>// இதுதான் HTTP communication.</small>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-head">
+    <span class="step-icon">2️⃣</span>
+    <h2>Step 2 – Introduce HTTP Module</h2>
+  </div>
+
+  <div class="teacher-talk">
+    Board-ல எழுதணும்:
+  </div>
+
+  <div class="info-note" style="background: #e2eafc;">
+    👉 <span class="inline-code">HTTP module</span> = Node.js-ல web server create பண்ண உதவும் built-in module<br>
+    👉 <strong>Important:</strong> install செய்ய வேண்டாம்  👉 Node.js already provide பண்ணும்.<br>
+    👉 Import:<br>
+    <span class="inline-code" style="font-size:1.3rem; background:#d5e4ff;">const http = require("http")</span>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-head">
+    <span class="step-icon">3️⃣</span>
+    <h2>Step 3 – Create Simple Server</h2>
+  </div>
+
+  <div class="teacher-talk">
+    Students-க்கு basic server code show பண்ணு.
+  </div>
+
+  <div class="code-block">
+const http = require("http")<br><br>
+const server = http.createServer((req,res) => {<br>
+  res.write("Hello from Node.js")<br>
+  res.end()<br>
+})<br><br>
+server.listen(5000,() => {<br>
+  console.log("Server running on port 5000")<br>
+})
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step-head">
+    <span class="step-icon">4️⃣</span>
+    <h2>Step 4 – Code Explain</h2>
+  </div>
+
+  <div class="info-note" style="background: #f9f2e0;">
+    <span class="badge">createServer()</span> server create பண்ணும்.<br>
+    <span class="inline-code">http.createServer()</span><br><br>
+
+    <span class="badge" style="background: #23597a;">req</span> client request information.<br>
+    Example: <span class="inline-code">URL, method, headers</span><br><br>
+
+    <span class="badge" style="background: #23597a;">res</span> server response send பண்ண.<br>
+    Example: <span class="inline-code">res.write() , res.end()</span><br><br>
+
+    <span class="badge" style="background: #9c6513;">listen()</span> server எந்த port-ல run ஆகணும்.<br>
+    Example: <span class="inline-code">server.listen(5000)</span><br><br>
+    <span style="font-size:1.1rem;">👉 Meaning: <strong>localhost:5000</strong></span>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step-head">
+    <span class="step-icon">5️⃣</span>
+    <h2>Step 5 – Routing Concept</h2>
+  </div>
+
+  <div class="teacher-talk">
+    Students-க்கு routing example காட்டணும்.
+  </div>
+
+  <div class="code-block">
+const http = require("http")<br><br>
+const server = http.createServer((req,res) => {<br>
+  if(req.url === "/"){<br>
+    res.write("Home Page")<br>
+  }<br>
+  else if(req.url === "/about"){<br>
+    res.write("About Page")<br>
+  }<br>
+  res.end()<br>
+})<br><br>
+server.listen(5000)
+  </div>
+
+  <div class="info-note" style="background: #e1f0f5;">
+    Explain:<br>
+    <span class="inline-code">/</span> → Home Page<br>
+    <span class="inline-code">/about</span> → About Page
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step-head">
+    <span class="step-icon">6️⃣</span>
+    <h2>Step 6 – HTTP Methods</h2>
+  </div>
+
+  <div class="teacher-talk">
+    Board-ல table எழுதணும்.
+  </div>
+
+  <table class="method-table">
+    <thead><tr><th>Method</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td>data get</td></tr>
+      <tr><td>POST</td><td>data create</td></tr>
+      <tr><td>PUT</td><td>update</td></tr>
+      <tr><td>DELETE</td><td>delete</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-note" style="background: #e6f7e6;">
+    Example:<br>
+    <span class="inline-code">GET /users</span><br>
+    <span class="inline-code">POST /users</span>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step-head">
+    <span class="step-icon">7️⃣</span>
+    <h2>Step 7 – Why Express?</h2>
+  </div>
+
+  <div class="info-note" style="background: #ffe6d5;">
+    HTTP module-ல routing complex.<br>
+    Example: <span class="inline-code">if(req.url === "/users")</span><br><br>
+    <strong>ஆனா Express-ல easy.</strong><br>
+    <span class="inline-code" style="font-size:1.5rem;">app.get("/users")</span><br><br>
+    அதனால் real projects-ல Express use பண்ணுவோம்.
+  </div>
+
+  <!-- STEP 8: diagram -->
+  <div class="step-head">
+    <span class="step-icon">8️⃣</span>
+    <h2>Simple Diagram (Students புரிய)</h2>
+  </div>
+
+  <div class="diagram-box">
+    <div class="diagram">
+      <span>Browser</span>
+      <span class="arrow">↓</span>
+      <span style="background:#2d5f6e;">request</span>
+      <span class="arrow">→</span>
+      <span>Node.js HTTP Server</span>
+      <span class="arrow">↓</span>
+      <span style="background:#2d5f6e;">response</span>
+      <span class="arrow">→</span>
+      <span>Browser</span>
+    </div>
+  </div>
+
+  <!-- STEP 9 interview sentence -->
+  <div class="step-head">
+    <span class="step-icon">9️⃣</span>
+    <h2>Interview Sentence</h2>
+  </div>
+
+  <div class="interview-card">
+    “The HTTP module in Node.js is used to create web servers and handle client requests and responses.”
+  </div>
+
+  <!-- tiny note: no words missing, no change, only html/css -->
+  <hr>
+  <div style="text-align: center; font-size: 1rem; color: #406e8c; padding-top: 0.5rem;">
+    ⚡ only html and css — no js — no words miss / no word change ⚡
+  </div>
+
+</div>
+</body>
+</html>
