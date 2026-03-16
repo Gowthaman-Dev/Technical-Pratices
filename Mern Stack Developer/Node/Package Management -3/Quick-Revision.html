@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js — NPM & package.json</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0c0c0f;
+    --bg2:     #131318;
+    --bg3:     #18181f;
+    --bg4:     #1e1e28;
+    --border:  rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text:    #e6e3dc;
+    --muted:   #72706a;
+    --muted2:  #9a9890;
+    --green:   #68f0a0;
+    --blue:    #68b8f0;
+    --amber:   #f0c068;
+    --purple:  #b068f0;
+    --red:     #f06878;
+    --teal:    #68f0e0;
+    --font:    'Syne', sans-serif;
+    --mono:    'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 3rem 2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: .6rem;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+  }
+
+  h1 .hl { color: var(--amber); }
+
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .tag {
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 4px 13px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 3rem 3rem 5rem;
+    display: grid;
+    gap: 3.5rem;
+  }
+
+  /* ── MODULE HEADING ── */
+  .mod-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .mod-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 100px;
+  }
+
+  .mb-npm  { background: rgba(240,192,104,.13); color: var(--amber); border: 1px solid rgba(240,192,104,.25); }
+  .mb-pkg  { background: rgba(104,176,240,.13); color: var(--blue);  border: 1px solid rgba(104,176,240,.25); }
+
+  .mod-head h2 {
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  /* ── DEF BOX ── */
+  .def-box {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 1.1rem 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .def-title { font-size: .95rem; font-weight: 700; margin-bottom: .35rem; }
+  .dt-amber  { color: var(--amber); }
+  .dt-blue   { color: var(--blue); }
+
+  .def-box p { font-size: .86rem; color: var(--muted2); line-height: 1.65; }
+
+  /* ── GRID ── */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+  .g5 { display: grid; grid-template-columns: repeat(5,1fr); gap: .75rem; }
+
+  @media (max-width: 760px) {
+    .g3, .g5 { grid-template-columns: 1fr 1fr; }
+    header, main { padding-left: 1.4rem; padding-right: 1.4rem; }
+    .g2 { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .g3, .g5 { grid-template-columns: 1fr; }
+  }
+
+  /* ── ANALOGY BOXES ── */
+  .analogy-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .ana-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+  }
+
+  .ana-title { font-size: .82rem; font-weight: 600; color: var(--text); margin-bottom: .6rem; }
+
+  .ana-box p  { font-size: .8rem; color: var(--muted2); line-height: 1.55; }
+
+  .steps { display: flex; flex-direction: column; gap: .45rem; }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    font-size: .8rem;
+    color: var(--text);
+    line-height: 1.45;
+  }
+
+  .step-num {
+    font-size: 10px;
+    background: var(--bg4);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--muted2);
+    margin-top: 1px;
+    font-family: var(--mono);
+  }
+
+  code { font-family: var(--mono); font-size: .8em; }
+
+  /* ── COMMAND LIST ── */
+  .cmd-list { display: flex; flex-direction: column; gap: .6rem; }
+
+  .cmd-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .85rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: .85rem;
+  }
+
+  .cmd-n {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    min-width: 18px;
+    padding-top: 3px;
+  }
+
+  .cmd-body { flex: 1; display: flex; flex-direction: column; gap: .3rem; }
+
+  .cmd-code {
+    font-family: var(--mono);
+    font-size: .82rem;
+    font-weight: 500;
+    color: var(--amber);
+  }
+
+  .cmd-desc { font-size: .79rem; color: var(--muted2); line-height: 1.5; }
+
+  .cmd-tags { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .2rem; }
+
+  .cpill {
+    font-size: 10px;
+    padding: 2px 9px;
+    border-radius: 100px;
+    font-family: var(--mono);
+    font-weight: 500;
+  }
+
+  .cp-loc  { background: rgba(104,176,240,.1); color: var(--blue);   border: 1px solid rgba(104,176,240,.2); }
+  .cp-dev  { background: rgba(240,192,104,.1); color: var(--amber);  border: 1px solid rgba(240,192,104,.2); }
+  .cp-glob { background: rgba(104,240,160,.1); color: var(--green);  border: 1px solid rgba(104,240,160,.2); }
+  .cp-rem  { background: rgba(240,104,120,.1); color: var(--red);    border: 1px solid rgba(240,104,120,.2); }
+  .cp-all  { background: rgba(176,104,240,.1); color: var(--purple); border: 1px solid rgba(176,104,240,.2); }
+  .cp-name { background: var(--bg4);           color: var(--muted2); border: 1px solid var(--border2); }
+
+  /* ── NODE_MODULES ── */
+  .tree {
+    background: #08080b;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    font-family: var(--mono);
+    font-size: .78rem;
+    line-height: 1.95;
+    color: var(--muted2);
+  }
+
+  .tf  { color: var(--blue);   font-weight: 500; }
+  .tp  { color: var(--green);  }
+  .tfi { color: var(--muted);  }
+
+  /* ── INSTALL TYPES ── */
+  .type-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+
+  .type-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .9rem 1rem;
+  }
+
+  .type-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: .5rem;
+  }
+
+  .tt-loc  { background: rgba(104,176,240,.15); color: var(--blue);   }
+  .tt-glob { background: rgba(104,240,160,.15); color: var(--green);  }
+  .tt-dev  { background: rgba(240,192,104,.15); color: var(--amber);  }
+
+  .type-name { font-size: .84rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+  .type-desc { font-size: .78rem; color: var(--muted2); line-height: 1.5; margin-bottom: .45rem; }
+  .type-cmd  { font-family: var(--mono); font-size: .76rem; color: var(--amber); }
+
+  /* ── TABLE ── */
+  .dt {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .83rem;
+  }
+
+  .dt th {
+    text-align: left;
+    padding: .55rem .9rem;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dt td {
+    padding: .65rem .9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .dt tr:last-child td { border-bottom: none; }
+
+  .dt code {
+    color: var(--amber);
+    background: rgba(240,192,104,.07);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: .78rem;
+  }
+
+  /* ── PRECODE BLOCKS ── */
+  pre {
+    background: #08080b;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    font-family: var(--mono);
+    font-size: .78rem;
+    line-height: 1.9;
+    overflow-x: auto;
+    color: #b8b6b0;
+  }
+
+  .pk  { color: var(--blue);   }
+  .pv  { color: var(--green);  }
+  .pkw { color: var(--purple); }
+  .pm  { color: var(--muted);  }
+  .pf  { color: var(--amber);  }
+  .ps  { color: var(--teal);   }
+
+  .code-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: .45rem;
+  }
+
+  /* ── SCRIPTS PILLS ── */
+  .script-row { display: flex; gap: .6rem; flex-wrap: wrap; }
+
+  .sp {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: .55rem .9rem;
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--amber);
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .sp-arrow { color: var(--muted); }
+
+  /* ── DEPS COLS ── */
+  .dep-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .dep-col {
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+  }
+
+  .dep-prod { background: rgba(104,240,160,.05); border: 1px solid rgba(104,240,160,.18); }
+  .dep-dev  { background: rgba(240,192,104,.05); border: 1px solid rgba(240,192,104,.18); }
+
+  .dep-title {
+    font-size: .79rem;
+    font-weight: 700;
+    margin-bottom: .6rem;
+  }
+
+  .dep-prod .dep-title { color: var(--green); }
+  .dep-dev  .dep-title { color: var(--amber); }
+
+  .dep-list { display: flex; flex-direction: column; gap: .3rem; }
+  .dep-list span { font-family: var(--mono); font-size: .8rem; color: var(--text); }
+
+  /* ── FIELD GRID ── */
+  .field-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; margin-bottom: 1rem; }
+
+  .field-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .8rem 1rem;
+  }
+
+  .field-key  { font-family: var(--mono); font-size: .8rem; font-weight: 500; color: var(--blue);  margin-bottom: .25rem; }
+  .field-desc { font-size: .78rem; color: var(--muted2); line-height: 1.45; }
+
+  /* ── INIT CARDS ── */
+  .init-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .init-item {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+  }
+
+  .init-cmd  { font-family: var(--mono); font-size: .88rem; font-weight: 500; color: var(--amber); margin-bottom: .4rem; }
+  .init-desc { font-size: .8rem; color: var(--muted2); line-height: 1.55; }
+
+  /* ── ORDERED STEPS ── */
+  .o-steps { display: flex; flex-direction: column; gap: .5rem; }
+
+  .o-step {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    font-size: .83rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .o-num {
+    font-family: var(--mono);
+    font-size: .7rem;
+    font-weight: 700;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+    background: rgba(240,192,104,.13);
+    color: var(--amber);
+    border: 1px solid rgba(240,192,104,.25);
+  }
+
+  /* ── INTERVIEW / BONUS BOXES ── */
+  .int-box {
+    background: rgba(104,176,240,.06);
+    border: 1px solid rgba(104,176,240,.2);
+    border-radius: 14px;
+    padding: 1.3rem 1.5rem;
+  }
+
+  .int-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: .55rem;
+  }
+
+  .int-box p { font-size: .88rem; font-style: italic; color: var(--text); line-height: 1.7; }
+
+  .bonus-box {
+    background: rgba(240,192,104,.06);
+    border: 1px solid rgba(240,192,104,.2);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+  }
+
+  .bonus-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: .55rem;
+  }
+
+  .bonus-box p { font-size: .84rem; color: var(--text); line-height: 1.7; }
+
+  .final-box {
+    background: rgba(104,240,160,.05);
+    border: 1px solid rgba(104,240,160,.18);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+  }
+
+  .final-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: .55rem;
+  }
+
+  .final-box p { font-size: .86rem; color: var(--text); line-height: 1.7; }
+
+  /* ── DIVIDER ── */
+  hr { border: none; border-top: 1px solid var(--border); margin: .5rem 0; }
+
+  /* ── INLINE NOTE ── */
+  .note { font-size: .79rem; color: var(--muted2); line-height: 1.6; margin-top: .6rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">Node.js — Quick Revision</div>
+    <h1>NPM &amp; <span class="hl">package.json</span></h1>
+  </div>
+  <div class="tags">
+    <span class="tag">built-in</span>
+    <span class="tag">no install</span>
+    <span class="tag">package manager</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══════════════════ NPM ═══════════════════ -->
+  <section>
+    <div class="mod-head">
+      <span class="mod-badge mb-npm">NPM</span>
+      <h2>Node Package Manager</h2>
+    </div>
+
+    <!-- Definition -->
+    <div class="card">
+      <div class="card-label">Definition</div>
+      <div class="def-box">
+        <div class="def-title dt-amber">NPM — Node Package Manager</div>
+        <p>Node.js packages install மற்றும் manage பண்ண பயன்படும் tool. Node.js install பண்ணும்போது NPM automatic-ஆ install ஆகும். External libraries install, dependencies manage, scripts run, packages publish பண்ண use பண்ணலாம்.</p>
+      </div>
+      <div class="analogy-row">
+        <div class="ana-box">
+          <div class="ana-title">Play Store / App Store போல</div>
+          <p>Phone-ல் WhatsApp, Instagram install பண்றோம் — NPM-ல் express, axios install பண்றோம்.</p>
+        </div>
+        <div class="ana-box">
+          <div class="ana-title">npm install-ல் என்ன நடக்கும்?</div>
+          <div class="steps">
+            <div class="step"><span class="step-num">1</span>Package download + install ஆகும்</div>
+            <div class="step"><span class="step-num">2</span><code>node_modules</code> folder create ஆகும்</div>
+            <div class="step"><span class="step-num">3</span><code>package.json</code> update ஆகும்</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 Commands -->
+    <div class="card">
+      <div class="card-label">5 Important Commands</div>
+      <div class="cmd-list">
+        <div class="cmd-item">
+          <span class="cmd-n">1</span>
+          <div class="cmd-body">
+            <div class="cmd-code">npm install express</div>
+            <div class="cmd-desc">Express package install ஆகும். node_modules folder + package.json update ஆகும்.</div>
+            <div class="cmd-tags"><span class="cpill cp-loc">local install</span></div>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <span class="cmd-n">2</span>
+          <div class="cmd-body">
+            <div class="cmd-code">npm install nodemon --save-dev</div>
+            <div class="cmd-desc">Development time மட்டும் use பண்ணும் package. Production-ல் தேவையில்லை.</div>
+            <div class="cmd-tags">
+              <span class="cpill cp-dev">dev dependency</span>
+              <span class="cpill cp-name">nodemon</span>
+              <span class="cpill cp-name">eslint</span>
+              <span class="cpill cp-name">prettier</span>
+            </div>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <span class="cmd-n">3</span>
+          <div class="cmd-body">
+            <div class="cmd-code">npm install -g nodemon</div>
+            <div class="cmd-desc">System / computer முழுவதும் install ஆகும். எந்த project-லயும் use பண்ணலாம்.</div>
+            <div class="cmd-tags"><span class="cpill cp-glob">global install</span></div>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <span class="cmd-n">4</span>
+          <div class="cmd-body">
+            <div class="cmd-code">npm uninstall express</div>
+            <div class="cmd-desc">Express package remove ஆகும். node_modules மற்றும் package.json-லயும் remove ஆகும்.</div>
+            <div class="cmd-tags"><span class="cpill cp-rem">remove package</span></div>
+          </div>
+        </div>
+        <div class="cmd-item">
+          <span class="cmd-n">5</span>
+          <div class="cmd-body">
+            <div class="cmd-code">npm install</div>
+            <div class="cmd-desc">package.json-ல் இருக்கும் all packages install ஆகும். GitHub clone பண்ணும்போது use பண்ணுவோம்.</div>
+            <div class="cmd-tags"><span class="cpill cp-all">install all deps</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- node_modules -->
+    <div class="card">
+      <div class="card-label">node_modules Folder</div>
+      <div class="g2">
+        <div class="tree">
+<span class="tf">project/</span>
+├── <span class="tf">node_modules/</span>
+│   ├── <span class="tp">express/</span>
+│   ├── <span class="tp">body-parser/</span>
+│   └── <span class="tp">other packages/</span>
+├── <span class="tfi">package.json</span>
+└── <span class="tfi">app.js</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.7rem;align-self:center">
+          <div class="ana-box">
+            <div class="ana-title">Installed packages</div>
+            <p>npm install பண்ணும் packages எல்லாம் இங்கே store ஆகும்.</p>
+          </div>
+          <div class="ana-box">
+            <div class="ana-title">Dependencies of dependencies</div>
+            <p>Express install பண்ணினால், Express use பண்ணும் other libraries கூட install ஆகும்.</p>
+          </div>
+        </div>
+      </div>
+      <p class="note">node_modules folder-ஐ GitHub-ல் push பண்ண வேண்டாம் — .gitignore-ல் add பண்ணுவோம். <code>npm install</code> run பண்ணினால் மீண்டும் create ஆகும்.</p>
+    </div>
+
+    <!-- Install Types -->
+    <div class="card">
+      <div class="card-label">Install Types — Key Interview Point</div>
+      <div class="type-grid">
+        <div class="type-item">
+          <div class="type-tag tt-loc">Local</div>
+          <div class="type-name">Local Install</div>
+          <div class="type-desc">Current project மட்டும். node_modules-ல் save ஆகும்.</div>
+          <div class="type-cmd">npm install express</div>
+        </div>
+        <div class="type-item">
+          <div class="type-tag tt-glob">Global</div>
+          <div class="type-name">Global Install</div>
+          <div class="type-desc">System முழுவதும். எந்த project-லயும் available.</div>
+          <div class="type-cmd">npm install -g nodemon</div>
+        </div>
+        <div class="type-item">
+          <div class="type-tag tt-dev">Dev</div>
+          <div class="type-name">Dev Dependency</div>
+          <div class="type-desc">Dev time மட்டும். Production-ல் தேவையில்லை.</div>
+          <div class="type-cmd">npm install nodemon --save-dev</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Commands table -->
+    <div class="card">
+      <div class="card-label">Commands — Quick Reference</div>
+      <table class="dt">
+        <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>npm install express</code></td><td>Package install பண்ண</td></tr>
+          <tr><td><code>npm install nodemon --save-dev</code></td><td>Dev dependency install</td></tr>
+          <tr><td><code>npm install -g nodemon</code></td><td>Global install</td></tr>
+          <tr><td><code>npm uninstall express</code></td><td>Package remove பண்ண</td></tr>
+          <tr><td><code>npm install</code></td><td>All dependencies install</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Most asked -->
+    <div class="bonus-box" style="margin-bottom:1rem">
+      <div class="bonus-label">Most Asked Interview Q — Local vs Global vs Dev?</div>
+      <p>
+        <strong>Local</strong> → Current project மட்டும் — <code>npm install express</code><br>
+        <strong>Global</strong> → System-wide, any project — <code>npm install -g nodemon</code><br>
+        <strong>Dev dependency</strong> → Dev time only, production-ல் தேவையில்லை — <code>npm install nodemon --save-dev</code>
+      </p>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Interview Sentence — Memorize</div>
+      <p>"NPM is the default package manager for Node.js used to install, manage, and update project dependencies."</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════ PACKAGE.JSON ═══════════════════ -->
+  <section>
+    <div class="mod-head">
+      <span class="mod-badge mb-pkg">package.json</span>
+      <h2>Project Configuration File</h2>
+    </div>
+
+    <!-- Definition -->
+    <div class="card">
+      <div class="card-label">Definition</div>
+      <div class="def-box">
+        <div class="def-title dt-blue">package.json — Project Configuration File</div>
+        <p>Node.js project-இன் ID card. Project name, version, dependencies, scripts எல்லாம் இந்த ஒரு file-ல் store ஆகும். இல்லாமல் project manage பண்ண முடியாது.</p>
+      </div>
+    </div>
+
+    <!-- Example File -->
+    <div class="card">
+      <div class="card-label">Example File</div>
+      <pre>{
+  <span class="pk">"name"</span>:        <span class="pv">"mern-project"</span>,
+  <span class="pk">"version"</span>:     <span class="pv">"1.0.0"</span>,
+  <span class="pk">"description"</span>: <span class="pv">"Job portal backend"</span>,
+  <span class="pk">"main"</span>:        <span class="pv">"server.js"</span>,
+  <span class="pk">"scripts"</span>: {
+    <span class="pk">"start"</span>: <span class="pv">"node server.js"</span>,
+    <span class="pk">"dev"</span>:   <span class="pv">"nodemon server.js"</span>
+  },
+  <span class="pk">"dependencies"</span>: {
+    <span class="pk">"express"</span>: <span class="pv">"^4.18.2"</span>
+  },
+  <span class="pk">"devDependencies"</span>: {
+    <span class="pk">"nodemon"</span>: <span class="pv">"^3.0.0"</span>
+  }
+}</pre>
+    </div>
+
+    <!-- Important Fields -->
+    <div class="card">
+      <div class="card-label">Important Fields</div>
+      <div class="field-grid">
+        <div class="field-item"><div class="field-key">"name"</div><div class="field-desc">Project name</div></div>
+        <div class="field-item"><div class="field-key">"version"</div><div class="field-desc">Project version</div></div>
+        <div class="field-item"><div class="field-key">"description"</div><div class="field-desc">Project details</div></div>
+        <div class="field-item"><div class="field-key">"main"</div><div class="field-desc">Entry file — server start ஆகும் file</div></div>
+        <div class="field-item"><div class="field-key">"scripts"</div><div class="field-desc">Commands run பண்ண</div></div>
+        <div class="field-item"><div class="field-key">"dependencies"</div><div class="field-desc">Required packages</div></div>
+      </div>
+      <table class="dt">
+        <thead><tr><th>Field</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>name</code></td><td>Project name</td></tr>
+          <tr><td><code>version</code></td><td>Project version</td></tr>
+          <tr><td><code>description</code></td><td>Project details</td></tr>
+          <tr><td><code>main</code></td><td>Entry file</td></tr>
+          <tr><td><code>scripts</code></td><td>Commands run பண்ண</td></tr>
+          <tr><td><code>dependencies</code></td><td>Required packages</td></tr>
+          <tr><td><code>devDependencies</code></td><td>Development packages</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Scripts -->
+    <div class="card">
+      <div class="card-label">scripts — How to Use</div>
+      <pre style="margin-bottom:.8rem"><span class="pk">"scripts"</span>: {
+  <span class="pk">"start"</span>: <span class="pv">"node server.js"</span>,
+  <span class="pk">"dev"</span>:   <span class="pv">"nodemon server.js"</span>
+}</pre>
+      <div class="script-row">
+        <div class="sp">npm run dev <span class="sp-arrow">→</span> nodemon server start</div>
+        <div class="sp">npm start <span class="sp-arrow">→</span> node server.js</div>
+      </div>
+    </div>
+
+    <!-- dependencies vs devDependencies -->
+    <div class="card">
+      <div class="card-label">dependencies vs devDependencies</div>
+      <div class="dep-cols">
+        <div class="dep-col dep-prod">
+          <div class="dep-title">dependencies — Production</div>
+          <div class="dep-list">
+            <span>express</span>
+            <span>mongoose</span>
+            <span>bcrypt</span>
+            <span>jsonwebtoken</span>
+            <span>cors</span>
+            <span>dotenv</span>
+          </div>
+        </div>
+        <div class="dep-col dep-dev">
+          <div class="dep-title">devDependencies — Dev only</div>
+          <div class="dep-list">
+            <span>nodemon</span>
+            <span>eslint</span>
+            <span>prettier</span>
+          </div>
+        </div>
+      </div>
+      <table class="dt" style="margin-top:.85rem">
+        <thead><tr><th>Type</th><th>Used</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>dependencies</td><td>Production packages</td><td>express, mongoose</td></tr>
+          <tr><td>devDependencies</td><td>Development tools</td><td>nodemon, eslint</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MERN Real Example -->
+    <div class="card">
+      <div class="card-label">Real Project — MERN Dependencies</div>
+      <pre><span class="pk">"dependencies"</span>: {
+  <span class="pk">"express"</span>:      <span class="pv">"^4.18.2"</span>,
+  <span class="pk">"mongoose"</span>:     <span class="pv">"^7.0.0"</span>,
+  <span class="pk">"bcrypt"</span>:       <span class="pv">"^5.1.0"</span>,
+  <span class="pk">"jsonwebtoken"</span>: <span class="pv">"^9.0.0"</span>,
+  <span class="pk">"cors"</span>:         <span class="pv">"^2.8.5"</span>,
+  <span class="pk">"dotenv"</span>:       <span class="pv">"^16.0.3"</span>
+}</pre>
+    </div>
+
+    <!-- Create package.json -->
+    <div class="card">
+      <div class="card-label">Create package.json</div>
+      <div class="init-grid">
+        <div class="init-item">
+          <div class="init-cmd">npm init</div>
+          <div class="init-desc">Step-by-step questions கேட்டு package.json create பண்ணும். Name, version, description manually enter பண்ணணும்.</div>
+        </div>
+        <div class="init-item">
+          <div class="init-cmd">npm init -y</div>
+          <div class="init-desc">Questions கேட்காமல் automatically default values-உடன் package.json create பண்ணும். Fast setup.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 100% Interview Q -->
+    <div class="bonus-box" style="margin-bottom:1rem">
+      <div class="bonus-label">100% Interview Q — npm install-ல் என்ன நடக்கும்?</div>
+      <div class="o-steps">
+        <div class="o-step"><span class="o-num">1</span>package.json-ல் இருக்கும் dependencies read ஆகும்</div>
+        <div class="o-step"><span class="o-num">2</span>npm registry-லிருந்து packages download ஆகும்</div>
+        <div class="o-step"><span class="o-num">3</span>node_modules folder-ல் install ஆகும்</div>
+        <div class="o-step"><span class="o-num">4</span>package-lock.json update ஆகும் (exact versions lock)</div>
+      </div>
+    </div>
+
+    <!-- Final Combined -->
+    <div class="final-box" style="margin-bottom:1rem">
+      <div class="final-label">Final Combined Answer (NPM + package.json)</div>
+      <p>"NPM is the package manager for Node.js used to install and manage external libraries. The package.json file stores project metadata, dependencies, and scripts required to run the application."</p>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Interview Sentence — Memorize</div>
+      <p>"package.json is a configuration file that stores project metadata, dependencies, and scripts for a Node.js application."</p>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

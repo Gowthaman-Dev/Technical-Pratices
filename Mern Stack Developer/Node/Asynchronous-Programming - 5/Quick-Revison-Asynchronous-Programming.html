@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js Interview Quick Revision</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --border: #2a2a35;
+    --border2: #3a3a48;
+    --text: #e8e8f0;
+    --muted: #7070888;
+    --muted: #707088;
+    --accent: #7c6af7;
+    --accent2: #5edba8;
+    --accent3: #f0a05a;
+    --accent4: #e86060;
+    --accent5: #60b4e8;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    padding: 0 0 80px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0a0a0f 0%, #12101e 50%, #0a120f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 56px 40px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 50%, rgba(124,106,247,.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 50%, rgba(94,219,168,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .15em;
+    color: var(--accent2);
+    border: 1px solid rgba(94,219,168,.3);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-family: var(--mono);
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 0 auto 24px;
+  }
+  .topic-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .topic-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border2);
+    padding: 5px 12px;
+    border-radius: 4px;
+    transition: color .2s, border-color .2s;
+  }
+  .topic-nav a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+  /* ── SECTION ── */
+  .topic {
+    margin-top: 60px;
+    scroll-margin-top: 20px;
+  }
+  .topic-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .topic-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(124,106,247,.1);
+    border: 1px solid rgba(124,106,247,.25);
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+  .topic-title {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 14px;
+  }
+  .card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .def-box {
+    background: var(--surface2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px;
+    font-size: 13.5px;
+    color: #c8c8e0;
+    line-height: 1.7;
+  }
+  .def-box strong { color: var(--accent); font-family: var(--mono); font-size: 13px; }
+
+  /* ── STATES ── */
+  .states { display: flex; gap: 10px; flex-wrap: wrap; }
+  .state-pill {
+    flex: 1; min-width: 120px;
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid;
+    text-align: center;
+  }
+  .state-name { font-family: var(--mono); font-size: 12px; font-weight: 700; }
+  .state-desc { font-size: 11px; margin-top: 3px; opacity: .75; }
+  .state-pending { background: rgba(240,160,90,.07); border-color: rgba(240,160,90,.3); }
+  .state-pending .state-name { color: var(--accent3); }
+  .state-fulfilled { background: rgba(94,219,168,.07); border-color: rgba(94,219,168,.3); }
+  .state-fulfilled .state-name { color: var(--accent2); }
+  .state-rejected { background: rgba(232,96,96,.07); border-color: rgba(232,96,96,.3); }
+  .state-rejected .state-name { color: var(--accent4); }
+
+  /* ── CODE ── */
+  .code-block {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.9;
+    overflow-x: auto;
+    white-space: pre;
+    color: #c0c0d8;
+  }
+  .kw  { color: #7ca8f0; }
+  .str { color: #7ec99e; }
+  .fn  { color: #f0c97c; }
+  .cm  { color: #505068; }
+  .h1c { color: #e86060; }
+  .h2c { color: #e8a060; }
+  .h3c { color: #60b8a0; }
+  .h4c { color: #a086e0; }
+
+  /* ── OUTPUT PILLS ── */
+  .output-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  .out-label { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .out-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 4px 12px;
+    color: var(--text);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .out-n {
+    font-size: 9px;
+    background: var(--border2);
+    border-radius: 50%;
+    width: 15px; height: 15px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--muted);
+  }
+
+  /* ── FLOW STEPS ── */
+  .flow { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+  .flow-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12.5px; color: #b0b0c8;
+  }
+  .flow-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--accent); }
+  .flow-dot.green { background: var(--accent2); }
+  .flow-connector { width: 1px; height: 10px; background: var(--border2); margin-left: 3px; }
+
+  /* ── TABLES ── */
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th {
+    background: var(--surface2);
+    padding: 8px 12px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+    color: #c0c0d8;
+  }
+  tr:last-child td { border-bottom: none; }
+  td code, th code {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surface2);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--accent5);
+  }
+  td strong { color: var(--text); font-weight: 500; }
+
+  /* ── GRID ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .mini-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .mini-title { font-family: var(--mono); font-size: 12px; font-weight: 700; margin-bottom: 5px; }
+  .mini-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+  /* ── PRIORITY ── */
+  .priority-list { display: flex; flex-direction: column; gap: 8px; }
+  .priority-item {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .p-rank { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 18px; flex-shrink: 0; }
+  .p-name { font-family: var(--mono); font-size: 13px; font-weight: 700; flex: 1; }
+  .p-bar { height: 4px; border-radius: 2px; flex-shrink: 0; }
+  .p-note { font-size: 11px; color: var(--muted); }
+
+  /* ── FLOW ROW ── */
+  .flow-row {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    padding: 10px 0;
+  }
+  .flow-box {
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid;
+  }
+  .fb-purple { background: rgba(124,106,247,.12); border-color: rgba(124,106,247,.4); color: #b0a4f8; }
+  .fb-teal   { background: rgba(94,219,168,.1); border-color: rgba(94,219,168,.35); color: #6dd4a8; }
+  .fb-amber  { background: rgba(240,160,90,.1); border-color: rgba(240,160,90,.35); color: #e8b070; }
+  .fb-coral  { background: rgba(232,96,96,.1); border-color: rgba(232,96,96,.35); color: #e89090; }
+  .flow-arr { color: var(--border2); font-size: 14px; }
+
+  /* ── TAGS ── */
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    color: #b0b0c8;
+  }
+
+  /* ── ADVANTAGE GRID ── */
+  .adv-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media(max-width:500px){ .adv-grid { grid-template-columns: 1fr 1fr; } }
+  .adv-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .adv-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .adv-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ── TIMELINE ── */
+  .timeline { display: flex; gap: 0; }
+  .tick { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .tick-bar { width: 4px; height: 28px; background: var(--border2); border-radius: 2px; }
+  .tick-val { font-family: var(--mono); font-size: 10px; color: var(--text); text-align: center; }
+  .tick-lbl { font-size: 10px; color: var(--muted); }
+  .tick.stop .tick-bar { background: var(--accent4); }
+  .tick.stop .tick-val { color: var(--accent4); }
+
+  /* ── INTERVIEW BOXES ── */
+  .interview-box {
+    background: rgba(96,180,232,.07);
+    border: 1px solid rgba(96,180,232,.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .interview-box .i-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent5);
+    margin-bottom: 7px;
+  }
+  .interview-box .i-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+    font-style: italic;
+  }
+
+  .warning-box {
+    background: rgba(232,96,96,.07);
+    border: 1px solid rgba(232,96,96,.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .warning-box .w-label {
+    font-family: var(--mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--accent4); margin-bottom: 7px;
+  }
+  .warning-box .w-text { font-size: 13px; color: #d0d0e0; line-height: 1.65; }
+
+  .bonus-box {
+    background: rgba(240,160,90,.07);
+    border: 1px solid rgba(240,160,90,.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .bonus-box .b-label {
+    font-family: var(--mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--accent3); margin-bottom: 7px;
+  }
+  .bonus-box .b-text { font-size: 13px; color: #d0d0e0; line-height: 1.7; }
+  .bonus-box .b-text strong { color: var(--text); }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* ── ULTIMATE SUMMARY ── */
+  .ultimate {
+    margin-top: 60px;
+    background: linear-gradient(135deg, #12101e, #0a120f);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    padding: 32px 28px;
+    text-align: center;
+  }
+  .ultimate h2 {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    letter-spacing: .05em;
+  }
+  .ultimate p {
+    font-size: 14px;
+    color: #c0c0d8;
+    line-height: 1.8;
+    max-width: 620px;
+    margin: 0 auto;
+    font-style: italic;
+  }
+  .ultimate p strong { color: var(--accent); font-style: normal; }
+
+  /* ── HELL VISUAL ── */
+  .hell-code {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 2;
+  }
+
+  .note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+  .note strong { color: #c0c0d8; }
+
+  /* animations */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .topic { animation: fadeUp .4s ease both; }
+  .topic:nth-child(1) { animation-delay: .05s; }
+  .topic:nth-child(2) { animation-delay: .1s; }
+  .topic:nth-child(3) { animation-delay: .15s; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Interview Quick Revision</div>
+  <h1>Node.js <span>Async</span> Concepts</h1>
+  <p class="hero-sub">Callbacks · Promises · Async/Await · Event Loop · Timers · setImmediate · process.nextTick</p>
+  <nav class="topic-nav">
+    <a href="#callbacks">Callbacks</a>
+    <a href="#promises">Promises</a>
+    <a href="#asyncawait">Async/Await</a>
+    <a href="#eventloop">Event Loop</a>
+    <a href="#timers">setTimeout/setInterval</a>
+    <a href="#setimmediate">setImmediate</a>
+    <a href="#nexttick">process.nextTick</a>
+  </nav>
+</div>
+
+<div class="container">
+
+<!-- ═══════════════════════════════════════════════
+     1. CALLBACK FUNCTIONS
+═══════════════════════════════════════════════ -->
+<div class="topic" id="callbacks">
+  <div class="topic-header">
+    <span class="topic-num">01</span>
+    <span class="topic-title">Callback Functions</span>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Definition</div>
+    <div class="def-box">
+      <strong>Callback Function</strong><br>
+      ஒரு function-க்கு argument ஆக pass பண்ணப்படும் function — அந்த operation முடிந்த பிறகு execute ஆகும். Node.js-ல async operations handle பண்ண அதிகமாக use பண்ணப்பட்டது.
+    </div>
+    <div class="tags" style="margin-top:12px;">
+      <span class="tag">File read</span>
+      <span class="tag">API call</span>
+      <span class="tag">Database query</span>
+      <span class="tag">setTimeout</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Simple Example</div>
+    <div class="code-block"><span class="kw">function</span> <span class="fn">greet</span>(name, callback) {
+  console.<span class="fn">log</span>(<span class="str">"Hello "</span> + name)
+  <span class="fn">callback</span>()  <span class="cm">// pass ஆன function call பண்ணும்</span>
+}
+
+<span class="kw">function</span> <span class="fn">done</span>() {
+  console.<span class="fn">log</span>(<span class="str">"Task completed"</span>)
+}
+
+<span class="fn">greet</span>(<span class="str">"Gowtham"</span>, done)</div>
+    <div class="flow" style="margin-top:12px;">
+      <div class="flow-item"><div class="flow-dot"></div>greet() run ஆகும்</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot"></div>"Hello Gowtham" print</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot"></div>callback() → done() execute</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot green"></div>"Task completed" print</div>
+    </div>
+    <div class="output-row">
+      <span class="out-label">Output:</span>
+      <span class="out-pill"><span class="out-n">1</span>Hello Gowtham</span>
+      <span class="out-pill"><span class="out-n">2</span>Task completed</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Real Node.js Example — fs.readFile</div>
+    <div class="code-block"><span class="kw">const</span> fs = <span class="fn">require</span>(<span class="str">"fs"</span>)
+
+fs.<span class="fn">readFile</span>(<span class="str">"data.txt"</span>, <span class="str">"utf8"</span>, (err, data) => {
+  <span class="kw">if</span> (err) {
+    console.<span class="fn">log</span>(err)   <span class="cm">// error handle</span>
+  } <span class="kw">else</span> {
+    console.<span class="fn">log</span>(data)  <span class="cm">// success</span>
+  }
+})</div>
+    <div class="flow" style="margin-top:12px;">
+      <div class="flow-item"><div class="flow-dot"></div>fs.readFile() → async — Node.js wait பண்ணாது</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot"></div>File read complete ஆகும்</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot green"></div>Callback (err, data) => {} run ஆகும்</div>
+    </div>
+    <p class="note">இதனால் தான் callback use பண்ணுறோம் — async task முடிந்த பிறகு மட்டுமே callback run ஆகும்.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Callback Hell</div>
+    <div class="hell-code"><span class="h1c">login</span>(user, <span class="kw">function</span>() {
+  <span class="h2c">getData</span>(<span class="kw">function</span>() {
+    <span class="h3c">updateData</span>(<span class="kw">function</span>() {
+      <span class="h4c">saveData</span>(<span class="kw">function</span>() {
+        <span class="cm">// deeply nested... Pyramid of Doom</span>
+      })
+    })
+  })
+})</div>
+    <p class="note">Function inside function inside function → இதுதான் Callback Hell. Pyramid of Doom என்றும் சொல்வார்கள்.</p>
+    <div class="adv-grid" style="margin-top:12px;">
+      <div class="adv-item" style="border-color:rgba(232,96,96,.25);">
+        <div class="adv-label" style="color:var(--accent4);">Readability</div>
+        <div class="adv-sub">Code read பண்ண கஷ்டம்</div>
+      </div>
+      <div class="adv-item" style="border-color:rgba(232,96,96,.25);">
+        <div class="adv-label" style="color:var(--accent4);">Debugging</div>
+        <div class="adv-sub">Error trace difficult</div>
+      </div>
+      <div class="adv-item" style="border-color:rgba(232,96,96,.25);">
+        <div class="adv-label" style="color:var(--accent4);">Maintain</div>
+        <div class="adv-sub">Change பண்ண hard</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Solution to Callback Hell</div>
+    <div class="grid2">
+      <div class="mini-card">
+        <div class="mini-title" style="color:var(--accent2);">Promises</div>
+        <div class="code-block" style="font-size:11px; margin-top:8px;">login()
+  .<span class="fn">then</span>(getData)
+  .<span class="fn">then</span>(updateData)
+  .<span class="fn">then</span>(saveData)
+  .<span class="fn">catch</span>(err => ...)</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:var(--accent);">Async / Await</div>
+        <div class="code-block" style="font-size:11px; margin-top:8px;"><span class="kw">async function</span> <span class="fn">run</span>() {
+  <span class="kw">await</span> <span class="fn">login</span>()
+  <span class="kw">await</span> <span class="fn">getData</span>()
+  <span class="kw">await</span> <span class="fn">saveData</span>()
+}</div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:10px;">Modern Node.js mostly Promises / Async Await use பண்ணும் — Callbacks avoid பண்ணலாம்.</p>
+  </div>
+
+  <div class="bonus-box">
+    <div class="b-label">Callback Hell — Interview One Line</div>
+    <div class="b-text">"Callback hell occurs when multiple callbacks are nested inside each other, making the code difficult to read and maintain."</div>
+  </div>
+  <div class="interview-box" style="margin-top:12px;">
+    <div class="i-label">Interview Sentence — Memorize</div>
+    <div class="i-text">"A callback function is a function passed as an argument to another function and executed after the operation completes."</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     2. PROMISES
+═══════════════════════════════════════════════ -->
+<div class="topic" id="promises">
+  <div class="topic-header">
+    <span class="topic-num">02</span>
+    <span class="topic-title">Promises</span>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Definition</div>
+    <div class="def-box">
+      <strong>Promise</strong><br>
+      Asynchronous operation-ஐ handle பண்ண modern method. Future-ல் success அல்லது failure result return பண்ணும் object. Callback hell-ஐ solve பண்ண வந்தது.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">3 States</div>
+    <div class="states">
+      <div class="state-pill state-pending">
+        <div class="state-name">Pending</div>
+        <div class="state-desc">Operation running</div>
+      </div>
+      <div class="state-pill state-fulfilled">
+        <div class="state-name">Fulfilled</div>
+        <div class="state-desc">Success</div>
+      </div>
+      <div class="state-pill state-rejected">
+        <div class="state-name">Rejected</div>
+        <div class="state-desc">Error / failure</div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:10px;">Order placed → <strong>Pending</strong> · Food delivered → <strong>Fulfilled</strong> · Restaurant closed → <strong>Rejected</strong></p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Promise Syntax</div>
+    <div class="code-block"><span class="kw">const</span> promise = <span class="kw">new</span> <span class="fn">Promise</span>((resolve, reject) => {
+  <span class="kw">if</span> (true) {
+    <span class="fn">resolve</span>(<span class="str">"Success"</span>)  <span class="cm">// Fulfilled</span>
+  } <span class="kw">else</span> {
+    <span class="fn">reject</span>(<span class="str">"Error"</span>)    <span class="cm">// Rejected</span>
+  }
+})</div>
+    <div style="margin-top:14px;">
+      <table>
+        <tr><th>Word</th><th>Meaning</th></tr>
+        <tr><td><code>new Promise</code></td><td>Async task create பண்ணும்</td></tr>
+        <tr><td><code>resolve</code></td><td>Success result pass பண்ணும்</td></tr>
+        <tr><td><code>reject</code></td><td>Error pass பண்ணும்</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Using Promise — .then() &amp; .catch()</div>
+    <div class="code-block">promise
+  .<span class="fn">then</span>(result => {
+    console.<span class="fn">log</span>(result)  <span class="cm">// Success handle</span>
+  })
+  .<span class="fn">catch</span>(error => {
+    console.<span class="fn">log</span>(error)   <span class="cm">// Error handle</span>
+  })</div>
+    <div style="margin-top:14px;">
+      <table>
+        <tr><th>Method</th><th>Purpose</th></tr>
+        <tr><td><code>.then()</code></td><td>Promise fulfilled ஆனால் run ஆகும்</td></tr>
+        <tr><td><code>.catch()</code></td><td>Promise rejected ஆனால் run ஆகும்</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Real Async Example — setTimeout with Promise</div>
+    <div class="code-block"><span class="kw">const</span> fetchData = <span class="kw">new</span> <span class="fn">Promise</span>((resolve, reject) => {
+  <span class="fn">setTimeout</span>(() => {
+    <span class="fn">resolve</span>(<span class="str">"Data received"</span>)
+  }, <span class="kw">2000</span>)
+})
+
+fetchData
+  .<span class="fn">then</span>(data => console.<span class="fn">log</span>(data))
+  .<span class="fn">catch</span>(err  => console.<span class="fn">log</span>(err))</div>
+    <div class="flow" style="margin-top:12px;">
+      <div class="flow-item"><div class="flow-dot"></div>Promise start → Pending</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot"></div>2 seconds wait → setTimeout Node API</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot green"></div>resolve() → Fulfilled → .then() run</div>
+    </div>
+    <div class="output-row">
+      <span class="out-label">Output:</span>
+      <span class="out-pill">Data received</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Callback Hell vs Promise Chaining</div>
+    <div class="grid2">
+      <div class="mini-card" style="border-color:rgba(232,96,96,.2);">
+        <div class="mini-title" style="color:var(--accent4); font-size:11px;">Callback Hell</div>
+        <div class="code-block" style="font-size:11px; margin-top:8px;"><span class="h1c">login</span>(() => {
+  <span class="h2c">getData</span>(() => {
+    <span class="h3c">updateData</span>(() => {
+      <span class="h4c">saveData</span>(() => {})
+    })
+  })
+})</div>
+      </div>
+      <div class="mini-card" style="border-color:rgba(94,219,168,.2);">
+        <div class="mini-title" style="color:var(--accent2); font-size:11px;">Promise Chain</div>
+        <div class="code-block" style="font-size:11px; margin-top:8px;"><span class="fn">login</span>()
+  .<span class="fn">then</span>(getData)
+  .<span class="fn">then</span>(updateData)
+  .<span class="fn">then</span>(saveData)
+  .<span class="fn">catch</span>(err => ...)</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <table>
+        <tr><th>Feature</th><th>Callback</th><th>Promise</th></tr>
+        <tr><td>Structure</td><td>Nested functions</td><td>Chaining</td></tr>
+        <tr><td>Readability</td><td>Messy</td><td>Clean</td></tr>
+        <tr><td>Error handle</td><td>Per callback</td><td>One .catch()</td></tr>
+        <tr><td>Debugging</td><td>Hard</td><td>Easy</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Advantages</div>
+    <div class="adv-grid">
+      <div class="adv-item"><div class="adv-label">Callback hell avoid</div><div class="adv-sub">Clean chaining</div></div>
+      <div class="adv-item"><div class="adv-label">Readable code</div><div class="adv-sub">Easy to follow</div></div>
+      <div class="adv-item"><div class="adv-label">Better error handling</div><div class="adv-sub">Single .catch()</div></div>
+    </div>
+  </div>
+
+  <div class="bonus-box">
+    <div class="b-label">Follow-up Interview Q — Promise vs Async/Await?</div>
+    <div class="b-text">
+      <strong>Promise</strong> → .then() chaining, functional style, moderate readability.<br>
+      <strong>Async/Await</strong> → Promise-மேலே built, synchronous-like syntax, very readable, try/catch error handling.<br>
+      Both same result — Async/Await is cleaner syntax for the same Promise underneath.
+    </div>
+  </div>
+  <div class="interview-box" style="margin-top:12px;">
+    <div class="i-label">Interview Sentence — Memorize</div>
+    <div class="i-text">"A Promise is an object that represents the eventual completion or failure of an asynchronous operation, with three states: pending, fulfilled, and rejected."</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     3. ASYNC / AWAIT
+═══════════════════════════════════════════════ -->
+<div class="topic" id="asyncawait">
+  <div class="topic-header">
+    <span class="topic-num">03</span>
+    <span class="topic-title">Async / Await</span>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Definition</div>
+    <div class="def-box">
+      <strong>Async / Await</strong><br>
+      Promises-ஐ easy syntax-ல் handle பண்ண modern method. Code-ஐ synchronous style போல் readable-ஆ எழுத உதவும். Promises-ஐ replace பண்ணவில்லை — மேலே built ஆனது.
+    </div>
+    <div style="margin-top:14px;">
+      <table>
+        <tr><th>Keyword</th><th>Meaning</th></tr>
+        <tr><td><code>async</code></td><td>Function always Promise return பண்ணும்</td></tr>
+        <tr><td><code>await</code></td><td>Promise resolve ஆகும் வரை wait பண்ணும் — async function-ல் மட்டுமே use பண்ணலாம்</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">async Function</div>
+    <div class="code-block"><span class="kw">async function</span> <span class="fn">getData</span>() {
+  <span class="kw">return</span> <span class="str">"Hello"</span>  <span class="cm">// automatically Promise wrap ஆகும்</span>
+}
+
+<span class="fn">getData</span>().<span class="fn">then</span>(data => console.<span class="fn">log</span>(data))</div>
+    <div class="output-row">
+      <span class="out-label">Output:</span>
+      <span class="out-pill">Hello</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">await Keyword</div>
+    <div class="code-block"><span class="kw">async function</span> <span class="fn">fetchData</span>() {
+  <span class="kw">const</span> data = <span class="kw">await</span> Promise.<span class="fn">resolve</span>(<span class="str">"Data received"</span>)
+  console.<span class="fn">log</span>(data)
+}
+<span class="fn">fetchData</span>()</div>
+    <div class="flow" style="margin-top:12px;">
+      <div class="flow-item"><div class="flow-dot"></div>fetchData start</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot"></div>await → promise resolve ஆகும் வரை wait</div>
+      <div class="flow-connector"></div>
+      <div class="flow-item"><div class="flow-dot green"></div>data received → console.log</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Real Example — API Call with Error Handling</div>
+    <div class="code-block"><span class="kw">async function</span> <span class="fn">getUsers</span>() {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.example.com/users"</span>)
+    <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>()
+    console.<span class="fn">log</span>(data)
+  } <span class="kw">catch</span>(err) {
+    console.<span class="fn">log</span>(err) <span class="cm">// promise reject → catch run</span>
+  }
+}</div>
+    <div style="margin-top:14px;">
+      <table>
+        <tr><th>Code</th><th>Meaning</th></tr>
+        <tr><td><code>await fetch()</code></td><td>API response வரும் வரை wait</td></tr>
+        <tr><td><code>await res.json()</code></td><td>Response-ஐ JSON-ஆக convert</td></tr>
+        <tr><td><code>try / catch</code></td><td>Error handling — .catch() போல</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Promise vs Async/Await</div>
+    <div class="grid2">
+      <div class="mini-card">
+        <div class="mini-title" style="color:var(--accent3); font-size:11px;">Promise (.then chain)</div>
+        <div class="code-block" style="font-size:11px; margin-top:8px;"><span class="fn">login</span>()
+  .<span class="fn">then</span>(getData)
+  .<span class="fn">then</span>(updateData)
+  .<span class="fn">then</span>(saveData)
+  .<span class="fn">catch</span>(err => ...)</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-title" style="color:var(--accent2); font-size:11px;">Async / Await</div>
+        <div class="code-block" style="font-size:11px; margin-top:8px;"><span class="kw">async function</span> <span class="fn">process</span>() {
+  <span class="kw">await</span> <span class="fn">login</span>()
+  <span class="kw">await</span> <span class="fn">getData</span>()
+  <span class="kw">await</span> <span class="fn">updateData</span>()
+  <span class="kw">await</span> <span class="fn">saveData</span>()
+}</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <table>
+        <tr><th>Feature</th><th>Promise</th><th>Async/Await</th></tr>
+        <tr><td>Syntax</td><td>.then() chaining</td><td>await — sequential</td></tr>
+        <tr><td>Readability</td><td>Moderate</td><td>Very readable</td></tr>
+        <tr><td>Error handle</td><td>.catch()</td><td>try / catch</td></tr>
+        <tr><td>Style</td><td>Functional</td><td>Synchronous-like</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Advantages</div>
+    <div class="adv-grid">
+      <div class="adv-item"><div class="adv-label">Clean syntax</div><div class="adv-sub">Less boilerplate</div></div>
+      <div class="adv-item"><div class="adv-label">Easy debugging</div><div class="adv-sub">Stack traces clear</div></div>
+      <div class="adv-item"><div class="adv-label">Readable code</div><div class="adv-sub">Sync style போல</div></div>
+    </div>
+  </div>
+
+  <div class="bonus-box">
+    <div class="b-label">Follow-up Interview Questions</div>
+    <div class="b-text">
+      <strong>Q1: await-ஐ async இல்லாமல் use பண்ணலாமா?</strong><br>
+      No — await-ஐ async function-ல் மட்டுமே use பண்ண முடியும். Outside use பண்ணினால் SyntaxError வரும்.<br><br>
+      <strong>Q2: await மறந்தால் என்ன ஆகும்?</strong><br>
+      Promise object return ஆகும் — resolved value கிடைக்காது. Code wrong result தரும், error வராது.
+    </div>
+  </div>
+  <div class="interview-box" style="margin-top:12px;">
+    <div class="i-label">Interview Sentence — Memorize</div>
+    <div class="i-text">"Async/Await is a modern syntax built on top of Promises that allows writing asynchronous code in a synchronous style, making it more readable and easier to debug."</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     4. EVENT LOOP
+═══════════════════════════════════════════════ -->
+<div class="topic" id="eventloop">
+  <div class="topic-header">
+    <span class="topic-num">04</span>
+    <span class="topic-title">Event Loop</span>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Flow</div>
+    <div class="flow-row">
+      <span class="flow-box fb-purple">Call Stack</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-teal">Node APIs</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-amber">Callback Queue</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-coral">Event Loop</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">4 Components</div>
+    <div class="grid2">
+      <div class="mini-card" style="border-left: 3px solid rgba(124,106,247,.5);">
+        <div class="mini-title" style="color:#b0a4f8;">Call Stack</div>
+        <div class="mini-desc">Current code execute ஆகும் இடம். Sync code இங்கே run ஆகும்.</div>
+      </div>
+      <div class="mini-card" style="border-left: 3px solid rgba(94,219,168,.5);">
+        <div class="mini-title" style="color:var(--accent2);">Node APIs</div>
+        <div class="mini-desc">Async tasks run ஆகும் இடம். setTimeout, fs, network calls.</div>
+      </div>
+      <div class="mini-card" style="border-left: 3px solid rgba(240,160,90,.5);">
+        <div class="mini-title" style="color:var(--accent3);">Callback Queue</div>
+        <div class="mini-desc">Async task முடிந்த பிறகு callback wait பண்ணும் இடம்.</div>
+      </div>
+      <div class="mini-card" style="border-left: 3px solid rgba(232,96,96,.5);">
+        <div class="mini-title" style="color:var(--accent4);">Event Loop</div>
+        <div class="mini-desc">Call stack empty? → Queue-ல் callback-ஐ எடுத்து execute பண்ணும்.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Code Example</div>
+    <div class="code-block">console.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="fn">setTimeout</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Async task"</span>)
+}, <span class="kw">2000</span>)
+
+console.<span class="fn">log</span>(<span class="str">"End"</span>)</div>
+    <div class="output-row">
+      <span class="out-label">Output:</span>
+      <span class="out-pill"><span class="out-n">1</span>Start</span>
+      <span class="out-pill"><span class="out-n">2</span>End</span>
+      <span class="out-pill"><span class="out-n">3</span>Async task <span style="font-size:10px;color:var(--muted)">(2s later)</span></span>
+    </div>
+    <p class="note" style="margin-top:10px;">setTimeout → Node API போகும் → Call stack clear ஆகும் → End print → 2s → callback queue → event loop → execute</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Why Event Loop?</div>
+    <div class="adv-grid">
+      <div class="adv-item"><div class="adv-label">Scalable</div><div class="adv-sub">Node.js scalable ஆக இருக்கும்</div></div>
+      <div class="adv-item"><div class="adv-label">Non-Blocking</div><div class="adv-sub">Operations block ஆகாது</div></div>
+      <div class="adv-item"><div class="adv-label">High Volume</div><div class="adv-sub">1000s of users handle</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Real Life — Restaurant</div>
+    <div class="def-box">
+      Waiter = Event Loop · Order = Request · Chef = Node API<br>
+      Waiter order wait பண்ண மாட்டான் → next customer போவான்.<br>
+      Chef ready ஆனதும் waiter serve பண்ணுவான். இதுதான் Event Loop.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Interview Q — Call Stack vs Callback Queue</div>
+    <div class="grid2">
+      <div class="mini-card" style="border-left:3px solid rgba(124,106,247,.5);">
+        <div class="mini-title" style="color:#b0a4f8;">Call Stack</div>
+        <div class="mini-desc" style="margin-top:6px;">Sync code execute ஆகும் இடம்<br>LIFO order<br>Empty ஆகும் வரை run ஆகும்</div>
+      </div>
+      <div class="mini-card" style="border-left:3px solid rgba(240,160,90,.5);">
+        <div class="mini-title" style="color:var(--accent3);">Callback Queue</div>
+        <div class="mini-desc" style="margin-top:6px;">Async callbacks wait பண்ணும் இடம்<br>FIFO order<br>Call stack empty ஆனதும் execute</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="interview-box">
+    <div class="i-label">Interview Sentence — Memorize</div>
+    <div class="i-text">"The event loop is the mechanism that allows Node.js to perform non-blocking asynchronous operations by handling callbacks from the event queue."</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     5. SETTIMEOUT / SETINTERVAL
+═══════════════════════════════════════════════ -->
+<div class="topic" id="timers">
+  <div class="topic-header">
+    <span class="topic-num">05</span>
+    <span class="topic-title">setTimeout / setInterval</span>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Definition</div>
+    <div class="grid2">
+      <div class="mini-card" style="border-left:3px solid rgba(124,106,247,.5);">
+        <div class="mini-title" style="color:#b0a4f8;">setTimeout</div>
+        <div class="mini-desc">ஒரு function-ஐ delay செய்து <strong style="color:var(--text);">ஒரு முறை மட்டும்</strong> execute பண்ணும்.</div>
+      </div>
+      <div class="mini-card" style="border-left:3px solid rgba(94,219,168,.5);">
+        <div class="mini-title" style="color:var(--accent2);">setInterval</div>
+        <div class="mini-desc">ஒரு function-ஐ <strong style="color:var(--text);">திரும்பத் திரும்ப</strong> interval-ல execute பண்ணும்.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Syntax &amp; Example</div>
+    <div class="grid2">
+      <div>
+        <p style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;">setTimeout</p>
+        <div class="code-block"><span class="fn">setTimeout</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Hello"</span>)
+}, <span class="kw">2000</span>) <span class="cm">// 2s delay</span></div>
+      </div>
+      <div>
+        <p style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;">setInterval</p>
+        <div class="code-block"><span class="fn">setInterval</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Running..."</span>)
+}, <span class="kw">2000</span>) <span class="cm">// every 2s</span></div>
+      </div>
+    </div>
+    <p class="note" style="margin-top:10px;">1000 ms = 1 second → 2000 ms = 2 seconds</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Execution Flow (setTimeout)</div>
+    <div class="code-block">console.<span class="fn">log</span>(<span class="str">"Start"</span>)
+<span class="fn">setTimeout</span>(() => { console.<span class="fn">log</span>(<span class="str">"Hello"</span>) }, <span class="kw">2000</span>)
+console.<span class="fn">log</span>(<span class="str">"End"</span>)</div>
+    <div class="output-row">
+      <span class="out-label">Output:</span>
+      <span class="out-pill"><span class="out-n">1</span>Start</span>
+      <span class="out-pill"><span class="out-n">2</span>End</span>
+      <span class="out-pill"><span class="out-n">3</span>Hello <span style="font-size:10px;color:var(--muted)">(2s later)</span></span>
+    </div>
+    <p class="note" style="margin-top:8px;">setTimeout asynchronous → Node API → Event Loop later execute பண்ணும்</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Stop Interval — clearInterval (Important!)</div>
+    <div class="code-block"><span class="kw">const</span> timer = <span class="fn">setInterval</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Hello"</span>)
+}, <span class="kw">1000</span>)
+
+<span class="fn">setTimeout</span>(() => {
+  <span class="fn">clearInterval</span>(timer) <span class="cm">// 5s-ல stop</span>
+}, <span class="kw">5000</span>)</div>
+    <div class="timeline" style="margin-top:14px;">
+      <div class="tick"><div class="tick-bar"></div><div class="tick-val">Hello</div><div class="tick-lbl">1s</div></div>
+      <div class="tick"><div class="tick-bar"></div><div class="tick-val">Hello</div><div class="tick-lbl">2s</div></div>
+      <div class="tick"><div class="tick-bar"></div><div class="tick-val">Hello</div><div class="tick-lbl">3s</div></div>
+      <div class="tick"><div class="tick-bar"></div><div class="tick-val">Hello</div><div class="tick-lbl">4s</div></div>
+      <div class="tick stop"><div class="tick-bar"></div><div class="tick-val">Stop</div><div class="tick-lbl">5s</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Difference — setTimeout vs setInterval</div>
+    <table>
+      <tr><th>Feature</th><th>setTimeout</th><th>setInterval</th></tr>
+      <tr><td>Execution</td><td>ஒரு முறை மட்டும் (once)</td><td>திரும்பத் திரும்ப (repeat)</td></tr>
+      <tr><td>Use case</td><td>Delay-ல் ஒரு task</td><td>Periodic tasks</td></tr>
+      <tr><td>Stop with</td><td><code>clearTimeout()</code></td><td><code>clearInterval()</code></td></tr>
+      <tr><td>Real example</td><td>Alarm after 5s</td><td>Clock tick every 1s</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Event Loop Connection</div>
+    <div class="flow-row">
+      <span class="flow-box fb-purple">setTimeout / setInterval</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-teal">Node APIs</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-amber">Callback Queue</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-coral">Event Loop</span>
+    </div>
+    <p class="note" style="margin-top:8px;">Both are asynchronous timers — synchronous code முடிந்த பிறகுதான் execute ஆகும்.</p>
+  </div>
+
+  <div class="bonus-box">
+    <div class="b-label">Bonus Interview Q</div>
+    <div class="b-text">
+      <strong>setTimeout(fn, 0) vs normal function call?</strong><br>
+      setTimeout(fn,0) → still async → callback queue போகும் → call stack clear ஆன பிறகுதான் run ஆகும். Normal call → immediate execute.
+    </div>
+  </div>
+  <div class="interview-box" style="margin-top:12px;">
+    <div class="i-label">Interview Sentence — Memorize</div>
+    <div class="i-text">"setTimeout and setInterval are timer functions used to schedule asynchronous execution in Node.js."</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     6. SETIMMEDIATE
+═══════════════════════════════════════════════ -->
+<div class="topic" id="setimmediate">
+  <div class="topic-header">
+    <span class="topic-num">06</span>
+    <span class="topic-title">setImmediate()</span>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Definition</div>
+    <div class="def-box">
+      <strong>setImmediate()</strong><br>
+      Current I/O operations முடிந்த உடனே — event loop-ன் next cycle-ல் callback execute பண்ணும். No delay. No repeat.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Syntax &amp; Basic Example</div>
+    <div class="code-block"><span class="fn">setImmediate</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Immediate task"</span>)
+})</div>
+    <p class="note" style="margin-top:8px;">No delay argument தேவை இல்லை — event loop next cycle-ல் automatically run ஆகும்.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Execution Flow</div>
+    <div class="code-block">console.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+<span class="fn">setImmediate</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Immediate"</span>)
+})
+
+console.<span class="fn">log</span>(<span class="str">"End"</span>)</div>
+    <div class="output-row">
+      <span class="out-label">Output:</span>
+      <span class="out-pill"><span class="out-n">1</span>Start</span>
+      <span class="out-pill"><span class="out-n">2</span>End</span>
+      <span class="out-pill"><span class="out-n">3</span>Immediate</span>
+    </div>
+    <p class="note" style="margin-top:8px;">Sync code முடிந்த பிறகு → event loop → setImmediate callback execute ஆகும்.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">I/O என்ன? (Input / Output)</div>
+    <div class="adv-grid">
+      <div class="adv-item"><div class="adv-label">File read</div><div class="adv-sub">I/O</div></div>
+      <div class="adv-item"><div class="adv-label">DB query</div><div class="adv-sub">I/O</div></div>
+      <div class="adv-item"><div class="adv-label">API request</div><div class="adv-sub">I/O</div></div>
+    </div>
+    <p class="note" style="margin-top:10px;">setImmediate → I/O phase முடிந்த உடனே run ஆகும் → இதனால் I/O callbacks-க்கு பிறகு queue-ல் execute ஆகும்.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Event Loop Connection</div>
+    <div class="flow-row">
+      <span class="flow-box fb-purple">setImmediate()</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-teal">Callback Queue</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-amber">Event Loop check</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-coral">Execute</span>
+    </div>
+    <p class="note" style="margin-top:8px;">Call Stack empty ஆனதும் → event loop → setImmediate callback run ஆகும்.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">setTimeout(0) vs setImmediate — Key Interview Point</div>
+    <div class="code-block"><span class="fn">setTimeout</span>(() => { console.<span class="fn">log</span>(<span class="str">"Timeout"</span>) }, <span class="kw">0</span>)
+<span class="fn">setImmediate</span>(() => { console.<span class="fn">log</span>(<span class="str">"Immediate"</span>) })</div>
+    <div class="output-row">
+      <span class="out-label">Usually:</span>
+      <span class="out-pill"><span class="out-n">1</span>Immediate</span>
+      <span class="out-pill"><span class="out-n">2</span>Timeout</span>
+    </div>
+    <p class="note" style="margin-top:10px;">setImmediate → I/O phase-க்கு பிறகு run ஆகும். setTimeout(0) → timer phase-ல் run ஆகும். Order environment-ஐ பொறுத்து change ஆகலாம் — but I/O-க்கு உள்ளே இருந்தால் setImmediate always first.</p>
+    <div style="margin-top:14px;">
+      <table>
+        <tr><th>Feature</th><th>setImmediate</th><th>setTimeout(fn, 0)</th></tr>
+        <tr><td>Phase</td><td>I/O phase-க்கு பிறகு</td><td>Timer phase</td></tr>
+        <tr><td>Predictability</td><td>I/O-ல் always first</td><td>Environment-based</td></tr>
+        <tr><td>Delay</td><td>No delay argument</td><td>0ms (minimum)</td></tr>
+        <tr><td>Use case</td><td>I/O-க்கு பிறகு task</td><td>Deferred execution</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">When to Use setImmediate</div>
+    <div class="grid2">
+      <div class="mini-card"><div class="mini-title" style="color:var(--accent2);">After I/O operations</div><div class="mini-desc">File read / DB query-க்கு பிறகு immediate task run பண்ண.</div></div>
+      <div class="mini-card"><div class="mini-title" style="color:var(--accent2);">Background tasks</div><div class="mini-desc">Heavy task-ஐ current cycle block பண்ணாமல் defer பண்ண.</div></div>
+      <div class="mini-card"><div class="mini-title" style="color:var(--accent2);">Event loop scheduling</div><div class="mini-desc">Next iteration-ல் code run பண்ண வேண்டும்போது.</div></div>
+      <div class="mini-card"><div class="mini-title" style="color:var(--accent2);">vs process.nextTick</div><div class="mini-desc">nextTick → I/O-க்கு முன்னே. setImmediate → I/O-க்கு பிறகே.</div></div>
+    </div>
+  </div>
+
+  <div class="bonus-box">
+    <div class="b-label">Interview Q — process.nextTick() vs setImmediate()?</div>
+    <div class="b-text">
+      <strong>process.nextTick()</strong> → current operation முடிந்த உடனே, I/O-க்கும் முன்னே run ஆகும் (highest priority).<br>
+      <strong>setImmediate()</strong> → I/O phase முடிந்த பிறகு, next event loop iteration-ல் run ஆகும்.
+    </div>
+  </div>
+  <div class="interview-box" style="margin-top:12px;">
+    <div class="i-label">Interview Sentence — Memorize</div>
+    <div class="i-text">"setImmediate executes a callback immediately after the current I/O operations are completed, in the next iteration of the event loop."</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     7. PROCESS.NEXTTICK
+═══════════════════════════════════════════════ -->
+<div class="topic" id="nexttick">
+  <div class="topic-header">
+    <span class="topic-num">07</span>
+    <span class="topic-title">process.nextTick()</span>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Definition</div>
+    <div class="def-box">
+      <strong>process.nextTick()</strong><br>
+      Current operation முடிந்த உடனே — event loop continue ஆவதற்கு முன்னாடியே — callback execute பண்ணும். Queue-க்கே போகாது. Fastest execution.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Syntax &amp; Example</div>
+    <div class="code-block">process.<span class="fn">nextTick</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Next tick"</span>)
+})</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Execution Flow</div>
+    <div class="code-block">console.<span class="fn">log</span>(<span class="str">"Start"</span>)
+
+process.<span class="fn">nextTick</span>(() => {
+  console.<span class="fn">log</span>(<span class="str">"Next tick"</span>)
+})
+
+console.<span class="fn">log</span>(<span class="str">"End"</span>)</div>
+    <div class="output-row">
+      <span class="out-label">Output:</span>
+      <span class="out-pill"><span class="out-n">1</span>Start</span>
+      <span class="out-pill"><span class="out-n">2</span>End</span>
+      <span class="out-pill"><span class="out-n">3</span>Next tick</span>
+    </div>
+    <p class="note" style="margin-top:8px;">Sync code முடிந்த உடனே → event loop-க்கு முன்னே → nextTick callback run ஆகும்.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Where it runs in the Event Loop</div>
+    <div class="flow-row">
+      <span class="flow-box fb-purple">Current code</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-teal" style="border-width:2px;">nextTick queue</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-amber">Event Loop</span>
+      <span class="flow-arr">→</span>
+      <span class="flow-box fb-coral">Callback Queue</span>
+    </div>
+    <p class="note" style="margin-top:8px;">nextTick queue → Event Loop-க்கே போகாமல் முன்னே run ஆகும் — இதனால் highest priority.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Execution Priority Order</div>
+    <div class="priority-list">
+      <div class="priority-item">
+        <span class="p-rank">1</span>
+        <span class="p-name" style="color:#b0a4f8;">process.nextTick()</span>
+        <div class="p-bar" style="width:80px;background:#7F77DD;"></div>
+        <span class="p-note">Fastest — before event loop</span>
+      </div>
+      <div class="priority-item">
+        <span class="p-rank">2</span>
+        <span class="p-name" style="color:var(--accent2);">setImmediate()</span>
+        <div class="p-bar" style="width:50px;background:#1D9E75;"></div>
+        <span class="p-note">After I/O phase</span>
+      </div>
+      <div class="priority-item">
+        <span class="p-rank">3</span>
+        <span class="p-name" style="color:var(--accent3);">setTimeout()</span>
+        <div class="p-bar" style="width:28px;background:#EF9F27;"></div>
+        <span class="p-note">Timer phase</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">process.nextTick vs setImmediate — Key Interview Point</div>
+    <div class="code-block"><span class="fn">setImmediate</span>(() => { console.<span class="fn">log</span>(<span class="str">"Immediate"</span>) })
+process.<span class="fn">nextTick</span>(() => { console.<span class="fn">log</span>(<span class="str">"NextTick"</span>) })</div>
+    <div class="output-row">
+      <span class="out-label">Output:</span>
+      <span class="out-pill"><span class="out-n">1</span>NextTick</span>
+      <span class="out-pill"><span class="out-n">2</span>Immediate</span>
+    </div>
+    <div style="margin-top:14px;">
+      <table>
+        <tr><th>Feature</th><th>process.nextTick</th><th>setImmediate</th></tr>
+        <tr><td>When runs</td><td>Event loop-க்கு முன்னே</td><td>I/O phase-க்கு பிறகு</td></tr>
+        <tr><td>Priority</td><td>Highest</td><td>Lower</td></tr>
+        <tr><td>Queue</td><td>nextTick queue (special)</td><td>Check phase queue</td></tr>
+        <tr><td>Risk</td><td>Starvation possible</td><td>Safe</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">When to Use</div>
+    <div class="grid2">
+      <div class="mini-card"><div class="mini-title" style="color:var(--accent2);">Error handling</div><div class="mini-desc">Immediate error propagation</div></div>
+      <div class="mini-card"><div class="mini-title" style="color:var(--accent2);">Cleanup tasks</div><div class="mini-desc">Resource cleanup after operation</div></div>
+      <div class="mini-card"><div class="mini-title" style="color:var(--accent2);">Small scheduling</div><div class="mini-desc">Tiny ops before event loop</div></div>
+    </div>
+  </div>
+
+  <div class="warning-box">
+    <div class="w-label">Why use carefully? — Interview Q</div>
+    <div class="w-text">process.nextTick-ஐ recursive-ஆக call பண்ணினால் → nextTick queue never empty ஆகாது → Event Loop starve ஆகும் → I/O, setTimeout எதுவும் run ஆகாது. இதனால் careful-ஆக use பண்ணணும்.</div>
+  </div>
+  <div class="interview-box" style="margin-top:12px;">
+    <div class="i-label">Interview Sentence — Memorize</div>
+    <div class="i-text">"process.nextTick schedules a callback to be executed immediately after the current operation, before the event loop continues — making it the highest priority async callback in Node.js."</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     ULTIMATE SUMMARY
+═══════════════════════════════════════════════ -->
+<div class="ultimate">
+  <h2>Ultimate Interview Summary</h2>
+  <p>"Node.js handles asynchronous programming using <strong>callbacks</strong>, <strong>promises</strong>, and <strong>async/await</strong>. The <strong>event loop</strong> manages these tasks by processing callbacks from the queue without blocking the main thread. Additional mechanisms like <strong>setTimeout</strong>, <strong>setImmediate</strong>, and <strong>process.nextTick</strong> help schedule asynchronous execution."</p>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>

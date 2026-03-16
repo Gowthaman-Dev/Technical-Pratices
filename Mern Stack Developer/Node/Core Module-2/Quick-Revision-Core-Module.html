@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js — Modules, Global Objects & Process</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0b0b0e;
+    --bg2:     #111115;
+    --bg3:     #17171d;
+    --bg4:     #1d1d25;
+    --border:  rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text:    #e4e1da;
+    --muted:   #6e6c66;
+    --muted2:  #96948e;
+    --green:   #6af0a2;
+    --blue:    #6ab8f0;
+    --amber:   #f0c06a;
+    --purple:  #b06af0;
+    --red:     #f06a7a;
+    --teal:    #6af0e0;
+    --font:    'Syne', sans-serif;
+    --mono:    'JetBrains Mono', monospace;
+    --r-md:    8px;
+    --r-lg:    14px;
+    --r-xl:    20px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 3rem 2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--purple);
+    font-weight: 600;
+    margin-bottom: .5rem;
+  }
+
+  h1 {
+    font-size: clamp(1.9rem, 4.5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1.08;
+  }
+
+  h1 em { font-style: normal; color: var(--amber); }
+
+  .htags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .htag {
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 4px 13px;
+    font-size: 11.5px;
+    color: var(--muted2);
+    font-family: var(--mono);
+  }
+
+  /* MAIN */
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 3rem 3rem 5rem;
+    display: grid;
+    gap: 3.5rem;
+  }
+
+  @media (max-width: 740px) {
+    header, main { padding-left: 1.4rem; padding-right: 1.4rem; }
+  }
+
+  /* MODULE HEADING */
+  .mhead { display: flex; align-items: center; gap: .9rem; margin-bottom: 1.6rem; }
+
+  .mbadge {
+    font-size: 11px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; padding: 4px 14px; border-radius: 100px;
+  }
+
+  .mb-mod  { background: rgba(176,106,240,.13); color: var(--purple); border: 1px solid rgba(176,106,240,.25); }
+  .mb-glob { background: rgba(106,184,240,.13); color: var(--blue);   border: 1px solid rgba(106,184,240,.25); }
+  .mb-proc { background: rgba(106,240,162,.13); color: var(--green);  border: 1px solid rgba(106,240,162,.25); }
+
+  .mhead h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
+
+  /* CARD */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .clabel {
+    font-size: 10px; font-weight: 700; letter-spacing: .15em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 1rem;
+  }
+
+  /* DEF BOX */
+  .defbox {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--r-lg); padding: 1rem 1.2rem; margin-bottom: 1rem;
+  }
+
+  .deftitle { font-size: .93rem; font-weight: 700; margin-bottom: .35rem; }
+  .dt-purple { color: var(--purple); }
+  .dt-blue   { color: var(--blue);   }
+  .dt-green  { color: var(--green);  }
+  .defbox p { font-size: .84rem; color: var(--muted2); line-height: 1.65; }
+
+  /* GRIDS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+
+  @media (max-width: 680px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+  /* INNER ITEM */
+  .iitem {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: .9rem 1rem;
+  }
+
+  .iname { font-family: var(--mono); font-size: .82rem; font-weight: 500; margin-bottom: .25rem; }
+  .idesc { font-size: .79rem; color: var(--muted2); line-height: 1.5; margin-bottom: .4rem; }
+
+  /* CODE */
+  pre {
+    background: #070709;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: .9rem 1.1rem;
+    font-family: var(--mono);
+    font-size: .77rem;
+    line-height: 1.9;
+    overflow-x: auto;
+    color: #b4b2ac;
+  }
+
+  .pk { color: var(--blue);   }
+  .pv { color: var(--green);  }
+  .pf { color: var(--amber);  }
+  .pm { color: var(--muted);  }
+  .pkw{ color: var(--purple); }
+
+  .codelabel {
+    font-size: 10px; font-family: var(--mono); color: var(--muted);
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem;
+  }
+
+  /* PILLS */
+  .pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+  .pill {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 100px; padding: 4px 13px;
+    font-family: var(--mono); font-size: .78rem; color: var(--text);
+  }
+
+  .pill-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: .5rem; }
+  .pill-label { font-size: .78rem; color: var(--muted2); }
+
+  .op {
+    display: inline-flex; align-items: center;
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 100px; padding: 3px 11px;
+    font-family: var(--mono); font-size: .76rem; color: var(--text);
+  }
+
+  /* CORE PILLS */
+  .core-pill {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r-md); padding: 6px 11px; font-size: .79rem; color: var(--text);
+  }
+
+  .core-pill code { font-family: var(--mono); font-size: .78rem; color: var(--blue); }
+
+  /* TABLE */
+  .dt { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .dt th {
+    text-align: left; padding: .55rem .9rem; font-size: .72rem; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+    border-bottom: 1px solid var(--border); background: var(--bg3);
+  }
+  .dt td { padding: .65rem .9rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.5; }
+  .dt tr:last-child td { border-bottom: none; }
+  .dt code { font-family: var(--mono); font-size: .77rem; color: var(--amber); background: rgba(240,192,106,.07); padding: 2px 7px; border-radius: 4px; }
+
+  /* EXPORT CARDS */
+  .exp-tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; padding: 2px 9px;
+    border-radius: 100px; margin-bottom: .5rem;
+  }
+  .et-s { background: rgba(106,184,240,.15); color: var(--blue); }
+  .et-m { background: rgba(106,240,162,.15); color: var(--green); }
+
+  /* BENEFITS GRID */
+  .ben-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .75rem; }
+
+  .ben-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: .85rem 1rem; text-align: center;
+  }
+
+  .ben-name { font-size: .82rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+  .ben-desc { font-size: .76rem; color: var(--muted2); line-height: 1.45; }
+
+  @media (max-width: 500px) { .ben-grid { grid-template-columns: 1fr 1fr; } }
+
+  /* CAR */
+  .car-parts { display: flex; gap: .6rem; flex-wrap: wrap; }
+
+  .car-part {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r-md); padding: 6px 13px;
+    font-size: .8rem; color: var(--muted2); font-family: var(--mono);
+  }
+
+  .arrow-center { text-align: center; color: var(--muted); font-size: .85rem; padding: .4rem 0; }
+
+  .mod-files { display: flex; gap: .6rem; flex-wrap: wrap; }
+
+  .mf { text-align: center; }
+  .mf-code { font-family: var(--mono); font-size: .8rem; color: var(--amber); background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-md); padding: 5px 11px; display: block; }
+  .mf-tag  { font-size: .7rem; color: var(--muted); display: block; margin-top: 3px; }
+
+  /* GLOBAL OBJ GRID */
+  .gobj-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+
+  @media (max-width: 550px) { .gobj-grid { grid-template-columns: 1fr 1fr; } }
+
+  .gobj-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: .9rem 1rem;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+
+  .gobj-name { font-family: var(--mono); font-size: .82rem; font-weight: 500; color: var(--blue); }
+  .gobj-purpose { font-size: .78rem; color: var(--muted2); line-height: 1.45; }
+  .gobj-code { font-family: var(--mono); font-size: .73rem; color: var(--amber); }
+  .gobj-out { font-size: .71rem; color: var(--muted); margin-top: 2px; }
+
+  /* COMPARE */
+  .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .cmp-item { border-radius: var(--r-lg); padding: .9rem 1rem; }
+  .cmp-no  { background: rgba(240,106,122,.05); border: 1px solid rgba(240,106,122,.18); }
+  .cmp-yes { background: rgba(106,240,162,.05); border: 1px solid rgba(106,240,162,.18); }
+
+  .cmp-tag {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    padding: 2px 9px; border-radius: 100px; display: inline-block; margin-bottom: .5rem;
+  }
+  .ct-no  { background: rgba(240,106,122,.15); color: var(--red);   }
+  .ct-yes { background: rgba(106,240,162,.15); color: var(--green); }
+
+  .cmp-note { font-size: .78rem; color: var(--muted2); margin-top: .5rem; line-height: 1.5; }
+
+  /* PROP GRID */
+  .prop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
+
+  .prop-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--r-lg); padding: .9rem 1rem;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+
+  .prop-name { font-family: var(--mono); font-size: .84rem; font-weight: 500; color: var(--blue); }
+  .prop-desc { font-size: .78rem; color: var(--muted2); line-height: 1.5; }
+  .prop-code { font-family: var(--mono); font-size: .73rem; color: var(--amber); }
+  .prop-out  { font-size: .71rem; color: var(--muted); margin-top: 2px; }
+  .prop-note { font-size: .73rem; color: var(--muted2); }
+
+  /* ARGV TABLE */
+  .argv-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  .argv-table th {
+    text-align: left; padding: .5rem .9rem; font-size: .7rem; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+    border-bottom: 1px solid var(--border); background: var(--bg3);
+  }
+  .argv-table td { padding: .6rem .9rem; border-bottom: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: .77rem; }
+  .argv-table tr:last-child td { border-bottom: none; }
+  .argv-table .td-plain { font-family: var(--font); font-size: .79rem; color: var(--muted2); }
+
+  /* INTERVIEW / BONUS */
+  .int-box {
+    background: rgba(106,184,240,.06); border: 1px solid rgba(106,184,240,.2);
+    border-radius: var(--r-lg); padding: 1.2rem 1.4rem;
+  }
+  .int-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .5rem; }
+  .int-box p { font-size: .87rem; font-style: italic; color: var(--text); line-height: 1.7; }
+
+  .bonus-box {
+    background: rgba(240,192,106,.06); border: 1px solid rgba(240,192,106,.2);
+    border-radius: var(--r-lg); padding: 1.1rem 1.3rem;
+  }
+  .bonus-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); margin-bottom: .45rem; }
+  .bonus-box p { font-size: .83rem; color: var(--text); line-height: 1.7; }
+  .bonus-box code { font-family: var(--mono); font-size: .77rem; color: var(--amber); }
+
+  .final-box {
+    background: rgba(106,240,162,.05); border: 1px solid rgba(106,240,162,.18);
+    border-radius: var(--r-lg); padding: 1.1rem 1.3rem;
+  }
+  .final-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--green); margin-bottom: .45rem; }
+  .final-box p { font-size: .85rem; color: var(--text); line-height: 1.7; }
+
+  /* NOTE */
+  .note { font-size: .78rem; color: var(--muted2); line-height: 1.6; margin-top: .5rem; }
+  .note code { font-family: var(--mono); font-size: .76rem; color: var(--amber); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">Node.js — Quick Revision</div>
+    <h1>Modules, Global &amp; <em>Process</em></h1>
+  </div>
+  <div class="htags">
+    <span class="htag">no import</span>
+    <span class="htag">reusable</span>
+    <span class="htag">global object</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════════ MODULES ══════════════ -->
+  <section>
+    <div class="mhead">
+      <span class="mbadge mb-mod">Modules</span>
+      <h2>Node.js Modules</h2>
+    </div>
+
+    <!-- Definition -->
+    <div class="card">
+      <div class="clabel">Definition</div>
+      <div class="defbox">
+        <div class="deftitle dt-purple">Module = Reusable JavaScript file</div>
+        <p>Module என்றால் reusable code கொண்ட JavaScript file. Node.js-ல் code-ஐ small files ஆக split பண்ணி organize பண்ணலாம். Code clean ஆக இருக்கும், reuse பண்ண முடியும், maintain easy ஆகும்.</p>
+      </div>
+      <p class="note">Example modules: <code>math.js</code> &nbsp; <code>auth.js</code> &nbsp; <code>database.js</code> — ஒவ்வொரு file-மும் ஒரு module.</p>
+    </div>
+
+    <!-- 2 Types -->
+    <div class="card">
+      <div class="clabel">2 Types of Modules</div>
+
+      <!-- Core -->
+      <div class="iitem" style="margin-bottom:.85rem">
+        <div class="iname" style="color:var(--purple)">1. Core Modules — Built-in</div>
+        <div class="pills" style="margin:.5rem 0">
+          <div class="core-pill"><code>fs</code> → file system</div>
+          <div class="core-pill"><code>http</code> → server create</div>
+          <div class="core-pill"><code>path</code> → file paths</div>
+          <div class="core-pill"><code>os</code> → operating system info</div>
+        </div>
+        <div class="codelabel">core.js</div>
+        <pre><span class="pkw">const</span> fs = <span class="pf">require</span>(<span class="pv">"fs"</span>)  <span class="pm">// require() use பண்ணி import</span></pre>
+      </div>
+
+      <!-- User Defined -->
+      <div class="iitem">
+        <div class="iname" style="color:var(--green)">2. User Defined Modules — நாமே create பண்ணும்</div>
+        <div class="g2" style="margin-top:.6rem">
+          <div>
+            <div class="codelabel">math.js</div>
+            <pre><span class="pkw">function</span> <span class="pf">add</span>(a, b) {
+  <span class="pkw">return</span> a + b
+}
+
+module.exports = <span class="pf">add</span>
+<span class="pm">// function export</span></pre>
+          </div>
+          <div>
+            <div class="codelabel">app.js</div>
+            <pre><span class="pkw">const</span> add = <span class="pf">require</span>(<span class="pv">"./math"</span>)
+
+<span class="pf">console</span>.log(<span class="pf">add</span>(<span class="pkw">2</span>, <span class="pkw">3</span>))
+<span class="pm">// require() import</span></pre>
+            <div class="pill-row">
+              <span class="pill-label">Output:</span>
+              <span class="op">5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Methods -->
+    <div class="card">
+      <div class="clabel">Module Export Methods</div>
+      <div class="g2">
+        <div class="iitem">
+          <div class="exp-tag et-s">Single export</div>
+          <div class="iname">module.exports</div>
+          <pre>module.exports = <span class="pf">add</span></pre>
+          <p class="idesc" style="margin-top:.4rem">Single function export பண்ண.</p>
+        </div>
+        <div class="iitem">
+          <div class="exp-tag et-m">Multiple export</div>
+          <div class="iname">exports.name</div>
+          <pre>exports.<span class="pf">add</span> = add
+exports.<span class="pf">sub</span> = sub</pre>
+          <p class="idesc" style="margin-top:.4rem">Multiple functions export பண்ண.</p>
+        </div>
+      </div>
+      <table class="dt" style="margin-top:.85rem">
+        <thead><tr><th>Method</th><th>Use</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>module.exports</code></td><td>Single export</td><td><code>module.exports = add</code></td></tr>
+          <tr><td><code>exports</code></td><td>Multiple exports</td><td><code>exports.add = add</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Why Important -->
+    <div class="card">
+      <div class="clabel">Why Modules Important</div>
+      <div class="ben-grid">
+        <div class="ben-item"><div class="ben-name">Code reuse</div><div class="ben-desc">Same code reuse பண்ணலாம்</div></div>
+        <div class="ben-item"><div class="ben-name">Clean structure</div><div class="ben-desc">Organized codebase</div></div>
+        <div class="ben-item"><div class="ben-name">Maintain easy</div><div class="ben-desc">Debug &amp; fix easy</div></div>
+        <div class="ben-item"><div class="ben-name">Separation of concerns</div><div class="ben-desc">Each file ஒரு responsibility</div></div>
+        <div class="ben-item"><div class="ben-name">Large apps</div><div class="ben-desc">Big projects manage easy</div></div>
+        <div class="ben-item"><div class="ben-name">Reusable files</div><div class="ben-desc">Import anywhere</div></div>
+      </div>
+    </div>
+
+    <!-- Car Analogy -->
+    <div class="card">
+      <div class="clabel">Real Life Example — Car Analogy</div>
+      <p class="note" style="margin-bottom:.7rem">Car = ஒவ்வொரு part-மும் separate module. Assemble பண்ணும்போது எல்லாம் connect ஆகும்.</p>
+      <div class="car-parts">
+        <span class="car-part">Engine</span>
+        <span class="car-part">Wheels</span>
+        <span class="car-part">Brake</span>
+        <span class="car-part">Steering</span>
+      </div>
+      <div class="arrow-center">↕ Same idea in Node.js</div>
+      <div class="mod-files">
+        <div class="mf"><span class="mf-code">auth.js</span><span class="mf-tag">module</span></div>
+        <div class="mf"><span class="mf-code">db.js</span><span class="mf-tag">module</span></div>
+        <div class="mf"><span class="mf-code">routes.js</span><span class="mf-tag">module</span></div>
+        <div class="mf"><span class="mf-code">server.js</span><span class="mf-tag">module</span></div>
+      </div>
+      <p class="note" style="margin-top:.65rem">ஒவ்வொரு file-மும் ஒரு module — server.js-ல் எல்லாம் import பண்ணி connect ஆகும்.</p>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Interview Sentence — Memorize</div>
+      <p>"Modules in Node.js allow developers to organize code into reusable and maintainable files."</p>
+    </div>
+  </section>
+
+  <!-- ══════════════ GLOBAL OBJECTS ══════════════ -->
+  <section>
+    <div class="mhead">
+      <span class="mbadge mb-glob">Global</span>
+      <h2>Global Objects</h2>
+    </div>
+
+    <!-- Definition -->
+    <div class="card">
+      <div class="clabel">Definition</div>
+      <div class="defbox">
+        <div class="deftitle dt-blue">Global Objects — No import needed</div>
+        <p>Node.js application முழுவதும் access பண்ணக்கூடிய objects. Import தேவையில்லை — directly use பண்ணலாம். Node.js program எங்கும் direct-ஆ access பண்ணலாம்.</p>
+      </div>
+      <div class="pills">
+        <span class="pill">console</span>
+        <span class="pill">process</span>
+        <span class="pill">setTimeout</span>
+        <span class="pill">setInterval</span>
+        <span class="pill">__dirname</span>
+        <span class="pill">__filename</span>
+      </div>
+    </div>
+
+    <!-- 6 Objects -->
+    <div class="card">
+      <div class="clabel">6 Important Global Objects</div>
+      <div class="gobj-grid">
+        <div class="gobj-item">
+          <div class="gobj-name">console</div>
+          <div class="gobj-purpose">Log messages print பண்ண</div>
+          <div class="codelabel">console.js</div>
+          <div class="gobj-code">console.log("Hello Node")</div>
+          <div class="gobj-out">Output: Hello Node</div>
+        </div>
+        <div class="gobj-item">
+          <div class="gobj-name">process</div>
+          <div class="gobj-purpose">Current Node.js process info</div>
+          <div class="codelabel">process.js</div>
+          <div class="gobj-code">console.log(process.platform)</div>
+          <div class="gobj-out">Output: win32</div>
+        </div>
+        <div class="gobj-item">
+          <div class="gobj-name">__dirname</div>
+          <div class="gobj-purpose">Current folder path</div>
+          <div class="codelabel">dirname.js</div>
+          <div class="gobj-code">console.log(__dirname)</div>
+          <div class="gobj-out">Output: C:\project\app</div>
+        </div>
+        <div class="gobj-item">
+          <div class="gobj-name">__filename</div>
+          <div class="gobj-purpose">Current file path</div>
+          <div class="codelabel">filename.js</div>
+          <div class="gobj-code">console.log(__filename)</div>
+          <div class="gobj-out">Output: full file path</div>
+        </div>
+        <div class="gobj-item">
+          <div class="gobj-name">setTimeout</div>
+          <div class="gobj-purpose">Code later run பண்ண</div>
+          <div class="codelabel">timeout.js</div>
+          <div class="gobj-code">setTimeout(() => {...}, 2000)</div>
+          <div class="gobj-out">2 seconds பிறகு run ஆகும்</div>
+        </div>
+        <div class="gobj-item">
+          <div class="gobj-name">setInterval</div>
+          <div class="gobj-purpose">Repeated execution</div>
+          <div class="codelabel">interval.js</div>
+          <div class="gobj-code">setInterval(() => {...}, 1000)</div>
+          <div class="gobj-out">Every second run ஆகும்</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Examples -->
+    <div class="card">
+      <div class="clabel">Code Examples</div>
+      <div class="g2">
+        <div>
+          <div class="codelabel">dirname.js</div>
+          <pre><span class="pf">console</span>.log(__dirname)
+<span class="pm">// project folder path</span></pre>
+          <div class="pill-row"><span class="pill-label">Output:</span><span class="op">project folder path</span></div>
+        </div>
+        <div>
+          <div class="codelabel">process.js</div>
+          <pre><span class="pf">console</span>.log(process.platform)
+<span class="pm">// win32 or linux</span></pre>
+          <div class="pill-row"><span class="pill-label">Output:</span><span class="op">win32</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Ref Table -->
+    <div class="card">
+      <div class="clabel">Quick Reference Table</div>
+      <table class="dt">
+        <thead><tr><th>Object</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>console</code></td><td>Log messages print பண்ண</td></tr>
+          <tr><td><code>process</code></td><td>Current process info</td></tr>
+          <tr><td><code>__dirname</code></td><td>Current folder path</td></tr>
+          <tr><td><code>__filename</code></td><td>Current file path</td></tr>
+          <tr><td><code>setTimeout</code></td><td>Run code later</td></tr>
+          <tr><td><code>setInterval</code></td><td>Run code repeatedly</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Global vs Non-Global -->
+    <div class="card">
+      <div class="clabel">Global vs Non-Global — Quick Trick</div>
+      <div class="cmp-grid">
+        <div class="cmp-item cmp-no">
+          <div class="cmp-tag ct-no">Requires import</div>
+          <pre><span class="pkw">const</span> fs = <span class="pf">require</span>(<span class="pv">"fs"</span>)
+fs.<span class="pf">readFile</span>(...)</pre>
+          <p class="cmp-note">fs — import செய்யணும். Global இல்லை.</p>
+        </div>
+        <div class="cmp-item cmp-yes">
+          <div class="cmp-tag ct-yes">Global — no import</div>
+          <pre><span class="pf">console</span>.log(<span class="pv">"Hello"</span>)
+<span class="pm">// no require() needed</span></pre>
+          <p class="cmp-note">console — import இல்லாம use பண்ணலாம். Global object.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Interview Sentence — Memorize</div>
+      <p>"Global objects in Node.js are available throughout the application without requiring import."</p>
+    </div>
+  </section>
+
+  <!-- ══════════════ PROCESS OBJECT ══════════════ -->
+  <section>
+    <div class="mhead">
+      <span class="mbadge mb-proc">Process</span>
+      <h2>Process Object</h2>
+    </div>
+
+    <!-- Definition -->
+    <div class="card">
+      <div class="clabel">Definition</div>
+      <div class="defbox">
+        <div class="deftitle dt-green">process — Global Object</div>
+        <p>Node.js application run ஆகும் current process information கொடுக்கும் global object. Import தேவையில்லை — directly use பண்ணலாம். Environment variables access, command line arguments, process control இதன் மூலம் பண்ணலாம்.</p>
+      </div>
+      <pre><span class="pf">console</span>.log(process)  <span class="pm">// no require() needed</span></pre>
+    </div>
+
+    <!-- 4 Properties -->
+    <div class="card">
+      <div class="clabel">4 Important Properties</div>
+      <div class="prop-grid">
+        <div class="prop-item">
+          <div class="prop-name">process.env</div>
+          <div class="prop-desc">Environment variables access பண்ண. .env file values read பண்ணலாம்.</div>
+          <div class="codelabel">env.js</div>
+          <div class="prop-code">console.log(process.env.PORT)</div>
+          <div class="prop-out">Output: 5000</div>
+        </div>
+        <div class="prop-item">
+          <div class="prop-name">process.argv</div>
+          <div class="prop-desc">Command line arguments. Program run-ல் pass பண்ணும் values store ஆகும்.</div>
+          <div class="codelabel">argv.js</div>
+          <div class="prop-code">console.log(process.argv)</div>
+          <div class="prop-out">Output: ['node', 'app.js', 'hello']</div>
+        </div>
+        <div class="prop-item">
+          <div class="prop-name">process.exit()</div>
+          <div class="prop-desc">Program immediately stop பண்ண.</div>
+          <div class="codelabel">exit.js</div>
+          <div class="prop-code">process.exit()</div>
+          <div class="prop-note">Program stop ஆகும்</div>
+        </div>
+        <div class="prop-item">
+          <div class="prop-name">process.pid</div>
+          <div class="prop-desc">Current running process ID.</div>
+          <div class="codelabel">pid.js</div>
+          <div class="prop-code">console.log(process.pid)</div>
+          <div class="prop-out">Output: 2345</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- process.env -->
+    <div class="card">
+      <div class="clabel">process.env — .env File Example</div>
+      <div class="g2">
+        <div>
+          <div class="codelabel">.env file</div>
+          <pre>PORT=<span class="pv">5000</span></pre>
+        </div>
+        <div>
+          <div class="codelabel">env.js</div>
+          <pre><span class="pf">console</span>.log(process.env.PORT)
+<span class="pm">// Output: 5000</span></pre>
+        </div>
+      </div>
+      <p class="note">process.env-ல் PORT, DB_URL, JWT_SECRET போன்ற .env file values read ஆகும். MERN project-ல் மிக முக்கியம்.</p>
+    </div>
+
+    <!-- process.argv -->
+    <div class="card">
+      <div class="clabel">process.argv — Command Line Arguments Deep Dive</div>
+      <pre style="margin-bottom:.8rem"><span class="pm">// Terminal command:</span>
+<span class="pm">// node app.js hello</span>
+
+<span class="pf">console</span>.log(process.argv)
+<span class="pm">// ['C:\nodejs\node.exe', 'C:\project\app.js', 'hello']</span></pre>
+      <table class="argv-table" style="margin-bottom:.85rem">
+        <thead><tr><th>Index</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>node path</td><td class="td-plain">Node.js location</td></tr>
+          <tr><td>1</td><td>file name</td><td class="td-plain">Run பண்ணும் file</td></tr>
+          <tr><td>2</td><td>hello</td><td class="td-plain">நாம் pass பண்ணிய argument</td></tr>
+        </tbody>
+      </table>
+      <div class="codelabel">Real example — app.js</div>
+      <pre><span class="pm">// node app.js Rocky</span>
+<span class="pf">console</span>.log(<span class="pv">"Hello"</span>, process.argv[<span class="pkw">2</span>])
+<span class="pm">// Output: Hello Rocky</span></pre>
+    </div>
+
+    <!-- Quick Ref Table -->
+    <div class="card">
+      <div class="clabel">Quick Reference Table</div>
+      <table class="dt">
+        <thead><tr><th>Property</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>process.env</code></td><td>Environment variables</td></tr>
+          <tr><td><code>process.argv</code></td><td>Command line arguments</td></tr>
+          <tr><td><code>process.exit()</code></td><td>Stop program</td></tr>
+          <tr><td><code>process.pid</code></td><td>Process ID</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Trick Q -->
+    <div class="bonus-box" style="margin-bottom:1rem">
+      <div class="bonus-label">Trick Interview Q — Only user arguments எப்படி get பண்றது?</div>
+      <p>process.argv[0] = node path, [1] = file name — user arguments [2] from start.<br>
+      <strong>Answer:</strong> <code>process.argv.slice(2)</code> → user arguments மட்டும் return ஆகும்.</p>
+    </div>
+
+    <!-- Final Combined -->
+    <div class="final-box" style="margin-bottom:1rem">
+      <div class="final-label">Final Combined Answer (Modules + Global + Process)</div>
+      <p>"Node.js uses modules to organize code into reusable files. Global objects are available throughout the application without importing them. The process object provides information about the currently running Node.js process, including environment variables and command-line arguments."</p>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Interview Sentence — Memorize</div>
+      <p>"The process object provides information and control over the current Node.js process."</p>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
