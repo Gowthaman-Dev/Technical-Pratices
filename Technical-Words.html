@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview — Phrases & Words Complete Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0b0b0e;
+    --bg2:     #111116;
+    --bg3:     #17171d;
+    --bg4:     #1d1d26;
+    --border:  rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text:    #e3e0d9;
+    --muted:   #6e6c66;
+    --muted2:  #96938d;
+    --green:   #6af0a2;
+    --blue:    #6ab8f0;
+    --amber:   #f0c06a;
+    --purple:  #b06af0;
+    --red:     #f06a7a;
+    --teal:    #6af0e0;
+    --font:    'Syne', sans-serif;
+    --mono:    'JetBrains Mono', monospace;
+    --rmd: 8px; --rlg: 14px; --rxl: 20px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; }
+
+  header { border-bottom: 1px solid var(--border); padding: 2.5rem 3rem 2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+  .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--green); font-weight: 600; margin-bottom: .5rem; }
+  h1 { font-size: clamp(1.9rem, 4.5vw, 3rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.08; }
+  h1 em { font-style: normal; color: var(--green); }
+  .htags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .htag { border: 1px solid var(--border2); border-radius: 100px; padding: 4px 13px; font-size: 11.5px; color: var(--muted2); font-family: var(--mono); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 3rem 3rem 5rem; display: grid; gap: 2rem; }
+  @media (max-width: 740px) { header, main { padding-left: 1.4rem; padding-right: 1.4rem; } }
+
+  /* SECTION CARDS */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rxl); padding: 1.4rem 1.5rem; }
+  .clabel { font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .sec-title { font-size: 1.1rem; font-weight: 700; letter-spacing: -.01em; margin-bottom: 1rem; }
+
+  /* PHRASE ROWS */
+  .phrase-list { display: flex; flex-direction: column; gap: .6rem; }
+  .phrase-row { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--rlg); padding: .75rem 1rem; display: flex; align-items: flex-start; gap: 1rem; }
+  .phrase { font-size: .84rem; font-weight: 700; font-style: italic; min-width: 220px; flex-shrink: 0; line-height: 1.5; }
+  .phrase-use { font-size: .77rem; color: var(--muted2); line-height: 1.55; flex: 1; }
+  @media (max-width: 600px) { .phrase-row { flex-direction: column; gap: .3rem; } .phrase { min-width: unset; } }
+
+  /* WORD ROWS */
+  .word-list { display: flex; flex-direction: column; gap: .6rem; }
+  .word-row { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--rlg); padding: .75rem 1rem; }
+  .word-header { display: flex; align-items: center; gap: .75rem; margin-bottom: .3rem; flex-wrap: wrap; }
+  .word-en { font-size: .88rem; font-weight: 700; }
+  .word-ta { font-size: .76rem; color: var(--muted2); }
+  .word-ex { font-size: .76rem; color: var(--muted); font-style: italic; line-height: 1.5; }
+
+  /* GRIDS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+  @media (max-width: 680px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+  /* FORMULA BOXES */
+  .formula-box { background: rgba(240,192,106,.06); border: 1px solid rgba(240,192,106,.2); border-radius: var(--rlg); padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+  .formula-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); margin-bottom: .5rem; }
+  .formula-steps { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: .7rem; letter-spacing: .02em; }
+  .formula-example { font-size: .82rem; color: var(--muted2); line-height: 1.8; font-style: italic; }
+  .formula-example strong { color: var(--amber); font-style: normal; }
+
+  .pattern-box { background: rgba(106,184,240,.06); border: 1px solid rgba(106,184,240,.2); border-radius: var(--rlg); padding: 1rem 1.3rem; }
+  .pattern-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .5rem; }
+  .pattern-text { font-size: .84rem; color: var(--text); line-height: 1.8; font-style: italic; }
+
+  .power-box { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--rlg); padding: 1rem 1.2rem; }
+  .power-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--green); margin-bottom: .6rem; }
+  .power-combos { font-size: .82rem; color: var(--text); line-height: 2.2; }
+  .combo { display: inline-block; background: rgba(106,240,162,.1); border: 0.5px solid rgba(106,240,162,.2); border-radius: 100px; padding: 3px 12px; margin: 2px 4px; font-family: var(--mono); font-size: .76rem; color: var(--green); }
+
+  /* INTERVIEW BOX */
+  .int-box { background: rgba(106,184,240,.06); border: 1px solid rgba(106,184,240,.2); border-radius: var(--rlg); padding: 1.2rem 1.4rem; }
+  .int-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .45rem; }
+  .int-box p { font-size: .87rem; font-style: italic; color: var(--text); line-height: 1.7; }
+  .int-div { border: none; border-top: 1px solid rgba(106,184,240,.2); margin: .8rem 0; }
+
+  .note { font-size: .78rem; color: var(--muted2); line-height: 1.6; margin-top: .5rem; }
+
+  /* COLOR HELPERS */
+  .c-blue   { color: var(--blue);   }
+  .c-green  { color: var(--green);  }
+  .c-amber  { color: var(--amber);  }
+  .c-purple { color: var(--purple); }
+  .c-teal   { color: var(--teal);   }
+  .c-red    { color: var(--red);    }
+  .c-muted  { color: var(--muted2); }
+
+  /* SECTION DIVIDER */
+  .section-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; margin-top: .5rem; }
+  .section-head h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.02em; }
+  .sh-badge { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 4px 14px; border-radius: 100px; }
+  .shb-phrase { background: rgba(106,240,162,.13); color: var(--green);  border: 1px solid rgba(106,240,162,.25); }
+  .shb-word   { background: rgba(106,184,240,.13); color: var(--blue);   border: 1px solid rgba(106,184,240,.25); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">Interview — Complete Guide</div>
+    <h1>Phrases &amp; <em>Words</em></h1>
+  </div>
+  <div class="htags">
+    <span class="htag">50+ phrases</span>
+    <span class="htag">word bank</span>
+    <span class="htag">golden formula</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════ PHRASES SECTION ══════════ -->
+  <div>
+    <div class="section-head">
+      <span class="sh-badge shb-phrase">Part 1</span>
+      <h2>Interview Phrases</h2>
+    </div>
+
+    <!-- OPENING -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Opening / Starting an Answer</div>
+      <div class="phrase-list">
+        <div class="phrase-row"><span class="phrase c-blue">"So basically..."</span><span class="phrase-use">Answer-ஐ casual-ஆ start பண்ண — most natural opener</span></div>
+        <div class="phrase-row"><span class="phrase c-blue">"To put it simply..."</span><span class="phrase-use">Simple-ஆ explain பண்றேன் என்று சொல்ல</span></div>
+        <div class="phrase-row"><span class="phrase c-blue">"In simple terms..."</span><span class="phrase-use">Technical concept-ஐ easy-ஆ சொல்ல</span></div>
+        <div class="phrase-row"><span class="phrase c-blue">"The core idea is..."</span><span class="phrase-use">Main concept-ஐ directly சொல்ல — confident opener</span></div>
+        <div class="phrase-row"><span class="phrase c-blue">"Great question — so..."</span><span class="phrase-use">Interviewer-ஐ acknowledge பண்ணி start பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-blue">"So the way it works is..."</span><span class="phrase-use">Process explain பண்ண start பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-blue">"At a high level..."</span><span class="phrase-use">Overview சொல்ல start பண்ண — then dive deep</span></div>
+      </div>
+    </div>
+
+    <!-- EXPLAINING -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Explaining a Concept</div>
+      <div class="phrase-list">
+        <div class="phrase-row"><span class="phrase c-amber">"What it does is..."</span><span class="phrase-use">Function/purpose explain பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-amber">"The main purpose of this is..."</span><span class="phrase-use">Why it exists என்று சொல்ல</span></div>
+        <div class="phrase-row"><span class="phrase c-amber">"This is essentially..."</span><span class="phrase-use">Core meaning restate பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-amber">"Under the hood..."</span><span class="phrase-use">Internal working explain பண்ண — shows depth</span></div>
+        <div class="phrase-row"><span class="phrase c-amber">"The way I understand it..."</span><span class="phrase-use">Own words-ல் explain பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-amber">"What this means is..."</span><span class="phrase-use">Technical term-ஐ plain English-ல் சொல்ல</span></div>
+        <div class="phrase-row"><span class="phrase c-amber">"In other words..."</span><span class="phrase-use">Different angle-ல் same thing சொல்ல</span></div>
+        <div class="phrase-row"><span class="phrase c-amber">"To break it down..."</span><span class="phrase-use">Complex concept-ஐ step-by-step சொல்ல</span></div>
+      </div>
+    </div>
+
+    <!-- EXAMPLES -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Giving Examples</div>
+      <div class="phrase-list">
+        <div class="phrase-row"><span class="phrase c-green">"For example, if we..."</span><span class="phrase-use">Concrete example start பண்ண — most used</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"A real-world use case would be..."</span><span class="phrase-use">Practical application show பண்ண — impressive</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"Let's say we have..."</span><span class="phrase-use">Scenario create பண்ணி explain பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"Take the case of..."</span><span class="phrase-use">Specific example introduce பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"Think of it like..."</span><span class="phrase-use">Analogy கொடுக்க — restaurant example போல</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"A good example of this is..."</span><span class="phrase-use">Strong example introduce பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"In a MERN project, for instance..."</span><span class="phrase-use">Project-specific example — very relevant</span></div>
+      </div>
+    </div>
+
+    <!-- CONNECTING -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Connecting Ideas</div>
+      <div class="phrase-list">
+        <div class="phrase-row"><span class="phrase c-purple">"That's why..."</span><span class="phrase-use">Cause → effect connect பண்ண — most powerful</span></div>
+        <div class="phrase-row"><span class="phrase c-purple">"Which means..."</span><span class="phrase-use">Implication சொல்ல</span></div>
+        <div class="phrase-row"><span class="phrase c-purple">"As a result..."</span><span class="phrase-use">Outcome/benefit சொல்ல</span></div>
+        <div class="phrase-row"><span class="phrase c-purple">"And on top of that..."</span><span class="phrase-use">Extra advantage add பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-purple">"Because of this..."</span><span class="phrase-use">Reason connect பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-purple">"This leads to..."</span><span class="phrase-use">Chain of events explain பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-purple">"And this is directly related to..."</span><span class="phrase-use">Two concepts link பண்ண — shows depth</span></div>
+        <div class="phrase-row"><span class="phrase c-purple">"Building on that..."</span><span class="phrase-use">Previous point-ஐ extend பண்ண</span></div>
+      </div>
+    </div>
+
+    <!-- KNOW MORE -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Showing You Know More</div>
+      <div class="phrase-list">
+        <div class="phrase-row"><span class="phrase c-teal">"And it's also worth mentioning..."</span><span class="phrase-use">Bonus point add பண்ண — shows extra knowledge</span></div>
+        <div class="phrase-row"><span class="phrase c-teal">"One thing interviewers often ask..."</span><span class="phrase-use">Pre-emptively next question answer பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-teal">"The key difference here is..."</span><span class="phrase-use">Comparison knowledge show பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-teal">"This is especially important when..."</span><span class="phrase-use">Context-specific knowledge show பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-teal">"There's also a concept called..."</span><span class="phrase-use">Related concept introduce பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-teal">"In production environments..."</span><span class="phrase-use">Real-world knowledge show பண்ண — very impressive</span></div>
+        <div class="phrase-row"><span class="phrase c-teal">"One common mistake people make is..."</span><span class="phrase-use">Awareness show பண்ண — stands out</span></div>
+      </div>
+    </div>
+
+    <!-- THINKING -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Admitting You're Thinking</div>
+      <div class="phrase-list">
+        <div class="phrase-row"><span class="phrase c-muted">"Let me think about that..."</span><span class="phrase-use">Time எடுக்க — panic ஆகாமல்</span></div>
+        <div class="phrase-row"><span class="phrase c-muted">"That's a great question, so..."</span><span class="phrase-use">Pause cover பண்ணி think பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-muted">"If I recall correctly..."</span><span class="phrase-use">Memory-ல் இருந்து சொல்லும்போது</span></div>
+        <div class="phrase-row"><span class="phrase c-muted">"Let me walk you through it..."</span><span class="phrase-use">Step-by-step answer structure பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-muted">"I want to make sure I explain this clearly..."</span><span class="phrase-use">Careful-ஆ answer பண்றேன் என்று show பண்ண</span></div>
+      </div>
+    </div>
+
+    <!-- CLOSING -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Closing an Answer Strongly</div>
+      <div class="phrase-list">
+        <div class="phrase-row"><span class="phrase c-green">"So that's the core concept."</span><span class="phrase-use">Clean ending — confident</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"That's why it's preferred in production."</span><span class="phrase-use">Real-world relevance show பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"This makes it efficient and scalable."</span><span class="phrase-use">Benefits-ல் end பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"That covers the main points."</span><span class="phrase-use">Comprehensive answer என்று signal பண்ண</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"Does that answer your question?"</span><span class="phrase-use">Interviewer-ஐ engage பண்ண — very professional</span></div>
+        <div class="phrase-row"><span class="phrase c-green">"That's the reason we use it in real projects."</span><span class="phrase-use">Practical knowledge end-ல் show பண்ண</span></div>
+      </div>
+    </div>
+
+    <!-- GOLDEN FORMULA -->
+    <div class="formula-box">
+      <div class="formula-label">Golden Answer Formula</div>
+      <div class="formula-steps">Open → Define → Explain → Example → Benefit → Close</div>
+      <div class="formula-example">
+        "<strong>So basically</strong> [Open], Node.js is a JavaScript runtime environment [Define]. <strong>What it does is</strong> run JavaScript on the server side using the V8 engine [Explain]. <strong>For example</strong>, when 1000 users send requests, the event loop handles them asynchronously [Example]. <strong>As a result</strong>, it reduces memory usage and improves performance [Benefit]. <strong>That's why</strong> it's preferred in production applications." [Close]
+      </div>
+    </div>
+
+    <div class="pattern-box" style="margin-top:1rem">
+      <div class="pattern-label">Perfect Sentence Pattern</div>
+      <div class="pattern-text">"So basically, [concept] is [definition]. What it does is [action]. For example, [scenario]. That's why it's [benefit] and [benefit]."</div>
+    </div>
+  </div>
+
+  <!-- ══════════ WORDS SECTION ══════════ -->
+  <div>
+    <div class="section-head">
+      <span class="sh-badge shb-word">Part 2</span>
+      <h2>Technical Words</h2>
+    </div>
+
+    <!-- TECHNICAL POWER WORDS -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Technical Power Words</div>
+      <div class="word-list">
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Efficient</span><span class="word-ta">நல்லா, குறைந்த resources-ல் வேலை செய்யும்</span></div><div class="word-ex">"This approach is more efficient than traditional methods."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Scalable</span><span class="word-ta">பெரிய scale-க்கு grow பண்ண முடியும்</span></div><div class="word-ex">"Node.js builds scalable server-side applications."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Optimized</span><span class="word-ta">performance-க்கு best-ஆ tune பண்ணப்பட்டது</span></div><div class="word-ex">"Virtual DOM keeps rendering optimized."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Reusable</span><span class="word-ta">மீண்டும் மீண்டும் use பண்ணலாம்</span></div><div class="word-ex">"React components are reusable across the app."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Maintainable</span><span class="word-ta">future-ல் easily change பண்ணலாம்</span></div><div class="word-ex">"Modular code is clean and maintainable."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Asynchronous</span><span class="word-ta">wait பண்ணாமல் parallel-ஆ run ஆகும்</span></div><div class="word-ex">"Node.js handles asynchronous operations efficiently."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Non-blocking</span><span class="word-ta">block ஆகாமல் continue பண்ணும்</span></div><div class="word-ex">"Non-blocking I/O allows handling multiple requests."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Lightweight</span><span class="word-ta">memory குறைவாக use பண்ணும்</span></div><div class="word-ex">"Zustand is a lightweight state management library."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Modular</span><span class="word-ta">small modules-ஆக divide பண்ணப்பட்டது</span></div><div class="word-ex">"Node.js follows a modular architecture."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Declarative</span><span class="word-ta">what to do சொல்றோம், how to do React decide பண்ணும்</span></div><div class="word-ex">"React uses a declarative approach for UI."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Component-based</span><span class="word-ta">சிறு சிறு components-ஆ divide பண்ணி build பண்ணுவது</span></div><div class="word-ex">"React follows component-based architecture."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Event-driven</span><span class="word-ta">events நடந்தால் மட்டும் code run ஆகும்</span></div><div class="word-ex">"Node.js uses an event-driven model."</div></div>
+      </div>
+    </div>
+
+    <!-- PROCESS WORDS -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Process / Action Words</div>
+      <div class="word-list">
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Handles</span><span class="word-ta">கையாளுகிறது</span></div><div class="word-ex">"Event loop handles multiple requests at once."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Manages</span><span class="word-ta">நிர்வகிக்கிறது</span></div><div class="word-ex">"Redux manages global state in large apps."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Prevents</span><span class="word-ta">தடுக்கிறது</span></div><div class="word-ex">"Error handling prevents application crashes."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Improves</span><span class="word-ta">மேம்படுத்துகிறது</span></div><div class="word-ex">"Virtual DOM improves rendering performance."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Allows</span><span class="word-ta">அனுமதிக்கிறது / உதவுகிறது</span></div><div class="word-ex">"Node.js allows JavaScript to run on the server."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Enables</span><span class="word-ta">சாத்தியமாக்குகிறது</span></div><div class="word-ex">"Async/Await enables cleaner asynchronous code."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Reduces</span><span class="word-ta">குறைக்கிறது</span></div><div class="word-ex">"Streams reduce memory usage significantly."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Executes</span><span class="word-ta">நிறைவேற்றுகிறது</span></div><div class="word-ex">"V8 engine executes JavaScript as machine code."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Processes</span><span class="word-ta">செயலாக்குகிறது</span></div><div class="word-ex">"Node.js processes requests asynchronously."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Resolves</span><span class="word-ta">தீர்க்கிறது / முடிக்கிறது</span></div><div class="word-ex">"A promise resolves when the operation completes."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Triggers</span><span class="word-ta">தூண்டுகிறது / activate பண்ணுகிறது</span></div><div class="word-ex">"The data event triggers when a chunk is received."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-green">Implements</span><span class="word-ta">நடைமுறைப்படுத்துகிறது</span></div><div class="word-ex">"We implement error handling using try-catch."</div></div>
+      </div>
+    </div>
+
+    <!-- COMPARISON WORDS -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Comparison Words</div>
+      <div class="word-list">
+        <div class="word-row"><div class="word-header"><span class="word-en c-amber">Unlike</span><span class="word-ta">மாறாக / வித்தியாசமாக</span></div><div class="word-ex">"Unlike traditional servers, Node.js uses a single thread."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-amber">Whereas</span><span class="word-ta">அதேசமயம் / ஆனால்</span></div><div class="word-ex">"Whereas PHP blocks, Node.js continues execution."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-amber">Instead of</span><span class="word-ta">பதிலாக</span></div><div class="word-ex">"Instead of loading the full page, React updates only the changed part."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-amber">Rather than</span><span class="word-ta">அதை விட / பதிலாக</span></div><div class="word-ex">"Rather than blocking, Node.js moves to the next task."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-amber">Compared to</span><span class="word-ta">ஒப்பிடும்போது</span></div><div class="word-ex">"Compared to Webpack, Vite is much faster."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-amber">On the other hand</span><span class="word-ta">மறுபுறத்தில்</span></div><div class="word-ex">"On the other hand, synchronous code blocks execution."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-amber">In contrast</span><span class="word-ta">இதற்கு நேர்மாறாக</span></div><div class="word-ex">"In contrast, buffers store data in full memory."</div></div>
+      </div>
+    </div>
+
+    <!-- CONFIDENCE WORDS -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Confidence / Clarity Words</div>
+      <div class="word-list">
+        <div class="word-row"><div class="word-header"><span class="word-en c-purple">Primarily</span><span class="word-ta">முக்கியமாக / mainly</span></div><div class="word-ex">"It is primarily used for building REST APIs."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-purple">Typically</span><span class="word-ta">பொதுவாக / usually</span></div><div class="word-ex">"We typically use try-catch for async error handling."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-purple">Essentially</span><span class="word-ta">அடிப்படையில் / in simple terms</span></div><div class="word-ex">"Essentially, the event loop checks if the call stack is empty."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-purple">Specifically</span><span class="word-ta">குறிப்பாக</span></div><div class="word-ex">"Specifically in React, we use hooks for state management."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-purple">Fundamentally</span><span class="word-ta">அடிப்படையிலேயே</span></div><div class="word-ex">"Fundamentally, Node.js is single-threaded."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-purple">In practice</span><span class="word-ta">நடைமுறையில்</span></div><div class="word-ex">"In practice, we use dotenv to manage environment variables."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-purple">Under the hood</span><span class="word-ta">உள்ளே / internally</span></div><div class="word-ex">"Under the hood, CRA uses Webpack for bundling."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-purple">At its core</span><span class="word-ta">மையமாக / core-ல்</span></div><div class="word-ex">"At its core, React is about building reusable components."</div></div>
+      </div>
+    </div>
+
+    <!-- OPENING & CLOSING PHRASES (WORDS SECTION) -->
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="clabel">Opening &amp; Closing Phrases</div>
+      <div class="word-list">
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">So basically</span><span class="word-ta">Answer start பண்ண</span></div><div class="word-ex">"So basically, Node.js is a JavaScript runtime environment."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">To put it simply</span><span class="word-ta">Simple-ஆ சொல்ல</span></div><div class="word-ex">"To put it simply, a buffer stores binary data temporarily."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">The key point is</span><span class="word-ta">முக்கிய point சொல்ல</span></div><div class="word-ex">"The key point is that Node.js doesn't wait for I/O."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">What makes it powerful</span><span class="word-ta">அது powerful ஏன் சொல்ல</span></div><div class="word-ex">"What makes it powerful is the non-blocking event loop."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">That's why</span><span class="word-ta">அதனால் தான் — reason connect பண்ண</span></div><div class="word-ex">"That's why Node.js is preferred for real-time applications."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">This makes it</span><span class="word-ta">இது இதை make பண்றது</span></div><div class="word-ex">"This makes it efficient and scalable."</div></div>
+        <div class="word-row"><div class="word-header"><span class="word-en c-blue">Which is why</span><span class="word-ta">இதனால் தான்</span></div><div class="word-ex">"Which is why it's widely used in production."</div></div>
+      </div>
+    </div>
+
+    <!-- GOLDEN FORMULA (WORDS SECTION) -->
+    <div class="formula-box" style="margin-bottom:1rem">
+      <div class="formula-label">Golden Formula — Every Answer</div>
+      <div class="formula-steps">Define → Explain → Example → Benefit</div>
+      <div class="formula-example">
+        "Node.js is a JavaScript runtime environment [Define] that uses a single-threaded event-driven architecture [Explain]. <strong>For example</strong>, when 1000 users send requests, the event loop handles them asynchronously [Example]. This makes it highly efficient and scalable for production applications [Benefit]."
+      </div>
+    </div>
+
+    <!-- POWER COMBOS -->
+    <div class="power-box">
+      <div class="power-label">Power Word Combinations — Use These</div>
+      <div>
+        <span class="combo">efficiently handles</span>
+        <span class="combo">significantly reduces</span>
+        <span class="combo">automatically manages</span>
+        <span class="combo">effectively prevents</span>
+        <span class="combo">highly scalable</span>
+        <span class="combo">easily maintainable</span>
+        <span class="combo">fully asynchronous</span>
+        <span class="combo">completely non-blocking</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

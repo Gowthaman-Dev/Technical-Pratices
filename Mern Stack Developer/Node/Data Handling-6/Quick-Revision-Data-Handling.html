@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js — Streams & Buffers</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0b0b0e;
+    --bg2:     #111116;
+    --bg3:     #17171d;
+    --bg4:     #1d1d26;
+    --border:  rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text:    #e3e0d9;
+    --muted:   #6e6c66;
+    --muted2:  #96938d;
+    --green:   #6af0a2;
+    --blue:    #6ab8f0;
+    --amber:   #f0c06a;
+    --purple:  #b06af0;
+    --red:     #f06a7a;
+    --teal:    #6af0e0;
+    --font:    'Syne', sans-serif;
+    --mono:    'JetBrains Mono', monospace;
+    --rmd:     8px;
+    --rlg:     14px;
+    --rxl:     20px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2.5rem 3rem 2rem;
+    display: flex; align-items: flex-end;
+    justify-content: space-between; gap: 1.5rem; flex-wrap: wrap;
+  }
+  .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--teal); font-weight: 600; margin-bottom: .5rem; }
+  h1 { font-size: clamp(1.9rem, 4.5vw, 3rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.08; }
+  h1 em { font-style: normal; color: var(--teal); }
+  .htags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .htag { border: 1px solid var(--border2); border-radius: 100px; padding: 4px 13px; font-size: 11.5px; color: var(--muted2); font-family: var(--mono); }
+
+  /* MAIN */
+  main { max-width: 1180px; margin: 0 auto; padding: 3rem 3rem 5rem; display: grid; gap: 3.5rem; }
+  @media (max-width: 740px) { header, main { padding-left: 1.4rem; padding-right: 1.4rem; } }
+
+  /* MODULE HEADING */
+  .mhead { display: flex; align-items: center; gap: .9rem; margin-bottom: 1.6rem; }
+  .mbadge { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 4px 14px; border-radius: 100px; }
+  .mb-stream { background: rgba(106,240,224,.13); color: var(--teal);   border: 1px solid rgba(106,240,224,.25); }
+  .mb-buf    { background: rgba(176,106,240,.13); color: var(--purple); border: 1px solid rgba(176,106,240,.25); }
+  .mhead h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
+
+  /* CARD */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rxl); padding: 1.4rem 1.5rem; margin-bottom: 1rem; }
+  .clabel { font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+
+  /* DEF BOX */
+  .defbox { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--rlg); padding: 1rem 1.2rem; margin-bottom: 1rem; }
+  .deftitle { font-size: .93rem; font-weight: 700; margin-bottom: .35rem; }
+  .dt-teal   { color: var(--teal);   }
+  .dt-purple { color: var(--purple); }
+  .defbox p { font-size: .84rem; color: var(--muted2); line-height: 1.65; }
+
+  /* GRIDS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+  .g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: .75rem; }
+  @media (max-width: 680px) { .g2, .g3 { grid-template-columns: 1fr; } .g4 { grid-template-columns: 1fr 1fr; } }
+
+  /* INNER ITEM */
+  .iitem { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .iname { font-family: var(--mono); font-size: .82rem; font-weight: 500; margin-bottom: .25rem; }
+  .idesc { font-size: .79rem; color: var(--muted2); line-height: 1.5; }
+
+  /* CODE */
+  pre { background: #060608; border: 1px solid var(--border); border-radius: var(--rmd); padding: .9rem 1.1rem; font-family: var(--mono); font-size: .77rem; line-height: 1.9; overflow-x: auto; color: #b2b0aa; }
+  .pk  { color: var(--blue);   }
+  .pv  { color: var(--green);  }
+  .pf  { color: var(--amber);  }
+  .pm  { color: var(--muted);  }
+  .pkw { color: var(--purple); }
+  .codelabel { font-size: 10px; font-family: var(--mono); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
+
+  /* TABLE */
+  .dt { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .dt th { text-align: left; padding: .55rem .9rem; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--bg3); }
+  .dt td { padding: .65rem .9rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.5; }
+  .dt tr:last-child td { border-bottom: none; }
+  .dt code { font-family: var(--mono); font-size: .77rem; color: var(--amber); background: rgba(240,192,106,.07); padding: 2px 7px; border-radius: 4px; }
+
+  /* COMPARE */
+  .cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .cmp-item { border-radius: var(--rlg); padding: .9rem 1rem; }
+  .cmp-no  { background: rgba(240,106,122,.05); border: 1px solid rgba(240,106,122,.18); }
+  .cmp-yes { background: rgba(106,240,162,.05); border: 1px solid rgba(106,240,162,.18); }
+  .cmp-tag { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 2px 9px; border-radius: 100px; display: inline-block; margin-bottom: .5rem; }
+  .ct-no  { background: rgba(240,106,122,.15); color: var(--red);   }
+  .ct-yes { background: rgba(106,240,162,.15); color: var(--green); }
+  .cmp-list { font-size: .78rem; color: var(--muted2); line-height: 2; margin-top: .3rem; }
+
+  /* FLOW STEPS */
+  .fsteps { display: flex; flex-direction: column; gap: 3px; }
+  .fstep  { display: flex; align-items: center; gap: 6px; font-size: .79rem; color: var(--text); }
+  .fdot   { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .fline  { width: 1px; height: 9px; margin-left: 3px; background: var(--border2); }
+
+  /* STREAM TYPES */
+  .types-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: .85rem; }
+  .type-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .type-num  { font-size: 10px; font-weight: 500; color: var(--muted); margin-bottom: .3rem; }
+  .type-name { font-size: .84rem; font-weight: 700; margin-bottom: .25rem; }
+  .type-desc { font-size: .78rem; color: var(--muted2); line-height: 1.5; margin-bottom: .4rem; }
+  .type-uses { display: flex; flex-wrap: wrap; gap: 4px; }
+  .use-tag   { font-size: .72rem; padding: 2px 8px; border-radius: 100px; background: var(--bg4); color: var(--muted2); border: 0.5px solid var(--border2); }
+
+  /* EVENTS GRID */
+  .events-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: .85rem; }
+  .ev-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .ev-name { font-family: var(--mono); font-size: .83rem; font-weight: 500; color: var(--amber); margin-bottom: .3rem; }
+  .ev-desc { font-size: .78rem; color: var(--muted2); line-height: 1.5; margin-bottom: .35rem; }
+  .ev-code { font-family: var(--mono); font-size: .72rem; color: var(--muted2); }
+
+  /* MODES */
+  .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .mode-item { border-radius: var(--rlg); padding: 1rem; }
+  .mode-flow  { background: rgba(106,184,240,.06); border: 1px solid rgba(106,184,240,.2); }
+  .mode-pause { background: rgba(240,192,106,.06); border: 1px solid rgba(240,192,106,.2); }
+  .mode-tag   { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 2px 9px; border-radius: 100px; display: inline-block; margin-bottom: .5rem; }
+  .mt-flow  { background: rgba(106,184,240,.15); color: var(--blue);  }
+  .mt-pause { background: rgba(240,192,106,.15); color: var(--amber); }
+  .mode-name { font-size: .84rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+  .mode-desc { font-size: .78rem; color: var(--muted2); line-height: 1.5; margin-bottom: .45rem; }
+  .mode-code { font-family: var(--mono); font-size: .73rem; color: var(--amber); }
+
+  /* ADVANTAGES GRID */
+  .adv-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: .75rem; }
+  .adv-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .85rem 1rem; }
+  .adv-name { font-size: .82rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+  .adv-desc { font-size: .76rem; color: var(--muted2); }
+
+  /* CHECKLIST */
+  .checklist { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .chk { background: rgba(106,240,162,.1); color: var(--green); border: 1px solid rgba(106,240,162,.2); border-radius: 100px; padding: 4px 13px; font-size: .76rem; font-weight: 600; }
+
+  /* PILLS */
+  .pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .pill { background: var(--bg3); border: 1px solid var(--border2); border-radius: 100px; padding: 4px 13px; font-size: .78rem; color: var(--text); }
+
+  /* BUFFER METHODS */
+  .method-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+  .method-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .method-tag  { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 100px; display: inline-block; margin-bottom: .45rem; }
+  .mt-blue  { background: rgba(106,184,240,.15); color: var(--blue);  }
+  .mt-green { background: rgba(106,240,162,.15); color: var(--green); }
+  .mt-amber2 { background: rgba(240,192,106,.15); color: var(--amber); }
+  .method-name { font-family: var(--mono); font-size: .81rem; font-weight: 500; color: var(--amber); margin-bottom: .3rem; }
+  .method-desc { font-size: .77rem; color: var(--muted2); line-height: 1.5; margin-bottom: .4rem; }
+
+  /* BUF VIS */
+  .buf-vis { display: flex; gap: 2px; margin: .45rem 0; flex-wrap: wrap; }
+  .bc { background: var(--bg4); border: 0.5px solid var(--border2); border-radius: 4px; padding: 5px 8px; font-family: var(--mono); font-size: .73rem; color: var(--text); text-align: center; min-width: 26px; }
+  .bc.hi { background: rgba(106,184,240,.15); border-color: rgba(106,184,240,.3); color: var(--blue); }
+  .bc.emp { color: var(--muted); }
+
+  /* INTERVIEW / BONUS */
+  .int-box { background: rgba(106,184,240,.06); border: 1px solid rgba(106,184,240,.2); border-radius: var(--rlg); padding: 1.2rem 1.4rem; }
+  .int-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .5rem; }
+  .int-box p { font-size: .87rem; font-style: italic; color: var(--text); line-height: 1.7; }
+
+  .bonus-box { background: rgba(240,192,106,.06); border: 1px solid rgba(240,192,106,.2); border-radius: var(--rlg); padding: 1.1rem 1.3rem; }
+  .bonus-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); margin-bottom: .45rem; }
+  .bonus-box p { font-size: .83rem; color: var(--text); line-height: 1.75; }
+  .bonus-box code { font-family: var(--mono); font-size: .77rem; color: var(--amber); }
+
+  .final-box { background: rgba(106,240,162,.05); border: 1px solid rgba(106,240,162,.18); border-radius: var(--rlg); padding: 1.1rem 1.3rem; }
+  .final-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--green); margin-bottom: .45rem; }
+  .final-box p { font-size: .85rem; color: var(--text); line-height: 1.7; }
+
+  /* NOTE */
+  .note { font-size: .78rem; color: var(--muted2); line-height: 1.6; margin-top: .5rem; }
+  .note code { font-family: var(--mono); font-size: .76rem; color: var(--amber); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">Node.js — Quick Revision</div>
+    <h1>Streams &amp; <em>Buffers</em></h1>
+  </div>
+  <div class="htags">
+    <span class="htag">chunk processing</span>
+    <span class="htag">binary data</span>
+    <span class="htag">memory efficient</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════ STREAMS ══════════ -->
+  <section>
+    <div class="mhead">
+      <span class="mbadge mb-stream">Streams</span>
+      <h2>Node.js Streams</h2>
+    </div>
+
+    <!-- Definition & Why -->
+    <div class="card">
+      <div class="clabel">Definition &amp; Why Streams</div>
+      <div class="defbox">
+        <div class="deftitle dt-teal">Stream — Data in small chunks</div>
+        <p>Data-ஐ small chunks (பகுதிகள்) ஆக process பண்ணும் method. Large files handle பண்ணும்போது முழு file memory-க்கு load பண்ணாமல் piece by piece process பண்ணும். அதனால் Node.js high performance.</p>
+      </div>
+      <div class="cmp-grid">
+        <div class="cmp-item cmp-no">
+          <div class="cmp-tag ct-no">Normal Method</div>
+          <div class="fsteps">
+            <div class="fstep"><div class="fdot" style="background:var(--red)"></div>File (5GB)</div>
+            <div class="fline"></div>
+            <div class="fstep"><div class="fdot" style="background:var(--red)"></div>Memory (5GB load)</div>
+            <div class="fline"></div>
+            <div class="fstep"><div class="fdot" style="background:var(--red)"></div>Process</div>
+          </div>
+          <div class="cmp-list">
+            Memory full ஆகும்<br>Program slow ஆகும்<br>Sometimes crash ஆகும்
+          </div>
+        </div>
+        <div class="cmp-item cmp-yes">
+          <div class="cmp-tag ct-yes">Stream Method</div>
+          <div class="fsteps">
+            <div class="fstep"><div class="fdot" style="background:var(--green)"></div>File</div>
+            <div class="fline"></div>
+            <div class="fstep"><div class="fdot" style="background:var(--green)"></div>Chunk (64KB) → Process</div>
+            <div class="fline"></div>
+            <div class="fstep"><div class="fdot" style="background:var(--green)"></div>Chunk (64KB) → Process</div>
+            <div class="fline"></div>
+            <div class="fstep"><div class="fdot" style="background:var(--green)"></div>Chunk (64KB) → Process</div>
+          </div>
+          <div class="cmp-list">
+            Memory usage குறையும்<br>Fast processing
+          </div>
+        </div>
+      </div>
+      <p class="note">Real examples: Video streaming · File reading · Network data transfer · YouTube play-while-download</p>
+    </div>
+
+    <!-- 4 Types -->
+    <div class="card">
+      <div class="clabel">4 Types of Streams</div>
+      <div class="types-grid">
+        <div class="type-item">
+          <div class="type-num">01 · READABLE</div>
+          <div class="type-name" style="color:var(--teal)">Readable Stream</div>
+          <div class="type-desc">Data read பண்ண use பண்ணும் stream.</div>
+          <div class="type-uses">
+            <span class="use-tag">File reading</span>
+            <span class="use-tag">HTTP request</span>
+            <span class="use-tag">Video streaming</span>
+          </div>
+        </div>
+        <div class="type-item">
+          <div class="type-num">02 · WRITABLE</div>
+          <div class="type-name" style="color:var(--green)">Writable Stream</div>
+          <div class="type-desc">Data write பண்ண use பண்ணும் stream.</div>
+          <div class="type-uses">
+            <span class="use-tag">File writing</span>
+            <span class="use-tag">HTTP response</span>
+            <span class="use-tag">Logging</span>
+          </div>
+        </div>
+        <div class="type-item">
+          <div class="type-num">03 · DUPLEX</div>
+          <div class="type-name" style="color:var(--amber)">Duplex Stream</div>
+          <div class="type-desc">Read + Write இரண்டும் செய்யும் stream.</div>
+          <div class="type-uses">
+            <span class="use-tag">TCP socket</span>
+            <span class="use-tag">Chat app</span>
+            <span class="use-tag">WebSocket</span>
+          </div>
+        </div>
+        <div class="type-item">
+          <div class="type-num">04 · TRANSFORM</div>
+          <div class="type-name" style="color:var(--purple)">Transform Stream</div>
+          <div class="type-desc">Read → Modify → Write. Data transform செய்யும்.</div>
+          <div class="type-uses">
+            <span class="use-tag">Compression</span>
+            <span class="use-tag">Encryption</span>
+            <span class="use-tag">Data conversion</span>
+          </div>
+        </div>
+      </div>
+      <p class="note">Remember: Readable → Read data · Writable → Write data · Duplex → Both · Transform → Read + Change + Write</p>
+    </div>
+
+    <!-- Code Examples -->
+    <div class="card">
+      <div class="clabel">Code Examples</div>
+      <div class="g2" style="margin-bottom:.85rem">
+        <div>
+          <div class="codelabel">Readable Stream</div>
+          <pre><span class="pkw">const</span> readStream =
+  fs.<span class="pf">createReadStream</span>(<span class="pv">"data.txt"</span>, <span class="pv">"utf8"</span>)
+
+readStream.<span class="pf">on</span>(<span class="pv">"data"</span>, (chunk) => {
+  <span class="pf">console</span>.log(chunk)
+})</pre>
+        </div>
+        <div>
+          <div class="codelabel">Writable Stream</div>
+          <pre><span class="pkw">const</span> writeStream =
+  fs.<span class="pf">createWriteStream</span>(<span class="pv">"output.txt"</span>)
+
+writeStream.<span class="pf">write</span>(<span class="pv">"Hello Node.js"</span>)</pre>
+        </div>
+      </div>
+      <div class="codelabel">pipe() — Readable → Writable connect</div>
+      <pre><span class="pkw">const</span> readStream  = fs.<span class="pf">createReadStream</span>(<span class="pv">"data.txt"</span>)
+<span class="pkw">const</span> writeStream = fs.<span class="pf">createWriteStream</span>(<span class="pv">"copy.txt"</span>)
+readStream.<span class="pf">pipe</span>(writeStream)  <span class="pm">// data.txt → copy.txt — one line!</span></pre>
+    </div>
+
+    <!-- Stream Methods -->
+    <div class="card">
+      <div class="clabel">Stream Methods</div>
+      <table class="dt">
+        <thead><tr><th>Method</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>pipe()</code></td><td>Streams connect பண்ண — automatic data transfer</td></tr>
+          <tr><td><code>on("data")</code></td><td>Data chunk receive பண்ண</td></tr>
+          <tr><td><code>on("end")</code></td><td>Stream reading finish</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Stream Events -->
+    <div class="card">
+      <div class="clabel">Stream Events — Event-Based System</div>
+      <div class="events-grid">
+        <div class="ev-item">
+          <div class="ev-name">data</div>
+          <div class="ev-desc">Chunk receive ஆனால் trigger ஆகும். Most important event.</div>
+          <div class="ev-code">readStream.on("data", (chunk) => {...})</div>
+        </div>
+        <div class="ev-item">
+          <div class="ev-name">end</div>
+          <div class="ev-desc">File reading complete ஆன பிறகு run ஆகும்.</div>
+          <div class="ev-code">readStream.on("end", () => {...})</div>
+        </div>
+        <div class="ev-item">
+          <div class="ev-name">error</div>
+          <div class="ev-desc">File read-ல் error வந்தால் run ஆகும்.</div>
+          <div class="ev-code">readStream.on("error", (err) => {...})</div>
+        </div>
+        <div class="ev-item">
+          <div class="ev-name">finish</div>
+          <div class="ev-desc">Writable stream writing complete ஆன பிறகு run ஆகும்.</div>
+          <div class="ev-code">writeStream.on("finish", () => {...})</div>
+        </div>
+      </div>
+      <p class="note">data → receive · end → read finish · error → problem · finish → write finish</p>
+    </div>
+
+    <!-- Backpressure -->
+    <div class="card">
+      <div class="clabel">Backpressure — Flow Control (Interview Important)</div>
+      <div class="iitem" style="margin-bottom:.85rem">
+        <div class="iname" style="color:var(--red)">What is Backpressure?</div>
+        <p class="idesc">Data producer fast-ஆ send பண்ணும்போது consumer slow-ஆ process பண்ணும் situation. Water tank fast → Glass slow → Overflow ஆகும். இதுதான் Backpressure concept.</p>
+      </div>
+      <div class="g2" style="margin-bottom:.85rem">
+        <div class="iitem">
+          <div class="iname" style="color:var(--amber)">Problem</div>
+          <p class="idesc">Read Stream (fast) → Write Stream (slow) → Data accumulate ஆகும்</p>
+        </div>
+        <div class="iitem">
+          <div class="iname" style="color:var(--green)">Solution</div>
+          <p class="idesc">1. Buffering — Extra data temp memory-ல் store<br>2. pipe() — Automatic pause/resume flow control</p>
+        </div>
+      </div>
+      <pre><span class="pm">// pipe() automatically handles backpressure</span>
+readStream.<span class="pf">pipe</span>(writeStream)  <span class="pm">// auto pause when slow</span></pre>
+    </div>
+
+    <!-- Flowing / Paused -->
+    <div class="card">
+      <div class="clabel">Flowing / Paused Mode</div>
+      <div class="mode-grid">
+        <div class="mode-item mode-flow">
+          <div class="mode-tag mt-flow">Flowing Mode</div>
+          <div class="mode-name">Automatic data flow</div>
+          <div class="mode-desc">data event attach பண்ணினால் stream automatically flowing mode-க்கு போகும். Data automatic-ஆ வரும்.</div>
+          <div class="mode-code">readStream.on("data", (chunk) => {...})</div>
+        </div>
+        <div class="mode-item mode-pause">
+          <div class="mode-tag mt-pause">Paused Mode</div>
+          <div class="mode-name">Manual control</div>
+          <div class="mode-desc">Data automatic-ஆ வராது. Program தான் control பண்ணும். pause() / resume() use பண்ணலாம்.</div>
+          <div class="mode-code">readStream.pause()  // stop<br>readStream.resume() // continue</div>
+        </div>
+      </div>
+      <p class="note">Tap analogy: Flowing = tap open (auto flow) · Paused = tap close (manual control)</p>
+    </div>
+
+    <!-- HighWaterMark -->
+    <div class="card">
+      <div class="clabel">HighWaterMark — Buffer Size Control</div>
+      <div class="iitem" style="margin-bottom:.85rem">
+        <div class="iname" style="color:var(--teal)">HighWaterMark = chunk size limit</div>
+        <p class="idesc">Stream buffer-ல் maximum data size எவ்வளவு இருக்கணும் என்று control பண்ணும் option. Default 64KB.</p>
+      </div>
+      <pre><span class="pkw">const</span> stream = fs.<span class="pf">createReadStream</span>(<span class="pv">"data.txt"</span>, {
+  highWaterMark: <span class="pkw">16</span> * <span class="pkw">1024</span>  <span class="pm">// 16KB chunk size</span>
+})
+<span class="pm">// Each chunk = 16KB — predictable size</span></pre>
+      <p class="note">Buffer overflow avoid · Memory control · Better performance · Flow control help</p>
+    </div>
+
+    <!-- Advantages -->
+    <div class="card">
+      <div class="clabel">Stream Advantages</div>
+      <div class="adv-grid">
+        <div class="adv-item"><div class="adv-name">Memory efficient</div><div class="adv-desc">Full file load ஆகாது</div></div>
+        <div class="adv-item"><div class="adv-name">Fast processing</div><div class="adv-desc">Chunk வந்தவுடன் process</div></div>
+        <div class="adv-item"><div class="adv-name">Large data handle</div><div class="adv-desc">Netflix, YouTube, uploads</div></div>
+        <div class="adv-item"><div class="adv-name">Real-time processing</div><div class="adv-desc">Live video, chat, stocks</div></div>
+      </div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="card">
+      <div class="clabel">Complete Concepts Covered</div>
+      <div class="checklist">
+        <span class="chk">Stream Basics</span>
+        <span class="chk">Why Streams</span>
+        <span class="chk">4 Stream Types</span>
+        <span class="chk">Stream Methods</span>
+        <span class="chk">Stream Events</span>
+        <span class="chk">Backpressure</span>
+        <span class="chk">Flowing / Paused Mode</span>
+        <span class="chk">HighWaterMark</span>
+      </div>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Final Interview Answer — Memorize</div>
+      <p>"Streams in Node.js are used to handle large data efficiently by processing it in small chunks instead of loading the entire data into memory. There are four types of streams: readable, writable, duplex, and transform. Streams are event-based and use events like data, end, and error. They also manage flow control using mechanisms like backpressure."</p>
+    </div>
+  </section>
+
+  <!-- ══════════ BUFFERS ══════════ -->
+  <section>
+    <div class="mhead">
+      <span class="mbadge mb-buf">Buffers</span>
+      <h2>Node.js Buffers</h2>
+    </div>
+
+    <!-- Definition -->
+    <div class="card">
+      <div class="clabel">Definition</div>
+      <div class="defbox">
+        <div class="deftitle dt-purple">Buffer — Temporary Binary Memory</div>
+        <p>Binary data store பண்ணும் temporary memory area. Node.js-ல் files, images, videos போன்ற binary data handle பண்ண buffers use பண்ணப்படும். Computer எல்லா data-யும் binary (0 &amp; 1) format-ல் தான் store பண்ணும்.</p>
+      </div>
+      <div class="pills">
+        <span class="pill">File reading</span>
+        <span class="pill">Image processing</span>
+        <span class="pill">Video streaming</span>
+        <span class="pill">Network packets</span>
+      </div>
+    </div>
+
+    <!-- 3 Creation Methods -->
+    <div class="card">
+      <div class="clabel">3 Buffer Creation Methods</div>
+      <div class="method-grid">
+        <div class="method-item">
+          <div class="method-tag mt-blue">from existing</div>
+          <div class="method-name">Buffer.from()</div>
+          <div class="method-desc">Existing data-இல் இருந்து buffer create பண்ணும்.</div>
+          <div class="codelabel">Example</div>
+          <pre><span class="pkw">const</span> buf = Buffer.<span class="pf">from</span>(<span class="pv">"Hello"</span>)
+<span class="pm">// &lt;Buffer 48 65 6c 6c 6f&gt;</span></pre>
+        </div>
+        <div class="method-item">
+          <div class="method-tag mt-green">fixed size</div>
+          <div class="method-name">Buffer.alloc()</div>
+          <div class="method-desc">Fixed size empty memory create பண்ணும்.</div>
+          <div class="codelabel">Example</div>
+          <pre><span class="pkw">const</span> buf = Buffer.<span class="pf">alloc</span>(<span class="pkw">10</span>)
+<span class="pm">// 10 bytes empty</span></pre>
+        </div>
+        <div class="method-item">
+          <div class="method-tag mt-amber2">fast (unsafe)</div>
+          <div class="method-name">Buffer.allocUnsafe()</div>
+          <div class="method-desc">Fast memory allocate பண்ணும் — but unsafe (old data இருக்கும்).</div>
+          <div class="codelabel">Example</div>
+          <pre><span class="pkw">const</span> buf = Buffer.<span class="pf">allocUnsafe</span>(<span class="pkw">10</span>)</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buffer Methods -->
+    <div class="card">
+      <div class="clabel">Buffer Methods — toString, write, slice, concat, length</div>
+      <div class="g2" style="margin-bottom:.85rem">
+        <div>
+          <div class="codelabel">toString() + length</div>
+          <pre><span class="pkw">const</span> buf = Buffer.<span class="pf">from</span>(<span class="pv">"Hello"</span>)
+<span class="pf">console</span>.log(buf.length)     <span class="pm">// 5</span>
+<span class="pf">console</span>.log(buf.<span class="pf">toString</span>()) <span class="pm">// Hello</span></pre>
+          <div class="buf-vis">
+            <div class="bc hi">H</div><div class="bc hi">e</div><div class="bc hi">l</div><div class="bc hi">l</div><div class="bc hi">o</div>
+          </div>
+          <p class="note">Hello = 5 characters → 5 bytes → length = 5</p>
+        </div>
+        <div>
+          <div class="codelabel">write()</div>
+          <pre><span class="pkw">const</span> buf = Buffer.<span class="pf">alloc</span>(<span class="pkw">10</span>)
+buf.<span class="pf">write</span>(<span class="pv">"Node"</span>)
+<span class="pf">console</span>.log(buf.<span class="pf">toString</span>())
+<span class="pm">// Output: Node</span></pre>
+          <div class="buf-vis">
+            <div class="bc hi">N</div><div class="bc hi">o</div><div class="bc hi">d</div><div class="bc hi">e</div>
+            <div class="bc emp">_</div><div class="bc emp">_</div><div class="bc emp">_</div><div class="bc emp">_</div><div class="bc emp">_</div><div class="bc emp">_</div>
+          </div>
+          <p class="note">Empty buffer → write() → data fill ஆகும். buffer.write("Node", 2) → position 2-ல் start ஆகும்.</p>
+        </div>
+      </div>
+      <div class="g2">
+        <div>
+          <div class="codelabel">slice() — Extract portion</div>
+          <pre><span class="pkw">const</span> buf = Buffer.<span class="pf">from</span>(<span class="pv">"Hello Node"</span>)
+<span class="pkw">const</span> slice = buf.<span class="pf">slice</span>(<span class="pkw">0</span>, <span class="pkw">5</span>)
+<span class="pf">console</span>.log(slice.<span class="pf">toString</span>())
+<span class="pm">// Output: Hello</span></pre>
+          <div class="buf-vis">
+            <div class="bc hi">H</div><div class="bc hi">e</div><div class="bc hi">l</div><div class="bc hi">l</div><div class="bc hi">o</div>
+            <div class="bc">N</div><div class="bc">o</div><div class="bc">d</div><div class="bc">e</div>
+          </div>
+          <p class="note">slice(0,5) → index 0 to 4. Original buffer copy பண்ணாது — same memory reference. Memory efficient!</p>
+        </div>
+        <div>
+          <div class="codelabel">concat() — Combine buffers</div>
+          <pre><span class="pkw">const</span> buf1 = Buffer.<span class="pf">from</span>(<span class="pv">"Hello "</span>)
+<span class="pkw">const</span> buf2 = Buffer.<span class="pf">from</span>(<span class="pv">"Node"</span>)
+<span class="pkw">const</span> res  = Buffer.<span class="pf">concat</span>([buf1, buf2])
+<span class="pf">console</span>.log(res.<span class="pf">toString</span>())
+<span class="pm">// Output: Hello Node</span></pre>
+          <p class="note" style="margin-top:.5rem">Multiple buffers → single buffer. Large file download-ல் multiple chunks → single buffer combine பண்ண use ஆகும்.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Methods Table -->
+    <div class="card">
+      <div class="clabel">All Methods — Quick Reference</div>
+      <table class="dt">
+        <thead><tr><th>Method</th><th>Purpose</th><th>Output example</th></tr></thead>
+        <tbody>
+          <tr><td><code>Buffer.from()</code></td><td>Existing data → buffer create</td><td>Buffer 48 65 6c...</td></tr>
+          <tr><td><code>Buffer.alloc()</code></td><td>Fixed size empty buffer</td><td>Buffer 00 00 00...</td></tr>
+          <tr><td><code>buffer.toString()</code></td><td>Buffer → string convert</td><td>Hello</td></tr>
+          <tr><td><code>buffer.length</code></td><td>Buffer size in bytes</td><td>5</td></tr>
+          <tr><td><code>buffer.write()</code></td><td>Buffer-க்கு data write பண்ண</td><td>Node</td></tr>
+          <tr><td><code>buffer.slice()</code></td><td>Portion extract பண்ண</td><td>Hello</td></tr>
+          <tr><td><code>Buffer.concat()</code></td><td>Multiple buffers combine பண்ண</td><td>Hello Node</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Streams vs Buffers -->
+    <div class="card">
+      <div class="clabel">Streams vs Buffers — Interview Important</div>
+      <table class="dt" style="margin-bottom:.75rem">
+        <thead><tr><th>Feature</th><th>Streams</th><th>Buffers</th></tr></thead>
+        <tbody>
+          <tr><td>Data handling</td><td>Chunk by chunk</td><td>Full memory storage</td></tr>
+          <tr><td>Purpose</td><td>Process data</td><td>Store binary data</td></tr>
+          <tr><td>Memory usage</td><td>Low</td><td>Higher</td></tr>
+          <tr><td>Performance</td><td>Fast for large files</td><td>Not efficient for large data</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Key Point: Streams internally buffers use பண்ணும் — Streams are built on top of buffers for efficient data handling!</p>
+    </div>
+
+    <!-- Buffer Advantages -->
+    <div class="card">
+      <div class="clabel">Buffer Advantages</div>
+      <div class="adv-grid">
+        <div class="adv-item"><div class="adv-name">Binary data handling</div><div class="adv-desc">Images, videos, files handle பண்ண</div></div>
+        <div class="adv-item"><div class="adv-name">Fast memory operations</div><div class="adv-desc">Temporary memory-ல் store ஆகும்</div></div>
+        <div class="adv-item"><div class="adv-name">Network communication</div><div class="adv-desc">Data packets handle பண்ண</div></div>
+        <div class="adv-item"><div class="adv-name">File processing</div><div class="adv-desc">File read/write operations</div></div>
+      </div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="card">
+      <div class="clabel">Complete Concepts Covered</div>
+      <div class="checklist">
+        <span class="chk">Buffer Basics</span>
+        <span class="chk">Binary Data Handling</span>
+        <span class="chk">Buffer.from() · Buffer.alloc()</span>
+        <span class="chk">toString() · write() · slice() · concat()</span>
+        <span class="chk">Buffer Length</span>
+        <span class="chk">Buffer Advantages</span>
+        <span class="chk">Streams vs Buffers</span>
+      </div>
+    </div>
+
+    <!-- Bonus -->
+    <div class="bonus-box" style="margin-bottom:1rem">
+      <div class="bonus-label">Bonus Interview Q — Buffer.from() vs Buffer.alloc() vs Buffer.concat()</div>
+      <p>
+        <strong>Buffer.from()</strong> → Existing data-இல் இருந்து buffer create — <code>Buffer.from("Hello")</code><br>
+        <strong>Buffer.alloc()</strong> → Fixed size empty buffer create — <code>Buffer.alloc(10)</code><br>
+        <strong>Buffer.concat()</strong> → Multiple buffers combine — <code>Buffer.concat([buf1, buf2])</code>
+      </p>
+    </div>
+
+    <!-- Final Combined -->
+    <div class="final-box" style="margin-bottom:1rem">
+      <div class="final-label">Final Combined Answer (Streams + Buffers)</div>
+      <p>"In Node.js, streams and buffers are used for efficient data handling. Streams process data in small chunks without loading the entire data into memory, while buffers are used to store binary data temporarily during data transfer."</p>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Interview Sentence — Memorize</div>
+      <p>"Buffers in Node.js are used to store binary data temporarily in memory. They are commonly used when working with streams, file systems, and network operations. Buffers support operations like creation, writing data, slicing, and concatenation."</p>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

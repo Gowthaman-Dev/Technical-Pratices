@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Node.js — Environment Variables & Error Handling</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0b0b0e;
+    --bg2:     #111116;
+    --bg3:     #17171d;
+    --bg4:     #1d1d26;
+    --border:  rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text:    #e3e0d9;
+    --muted:   #6e6c66;
+    --muted2:  #96938d;
+    --green:   #6af0a2;
+    --blue:    #6ab8f0;
+    --amber:   #f0c06a;
+    --purple:  #b06af0;
+    --red:     #f06a7a;
+    --teal:    #6af0e0;
+    --font:    'Syne', sans-serif;
+    --mono:    'JetBrains Mono', monospace;
+    --rmd:     8px;
+    --rlg:     14px;
+    --rxl:     20px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; }
+
+  /* HEADER */
+  header { border-bottom: 1px solid var(--border); padding: 2.5rem 3rem 2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+  .eyebrow { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--green); font-weight: 600; margin-bottom: .5rem; }
+  h1 { font-size: clamp(1.9rem, 4.5vw, 3rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.08; }
+  h1 em { font-style: normal; color: var(--red); }
+  .htags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .htag { border: 1px solid var(--border2); border-radius: 100px; padding: 4px 13px; font-size: 11.5px; color: var(--muted2); font-family: var(--mono); }
+
+  /* MAIN */
+  main { max-width: 1180px; margin: 0 auto; padding: 3rem 3rem 5rem; display: grid; gap: 3.5rem; }
+  @media (max-width: 740px) { header, main { padding-left: 1.4rem; padding-right: 1.4rem; } }
+
+  /* MODULE HEADING */
+  .mhead { display: flex; align-items: center; gap: .9rem; margin-bottom: 1.6rem; }
+  .mbadge { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 4px 14px; border-radius: 100px; }
+  .mb-env { background: rgba(106,240,162,.13); color: var(--green);  border: 1px solid rgba(106,240,162,.25); }
+  .mb-err { background: rgba(240,106,122,.13); color: var(--red);    border: 1px solid rgba(240,106,122,.25); }
+  .mhead h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
+
+  /* CARD */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rxl); padding: 1.4rem 1.5rem; margin-bottom: 1rem; }
+  .clabel { font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+
+  /* DEF BOX */
+  .defbox { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--rlg); padding: 1rem 1.2rem; margin-bottom: 1rem; }
+  .deftitle { font-size: .93rem; font-weight: 700; margin-bottom: .35rem; }
+  .dt-green { color: var(--green); }
+  .dt-red   { color: var(--red);   }
+  .defbox p { font-size: .84rem; color: var(--muted2); line-height: 1.65; }
+
+  /* GRIDS */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+  @media (max-width: 680px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+  /* INNER ITEM */
+  .iitem { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .iname { font-size: .84rem; font-weight: 700; margin-bottom: .3rem; }
+  .idesc { font-size: .79rem; color: var(--muted2); line-height: 1.55; }
+
+  /* CODE */
+  pre { background: #060608; border: 1px solid var(--border); border-radius: var(--rmd); padding: .9rem 1.1rem; font-family: var(--mono); font-size: .77rem; line-height: 1.9; overflow-x: auto; color: #b2b0aa; }
+  .pk  { color: var(--blue);   }
+  .pv  { color: var(--green);  }
+  .pf  { color: var(--amber);  }
+  .pm  { color: var(--muted);  }
+  .pkw { color: var(--purple); }
+  .codelabel { font-size: 10px; font-family: var(--mono); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .4rem; }
+
+  /* TABLE */
+  .dt { width: 100%; border-collapse: collapse; font-size: .82rem; }
+  .dt th { text-align: left; padding: .55rem .9rem; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--bg3); }
+  .dt td { padding: .65rem .9rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; line-height: 1.5; }
+  .dt tr:last-child td { border-bottom: none; }
+  .dt code { font-family: var(--mono); font-size: .77rem; color: var(--amber); background: rgba(240,192,106,.07); padding: 2px 7px; border-radius: 4px; }
+
+  /* PILLS */
+  .pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .pill  { background: var(--bg3); border: 1px solid var(--border2); border-radius: 100px; padding: 4px 13px; font-size: .78rem; color: var(--text); }
+
+  /* DANGER BOX */
+  .danger-box { background: rgba(240,106,122,.05); border: 1px solid rgba(240,106,122,.2); border-radius: var(--rlg); padding: 1.1rem 1.3rem; margin-bottom: 1rem; }
+  .danger-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--red); margin-bottom: .5rem; }
+  .danger-box p { font-size: .83rem; color: var(--text); line-height: 1.65; }
+
+  /* ENV FLOW */
+  .flow-wrap { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: 1.1rem 1.3rem; display: flex; flex-direction: column; gap: .45rem; }
+  .fw-box { background: var(--bg4); border: 0.5px solid var(--border2); border-radius: var(--rmd); padding: .6rem 1rem; font-family: var(--mono); font-size: .79rem; }
+  .fw-env { color: var(--green); }
+  .fw-pkg { color: var(--amber); }
+  .fw-acc { color: var(--blue); }
+  .fw-arrow { text-align: center; color: var(--muted); font-size: .85rem; }
+
+  /* WHY GRID */
+  .why-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+  .why-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .why-num  { font-size: 10px; font-weight: 500; color: var(--muted); margin-bottom: .3rem; }
+  .why-title { font-size: .84rem; font-weight: 700; margin-bottom: .3rem; }
+  .why-desc  { font-size: .78rem; color: var(--muted2); line-height: 1.5; margin-bottom: .4rem; }
+  .why-tags  { display: flex; flex-wrap: wrap; gap: 4px; }
+  .wtag { font-size: .72rem; padding: 2px 8px; border-radius: 100px; background: var(--bg4); color: var(--muted2); border: 0.5px solid var(--border2); font-family: var(--mono); }
+
+  /* ERROR TYPES */
+  .err-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: .85rem; }
+  .err-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .err-num  { font-size: 10px; font-weight: 500; color: var(--muted); margin-bottom: .3rem; }
+  .err-name { font-size: .84rem; font-weight: 700; margin-bottom: .3rem; }
+  .err-desc { font-size: .78rem; color: var(--muted2); line-height: 1.5; margin-bottom: .4rem; }
+  .err-out  { font-size: .72rem; color: var(--red); margin-top: 3px; font-family: var(--mono); }
+
+  /* METHOD LIST */
+  .method-list { display: flex; flex-direction: column; gap: .85rem; }
+  .method-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .m-hdr { display: flex; align-items: center; gap: .7rem; margin-bottom: .5rem; }
+  .m-tag { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 9px; border-radius: 100px; }
+  .mt1 { background: rgba(106,184,240,.15); color: var(--blue);  }
+  .mt2 { background: rgba(106,240,162,.15); color: var(--green); }
+  .mt3 { background: rgba(240,192,106,.15); color: var(--amber); }
+  .m-name { font-size: .84rem; font-weight: 700; color: var(--text); }
+  .m-desc { font-size: .78rem; color: var(--muted2); margin-bottom: .5rem; }
+
+  /* HTTP CODES */
+  .http-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: .65rem; }
+  .http-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .75rem .8rem; text-align: center; }
+  .http-code { font-family: var(--mono); font-size: .96rem; font-weight: 700; margin-bottom: .2rem; }
+  .http-desc { font-size: .72rem; color: var(--muted2); line-height: 1.35; }
+  .c400 { color: var(--red);    }
+  .c401 { color: var(--amber);  }
+  .c403 { color: var(--red);    }
+  .c404 { color: var(--purple); }
+  .c500 { color: var(--red);    }
+
+  /* FLOW STEPS */
+  .flow-box { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: 1rem 1.2rem; display: flex; flex-direction: column; gap: .4rem; }
+  .fstep { display: flex; align-items: center; gap: .6rem; font-size: .79rem; color: var(--text); line-height: 1.45; }
+  .fdot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .fline { width: 1px; height: 9px; margin-left: 3px; background: var(--border2); }
+
+  /* QA LIST */
+  .qa-list { display: flex; flex-direction: column; gap: .75rem; }
+  .qa-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rlg); padding: .9rem 1rem; }
+  .qa-q { font-size: .82rem; font-weight: 700; color: var(--text); margin-bottom: .3rem; }
+  .qa-a { font-size: .79rem; color: var(--muted2); line-height: 1.6; }
+
+  /* INTERVIEW BOX */
+  .int-box { background: rgba(106,184,240,.06); border: 1px solid rgba(106,184,240,.2); border-radius: var(--rlg); padding: 1.2rem 1.4rem; }
+  .int-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: .45rem; }
+  .int-box p { font-size: .87rem; font-style: italic; color: var(--text); line-height: 1.7; }
+  .int-divider { border: none; border-top: 1px solid rgba(106,184,240,.2); margin: .85rem 0; }
+
+  /* NOTE */
+  .note { font-size: .78rem; color: var(--muted2); line-height: 1.6; margin-top: .5rem; }
+  .note code { font-family: var(--mono); font-size: .76rem; color: var(--amber); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">Node.js — Quick Revision</div>
+    <h1>Env Variables &amp; <em>Error Handling</em></h1>
+  </div>
+  <div class="htags">
+    <span class="htag">.env</span>
+    <span class="htag">dotenv</span>
+    <span class="htag">try-catch</span>
+    <span class="htag">middleware</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ══════════ ENVIRONMENT VARIABLES ══════════ -->
+  <section>
+    <div class="mhead">
+      <span class="mbadge mb-env">ENV</span>
+      <h2>Environment Variables</h2>
+    </div>
+
+    <!-- Definition -->
+    <div class="card">
+      <div class="clabel">Definition</div>
+      <div class="defbox">
+        <div class="deftitle dt-green">Environment Variables</div>
+        <p>Application configuration values store பண்ணும் variables. இந்த values code-க்கு வெளியே store ஆகும். இதுல usually secret values இருக்கும் — code-ல் direct எழுதக்கூடாது.</p>
+      </div>
+      <div class="pills">
+        <span class="pill">Database URL</span>
+        <span class="pill">JWT Secret</span>
+        <span class="pill">Port number</span>
+        <span class="pill">API keys</span>
+      </div>
+    </div>
+
+    <!-- Bad Practice -->
+    <div class="danger-box">
+      <div class="danger-label">Bad Practice — Never do this</div>
+      <pre><span class="pkw">const</span> dbPassword = <span class="pv">"mypassword123"</span>  <span class="pm">// ❌ WRONG</span></pre>
+      <p style="margin-top:.5rem">Code GitHub-க்கு push பண்ணினா → Password public ஆகிடும். இதனால் .env file use பண்ணுவோம்.</p>
+    </div>
+
+    <!-- .env File -->
+    <div class="card">
+      <div class="clabel">.env File Example</div>
+      <div class="codelabel">.env</div>
+      <pre>PORT=<span class="pv">5000</span>
+MONGO_URL=<span class="pv">mongodb://localhost:27017/jobportal</span>
+JWT_SECRET=<span class="pv">mysecretkey</span></pre>
+      <table class="dt" style="margin-top:.85rem">
+        <thead><tr><th>Variable</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>PORT</code></td><td>Server port number</td></tr>
+          <tr><td><code>MONGO_URL</code></td><td>Database connection string</td></tr>
+          <tr><td><code>JWT_SECRET</code></td><td>Authentication secret key</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- dotenv Setup -->
+    <div class="card">
+      <div class="clabel">dotenv Package — Setup</div>
+      <div class="g2">
+        <div>
+          <div class="codelabel">Install</div>
+          <pre>npm install dotenv</pre>
+          <p class="note" style="margin-top:.5rem">Node.js .env file directly read பண்ண முடியாது — அதனால் dotenv package use பண்ணுறோம்.</p>
+        </div>
+        <div>
+          <div class="codelabel">server.js</div>
+          <pre><span class="pkw">import</span> dotenv <span class="pkw">from</span> <span class="pv">"dotenv"</span>
+
+dotenv.<span class="pf">config</span>()  <span class="pm">// .env load ஆகும்</span>
+
+<span class="pkw">const</span> port = process.env.PORT
+
+app.<span class="pf">listen</span>(port, () => {
+  <span class="pf">console</span>.log(<span class="pv">"Server running"</span>)
+})</pre>
+        </div>
+      </div>
+      <div class="g2" style="margin-top:.85rem">
+        <div class="iitem">
+          <div class="iname" style="color:var(--amber)">dotenv.config()</div>
+          <p class="idesc">.env variables Node.js process-க்கு load ஆகும். Server file-ல் top-ல் call பண்ணணும்.</p>
+        </div>
+        <div class="iitem">
+          <div class="iname" style="color:var(--blue)">process.env</div>
+          <p class="idesc">Load ஆன variables-ஐ access பண்ண.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Access Variables -->
+    <div class="card">
+      <div class="clabel">Access Environment Variables</div>
+      <pre>process.env.PORT        <span class="pm">// 5000</span>
+process.env.JWT_SECRET  <span class="pm">// mysecretkey</span>
+process.env.MONGO_URL   <span class="pm">// mongodb://...</span>
+
+<span class="pm">// Usage example:</span>
+<span class="pkw">const</span> secret = process.env.JWT_SECRET</pre>
+    </div>
+
+    <!-- Flow Diagram -->
+    <div class="card">
+      <div class="clabel">Flow Diagram</div>
+      <div class="flow-wrap">
+        <div class="fw-box"><span class="fw-env">.env file</span><br>PORT=5000 · JWT_SECRET=xyz · MONGO_URL=dburl</div>
+        <div class="fw-arrow">↓</div>
+        <div class="fw-box"><span class="fw-pkg">dotenv.config()</span></div>
+        <div class="fw-arrow">↓</div>
+        <div class="fw-box"><span class="fw-pkg">Node.js App</span></div>
+        <div class="fw-arrow">↓</div>
+        <div class="fw-box"><span class="fw-acc">process.env.PORT</span> &nbsp; <span class="fw-acc">process.env.JWT_SECRET</span></div>
+      </div>
+    </div>
+
+    <!-- Why Used -->
+    <div class="card">
+      <div class="clabel">Why Environment Variables Used</div>
+      <div class="why-grid">
+        <div class="why-item">
+          <div class="why-num">1</div>
+          <div class="why-title" style="color:var(--green)">Security</div>
+          <div class="why-desc">Secret values code-ல் இருக்காது. GitHub push பண்ணினாலும் safe.</div>
+          <div class="why-tags">
+            <span class="wtag">JWT_SECRET</span>
+            <span class="wtag">API_KEY</span>
+            <span class="wtag">DB_PASSWORD</span>
+          </div>
+        </div>
+        <div class="why-item">
+          <div class="why-num">2</div>
+          <div class="why-title" style="color:var(--blue)">Easy Configuration</div>
+          <div class="why-desc">Port change பண்ண easy. Code change தேவையில்லை — .env மட்டும் change பண்ணினால் போதும்.</div>
+          <div class="why-tags">
+            <span class="wtag">PORT=5000</span>
+            <span class="wtag">PORT=8000</span>
+          </div>
+        </div>
+        <div class="why-item">
+          <div class="why-num">3</div>
+          <div class="why-title" style="color:var(--amber)">Different Environments</div>
+          <div class="why-desc">ஒவ்வொரு environment-க்கும் different configuration.</div>
+          <div class="why-tags">
+            <span class="wtag">Development</span>
+            <span class="wtag">Testing</span>
+            <span class="wtag">Production</span>
+          </div>
+        </div>
+      </div>
+      <p class="note" style="margin-top:.75rem">Example: DEV_DB_URL vs PROD_DB_URL — same code, different values per environment.</p>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Interview Sentences — Memorize</div>
+      <p>"Environment variables are used to store configuration values like database URLs, API keys, and secrets outside the source code."</p>
+      <hr class="int-divider">
+      <div class="int-label">Better Answer (Professional)</div>
+      <p>"Environment variables allow us to store sensitive configuration values such as database URLs, API keys, and JWT secrets outside the application code, improving security and flexibility."</p>
+    </div>
+  </section>
+
+  <!-- ══════════ ERROR HANDLING ══════════ -->
+  <section>
+    <div class="mhead">
+      <span class="mbadge mb-err">Error Handling</span>
+      <h2>Error Handling</h2>
+    </div>
+
+    <!-- Definition -->
+    <div class="card">
+      <div class="clabel">Definition</div>
+      <div class="defbox">
+        <div class="deftitle dt-red">Error Handling</div>
+        <p>Application run ஆகும்போது வரும் errors-ஐ detect பண்ணி handle பண்ணுற process. Error handle பண்ணவில்லை என்றால் server crash ஆகும்.</p>
+      </div>
+      <p class="note">Examples: Database connection error · Invalid API request · Server crash · API failure · Authentication failure</p>
+    </div>
+
+    <!-- 3 Types -->
+    <div class="card">
+      <div class="clabel">3 Types of Errors</div>
+      <div class="err-grid">
+        <div class="err-item">
+          <div class="err-num">1</div>
+          <div class="err-name" style="color:var(--purple)">Syntax Error</div>
+          <div class="err-desc">Code syntax mistake. Program run ஆகவே முடியாது.</div>
+          <div class="codelabel">Example</div>
+          <pre style="font-size:.73rem">const name =</pre>
+          <div class="err-out">SyntaxError: Unexpected end</div>
+        </div>
+        <div class="err-item">
+          <div class="err-num">2</div>
+          <div class="err-name" style="color:var(--amber)">Runtime Error</div>
+          <div class="err-desc">Program run ஆகும்போது error வரும். API calls, DB queries-ல் occur ஆகும்.</div>
+          <div class="codelabel">Example</div>
+          <pre style="font-size:.73rem"><span class="pkw">const</span> user = undefined
+console.log(user.name)</pre>
+          <div class="err-out">TypeError: Cannot read 'name'</div>
+        </div>
+        <div class="err-item">
+          <div class="err-num">3</div>
+          <div class="err-name" style="color:var(--blue)">Logical Error</div>
+          <div class="err-desc">Code run ஆகும் ஆனால் wrong output வரும். Debugging மூலம் கண்டுபிடிக்கணும்.</div>
+          <div class="codelabel">Example</div>
+          <pre style="font-size:.73rem"><span class="pkw">const</span> result = 2 + 2
+console.log(result === 5)</pre>
+          <div class="err-out">Expected 4, logic wrong → 5</div>
+        </div>
+      </div>
+      <table class="dt" style="margin-top:.85rem">
+        <thead><tr><th>Error Type</th><th>Meaning</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Syntax Error</td><td>Code mistake</td><td><code>const name =</code></td></tr>
+          <tr><td>Runtime Error</td><td>Error during execution</td><td><code>user.name when user undefined</code></td></tr>
+          <tr><td>Logical Error</td><td>Wrong output</td><td><code>Wrong calculation</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 3 Methods -->
+    <div class="card">
+      <div class="clabel">3 Express Error Handling Methods</div>
+      <div class="method-list">
+        <div class="method-item">
+          <div class="m-hdr"><span class="m-tag mt1">Method 1</span><span class="m-name">Try Catch</span></div>
+          <p class="m-desc">Async operations errors handle பண்ண.</p>
+          <pre><span class="pkw">try</span> {
+  <span class="pkw">const</span> user = <span class="pkw">await</span> User.<span class="pf">find</span>()
+} <span class="pkw">catch</span>(error) {
+  <span class="pf">console</span>.log(error)  <span class="pm">// try → risky code · catch → error handle</span>
+}</pre>
+        </div>
+        <div class="method-item">
+          <div class="m-hdr"><span class="m-tag mt2">Method 2</span><span class="m-name">Send Error Response</span></div>
+          <p class="m-desc">Server error வந்தா client-க்கு proper HTTP response அனுப்பணும்.</p>
+          <pre><span class="pkw">catch</span>(error) {
+  res.<span class="pf">status</span>(<span class="pk">500</span>).<span class="pf">json</span>({ <span class="pv">message</span>: <span class="pv">"Server Error"</span> })
+  <span class="pm">// status(500) → server error · json() → response send</span>
+}</pre>
+        </div>
+        <div class="method-item">
+          <div class="m-hdr"><span class="m-tag mt3">Method 3</span><span class="m-name">Global Error Middleware</span></div>
+          <p class="m-desc">Express-ல் central error handler. All errors one place-ல் handle ஆகும்.</p>
+          <pre><span class="pm">// errorMiddleware.js</span>
+app.<span class="pf">use</span>((err, req, res, next) => {
+  res.<span class="pf">status</span>(<span class="pk">500</span>).<span class="pf">json</span>({ <span class="pv">message</span>: err.message })
+  <span class="pm">// err→error · req→request · res→response · next→next middleware</span>
+})</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controller Examples -->
+    <div class="card">
+      <div class="clabel">Controller Example — Real MERN</div>
+      <div class="g2">
+        <div>
+          <div class="codelabel">userController.js</div>
+          <pre><span class="pkw">export const</span> <span class="pf">getUsers</span> = <span class="pkw">async</span> (req, res) => {
+  <span class="pkw">try</span> {
+    <span class="pkw">const</span> users = <span class="pkw">await</span> User.<span class="pf">find</span>()
+    res.<span class="pf">json</span>(users)
+  } <span class="pkw">catch</span>(err) {
+    res.<span class="pf">status</span>(<span class="pk">500</span>).<span class="pf">json</span>({
+      <span class="pv">message</span>: <span class="pv">"Error fetching users"</span>
+    })
+  }
+}</pre>
+        </div>
+        <div>
+          <div class="codelabel">authController.js (interview level)</div>
+          <pre><span class="pkw">export const</span> <span class="pf">register</span> = <span class="pkw">async</span> (req, res) => {
+  <span class="pkw">try</span> {
+    <span class="pkw">const</span> user = <span class="pkw">await</span> User.<span class="pf">create</span>(req.body)
+    res.<span class="pf">status</span>(<span class="pk">201</span>).<span class="pf">json</span>(user)
+  } <span class="pkw">catch</span>(error) {
+    res.<span class="pf">status</span>(<span class="pk">500</span>).<span class="pf">json</span>({
+      <span class="pv">message</span>: <span class="pv">"Registration failed"</span>
+    })
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- HTTP Codes -->
+    <div class="card">
+      <div class="clabel">Common HTTP Error Codes</div>
+      <div class="http-grid">
+        <div class="http-item"><div class="http-code c400">400</div><div class="http-desc">Bad Request</div></div>
+        <div class="http-item"><div class="http-code c401">401</div><div class="http-desc">Unauthorized</div></div>
+        <div class="http-item"><div class="http-code c403">403</div><div class="http-desc">Forbidden</div></div>
+        <div class="http-item"><div class="http-code c404">404</div><div class="http-desc">Not Found</div></div>
+        <div class="http-item"><div class="http-code c500">500</div><div class="http-desc">Server Error</div></div>
+      </div>
+      <p class="note" style="margin-top:.75rem">400 → invalid input · 401 → login required · 404 → route not found · 500 → server failure</p>
+    </div>
+
+    <!-- Error Flow -->
+    <div class="card">
+      <div class="clabel">Error Handling Flow</div>
+      <div class="flow-box">
+        <div class="fstep"><div class="fdot" style="background:var(--blue)"></div>Client Request</div>
+        <div class="fline"></div>
+        <div class="fstep"><div class="fdot" style="background:var(--blue)"></div>Controller → Try Block</div>
+        <div class="fline"></div>
+        <div class="fstep"><div class="fdot" style="background:var(--green)"></div>Success → res.json(data) — 201/200</div>
+        <div class="fline"></div>
+        <div class="fstep"><div class="fdot" style="background:var(--red)"></div>Error → Catch Block → res.status(500).json({message})</div>
+        <div class="fline"></div>
+        <div class="fstep"><div class="fdot" style="background:var(--amber)"></div>Global Error Middleware → central handler</div>
+      </div>
+    </div>
+
+    <!-- Interview Q&A -->
+    <div class="card">
+      <div class="clabel">Common Interview Questions</div>
+      <div class="qa-list">
+        <div class="qa-item">
+          <div class="qa-q">Q1: What are environment variables?</div>
+          <div class="qa-a">Environment variables store configuration values like database URLs and secret keys outside the source code.</div>
+        </div>
+        <div class="qa-item">
+          <div class="qa-q">Q2: Why use dotenv?</div>
+          <div class="qa-a">We use dotenv to load environment variables from a .env file into process.env.</div>
+        </div>
+        <div class="qa-item">
+          <div class="qa-q">Q3: How do you handle errors in Express?</div>
+          <div class="qa-a">We use try-catch blocks in async functions and also implement global error handling middleware.</div>
+        </div>
+        <div class="qa-item">
+          <div class="qa-q">Q4: How do you access environment variables?</div>
+          <div class="qa-a">Environment variables are accessed using process.env.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="int-box">
+      <div class="int-label">Interview Sentence — Memorize</div>
+      <p>"Error handling is the process of managing errors in an application to prevent crashes and provide meaningful responses to users."</p>
+      <hr class="int-divider">
+      <div class="int-label">Better Answer (Professional)</div>
+      <p>"In Express.js, error handling is implemented using try-catch blocks, sending proper HTTP responses, and global error middleware to manage application errors effectively."</p>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
