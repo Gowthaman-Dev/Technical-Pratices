@@ -1,0 +1,198 @@
+<script>
+
+    //1. Reverse a string without using built-in methods
+
+    // let str = "gowtham";
+    // let reversed = "";
+
+    // for (let i = str.length - 1; i >= 0; i--) {
+    //     reversed += str[i];
+    // }
+
+    // console.log(reversed);
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //2. Check whether a string is a palindrome (no split, reverse, join)
+
+    // let str = "madam";
+    // let isPalindrome = true;
+
+    // for (let i = 0; i < str.length / 2; i++) {
+
+    //     if (str[i] !== str[str.length - 1 - i]) {
+    //         isPalindrome = false;
+    //         break;
+    //     }
+    // }
+
+    // if (isPalindrome) {
+    //     console.log("Palindrome");
+    // } else {
+    //     console.log("Not Palindrome");
+    // }
+
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //3.Count the number of vowels in a string without using includes.
+
+    // let str = "gowtham";
+    // let count = 0;
+
+    // for (let i = 0; i < str.length; i++) {
+
+    //     let ch = str[i].toLowerCase();
+
+    //     if (
+    //         ch === 'a' ||
+    //         ch === 'e' ||
+    //         ch === 'i' ||
+    //         ch === 'o' ||
+    //         ch === 'u'
+    //     ) {
+    //         count++;
+    //     }
+    // }
+
+    // console.log(count);
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //4.Convert a string to uppercase without using toUpperCase().
+
+    // let str = "Gowtham";
+    // let result = "";
+
+    // for (let i = 0; i < str.length; i++) {
+
+    //     let code = str.charCodeAt(i);   //<- Character-ai number-aa convert panna.
+
+    //     // a-z => 97 to 122
+    //     if (code >= 97 && code <= 122) {
+    //         result += String.fromCharCode(code - 32);
+    //     } else {
+    //         result += str[i];
+    //     }
+    // }
+
+    // console.log(result);
+
+    // Computer letters-a numbers-aa store pannum.
+    // Each character has a number called ASCII code.
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //5.Check whether a number is prime.
+
+    // let num = 7;
+    // let isPrime = true;
+
+    // if (num <= 1) {
+    //     isPrime = false;
+    // } else {
+    //     for (let i = 2; i <= Math.sqrt(num); i++) {
+    //         if (num % i === 0) {
+    //             isPrime = false;
+    //             break;
+    //         }
+    //     }
+    // }
+
+    // if (isPrime) {
+    //     console.log("Prime Number");
+    // } else {
+    //     console.log("Not Prime Number");
+    // }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //6.Generate Fibonacci series up to n terms.
+
+    // let n = 10; // number of terms
+    // let a = 0, b = 1;
+
+    // console.log(a); // first number
+    // console.log(b); // second number
+
+    // for (let i = 3; i <= n; i++) {
+    //     let next = a + b;   // sum of previous two numbers
+    //     console.log(next);  // print next number
+    //     a = b;              // shift a to b
+    //     b = next;           // shift b to next
+    // }
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //7. Calculate factorial of a number using a loop.
+
+    // let num = 5;
+    // let factorial = 1;
+
+    // for (let i = 1; i <= num; i++) {
+    //     factorial = factorial * i;
+    // }
+    // console.log("Factorial is:", factorial)
+
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //8. Swap two numbers without using a third variable.
+
+
+    // let a = 5;
+    // let b = 10;
+
+    // a = a + b;
+    // b = a - b;
+    // a = a - b;
+
+    // console.log("a:", a);
+    // console.log("b:", b);
+
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //9. Reverse a given number using a loop.
+
+
+    // let num = 12345;
+    // let reverse = 0;
+
+    // while ( 0 <num) {
+    //     let digit = num % 10;          // Get last digit
+    //     reverse = reverse * 10 + digit; // Add to reverse
+    //     num = Math.floor(num / 10);     // Remove last digit
+    // }
+
+    // console.log("Reversed Number:", reverse);
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //10. Count the number of digits in a given number using a loop.
+
+
+    // let num = 12347;
+    // let count = 0;
+
+    // while (num > 0) {
+    //     num = Math.floor(num / 10) // Remove last digit
+    //     count++;                   // Increase count
+    // }
+
+    // console.log("Total Digits:", count);
+
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+</script>

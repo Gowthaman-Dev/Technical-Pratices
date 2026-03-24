@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Express.js Quick Revision — Req/Res · Static Files · Error Handling</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Noto+Sans+Tamil:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #faf7f2;
+      --paper:   #ffffff;
+      --ink:     #1c1814;
+      --ink2:    #3a342e;
+      --muted:   #8c8079;
+      --border:  #e4ddd4;
+      --subtle:  #f2ede6;
+
+      --c1: #1a6b5a;   /* forest green  — Req/Res */
+      --c2: #8b3a8b;   /* deep purple   — Static Files */
+      --c3: #b84040;   /* deep red      — Error Handling */
+
+      --get:    #1a6b5a;
+      --post:   #c47d0e;
+      --put:    #5a4ab8;
+      --delete: #b84040;
+
+      --code-bg: #1a1714;
+      --code-fg: #ede8e0;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Noto Sans Tamil', sans-serif;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    /* subtle dot pattern */
+    body::before {
+      content:'';
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image: radial-gradient(circle, rgba(28,24,20,0.07) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* ══ HERO ══ */
+    .hero {
+      position:relative; z-index:1;
+      background: var(--ink);
+      padding: 70px 32px 60px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content:'';
+      position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 40%, rgba(26,107,90,0.25)   0%, transparent 55%),
+        radial-gradient(ellipse 70% 80% at 90% 20%, rgba(139,58,139,0.22)  0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 50% 100%,rgba(184,64,64,0.18)  0%, transparent 50%);
+    }
+
+    .hero-badge {
+      position:relative; z-index:1;
+      display:inline-block;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.68rem;
+      letter-spacing:0.22em;
+      text-transform:uppercase;
+      color: rgba(250,247,242,0.45);
+      border:1px solid rgba(250,247,242,0.15);
+      border-radius:3px;
+      padding:4px 14px;
+      margin-bottom:24px;
+    }
+
+    .hero h1 {
+      position:relative; z-index:1;
+      font-family:'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 7vw, 5rem);
+      line-height: 1.1;
+      color: var(--bg);
+      margin-bottom:16px;
+    }
+
+    .hero h1 em { font-style:italic; }
+    .hero h1 .hl1 { color:#5ecfb8; }
+    .hero h1 .hl2 { color:#d49eee; }
+    .hero h1 .hl3 { color:#f09090; }
+
+    .hero-sub {
+      position:relative; z-index:1;
+      font-size:1rem;
+      color: rgba(250,247,242,0.55);
+      margin-bottom:36px;
+    }
+
+    .hero-chips {
+      position:relative; z-index:1;
+      display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+    }
+
+    .chip {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.7rem;
+      letter-spacing:0.08em;
+      border-radius:4px;
+      padding:5px 14px;
+      border:1px solid;
+    }
+    .chip-1 { color:#5ecfb8; border-color:rgba(94,207,184,0.3);  background:rgba(94,207,184,0.07); }
+    .chip-2 { color:#d49eee; border-color:rgba(212,158,238,0.3); background:rgba(212,158,238,0.07); }
+    .chip-3 { color:#f09090; border-color:rgba(240,144,144,0.3); background:rgba(240,144,144,0.07); }
+
+    /* ══ MAIN ══ */
+    .main {
+      position:relative; z-index:1;
+      max-width:980px;
+      margin:0 auto;
+      padding:60px 24px 100px;
+    }
+
+    /* ══ TOPIC CARD ══ */
+    .topic {
+      background: var(--paper);
+      border:1px solid var(--border);
+      border-radius:4px;
+      margin-bottom:60px;
+      overflow:hidden;
+      box-shadow: 0 2px 0 var(--border), 4px 6px 0 var(--border);
+      animation: riseUp 0.5s ease both;
+    }
+    .topic:nth-child(1){ animation-delay:0.05s; }
+    .topic:nth-child(2){ animation-delay:0.12s; }
+    .topic:nth-child(3){ animation-delay:0.19s; }
+
+    @keyframes riseUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── BAND ── */
+    .band {
+      display:flex; align-items:center; gap:14px;
+      padding:18px 28px;
+      border-bottom:2px solid;
+    }
+    .t1 .band { background:rgba(26,107,90,0.06);  border-bottom-color:var(--c1); }
+    .t2 .band { background:rgba(139,58,139,0.06); border-bottom-color:var(--c2); }
+    .t3 .band { background:rgba(184,64,64,0.06);  border-bottom-color:var(--c3); }
+
+    .tnum {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.64rem;
+      letter-spacing:0.12em;
+      color: var(--muted);
+      background: var(--subtle);
+      border:1px solid var(--border);
+      border-radius:3px;
+      padding:3px 10px;
+    }
+
+    .ttitle {
+      font-family:'DM Serif Display', serif;
+      font-size:clamp(1.2rem, 3vw, 1.8rem);
+      flex:1;
+    }
+    .t1 .ttitle { color:var(--c1); }
+    .t2 .ttitle { color:var(--c2); }
+    .t3 .ttitle { color:var(--c3); }
+
+    .ticon { font-size:1.9rem; }
+
+    /* ── BODY ── */
+    .tbody { padding:28px 28px 34px; }
+
+    /* ── SECTION LABEL ── */
+    .sl {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.63rem;
+      font-weight:700;
+      letter-spacing:0.2em;
+      text-transform:uppercase;
+      color: var(--muted);
+      margin-bottom:10px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .sl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* ── DEFINITION BOX ── */
+    .def {
+      border-left:4px solid;
+      border-radius:0 6px 6px 0;
+      padding:15px 20px;
+      margin-bottom:24px;
+    }
+    .t1 .def { border-left-color:var(--c1); background:rgba(26,107,90,0.05);  }
+    .t2 .def { border-left-color:var(--c2); background:rgba(139,58,139,0.05); }
+    .t3 .def { border-left-color:var(--c3); background:rgba(184,64,64,0.05);  }
+
+    .def-q {
+      font-family:'DM Serif Display', serif;
+      font-size:0.96rem;
+      font-style:italic;
+      margin-bottom:7px;
+    }
+    .t1 .def-q { color:var(--c1); }
+    .t2 .def-q { color:var(--c2); }
+    .t3 .def-q { color:var(--c3); }
+
+    .def-ta { font-size:0.89rem; color:var(--ink2); }
+    .def-ta strong { color:var(--ink); font-weight:700; }
+
+    /* ── TABLE ── */
+    .tw {
+      border:1px solid var(--border);
+      border-radius:6px;
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+
+    table { width:100%; border-collapse:collapse; }
+
+    thead { background:var(--ink); }
+
+    th {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.67rem;
+      letter-spacing:0.1em;
+      color:var(--bg);
+      padding:10px 16px;
+      text-align:left;
+      border-bottom:1px solid rgba(255,255,255,0.1);
+    }
+
+    td {
+      font-size:0.87rem;
+      color:var(--ink);
+      padding:10px 16px;
+      border-bottom:1px solid var(--border);
+      vertical-align:middle;
+    }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(28,24,20,0.02); }
+
+    /* ── INLINE TAGS ── */
+    .tag {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.76rem;
+      border-radius:4px;
+      padding:2px 8px;
+      border:1px solid;
+      white-space:nowrap;
+      display:inline-block;
+    }
+    .tn  { color:var(--ink2);   border-color:var(--border);            background:var(--subtle); }
+    .tg  { color:var(--get);    border-color:rgba(26,107,90,0.3);      background:rgba(26,107,90,0.06); }
+    .tp  { color:var(--post);   border-color:rgba(196,125,14,0.3);     background:rgba(196,125,14,0.06); }
+    .tpu { color:var(--put);    border-color:rgba(90,74,184,0.3);      background:rgba(90,74,184,0.06); }
+    .td  { color:var(--delete); border-color:rgba(184,64,64,0.3);      background:rgba(184,64,64,0.06); }
+    .tc1 { color:var(--c1);     border-color:rgba(26,107,90,0.35);     background:rgba(26,107,90,0.07); }
+    .tc2 { color:var(--c2);     border-color:rgba(139,58,139,0.35);    background:rgba(139,58,139,0.07); }
+    .tc3 { color:var(--c3);     border-color:rgba(184,64,64,0.35);     background:rgba(184,64,64,0.07); }
+
+    /* ── CODE BLOCK ── */
+    .cb {
+      background:var(--code-bg);
+      border-radius:7px;
+      overflow:hidden;
+      margin-bottom:24px;
+      border:1px solid rgba(255,255,255,0.06);
+    }
+
+    .cb-head {
+      display:flex; align-items:center; gap:6px;
+      padding:9px 14px;
+      background:rgba(255,255,255,0.04);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+
+    .dot { width:9px; height:9px; border-radius:50%; }
+    .dot:nth-child(1){background:#ff5f57;}
+    .dot:nth-child(2){background:#febc2e;}
+    .dot:nth-child(3){background:#28c840;}
+
+    .cb-name {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.66rem;
+      color:rgba(237,232,224,0.3);
+      margin-left:8px;
+    }
+
+    pre {
+      padding:18px 20px;
+      overflow-x:auto;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.81rem;
+      line-height:1.9;
+      color:var(--code-fg);
+    }
+
+    .k  { color:#c792ea; }
+    .f  { color:#82aaff; }
+    .s  { color:#c3e88d; }
+    .cm { color:#4a5568; font-style:italic; }
+    .n  { color:#f78c6c; }
+    .v  { color:var(--code-fg); }
+
+    /* ── COMPARISON GRID ── */
+    .cmp {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:14px; margin-bottom:24px;
+    }
+
+    .cmp-side {
+      border:1px solid var(--border);
+      border-radius:6px;
+      overflow:hidden;
+    }
+
+    .cmp-head {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.63rem;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      padding:8px 14px;
+      color:#fff;
+    }
+    .t1 .cmp-side:first-child .cmp-head { background:var(--c1); }
+    .t1 .cmp-side:last-child  .cmp-head { background:var(--ink); }
+    .t2 .cmp-side:first-child .cmp-head { background:var(--c2); }
+    .t2 .cmp-side:last-child  .cmp-head { background:var(--ink); }
+    .t3 .cmp-side:first-child .cmp-head { background:var(--c3); }
+    .t3 .cmp-side:last-child  .cmp-head { background:var(--ink); }
+
+    .cmp-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:9px 14px;
+      border-bottom:1px solid var(--border);
+      font-size:0.85rem;
+      color:var(--ink);
+    }
+    .cmp-row:last-child { border-bottom:none; }
+    .cmp-row.plain { display:block; color:var(--muted); font-size:0.83rem; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow {
+      display:flex; flex-direction:column; align-items:center;
+      margin-bottom:24px;
+    }
+
+    .fbox {
+      background:var(--subtle);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:11px 28px;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.81rem;
+      color:var(--ink);
+      text-align:center;
+      min-width:260px;
+    }
+    .fbox .fnote {
+      display:block;
+      font-family:'Noto Sans Tamil', sans-serif;
+      font-size:0.72rem;
+      color:var(--muted);
+      margin-top:3px;
+    }
+
+    .t1 .fbox.hi { border-color:var(--c1); color:var(--c1); background:rgba(26,107,90,0.06); }
+    .t2 .fbox.hi { border-color:var(--c2); color:var(--c2); background:rgba(139,58,139,0.06); }
+    .t3 .fbox.hi { border-color:var(--c3); color:var(--c3); background:rgba(184,64,64,0.06); }
+
+    .fbox.err {
+      border-color:var(--c3);
+      color:var(--c3);
+      background:rgba(184,64,64,0.05);
+    }
+
+    .farr {
+      width:2px; height:26px;
+      position:relative;
+    }
+    .t1 .farr { background:linear-gradient(var(--c1), rgba(26,107,90,0.2)); }
+    .t2 .farr { background:linear-gradient(var(--c2), rgba(139,58,139,0.2)); }
+    .t3 .farr { background:linear-gradient(var(--c3), rgba(184,64,64,0.2)); }
+
+    .farr::after {
+      content:'▼';
+      position:absolute; bottom:-7px; left:50%;
+      transform:translateX(-50%);
+      font-size:0.58rem;
+      color:var(--muted);
+    }
+
+    /* ── STEP LIST ── */
+    .steps { display:flex; flex-direction:column; gap:8px; margin-bottom:24px; }
+
+    .step {
+      display:flex; align-items:flex-start; gap:12px;
+      background:var(--subtle);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:12px 16px;
+    }
+
+    .sn {
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.72rem; font-weight:700;
+      flex-shrink:0; margin-top:1px;
+      color:#fff;
+    }
+    .t1 .sn { background:var(--c1); }
+    .t2 .sn { background:var(--c2); }
+    .t3 .sn { background:var(--c3); }
+
+    .st { font-size:0.88rem; color:var(--ink); line-height:1.6; }
+    .st strong { color:var(--ink); font-weight:700; }
+    .st code {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.78rem;
+      background:rgba(28,24,20,0.07);
+      border:1px solid var(--border);
+      border-radius:3px;
+      padding:1px 6px;
+    }
+
+    /* ── WARNING BOX ── */
+    .warn {
+      display:flex; gap:12px; align-items:flex-start;
+      background:rgba(196,125,14,0.07);
+      border:1px solid rgba(196,125,14,0.3);
+      border-left:4px solid #c47d0e;
+      border-radius:0 6px 6px 0;
+      padding:14px 16px;
+      margin-bottom:24px;
+    }
+    .warn-icon { font-size:1.1rem; flex-shrink:0; margin-top:2px; }
+    .warn-text {
+      font-size:0.88rem;
+      color:#7a4d00;
+    }
+    .warn-text code {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.8rem;
+      background:rgba(196,125,14,0.1);
+      border-radius:3px;
+      padding:1px 6px;
+    }
+
+    /* ── INFO ROW ── */
+    .info-row {
+      display:flex; align-items:flex-start; gap:10px;
+      background:var(--subtle);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:12px 16px;
+      margin-bottom:12px;
+      font-size:0.87rem;
+      color:var(--ink);
+    }
+    .info-row:last-of-type { margin-bottom:24px; }
+    .info-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+
+    /* ── FOLDER TREE ── */
+    .folder {
+      background:var(--code-bg);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:7px;
+      padding:18px 22px;
+      margin-bottom:24px;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.82rem;
+      line-height:2.1;
+    }
+    .fd { color:#f0a500; }
+    .ff { color:var(--code-fg); }
+    .fi { color:#f78c6c; }
+    .fc { color:#c792ea; }
+    .fj { color:#c3e88d; }
+    .ft { color:#546070; }
+
+    /* ── URL BOX ── */
+    .url-box {
+      background:var(--code-bg);
+      border:1px solid rgba(94,207,184,0.25);
+      border-radius:6px;
+      padding:13px 18px;
+      margin-bottom:10px;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.84rem;
+      color:#5ecfb8;
+      display:flex; align-items:center; gap:10px;
+    }
+    .url-icon { color:rgba(237,232,224,0.3); font-size:0.75rem; }
+
+    /* ── ERROR CODE GRID ── */
+    .err-grid {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:12px; margin-bottom:24px;
+    }
+    .err-card {
+      background:var(--subtle);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:16px;
+      text-align:center;
+    }
+    .err-code {
+      font-family:'DM Serif Display', serif;
+      font-size:1.9rem;
+      font-weight:400;
+      margin-bottom:4px;
+    }
+    .err-card:nth-child(1) .err-code { color:var(--c3); }
+    .err-card:nth-child(2) .err-code { color:#c47d0e; }
+    .err-card:nth-child(3) .err-code { color:var(--put); }
+    .err-desc {
+      font-size:0.8rem;
+      color:var(--muted);
+    }
+
+    /* ── INTERVIEW BOX ── */
+    .interview {
+      border-radius:6px;
+      padding:22px 24px;
+    }
+    .interview::before {
+      content:'🎤  INTERVIEW ANSWER — வாயால சொல்லு';
+      display:block;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.6rem;
+      letter-spacing:0.16em;
+      color:rgba(28,24,20,0.35);
+      margin-bottom:12px;
+    }
+    .t1 .interview { background:rgba(26,107,90,0.07);  border:1px solid rgba(26,107,90,0.25);  }
+    .t2 .interview { background:rgba(139,58,139,0.07); border:1px solid rgba(139,58,139,0.25); }
+    .t3 .interview { background:rgba(184,64,64,0.07);  border:1px solid rgba(184,64,64,0.25);  }
+
+    .interview p { font-size:0.92rem; color:var(--ink); line-height:1.85; }
+    .t1 .interview em { font-style:normal; font-weight:700; color:var(--c1); }
+    .t2 .interview em { font-style:normal; font-weight:700; color:var(--c2); }
+    .t3 .interview em { font-style:normal; font-weight:700; color:var(--c3); }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align:center;
+      padding:32px 20px;
+      background:var(--ink);
+      color:rgba(250,247,242,0.4);
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.7rem;
+      letter-spacing:0.1em;
+      position:relative; z-index:1;
+    }
+    .footer .f1 { color:#5ecfb8; }
+    .footer .f2 { color:#d49eee; }
+    .footer .f3 { color:#f09090; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:580px){
+      .cmp { grid-template-columns:1fr; }
+      .err-grid { grid-template-columns:repeat(3,1fr); }
+      .tbody { padding:18px 14px 24px; }
+      .hero { padding:52px 18px 44px; }
+      .band { padding:14px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="hero-badge">📘 Express.js · Interview Quick Revision</div>
+  <h1>
+    <span class="hl1">Req</span> &amp; <span class="hl1">Res</span><br/>
+    <em><span class="hl2">Static</span> Files</em><br/>
+    <span class="hl3">Error</span> Handling
+  </h1>
+  <p class="hero-sub">எல்லா topics-உம் ஒரே page ல — Interview ready பண்ண!</p>
+  <div class="hero-chips">
+    <span class="chip chip-1">07 · Request &amp; Response Objects</span>
+    <span class="chip chip-2">08 · Static Files</span>
+    <span class="chip chip-3">09 · Error Handling Middleware</span>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- ══════════════════════════════════════════
+       TOPIC 07 — REQUEST & RESPONSE
+  ══════════════════════════════════════════ -->
+  <section class="topic t1">
+    <div class="band">
+      <span class="tnum">TOPIC 07</span>
+      <h2 class="ttitle">Request &amp; Response Objects</h2>
+      <span class="ticon">📮</span>
+    </div>
+
+    <div class="tbody">
+
+      <!-- 1️⃣ -->
+      <div class="sl">1️⃣ Request &amp; Response என்னன்னா?</div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Object</th><th>யாரு அனுப்புவாங்க</th><th>என்ன</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc1">req (Request)</span></td><td>Client → Server</td><td>Form data, URL params, query data</td></tr>
+            <tr><td><span class="tag tg">res (Response)</span></td><td>Server → Client</td><td>Reply / Result</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="def">
+        <div class="def-q">"Request object contains data sent by the client, and the response object is used by the server to send data back to the client."</div>
+      </div>
+
+      <!-- 2️⃣ -->
+      <div class="sl">2️⃣ Real Life Example 📮</div>
+      <div class="cmp">
+        <div class="cmp-side">
+          <div class="cmp-head">Real Life — Post Office</div>
+          <div class="cmp-row"><span>✉️ Letter send பண்றது</span><span class="tag tc1">Request</span></div>
+          <div class="cmp-row"><span>📬 Reply letter வருவது</span><span class="tag tg">Response</span></div>
+        </div>
+        <div class="cmp-side">
+          <div class="cmp-head">Web Flow</div>
+          <div class="cmp-row plain">Person → Letter → Post Office → Reply</div>
+          <div class="cmp-row plain">Client → Request → Server → Response ✅</div>
+        </div>
+      </div>
+
+      <!-- 3️⃣ -->
+      <div class="sl">3️⃣ Communication Flow</div>
+      <div class="flow">
+        <div class="fbox">Client (Browser)</div>
+        <div class="farr"></div>
+        <div class="fbox hi">Request (req)<span class="fnote">← Client data அனுப்புது</span></div>
+        <div class="farr"></div>
+        <div class="fbox">Express Server<span class="fnote">← Process பண்றது</span></div>
+        <div class="farr"></div>
+        <div class="fbox hi">Response (res)<span class="fnote">← Server reply அனுப்புது</span></div>
+        <div class="farr"></div>
+        <div class="fbox">Client (Browser)</div>
+      </div>
+
+      <!-- 4️⃣ -->
+      <div class="sl">4️⃣ Basic Code</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">basic.js</span>
+        </div>
+        <pre><span class="k">import</span> <span class="v">express</span> <span class="k">from</span> <span class="s">"express"</span>
+
+<span class="k">const</span> <span class="v">app</span> = <span class="f">express</span>()
+
+<span class="v">app</span>.<span class="f">get</span>(<span class="s">"/"</span>, (<span class="v">req</span>, <span class="v">res</span>) =&gt; {
+  <span class="v">res</span>.<span class="f">send</span>(<span class="s">"Hello World"</span>)
+})
+
+<span class="v">app</span>.<span class="f">listen</span>(<span class="n">5000</span>)</pre>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Part</th><th>என்ன</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc1">req</span></td><td>Request object — client data இருக்கும்</td></tr>
+            <tr><td><span class="tag tg">res</span></td><td>Response object — client கு reply அனுப்பும்</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5️⃣ -->
+      <div class="sl">5️⃣ Request Object (req) — 3 Types</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">req-types.js</span>
+        </div>
+        <pre><span class="cm">// 1️⃣ req.body → Form data</span>
+<span class="v">app</span>.<span class="f">post</span>(<span class="s">"/register"</span>, (<span class="v">req</span>, <span class="v">res</span>) =&gt; {
+  <span class="v">console</span>.<span class="f">log</span>(<span class="v">req</span>.body)       <span class="cm">// { name: "Gowtham", email: "..." }</span>
+})
+
+<span class="cm">// 2️⃣ req.params → URL parameter</span>
+<span class="v">app</span>.<span class="f">get</span>(<span class="s">"/users/:id"</span>, (<span class="v">req</span>, <span class="v">res</span>) =&gt; {
+  <span class="v">console</span>.<span class="f">log</span>(<span class="v">req</span>.params.id)  <span class="cm">// /users/5 → "5"</span>
+})
+
+<span class="cm">// 3️⃣ req.query → Query string</span>
+<span class="v">app</span>.<span class="f">get</span>(<span class="s">"/search"</span>, (<span class="v">req</span>, <span class="v">res</span>) =&gt; {
+  <span class="v">console</span>.<span class="f">log</span>(<span class="v">req</span>.query.name) <span class="cm">// /search?name=Gowtham → "Gowtham"</span>
+})</pre>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Property</th><th>எப்போ use பண்றது</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc1">req.body</span></td><td>Form / POST data</td></tr>
+            <tr><td><span class="tag tg">req.params</span></td><td>URL ல :id மாதிரி data</td></tr>
+            <tr><td><span class="tag tp">req.query</span></td><td>URL ல ?key=value data</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6️⃣ -->
+      <div class="sl">6️⃣ Response Object (res) — 3 Methods</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">res-methods.js</span>
+        </div>
+        <pre><span class="v">res</span>.<span class="f">send</span>(<span class="s">"Hello"</span>)              <span class="cm">// 📝 Text send</span>
+<span class="v">res</span>.<span class="f">json</span>({ name: <span class="s">"Gowtham"</span> }) <span class="cm">// 📦 JSON send</span>
+<span class="v">res</span>.<span class="f">status</span>(<span class="n">404</span>).<span class="f">send</span>(<span class="s">"Not Found"</span>) <span class="cm">// 🔢 Status code + message</span></pre>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Method</th><th>என்ன அனுப்புது</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc1">res.send()</span></td><td>Plain text</td></tr>
+            <tr><td><span class="tag tg">res.json()</span></td><td>JSON data</td></tr>
+            <tr><td><span class="tag tp">res.status()</span></td><td>HTTP status code</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 7️⃣ -->
+      <div class="sl">7️⃣ Interview Answer (வாயால சொல்லு)</div>
+      <div class="interview">
+        <p>"In Express.js, the request object (<em>req</em>) contains data sent by the client such as <em>form data, URL parameters, and query strings</em>. The response object (<em>res</em>) is used by the server to send data back to the client using methods like <em>res.send(), res.json(), and res.status()</em>."</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       TOPIC 08 — STATIC FILES
+  ══════════════════════════════════════════ -->
+  <section class="topic t2">
+    <div class="band">
+      <span class="tnum">TOPIC 08</span>
+      <h2 class="ttitle">Static Files in Express.js</h2>
+      <span class="ticon">🖼️</span>
+    </div>
+
+    <div class="tbody">
+
+      <!-- 1️⃣ -->
+      <div class="sl">1️⃣ Static Files என்னன்னா?</div>
+      <div class="def">
+        <div class="def-q">"Static files are files served directly to the client without server processing."</div>
+        <div class="def-ta">Server side processing இல்லாம → Direct-ஆ browser கு send = <strong>Static Files ✅</strong></div>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>File Type</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>🖼️ Images</td><td>image1.png, profile.png</td></tr>
+            <tr><td>🎨 CSS</td><td>style.css</td></tr>
+            <tr><td>📜 JavaScript</td><td>script.js</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2️⃣ -->
+      <div class="sl">2️⃣ Folder Structure</div>
+      <div class="folder">
+        <span class="fd">📁 project</span><br/>
+        <span class="ft"> ├── </span><span class="ff">📄 server.js</span><br/>
+        <span class="ft"> └── </span><span class="fd">📁 uploads</span><br/>
+        <span class="ft">      ├── </span><span class="fi">🖼️ image1.png</span><br/>
+        <span class="ft">      ├── </span><span class="fc">🎨 style.css</span><br/>
+        <span class="ft">      └── </span><span class="fj">📜 script.js</span>
+      </div>
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span>uploads folder ல static files வைப்போம் ✅</span>
+      </div>
+
+      <!-- 3️⃣ -->
+      <div class="sl">3️⃣ Express Static Middleware Code</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">static.js</span>
+        </div>
+        <pre><span class="k">import</span> <span class="v">express</span> <span class="k">from</span> <span class="s">"express"</span>
+
+<span class="k">const</span> <span class="v">app</span> = <span class="f">express</span>()
+
+<span class="cm">// Static files serve பண்ண</span>
+<span class="v">app</span>.<span class="f">use</span>(<span class="v">express</span>.<span class="f">static</span>(<span class="s">"uploads"</span>))
+
+<span class="v">app</span>.<span class="f">listen</span>(<span class="n">5000</span>)</pre>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Part</th><th>என்ன பண்றது</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc2">express.static()</span></td><td>Static files serve பண்ற middleware</td></tr>
+            <tr><td><span class="tag tn">"uploads"</span></td><td>Files இருக்கும் folder name</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4️⃣ -->
+      <div class="sl">4️⃣ Browser Access</div>
+      <div class="url-box">
+        <span class="url-icon">🌐</span>
+        http://localhost:5000/image1.png
+      </div>
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span>Browser direct-ஆ image show பண்ணும் — Server processing தேவையில்லை ✅</span>
+      </div>
+
+      <!-- 5️⃣ -->
+      <div class="sl">5️⃣ Real Project Example</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">index.html — Frontend ல image use பண்ண</span>
+        </div>
+        <pre><span class="cm">&lt;!-- Frontend ல image use பண்ண --&gt;</span>
+<span class="k">&lt;img</span> <span class="f">src</span>=<span class="s">"http://localhost:5000/profile.png"</span> <span class="k">/&gt;</span></pre>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Use Case</th><th>File</th></tr></thead>
+          <tbody>
+            <tr><td>🖼️ Profile image</td><td><span class="tag tn">profile.png</span></td></tr>
+            <tr><td>🎨 CSS styling</td><td><span class="tag tn">style.css</span></td></tr>
+            <tr><td>📜 JS scripts</td><td><span class="tag tn">script.js</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6️⃣ -->
+      <div class="sl">6️⃣ Request Flow</div>
+      <div class="flow">
+        <div class="fbox">Browser</div>
+        <div class="farr"></div>
+        <div class="fbox">Request static file (image1.png)</div>
+        <div class="farr"></div>
+        <div class="fbox hi">Express Server</div>
+        <div class="farr"></div>
+        <div class="fbox hi">uploads Folder<span class="fnote">← File எடுக்கும்</span></div>
+        <div class="farr"></div>
+        <div class="fbox">Image Response<span class="fnote">← Direct send பண்ணும்</span></div>
+      </div>
+
+      <!-- 7️⃣ -->
+      <div class="sl">7️⃣ Interview Answer (வாயால சொல்லு)</div>
+      <div class="interview">
+        <p>"Static files are files like images, CSS, and JavaScript that are served directly to the client without any server-side processing. In Express.js, we use the <em>express.static()</em> middleware and pass the folder name to serve these files. For example, <em>app.use(express.static('uploads'))</em> will serve all files inside the uploads folder."</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       TOPIC 09 — ERROR HANDLING MIDDLEWARE
+  ══════════════════════════════════════════ -->
+  <section class="topic t3">
+    <div class="band">
+      <span class="tnum">TOPIC 09</span>
+      <h2 class="ttitle">Error Handling Middleware</h2>
+      <span class="ticon">🏥</span>
+    </div>
+
+    <div class="tbody">
+
+      <!-- 1️⃣ -->
+      <div class="sl">1️⃣ Error Handling என்னன்னா?</div>
+      <div class="def">
+        <div class="def-q">"Error handling is used to manage application errors and send proper responses."</div>
+        <div class="def-ta">Application ல error வந்தா → catch பண்ணி → proper response send பண்றது = <strong>Error Handling ✅</strong></div>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Error Type</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>Database error</td><td>MongoDB connect ஆகல</td></tr>
+            <tr><td>API error</td><td>Invalid request</td></tr>
+            <tr><td>Route error</td><td>Page not found</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2️⃣ -->
+      <div class="sl">2️⃣ Real Life Example 🏥</div>
+      <div class="cmp">
+        <div class="cmp-side">
+          <div class="cmp-head">Real Life — Hospital</div>
+          <div class="cmp-row"><span>🤒 Patient Problem</span><span class="tag tc3">Error</span></div>
+          <div class="cmp-row"><span>👨‍⚕️ Doctor</span><span class="tag tc3">Error Middleware</span></div>
+          <div class="cmp-row"><span>💊 Treatment</span><span class="tag tc3">Response</span></div>
+        </div>
+        <div class="cmp-side">
+          <div class="cmp-head">Web Flow</div>
+          <div class="cmp-row plain">Problem → Doctor → Treatment</div>
+          <div class="cmp-row plain">Error → Error Middleware → Response ✅</div>
+        </div>
+      </div>
+
+      <!-- 3️⃣ -->
+      <div class="sl">3️⃣ Error Flow</div>
+      <div class="flow">
+        <div class="fbox">Client Request</div>
+        <div class="farr"></div>
+        <div class="fbox">Route / Controller</div>
+        <div class="farr"></div>
+        <div class="fbox err">Error Occurs ❌</div>
+        <div class="farr"></div>
+        <div class="fbox hi">Error Middleware<span class="fnote">← catch பண்றது</span></div>
+        <div class="farr"></div>
+        <div class="fbox">Response (err.message)</div>
+      </div>
+
+      <!-- 4️⃣ -->
+      <div class="sl">4️⃣ Error Middleware Code ⚠️</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">error-middleware.js</span>
+        </div>
+        <pre><span class="v">app</span>.<span class="f">use</span>((<span class="v">err</span>, <span class="v">req</span>, <span class="v">res</span>, <span class="v">next</span>) =&gt; {
+  <span class="v">res</span>.<span class="f">status</span>(<span class="n">500</span>).<span class="f">send</span>(<span class="s">"Server Error"</span>)
+})</pre>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Parameter</th><th>என்ன</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc3">err</span></td><td>Error object</td></tr>
+            <tr><td><span class="tag tn">req</span></td><td>Request</td></tr>
+            <tr><td><span class="tag tg">res</span></td><td>Response</td></tr>
+            <tr><td><span class="tag tpu">next</span></td><td>Next middleware</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warn">
+        <span class="warn-icon">⚠️</span>
+        <span class="warn-text">Error middleware ல <strong>exactly 4 parameters</strong> இருக்கணும் — இல்லன்னா Express error middleware-ஆ recognize பண்ணாது!</span>
+      </div>
+
+      <!-- 5️⃣ -->
+      <div class="sl">5️⃣ Route + Error Middleware Full Example</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">full-error.js</span>
+        </div>
+        <pre><span class="v">app</span>.<span class="f">get</span>(<span class="s">"/users"</span>, (<span class="v">req</span>, <span class="v">res</span>, <span class="v">next</span>) =&gt; {
+  <span class="k">try</span> {
+    <span class="k">throw new</span> <span class="f">Error</span>(<span class="s">"Database error"</span>)   <span class="cm">// 1️⃣ Error வருது</span>
+  } <span class="k">catch</span>(<span class="v">err</span>) {
+    <span class="f">next</span>(<span class="v">err</span>)                           <span class="cm">// 2️⃣ Error middleware கு அனுப்புது</span>
+  }
+})
+
+<span class="v">app</span>.<span class="f">use</span>((<span class="v">err</span>, <span class="v">req</span>, <span class="v">res</span>, <span class="v">next</span>) =&gt; {      <span class="cm">// 3️⃣ Error handle பண்றது</span>
+  <span class="v">res</span>.<span class="f">status</span>(<span class="n">500</span>).<span class="f">send</span>(<span class="v">err</span>.message)
+})</pre>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Step</th><th>என்ன நடக்குது</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc3">1️⃣</span></td><td>Route ல error வருது</td></tr>
+            <tr><td><span class="tag tc3">2️⃣</span></td><td>next(err) call பண்றது</td></tr>
+            <tr><td><span class="tag tc3">3️⃣</span></td><td>Error middleware catch பண்றது</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6️⃣ -->
+      <div class="sl">6️⃣ Common HTTP Error Codes</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">status-codes.js</span>
+        </div>
+        <pre><span class="v">res</span>.<span class="f">status</span>(<span class="n">404</span>).<span class="f">send</span>(<span class="s">"Page Not Found"</span>)  <span class="cm">// Route இல்லை</span>
+<span class="v">res</span>.<span class="f">status</span>(<span class="n">500</span>).<span class="f">send</span>(<span class="s">"Server Error"</span>)    <span class="cm">// Server problem</span>
+<span class="v">res</span>.<span class="f">status</span>(<span class="n">400</span>).<span class="f">send</span>(<span class="s">"Bad Request"</span>)     <span class="cm">// Invalid input</span></pre>
+      </div>
+      <div class="err-grid">
+        <div class="err-card">
+          <div class="err-code">404</div>
+          <div class="err-desc">Page Not Found</div>
+        </div>
+        <div class="err-card">
+          <div class="err-code">500</div>
+          <div class="err-desc">Server Error</div>
+        </div>
+        <div class="err-card">
+          <div class="err-code">400</div>
+          <div class="err-desc">Bad Request</div>
+        </div>
+      </div>
+
+      <!-- 7️⃣ -->
+      <div class="sl">7️⃣ Interview Answer (வாயால சொல்லு)</div>
+      <div class="interview">
+        <p>"Express provides error-handling middleware to catch and manage application errors. It takes <em>4 parameters — err, req, res, and next</em>. When an error occurs in a route, we call <em>next(err)</em> to pass it to the error middleware, which sends a proper response with the appropriate <em>HTTP status code</em>."</p>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="f1">Request &amp; Response</span> · <span class="f2">Static Files</span> · <span class="f3">Error Handling</span> — Express.js Interview Ready 🔥
+</footer>
+
+</body>
+</html>

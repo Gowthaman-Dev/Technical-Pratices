@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Express.js Quick Revision — REST API · Lightweight · Database</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Tamil:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:      #0c0f14;
+      --surface: #131720;
+      --card:    #181e28;
+      --border:  #252d3d;
+      --text:    #dce4f0;
+      --muted:   #6b7a96;
+      --subtle:  #1e2535;
+
+      --c1: #f0a500;   /* amber  — REST API */
+      --c2: #00c896;   /* teal   — Lightweight */
+      --c3: #7b8cde;   /* violet — Database */
+
+      --get:    #00c896;
+      --post:   #f0a500;
+      --put:    #7b8cde;
+      --delete: #e05c7a;
+
+      --code-bg: #0a0d12;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans Tamil', sans-serif;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    /* ── GRID TEXTURE ── */
+    body::before {
+      content:'';
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(220,228,240,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220,228,240,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ══════════════════════════════
+       HERO
+    ══════════════════════════════ */
+    .hero {
+      position: relative; z-index:1;
+      padding: 72px 32px 64px;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero::before {
+      content:'';
+      position:absolute; inset:0; z-index:0;
+      background:
+        radial-gradient(ellipse 100% 70% at 15% 50%,  rgba(240,165,0,0.12)  0%, transparent 55%),
+        radial-gradient(ellipse 80%  90% at 85% 20%,  rgba(123,140,222,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 60%  60% at 50% 100%, rgba(0,200,150,0.08)   0%, transparent 50%);
+    }
+
+    .hero-label {
+      position:relative; z-index:1;
+      display:inline-block;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.68rem;
+      letter-spacing:0.22em;
+      text-transform:uppercase;
+      color: var(--muted);
+      border:1px solid var(--border);
+      border-radius:3px;
+      padding:4px 14px;
+      margin-bottom:22px;
+    }
+
+    .hero h1 {
+      position:relative; z-index:1;
+      font-family:'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 9vw, 6.5rem);
+      letter-spacing:0.04em;
+      line-height:0.95;
+      margin-bottom:18px;
+    }
+
+    .hero h1 .w1 { color: var(--c1); }
+    .hero h1 .w2 { color: var(--text); }
+    .hero h1 .w3 { color: var(--c2); }
+
+    .hero-sub {
+      position:relative; z-index:1;
+      font-size:1rem;
+      color: var(--muted);
+      margin-bottom:36px;
+    }
+
+    .hero-chips {
+      position:relative; z-index:1;
+      display:flex; flex-wrap:wrap; gap:10px; justify-content:center;
+    }
+
+    .chip {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.72rem;
+      letter-spacing:0.08em;
+      border-radius:4px;
+      padding:5px 14px;
+      border:1px solid;
+    }
+    .chip-1 { color:var(--c1); border-color:rgba(240,165,0,0.3);   background:rgba(240,165,0,0.06);   }
+    .chip-2 { color:var(--c2); border-color:rgba(0,200,150,0.3);   background:rgba(0,200,150,0.06);   }
+    .chip-3 { color:var(--c3); border-color:rgba(123,140,222,0.3); background:rgba(123,140,222,0.06); }
+
+    /* ══════════════════════════════
+       MAIN
+    ══════════════════════════════ */
+    .main {
+      position:relative; z-index:1;
+      max-width:980px;
+      margin:0 auto;
+      padding:60px 24px 100px;
+    }
+
+    /* ══════════════════════════════
+       TOPIC CARD
+    ══════════════════════════════ */
+    .topic {
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius:10px;
+      margin-bottom:60px;
+      overflow:hidden;
+      animation: fadeUp 0.5s ease both;
+    }
+    .topic:nth-child(1){ animation-delay:0.05s; }
+    .topic:nth-child(2){ animation-delay:0.12s; }
+    .topic:nth-child(3){ animation-delay:0.19s; }
+
+    @keyframes fadeUp {
+      from{ opacity:0; transform:translateY(18px); }
+      to  { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── TOPIC BAND ── */
+    .band {
+      display:flex; align-items:center; gap:14px;
+      padding:18px 28px;
+      border-bottom:1px solid var(--border);
+    }
+    .t1 .band { background:rgba(240,165,0,0.07);   border-bottom-color:rgba(240,165,0,0.4); }
+    .t2 .band { background:rgba(0,200,150,0.07);   border-bottom-color:rgba(0,200,150,0.4); }
+    .t3 .band { background:rgba(123,140,222,0.07); border-bottom-color:rgba(123,140,222,0.4); }
+
+    .tnum {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.65rem;
+      letter-spacing:0.12em;
+      color: var(--muted);
+      background: var(--subtle);
+      border:1px solid var(--border);
+      border-radius:3px;
+      padding:3px 10px;
+    }
+
+    .ttitle {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:clamp(1.3rem, 3.5vw, 2rem);
+      letter-spacing:0.05em;
+      flex:1;
+    }
+    .t1 .ttitle { color:var(--c1); }
+    .t2 .ttitle { color:var(--c2); }
+    .t3 .ttitle { color:var(--c3); }
+
+    .ticon { font-size:1.8rem; }
+
+    /* ── BODY ── */
+    .tbody { padding:28px 28px 34px; }
+
+    /* ── SECTION LABEL ── */
+    .sl {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.64rem;
+      font-weight:700;
+      letter-spacing:0.2em;
+      text-transform:uppercase;
+      color: var(--muted);
+      margin-bottom:10px;
+      display:flex; align-items:center; gap:10px;
+    }
+    .sl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+    /* ── DEFINITION BOX ── */
+    .def {
+      border-radius:0 8px 8px 0;
+      padding:16px 20px;
+      margin-bottom:24px;
+      border-left:4px solid;
+    }
+    .t1 .def { border-left-color:var(--c1); background:rgba(240,165,0,0.06);   }
+    .t2 .def { border-left-color:var(--c2); background:rgba(0,200,150,0.06);   }
+    .t3 .def { border-left-color:var(--c3); background:rgba(123,140,222,0.06); }
+
+    .def-q {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.9rem;
+      font-weight:700;
+      margin-bottom:7px;
+      font-style:italic;
+    }
+    .t1 .def-q { color:var(--c1); }
+    .t2 .def-q { color:var(--c2); }
+    .t3 .def-q { color:var(--c3); }
+
+    .def-ta {
+      font-size:0.89rem;
+      color:var(--text);
+    }
+    .def-ta strong { color:#fff; }
+
+    /* ── TABLE ── */
+    .tw {
+      border:1px solid var(--border);
+      border-radius:7px;
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+
+    table { width:100%; border-collapse:collapse; }
+
+    thead { background:var(--subtle); }
+
+    th {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.68rem;
+      letter-spacing:0.1em;
+      color: var(--muted);
+      padding:10px 16px;
+      text-align:left;
+      border-bottom:1px solid var(--border);
+    }
+
+    td {
+      font-size:0.87rem;
+      color: var(--text);
+      padding:10px 16px;
+      border-bottom:1px solid var(--border);
+      vertical-align:middle;
+    }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:rgba(255,255,255,0.02); }
+
+    /* ── INLINE TAGS ── */
+    .tag {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.76rem;
+      border-radius:4px;
+      padding:2px 8px;
+      border:1px solid;
+      white-space:nowrap;
+    }
+    .tg  { color:var(--get);    border-color:rgba(0,200,150,0.35);  background:rgba(0,200,150,0.08);   }
+    .tp  { color:var(--post);   border-color:rgba(240,165,0,0.35);  background:rgba(240,165,0,0.08);   }
+    .tpu { color:var(--put);    border-color:rgba(123,140,222,0.35);background:rgba(123,140,222,0.08); }
+    .td  { color:var(--delete); border-color:rgba(224,92,122,0.35); background:rgba(224,92,122,0.08);  }
+    .tn  { color:var(--text);   border-color:var(--border);         background:var(--subtle);          }
+    .tc1 { color:var(--c1);     border-color:rgba(240,165,0,0.35);  background:rgba(240,165,0,0.07);   }
+    .tc2 { color:var(--c2);     border-color:rgba(0,200,150,0.35);  background:rgba(0,200,150,0.07);   }
+    .tc3 { color:var(--c3);     border-color:rgba(123,140,222,0.35);background:rgba(123,140,222,0.07); }
+
+    /* ── CODE BLOCK ── */
+    .cb {
+      background:var(--code-bg);
+      border:1px solid var(--border);
+      border-radius:8px;
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+
+    .cb-head {
+      display:flex; align-items:center; gap:6px;
+      padding:8px 14px;
+      background:rgba(255,255,255,0.03);
+      border-bottom:1px solid var(--border);
+    }
+
+    .dot { width:9px; height:9px; border-radius:50%; }
+    .dot:nth-child(1){background:#ff5f57;}
+    .dot:nth-child(2){background:#febc2e;}
+    .dot:nth-child(3){background:#28c840;}
+
+    .cb-name {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.66rem;
+      color:rgba(255,255,255,0.25);
+      margin-left:8px;
+    }
+
+    pre {
+      padding:18px 20px;
+      overflow-x:auto;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.81rem;
+      line-height:1.9;
+    }
+
+    .k { color:#c792ea; }
+    .f { color:#82aaff; }
+    .s { color:#c3e88d; }
+    .c { color:#546070; font-style:italic; }
+    .n { color:#f78c6c; }
+    .v { color:var(--text); }
+
+    /* ── COMPARISON GRID ── */
+    .cmp {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:14px; margin-bottom:24px;
+    }
+
+    .cmp-side {
+      border:1px solid var(--border);
+      border-radius:7px;
+      overflow:hidden;
+    }
+
+    .cmp-head {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.64rem;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      padding:8px 14px;
+      color:#fff;
+    }
+    .t1 .cmp-side:first-child .cmp-head { background:rgba(240,165,0,0.7); }
+    .t1 .cmp-side:last-child  .cmp-head { background:var(--subtle); color:var(--muted); }
+    .t2 .cmp-side:first-child .cmp-head { background:rgba(0,200,150,0.55); }
+    .t2 .cmp-side:last-child  .cmp-head { background:var(--subtle); color:var(--muted); }
+    .t3 .cmp-side:first-child .cmp-head { background:rgba(123,140,222,0.55); }
+    .t3 .cmp-side:last-child  .cmp-head { background:var(--subtle); color:var(--muted); }
+
+    .cmp-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:9px 14px;
+      border-bottom:1px solid var(--border);
+      font-size:0.85rem;
+      color:var(--text);
+    }
+    .cmp-row:last-child { border-bottom:none; }
+    .cmp-row.plain { display:block; color:var(--muted); font-size:0.82rem; }
+
+    /* ── METHOD BADGES ── */
+    .methods {
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin-bottom:24px;
+    }
+
+    .mb {
+      display:flex; align-items:center; gap:8px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:9px 14px;
+    }
+
+    .mv {
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.74rem;
+      font-weight:700;
+      padding:2px 9px;
+      border-radius:3px;
+      min-width:54px;
+      text-align:center;
+    }
+    .mv-g { background:rgba(0,200,150,0.15); color:var(--get); }
+    .mv-p { background:rgba(240,165,0,0.15);  color:var(--post); }
+    .mv-u { background:rgba(123,140,222,0.15);color:var(--put); }
+    .mv-d { background:rgba(224,92,122,0.15); color:var(--delete); }
+
+    .md { font-size:0.82rem; color:var(--muted); }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow {
+      display:flex; flex-direction:column; align-items:center;
+      margin-bottom:24px;
+    }
+
+    .fbox {
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:7px;
+      padding:11px 28px;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.82rem;
+      color:var(--text);
+      text-align:center;
+      min-width:250px;
+    }
+    .fbox .fnote {
+      display:block;
+      font-family:'Noto Sans Tamil', sans-serif;
+      font-size:0.72rem;
+      color:var(--muted);
+      margin-top:3px;
+    }
+
+    .t1 .fbox.hi { border-color:var(--c1); color:var(--c1); background:rgba(240,165,0,0.06); }
+    .t2 .fbox.hi { border-color:var(--c2); color:var(--c2); background:rgba(0,200,150,0.06); }
+    .t3 .fbox.hi { border-color:var(--c3); color:var(--c3); background:rgba(123,140,222,0.06); }
+
+    .farr {
+      width:2px; height:26px;
+      position:relative;
+    }
+    .t1 .farr { background:linear-gradient(var(--c1), rgba(240,165,0,0.3)); }
+    .t2 .farr { background:linear-gradient(var(--c2), rgba(0,200,150,0.3)); }
+    .t3 .farr { background:linear-gradient(var(--c3), rgba(123,140,222,0.3)); }
+
+    .farr::after {
+      content:'▼';
+      position:absolute; bottom:-7px; left:50%;
+      transform:translateX(-50%);
+      font-size:0.58rem;
+      color:var(--muted);
+    }
+
+    /* ── STEP LIST ── */
+    .steps { display:flex; flex-direction:column; gap:8px; margin-bottom:24px; }
+
+    .step {
+      display:flex; align-items:center; gap:12px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:12px 16px;
+    }
+
+    .sn {
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.72rem;
+      font-weight:700;
+      flex-shrink:0;
+      color:#fff;
+    }
+    .t1 .sn { background:var(--c1); color:#000; }
+    .t2 .sn { background:var(--c2); color:#000; }
+    .t3 .sn { background:var(--c3); }
+
+    .st {
+      font-size:0.88rem;
+      color:var(--text);
+    }
+    .st strong { color:#fff; }
+
+    /* ── NOTE BOX ── */
+    .note-box {
+      border-radius:6px;
+      padding:12px 16px;
+      margin-bottom:24px;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.82rem;
+      border:1px solid;
+    }
+    .t2 .note-box {
+      color:var(--c2);
+      border-color:rgba(0,200,150,0.3);
+      background:rgba(0,200,150,0.05);
+    }
+
+    /* ── INTERVIEW BOX ── */
+    .interview {
+      border-radius:8px;
+      padding:22px 24px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .interview::before {
+      content:'🎤 INTERVIEW ANSWER — வாயால சொல்லு';
+      display:block;
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.6rem;
+      letter-spacing:0.16em;
+      color:rgba(255,255,255,0.4);
+      margin-bottom:12px;
+    }
+
+    .t1 .interview { background:rgba(240,165,0,0.12);   border:1px solid rgba(240,165,0,0.35);   }
+    .t2 .interview { background:rgba(0,200,150,0.10);   border:1px solid rgba(0,200,150,0.35);   }
+    .t3 .interview { background:rgba(123,140,222,0.10); border:1px solid rgba(123,140,222,0.35); }
+
+    .interview p {
+      font-size:0.92rem;
+      color:var(--text);
+      line-height:1.85;
+    }
+
+    .t1 .interview em { color:var(--c1);  font-style:normal; font-weight:700; }
+    .t2 .interview em { color:var(--c2);  font-style:normal; font-weight:700; }
+    .t3 .interview em { color:var(--c3);  font-style:normal; font-weight:700; }
+
+    /* ── INFO ROW ── */
+    .info-row {
+      display:flex; align-items:flex-start; gap:10px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:6px;
+      padding:12px 16px;
+      margin-bottom:12px;
+      font-size:0.87rem;
+    }
+    .info-row:last-child { margin-bottom:24px; }
+    .info-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+    .info-text { color:var(--text); }
+    .info-text strong { color:#fff; }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align:center;
+      padding:32px 20px;
+      border-top:1px solid var(--border);
+      font-family:'JetBrains Mono', monospace;
+      font-size:0.7rem;
+      color:var(--muted);
+      letter-spacing:0.1em;
+      position:relative; z-index:1;
+    }
+    .footer .f1 { color:var(--c1); }
+    .footer .f2 { color:var(--c2); }
+    .footer .f3 { color:var(--c3); }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:580px){
+      .cmp { grid-template-columns:1fr; }
+      .tbody { padding:20px 16px 26px; }
+      .hero { padding:50px 18px 42px; }
+      .band { padding:14px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="hero-label">📘 Express.js · Interview Quick Revision</div>
+  <h1>
+    <span class="w1">REST</span> <span class="w2">API</span><br/>
+    <span class="w3">Lightweight</span> &amp; <span class="w2">Database</span>
+  </h1>
+  <p class="hero-sub">எல்லா topics-உம் ஒரே page ல — Interview ready பண்ண!</p>
+  <div class="hero-chips">
+    <span class="chip chip-1">04 · REST API</span>
+    <span class="chip chip-2">05 · Lightweight &amp; Fast</span>
+    <span class="chip chip-3">06 · Database Connection</span>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- ══════════════════════════════════════════════
+       TOPIC 04 — REST API
+  ══════════════════════════════════════════════ -->
+  <section class="topic t1">
+    <div class="band">
+      <span class="tnum">TOPIC 04</span>
+      <h2 class="ttitle">REST API</h2>
+      <span class="ticon">🍽️</span>
+    </div>
+
+    <div class="tbody">
+
+      <!-- 1️⃣ API என்னன்னா -->
+      <div class="sl">1️⃣ API என்னன்னா?</div>
+      <div class="def">
+        <div class="def-q">"API is a communication bridge between frontend and backend."</div>
+        <div class="def-ta">Frontend க்கும் Backend க்கும் நடுல communicate பண்ண உதவுவது = <strong>API</strong></div>
+      </div>
+
+      <!-- 2️⃣ Real Life Example -->
+      <div class="sl">2️⃣ Real Life Example 🍽️</div>
+      <div class="cmp">
+        <div class="cmp-side">
+          <div class="cmp-head">Real Life — Restaurant</div>
+          <div class="cmp-row"><span>👩‍🍳 Customer</span><span class="tag tc1">Frontend</span></div>
+          <div class="cmp-row"><span>🧑‍💼 Waiter</span><span class="tag tc1">API</span></div>
+          <div class="cmp-row"><span>🍳 Kitchen</span><span class="tag tc1">Backend</span></div>
+          <div class="cmp-row"><span>🍛 Food</span><span class="tag tc1">Response</span></div>
+        </div>
+        <div class="cmp-side">
+          <div class="cmp-head">Web Flow</div>
+          <div class="cmp-row plain">Customer → Waiter → Kitchen → Food</div>
+          <div class="cmp-row plain">Frontend → API → Backend → Response ✅</div>
+        </div>
+      </div>
+
+      <!-- 3️⃣ REST API என்னன்னா -->
+      <div class="sl">3️⃣ REST API என்னன்னா?</div>
+      <div class="def">
+        <div class="def-q">REST API = HTTP methods use பண்ணி API create பண்ற standard way</div>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Method</th><th>என்ன பண்றது</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tg">GET</span></td><td>Data படிக்க</td></tr>
+            <tr><td><span class="tag tp">POST</span></td><td>Data create பண்ண</td></tr>
+            <tr><td><span class="tag tpu">PUT</span></td><td>Data update பண்ண</td></tr>
+            <tr><td><span class="tag td">DELETE</span></td><td>Data delete பண்ண</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4️⃣ Basic REST API Code -->
+      <div class="sl">4️⃣ Basic REST API Code</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">api.js</span>
+        </div>
+        <pre><span class="k">import</span> <span class="v">express</span> <span class="k">from</span> <span class="s">"express"</span>
+
+<span class="k">const</span> <span class="v">app</span> = <span class="f">express</span>()
+
+<span class="v">app</span>.<span class="f">post</span>(<span class="s">"/register"</span>, (<span class="v">req</span>, <span class="v">res</span>) =&gt; {
+  <span class="v">res</span>.<span class="f">send</span>(<span class="s">"User Registered"</span>)
+})
+
+<span class="v">app</span>.<span class="f">listen</span>(<span class="n">5000</span>)</pre>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Part</th><th>என்ன</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc1">/register</span></td><td>API Endpoint</td></tr>
+            <tr><td><span class="tag tp">POST</span></td><td>Data create பண்றது</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5️⃣ Full CRUD Example -->
+      <div class="sl">5️⃣ Full CRUD Example</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">crud.js</span>
+        </div>
+        <pre><span class="v">app</span>.<span class="f">get</span>(<span class="s">"/users"</span>)        <span class="c">// 📖 List get பண்ண</span>
+<span class="v">app</span>.<span class="f">post</span>(<span class="s">"/users"</span>)       <span class="c">// ➕ User create பண்ண</span>
+<span class="v">app</span>.<span class="f">put</span>(<span class="s">"/users/:id"</span>)    <span class="c">// ✏️ User update பண்ண</span>
+<span class="v">app</span>.<span class="f">delete</span>(<span class="s">"/users/:id"</span>) <span class="c">// 🗑️ User delete பண்ண</span></pre>
+      </div>
+
+      <!-- 6️⃣ Real Project Endpoints -->
+      <div class="sl">6️⃣ Real Project Endpoints</div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Endpoint</th><th>Method</th><th>என்ன பண்றது</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tn">/register</span></td><td><span class="tag tp">POST</span></td><td>User create</td></tr>
+            <tr><td><span class="tag tn">/users</span></td><td><span class="tag tg">GET</span></td><td>User list</td></tr>
+            <tr><td><span class="tag tn">/updateUser</span></td><td><span class="tag tpu">PUT</span></td><td>User modify</td></tr>
+            <tr><td><span class="tag tn">/deleteUser</span></td><td><span class="tag td">DELETE</span></td><td>User remove</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 7️⃣ Full Flow Diagram -->
+      <div class="sl">7️⃣ Full Flow Diagram</div>
+      <div class="flow">
+        <div class="fbox hi">Frontend</div>
+        <div class="farr"></div>
+        <div class="fbox hi">REST API<span class="fnote">← Express routes handle பண்றது</span></div>
+        <div class="farr"></div>
+        <div class="fbox">Backend Logic</div>
+        <div class="farr"></div>
+        <div class="fbox">Database</div>
+        <div class="farr"></div>
+        <div class="fbox">Response</div>
+      </div>
+
+      <!-- 8️⃣ Interview -->
+      <div class="sl">8️⃣ Interview Answer (வாயால சொல்லு)</div>
+      <div class="interview">
+        <p>"API is a communication bridge between frontend and backend. REST API uses HTTP methods like <em>GET, POST, PUT, and DELETE</em> to perform CRUD operations. In Express.js, we create RESTful APIs using <em>app.get(), app.post(), app.put(), and app.delete()</em> to allow frontend and backend to communicate."</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       TOPIC 05 — LIGHTWEIGHT & FAST
+  ══════════════════════════════════════════════ -->
+  <section class="topic t2">
+    <div class="band">
+      <span class="tnum">TOPIC 05</span>
+      <h2 class="ttitle">Lightweight &amp; Fast</h2>
+      <span class="ticon">🏍️</span>
+    </div>
+
+    <div class="tbody">
+
+      <!-- 1️⃣ Lightweight என்னன்னா -->
+      <div class="sl">1️⃣ Lightweight என்னன்னா?</div>
+      <div class="def">
+        <div class="def-q">"Lightweight = Unnecessary features இல்லாம, minimum code போதும், fast performance."</div>
+        <div class="def-ta">அதிக code இல்லாம → Simple → Fast = <strong>Express.js ✅</strong></div>
+      </div>
+
+      <!-- 2️⃣ Real Life Example -->
+      <div class="sl">2️⃣ Real Life Example 🚗</div>
+      <div class="cmp">
+        <div class="cmp-side">
+          <div class="cmp-head">Vehicle Comparison</div>
+          <div class="cmp-row"><span>🚛 Heavy Truck</span><span class="tag td">Slow</span></div>
+          <div class="cmp-row"><span>🏍️ Bike</span><span class="tag tc2">Fast</span></div>
+        </div>
+        <div class="cmp-side">
+          <div class="cmp-head">Framework Comparison</div>
+          <div class="cmp-row"><span>Heavy Framework</span><span class="tag td">Slow</span></div>
+          <div class="cmp-row"><span>Express.js</span><span class="tag tc2">Fast &amp; Lightweight</span></div>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span class="info-text">Express = Bike மாதிரி — <strong>lightweight, fast, flexible ✅</strong></span>
+      </div>
+
+      <!-- 3️⃣ Minimum Code -->
+      <div class="sl">3️⃣ Minimum Code — Server Ready</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">server.js</span>
+        </div>
+        <pre><span class="k">import</span> <span class="v">express</span> <span class="k">from</span> <span class="s">"express"</span>
+
+<span class="k">const</span> <span class="v">app</span> = <span class="f">express</span>()
+
+<span class="v">app</span>.<span class="f">get</span>(<span class="s">"/"</span>, (<span class="v">req</span>, <span class="v">res</span>) =&gt; {
+  <span class="v">res</span>.<span class="f">send</span>(<span class="s">"Hello"</span>)
+})
+
+<span class="v">app</span>.<span class="f">listen</span>(<span class="n">5000</span>)</pre>
+      </div>
+
+      <div class="note-box">
+        🔥 வெறும் 5 lines — Server ready!<br/>
+        Other heavy frameworks இதே காரியத்துக்கு 20+ lines எழுதணும்.
+      </div>
+
+      <!-- 4️⃣ Express Fast ஆ இருக்க 3 காரணங்கள் -->
+      <div class="sl">4️⃣ Express Fast ஆ இருக்க 3 காரணங்கள்</div>
+      <div class="steps">
+        <div class="step">
+          <span class="sn">1</span>
+          <span class="st"><strong>Minimal Framework</strong> — தேவையானது மட்டும் இருக்கும்</span>
+        </div>
+        <div class="step">
+          <span class="sn">2</span>
+          <span class="st"><strong>Node.js Async</strong> — Non-blocking architecture → Fast</span>
+        </div>
+        <div class="step">
+          <span class="sn">3</span>
+          <span class="st"><strong>Only Required Features</strong> — Extra load இல்லை</span>
+        </div>
+      </div>
+
+      <!-- 5️⃣ Request Flow -->
+      <div class="sl">5️⃣ Request Flow</div>
+      <div class="flow">
+        <div class="fbox">Client Request</div>
+        <div class="farr"></div>
+        <div class="fbox hi">Express Server<span class="fnote">← Lightweight, fast handle</span></div>
+        <div class="farr"></div>
+        <div class="fbox">Fast Response</div>
+      </div>
+
+      <!-- 6️⃣ Practical Point -->
+      <div class="sl">6️⃣ Practical Point 📦</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">தேவையானது மட்டும் add பண்ணலாம்</span>
+        </div>
+        <pre><span class="k">import</span> <span class="v">cors</span> <span class="k">from</span> <span class="s">"cors"</span>
+<span class="k">import</span> <span class="v">mongoose</span> <span class="k">from</span> <span class="s">"mongoose"</span>
+
+<span class="v">app</span>.<span class="f">use</span>(<span class="f">cors</span>())</pre>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span class="info-text">தேவையான packages மட்டும் → Application heavy ஆகாது → <strong>Fast ✅</strong></span>
+      </div>
+
+      <!-- 7️⃣ Interview -->
+      <div class="sl">7️⃣ Interview Answer (வாயால சொல்லு)</div>
+      <div class="interview">
+        <p>"Express.js is a fast and lightweight framework because it provides only minimal features and is built on top of Node.js which uses <em>non-blocking asynchronous architecture</em>. We can create a server with just a few lines of code and add only the packages we need, keeping the application <em>light and fast</em>."</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+       TOPIC 06 — DATABASE CONNECTION
+  ══════════════════════════════════════════════ -->
+  <section class="topic t3">
+    <div class="band">
+      <span class="tnum">TOPIC 06</span>
+      <h2 class="ttitle">Express.js + Database Connection</h2>
+      <span class="ticon">🗄️</span>
+    </div>
+
+    <div class="tbody">
+
+      <!-- 1️⃣ Database என்னன்னா -->
+      <div class="sl">1️⃣ Database என்னன்னா?</div>
+      <div class="def">
+        <div class="def-q">"Database = Application data permanent-ஆ save ஆகும் place."</div>
+        <div class="def-ta">User register பண்ணினா → name, email, password → <strong>Database ல save ஆகும் ✅</strong></div>
+      </div>
+
+      <!-- 2️⃣ Popular Databases -->
+      <div class="sl">2️⃣ Popular Databases</div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Database</th><th>Connect பண்ண Package</th></tr></thead>
+          <tbody>
+            <tr><td>🍃 MongoDB</td><td><span class="tag tc2">mongoose</span></td></tr>
+            <tr><td>🐬 MySQL</td><td><span class="tag tc3">mysql2</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 3️⃣ Full Flow Diagram -->
+      <div class="sl">3️⃣ Full Flow Diagram</div>
+      <div class="flow">
+        <div class="fbox">Frontend</div>
+        <div class="farr"></div>
+        <div class="fbox hi">Express Server<span class="fnote">← Request handle பண்றது</span></div>
+        <div class="farr"></div>
+        <div class="fbox hi">Database<span class="fnote">← Data save / fetch</span></div>
+        <div class="farr"></div>
+        <div class="fbox">Response</div>
+      </div>
+
+      <!-- 4️⃣ CRUD Operations -->
+      <div class="sl">4️⃣ CRUD Operations</div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Operation</th><th>என்ன பண்றது</th><th>Real Example</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tp">Create</span></td><td>Data save</td><td>User register</td></tr>
+            <tr><td><span class="tag tg">Read</span></td><td>Data fetch</td><td>User list get</td></tr>
+            <tr><td><span class="tag tpu">Update</span></td><td>Data modify</td><td>Profile update</td></tr>
+            <tr><td><span class="tag td">Delete</span></td><td>Data remove</td><td>Account delete</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5️⃣ Express + MongoDB Code -->
+      <div class="sl">5️⃣ Express + MongoDB Code</div>
+      <div class="cb">
+        <div class="cb-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="cb-name">db.js</span>
+        </div>
+        <pre><span class="k">import</span> <span class="v">express</span> <span class="k">from</span> <span class="s">"express"</span>
+<span class="k">import</span> <span class="v">mongoose</span> <span class="k">from</span> <span class="s">"mongoose"</span>
+
+<span class="k">const</span> <span class="v">app</span> = <span class="f">express</span>()
+
+<span class="c">// Database Connect</span>
+<span class="v">mongoose</span>.<span class="f">connect</span>(<span class="s">"mongodb://localhost:27017/mydb"</span>)
+  .<span class="f">then</span>(() =&gt; <span class="v">console</span>.<span class="f">log</span>(<span class="s">"Database connected"</span>)) <span class="c">// ✅ Terminal ல தெரியும்</span>
+
+<span class="v">app</span>.<span class="f">get</span>(<span class="s">"/users"</span>, (<span class="v">req</span>, <span class="v">res</span>) =&gt; {
+  <span class="v">res</span>.<span class="f">send</span>(<span class="s">"Users fetched from database"</span>)
+})
+
+<span class="v">app</span>.<span class="f">listen</span>(<span class="n">5000</span>)</pre>
+      </div>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>Part</th><th>என்ன பண்றது</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tc3">mongoose.connect()</span></td><td>MongoDB connect பண்றது</td></tr>
+            <tr><td><span class="tag tc2">.then()</span></td><td>Connect success confirm</td></tr>
+            <tr><td><span class="tag tn">app.get("/users")</span></td><td>Data fetch route</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 6️⃣ Real Project API Endpoints -->
+      <div class="sl">6️⃣ Real Project API Endpoints</div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Endpoint</th><th>Method</th><th>CRUD</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tn">/register</span></td><td><span class="tag tp">POST</span></td><td>Create</td></tr>
+            <tr><td><span class="tag tn">/users</span></td><td><span class="tag tg">GET</span></td><td>Read</td></tr>
+            <tr><td><span class="tag tn">/updateUser</span></td><td><span class="tag tpu">PUT</span></td><td>Update</td></tr>
+            <tr><td><span class="tag tn">/deleteUser</span></td><td><span class="tag td">DELETE</span></td><td>Delete</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">✅</span>
+        <span class="info-text">இந்த APIs எல்லாம் <strong>database CRUD operations perform பண்ணும் ✅</strong></span>
+      </div>
+
+      <!-- 7️⃣ Interview -->
+      <div class="sl">7️⃣ Interview Answer (வாயால சொல்லு)</div>
+      <div class="interview">
+        <p>"Express applications connect with databases like MongoDB using <em>Mongoose</em> to perform CRUD operations — <em>Create, Read, Update, and Delete</em>. The frontend sends a request, Express handles it, queries the database, and sends back the response."</p>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="f1">REST API</span> · <span class="f2">Lightweight &amp; Fast</span> · <span class="f3">Database Connection</span> — Express.js Interview Ready 🔥
+</footer>
+
+</body>
+</html>

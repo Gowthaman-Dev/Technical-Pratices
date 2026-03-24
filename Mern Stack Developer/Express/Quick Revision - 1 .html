@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Express.js Quick Revision 🚀</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Noto+Sans+Tamil:wght@400;600;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --card: #16161f;
+      --border: #2a2a3a;
+      --accent1: #ff6b35;
+      --accent2: #00d4aa;
+      --accent3: #7c6aff;
+      --accent4: #ffd166;
+      --accent5: #ff4d6d;
+      --text: #e8e8f0;
+      --muted: #888899;
+      --code-bg: #0d0d15;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', 'Noto Sans Tamil', sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 20px;
+      position: relative;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(124,106,255,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255,107,53,0.12) 0%, transparent 55%),
+        var(--bg);
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(124,106,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,106,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(255,107,53,0.15), rgba(124,106,255,0.15));
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: 100px;
+      padding: 6px 20px;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent1);
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(2.2rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent3) 60%, var(--accent1));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .hero-sub {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--muted);
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topic-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .nav-pill {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      cursor: default;
+      transition: all 0.2s;
+    }
+
+    .nav-pill:hover {
+      border-color: var(--accent3);
+      color: var(--accent3);
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 20px 100px;
+    }
+
+    /* ===== TOPIC SECTION ===== */
+    .topic {
+      margin-bottom: 80px;
+      position: relative;
+    }
+
+    .topic-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topic-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent3);
+      background: rgba(124,106,255,0.1);
+      border: 1px solid rgba(124,106,255,0.3);
+      border-radius: 6px;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+
+    .topic-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .topic-emoji {
+      font-size: 1.8rem;
+      margin-left: auto;
+    }
+
+    /* ===== DEFINITION BOX ===== */
+    .definition {
+      background: linear-gradient(135deg, rgba(124,106,255,0.08), rgba(0,212,170,0.05));
+      border: 1px solid rgba(124,106,255,0.3);
+      border-left: 4px solid var(--accent3);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      font-family: 'Noto Sans Tamil', sans-serif;
+    }
+
+    .definition-quote {
+      font-size: 1rem;
+      color: var(--accent2);
+      font-weight: 600;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .definition-ta {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    /* ===== GRID CARDS ===== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--accent3);
+      transform: translateY(-2px);
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent1);
+      margin-bottom: 6px;
+    }
+
+    .card-desc {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* ===== TABLE ===== */
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: 28px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: rgba(124,106,255,0.1);
+    }
+
+    th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent3);
+      padding: 12px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text);
+      padding: 11px 18px;
+      border-bottom: 1px solid rgba(42,42,58,0.5);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: rgba(124,106,255,0.04); }
+
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      background: rgba(255,107,53,0.1);
+      color: var(--accent1);
+      border: 1px solid rgba(255,107,53,0.25);
+      border-radius: 5px;
+      padding: 2px 8px;
+    }
+
+    .tag-green {
+      background: rgba(0,212,170,0.1);
+      color: var(--accent2);
+      border-color: rgba(0,212,170,0.25);
+    }
+
+    .tag-blue {
+      background: rgba(124,106,255,0.1);
+      color: var(--accent3);
+      border-color: rgba(124,106,255,0.25);
+    }
+
+    .tag-yellow {
+      background: rgba(255,209,102,0.1);
+      color: var(--accent4);
+      border-color: rgba(255,209,102,0.25);
+    }
+
+    .tag-red {
+      background: rgba(255,77,109,0.1);
+      color: var(--accent5);
+      border-color: rgba(255,77,109,0.25);
+    }
+
+    /* ===== CODE BLOCK ===== */
+    .code-wrap {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(42,42,58,0.5);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .code-dot:nth-child(1) { background: #ff5f57; }
+    .code-dot:nth-child(2) { background: #febc2e; }
+    .code-dot:nth-child(3) { background: #28c840; }
+
+    .code-filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    pre {
+      padding: 20px 24px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.83rem;
+      line-height: 1.8;
+    }
+
+    .kw { color: #7c6aff; }
+    .fn { color: #00d4aa; }
+    .str { color: #ffd166; }
+    .cm { color: #555566; font-style: italic; }
+    .num { color: #ff6b35; }
+    .var { color: #e8e8f0; }
+    .method { color: #ff6b35; }
+
+    /* ===== FLOW DIAGRAM ===== */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 28px;
+    }
+
+    .flow-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text);
+      min-width: 220px;
+      text-align: center;
+      position: relative;
+    }
+
+    .flow-box.highlight-orange { border-color: var(--accent1); color: var(--accent1); }
+    .flow-box.highlight-green  { border-color: var(--accent2); color: var(--accent2); }
+    .flow-box.highlight-purple { border-color: var(--accent3); color: var(--accent3); }
+    .flow-box.highlight-yellow { border-color: var(--accent4); color: var(--accent4); }
+    .flow-box.highlight-red    { border-color: var(--accent5); color: var(--accent5); }
+
+    .flow-arrow {
+      width: 2px;
+      height: 28px;
+      background: linear-gradient(to bottom, var(--accent3), var(--accent1));
+      position: relative;
+    }
+
+    .flow-arrow::after {
+      content: '▼';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--accent1);
+      font-size: 0.7rem;
+    }
+
+    .flow-note {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ===== REAL LIFE COMPARISON ===== */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .comparison-side {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .comparison-side.real { border-top: 3px solid var(--accent4); }
+    .comparison-side.web  { border-top: 3px solid var(--accent2); }
+
+    .comparison-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .comparison-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(42,42,58,0.6);
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.85rem;
+    }
+
+    .comparison-item:last-child { border-bottom: none; }
+
+    .comparison-item .emoji { font-size: 1.2rem; }
+
+    /* ===== WARNING BOX ===== */
+    .warning {
+      background: rgba(255,209,102,0.06);
+      border: 1px solid rgba(255,209,102,0.3);
+      border-left: 4px solid var(--accent4);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 28px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .warning-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+
+    .warning-text {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.88rem;
+      color: var(--accent4);
+    }
+
+    /* ===== INTERVIEW BOX ===== */
+    .interview-box {
+      background: linear-gradient(135deg, rgba(0,212,170,0.06), rgba(124,106,255,0.06));
+      border: 1px solid rgba(0,212,170,0.25);
+      border-radius: 14px;
+      padding: 22px 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .interview-box::before {
+      content: '🎤 INTERVIEW ANSWER';
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--accent2);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .interview-box p {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .interview-box em {
+      color: var(--accent2);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* ===== SECTION LABEL ===== */
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent1);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(255,107,53,0.3), transparent);
+    }
+
+    /* ===== STEP LIST ===== */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(124,106,255,0.15);
+      border: 1px solid rgba(124,106,255,0.4);
+      color: var(--accent3);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .step-text code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent2);
+      background: rgba(0,212,170,0.08);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+      margin: 60px 0;
+    }
+
+    /* ===== METHOD BADGES ===== */
+    .methods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .method-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+    }
+
+    .method-verb {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      min-width: 58px;
+      text-align: center;
+    }
+
+    .get-badge  { background: rgba(0,212,170,0.15);  color: var(--accent2); }
+    .post-badge { background: rgba(255,107,53,0.15);  color: var(--accent1); }
+    .put-badge  { background: rgba(255,209,102,0.15); color: var(--accent4); }
+    .del-badge  { background: rgba(255,77,109,0.15);  color: var(--accent5); }
+
+    .method-desc {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    /* ===== FOLDER STRUCTURE ===== */
+    .folder {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 2;
+    }
+
+    .folder .dir { color: var(--accent4); }
+    .folder .file { color: var(--text); }
+    .folder .img  { color: var(--accent1); }
+    .folder .css  { color: var(--accent3); }
+    .folder .js   { color: var(--accent2); }
+    .folder .tree { color: var(--muted); }
+
+    /* ===== URL BOX ===== */
+    .url-box {
+      background: var(--code-bg);
+      border: 1px solid rgba(0,212,170,0.25);
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: var(--accent2);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .url-icon { color: var(--muted); font-size: 0.75rem; }
+
+    /* ===== ERROR CODE GRID ===== */
+    .error-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .error-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .error-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .error-desc {
+      font-family: 'Noto Sans Tamil', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .footer span { color: var(--accent1); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      .comparison { grid-template-columns: 1fr; }
+      .error-grid { grid-template-columns: repeat(3, 1fr); }
+      .topic-title { font-size: 1.1rem; }
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero h1 { animation: fadeUp 0.6s ease both; }
+    .hero-sub { animation: fadeUp 0.6s 0.1s ease both; }
+    .topic-nav { animation: fadeUp 0.6s 0.2s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-badge">📘 Interview Quick Revision</div>
+  <h1>Express.js<br/>Quick Revision 🚀</h1>
+  <p class="hero-sub">எல்லா topics-உம் ஒரே page ல — Interview ready பண்ண!</p>
+  <div class="topic-nav">
+    <span class="nav-pill">01 · Server Creation</span>
+    <span class="nav-pill">02 · Routing</span>
+    <span class="nav-pill">03 · Middleware</span>
+    <span class="nav-pill">04 · REST API</span>
+    <span class="nav-pill">05 · Lightweight</span>
+    <span class="nav-pill">06 · Database</span>
+    <span class="nav-pill">07 · Req &amp; Res</span>
+    <span class="nav-pill">08 · Static Files</span>
+    <span class="nav-pill">09 · Error Handling</span>
+  </div>
+</section>
+
+<div class="main">
+
+  <!-- ==================== TOPIC 01: SERVER CREATION ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">01</span>
+      <h2 class="topic-title">Server Creation</h2>
+      <span class="topic-emoji">🖥️</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"Express is a Node.js framework used to easily create servers and handle HTTP requests."</div>
+      <div class="definition-ta">Client request வந்தா → handle பண்ணி → response அனுப்புவது = <strong>Server</strong> ✅</div>
+    </div>
+
+    <div class="section-label">Basic Server Code</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">server.js</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">"express"</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>()           <span class="cm">// Express app create</span>
+
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">res</span>.<span class="fn">send</span>(<span class="str">"Server is running"</span>) <span class="cm">// Response send</span>
+})
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="num">5000</span>, () => {
+  <span class="var">console</span>.<span class="fn">log</span>(<span class="str">"Server started on port 5000"</span>)
+})</pre>
+    </div>
+
+    <div class="section-label">Parts Explained</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Part</th><th>என்ன பண்றது</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">express()</span></td><td>App instance create பண்றது</td></tr>
+          <tr><td><span class="tag">app.get()</span></td><td>GET request handle பண்றது</td></tr>
+          <tr><td><span class="tag">app.listen()</span></td><td>Server start பண்றது</td></tr>
+          <tr><td><span class="tag">5000</span></td><td>Port number</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Server Flow</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">Client (Browser)</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box">Request (Port 5000)</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">Express Server ← Handle பண்றது</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">Response</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"Express is a Node.js framework used to easily create servers and handle HTTP requests. We create an Express app using <em>express()</em>, define routes using <em>app.get()</em>, and start the server using <em>app.listen()</em> on a specific port."</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== TOPIC 02: ROUTING ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">02</span>
+      <h2 class="topic-title">Routing</h2>
+      <span class="topic-emoji">🗺️</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"Routing defines how the server responds to different URL requests."</div>
+      <div class="definition-ta">Frontend இருந்து வரும் URL-ஐ Server handle பண்றது = <strong>Routing</strong></div>
+    </div>
+
+    <div class="section-label">Real Life Example 📮</div>
+    <div class="comparison">
+      <div class="comparison-side real">
+        <div class="comparison-label">Real Life — Post Office</div>
+        <div class="comparison-item"><span>🏠 Address</span><span class="tag">URL (/users)</span></div>
+        <div class="comparison-item"><span>🏤 Post Office</span><span class="tag">Server (Express)</span></div>
+        <div class="comparison-item"><span>📬 Delivery</span><span class="tag">Response</span></div>
+      </div>
+      <div class="comparison-side web">
+        <div class="comparison-label">Web Flow</div>
+        <div class="comparison-item"><span>Server → URL check</span></div>
+        <div class="comparison-item"><span>Route match பண்றது</span></div>
+        <div class="comparison-item"><span>Correct data return ✅</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">Basic Express Route</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">routes.js</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">"express"</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>()
+
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/users"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">res</span>.<span class="fn">send</span>(<span class="str">"Users data"</span>)
+})
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="num">5000</span>)</pre>
+    </div>
+
+    <div class="section-label">HTTP Methods (4 முக்கியமானவை)</div>
+    <div class="methods">
+      <div class="method-badge"><span class="method-verb get-badge">GET</span><span class="method-desc">📖 Data படிக்க</span></div>
+      <div class="method-badge"><span class="method-verb post-badge">POST</span><span class="method-desc">➕ Data create பண்ண</span></div>
+      <div class="method-badge"><span class="method-verb put-badge">PUT</span><span class="method-desc">✏️ Data update பண்ண</span></div>
+      <div class="method-badge"><span class="method-verb del-badge">DELETE</span><span class="method-desc">🗑️ Data delete பண்ண</span></div>
+    </div>
+
+    <div class="section-label">Flow Diagram</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">🌐 Browser</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box">📎 URL Request (/users)</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">⚙️ Express Route Match</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">📦 Response Send</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"Routing is the process of handling client URL requests on the server using HTTP methods like <em>GET, POST, PUT, and DELETE</em>. In Express.js, each URL has a route function that returns the correct response."</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== TOPIC 03: MIDDLEWARE ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">03</span>
+      <h2 class="topic-title">Middleware</h2>
+      <span class="topic-emoji">✈️</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"Middleware is a function that processes a request before sending the response."</div>
+      <div class="definition-ta">Request வந்து Response போறதுக்கு முன்னாடி நடுல run ஆகும் function = <strong>Middleware</strong></div>
+    </div>
+
+    <div class="section-label">Real Life Example ✈️</div>
+    <div class="comparison">
+      <div class="comparison-side real">
+        <div class="comparison-label">Real Life — Airport</div>
+        <div class="comparison-item"><span>🧑‍✈️ Passenger</span><span class="tag">Request</span></div>
+        <div class="comparison-item"><span>🛂 Security Check</span><span class="tag">Middleware</span></div>
+        <div class="comparison-item"><span>✈️ Flight</span><span class="tag">Route</span></div>
+      </div>
+      <div class="comparison-side web">
+        <div class="comparison-label">Request Flow</div>
+        <div class="comparison-item"><span>Passenger → Security → Flight</span></div>
+        <div class="comparison-item"><span>Request → Middleware → Route</span></div>
+        <div class="comparison-item"><span>→ Response ✅</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">Basic Middleware Code</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">middleware.js</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">"express"</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>()
+
+<span class="var">app</span>.<span class="fn">use</span>((<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+  <span class="var">console</span>.<span class="fn">log</span>(<span class="str">"Middleware executed"</span>)
+  <span class="fn">next</span>()  <span class="cm">// ← இல்லன்னா request stop ஆகும்</span>
+})
+
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/users"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">res</span>.<span class="fn">send</span>(<span class="str">"Users data"</span>)
+})
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="num">5000</span>)</pre>
+    </div>
+
+    <div class="section-label">Parts Explained</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Part</th><th>என்ன பண்றது</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">app.use()</span></td><td>Middleware register பண்றது</td></tr>
+          <tr><td><span class="tag tag-green">next()</span></td><td>Next route/middleware கு அனுப்புது</td></tr>
+          <tr><td><span class="tag tag-red">next() இல்லன்னா</span></td><td>Request அங்கயே stuck ஆகும் ⚠️</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">next() இல்லன்னா என்ஆகும்? ⚠️</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">warning.js</span>
+      </div>
+      <pre><span class="var">app</span>.<span class="fn">use</span>((<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+  <span class="var">console</span>.<span class="fn">log</span>(<span class="str">"Stop here"</span>)
+  <span class="cm">// next() ❌ call பண்ணல</span>
+})
+
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/users"</span>, ...) <span class="cm">// ← இது NEVER run ஆகாது</span></pre>
+    </div>
+
+    <div class="warning">
+      <span class="warning-icon">⚠️</span>
+      <span class="warning-text"><code>next()</code> இல்லன்னா → Route reach ஆகாது → Response வராது 🚫</span>
+    </div>
+
+    <div class="section-label">Middleware Use Cases</div>
+    <div class="cards-grid">
+      <div class="card">
+        <span class="card-icon">🔐</span>
+        <div class="card-title">Authentication</div>
+        <div class="card-desc">Login இருக்கா check பண்றது</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">📝</span>
+        <div class="card-title">Logging</div>
+        <div class="card-desc">Request log பண்றது</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">✅</span>
+        <div class="card-title">Validation</div>
+        <div class="card-desc">Input correct-ஆ check பண்றது</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🛡️</span>
+        <div class="card-title">Security / CORS</div>
+        <div class="card-desc"><code>app.use(cors())</code></div>
+      </div>
+    </div>
+
+    <div class="section-label">Real Project Flow</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">User Login Request</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">Authentication Middleware ← token/session check</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box">Route Controller</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">Response</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"Middleware is a function that runs between the request and the response. It is used for <em>authentication, logging, validation, and security</em>. In Express.js, we use <em>app.use()</em> to register middleware, and <em>next()</em> must be called to pass control to the next function."</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== TOPIC 04: REST API ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">04</span>
+      <h2 class="topic-title">REST API</h2>
+      <span class="topic-emoji">🍽️</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"API is a communication bridge between frontend and backend."</div>
+      <div class="definition-ta">Frontend க்கும் Backend க்கும் நடுல communicate பண்ண உதவுவது = <strong>API</strong></div>
+    </div>
+
+    <div class="section-label">Real Life Example 🍽️</div>
+    <div class="comparison">
+      <div class="comparison-side real">
+        <div class="comparison-label">Real Life — Restaurant</div>
+        <div class="comparison-item"><span>👩‍🍳 Customer</span><span class="tag">Frontend</span></div>
+        <div class="comparison-item"><span>🧑‍💼 Waiter</span><span class="tag">API</span></div>
+        <div class="comparison-item"><span>🍳 Kitchen</span><span class="tag">Backend</span></div>
+        <div class="comparison-item"><span>🍛 Food</span><span class="tag">Response</span></div>
+      </div>
+      <div class="comparison-side web">
+        <div class="comparison-label">REST API = Standard Way</div>
+        <div class="comparison-item"><span>HTTP methods use பண்ணி</span></div>
+        <div class="comparison-item"><span>API create பண்ற standard way</span></div>
+        <div class="comparison-item"><span>Customer→Waiter→Kitchen→Food ✅</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">HTTP Methods</div>
+    <div class="methods">
+      <div class="method-badge"><span class="method-verb get-badge">GET</span><span class="method-desc">Data படிக்க</span></div>
+      <div class="method-badge"><span class="method-verb post-badge">POST</span><span class="method-desc">Data create பண்ண</span></div>
+      <div class="method-badge"><span class="method-verb put-badge">PUT</span><span class="method-desc">Data update பண்ண</span></div>
+      <div class="method-badge"><span class="method-verb del-badge">DELETE</span><span class="method-desc">Data delete பண்ண</span></div>
+    </div>
+
+    <div class="section-label">Basic REST API Code</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">api.js</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">"express"</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>()
+
+<span class="var">app</span>.<span class="fn">post</span>(<span class="str">"/register"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">res</span>.<span class="fn">send</span>(<span class="str">"User Registered"</span>)
+})
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="num">5000</span>)</pre>
+    </div>
+
+    <div class="section-label">Full CRUD Example</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">crud.js</span>
+      </div>
+      <pre><span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/users"</span>)        <span class="cm">// 📖 List get பண்ண</span>
+<span class="var">app</span>.<span class="fn">post</span>(<span class="str">"/users"</span>)       <span class="cm">// ➕ User create பண்ண</span>
+<span class="var">app</span>.<span class="fn">put</span>(<span class="str">"/users/:id"</span>)    <span class="cm">// ✏️ User update பண்ண</span>
+<span class="var">app</span>.<span class="fn">delete</span>(<span class="str">"/users/:id"</span>) <span class="cm">// 🗑️ User delete பண்ண</span></pre>
+    </div>
+
+    <div class="section-label">Real Project Endpoints</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Endpoint</th><th>Method</th><th>என்ன பண்றது</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-blue">/register</span></td><td><span class="tag tag-green">POST</span></td><td>User create</td></tr>
+          <tr><td><span class="tag tag-blue">/users</span></td><td><span class="tag tag-green">GET</span></td><td>User list</td></tr>
+          <tr><td><span class="tag tag-blue">/updateUser</span></td><td><span class="tag tag-yellow">PUT</span></td><td>User modify</td></tr>
+          <tr><td><span class="tag tag-blue">/deleteUser</span></td><td><span class="tag tag-red">DELETE</span></td><td>User remove</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Full Flow Diagram</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">Frontend</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">REST API ← Express routes handle பண்றது</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box">Backend Logic</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-yellow">Database</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">Response</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"API is a communication bridge between frontend and backend. REST API uses HTTP methods like <em>GET, POST, PUT, and DELETE</em> to perform CRUD operations. In Express.js, we create RESTful APIs using <em>app.get(), app.post(), app.put(), and app.delete()</em> to allow frontend and backend to communicate."</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== TOPIC 05: LIGHTWEIGHT ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">05</span>
+      <h2 class="topic-title">Lightweight &amp; Fast</h2>
+      <span class="topic-emoji">🏍️</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"Express.js is a fast and lightweight framework because it provides minimal features and allows developers to build applications quickly."</div>
+      <div class="definition-ta">அதிக code இல்லாம → Simple → Fast = <strong>Express.js</strong> ✅</div>
+    </div>
+
+    <div class="section-label">Real Life Example 🚗</div>
+    <div class="comparison">
+      <div class="comparison-side real">
+        <div class="comparison-label">Vehicle Comparison</div>
+        <div class="comparison-item"><span>🚛 Heavy Truck</span><span class="tag tag-red">Slow</span></div>
+        <div class="comparison-item"><span>🏍️ Bike</span><span class="tag tag-green">Fast</span></div>
+      </div>
+      <div class="comparison-side web">
+        <div class="comparison-label">Framework Comparison</div>
+        <div class="comparison-item"><span>Heavy Framework</span><span class="tag tag-red">Slow</span></div>
+        <div class="comparison-item"><span>Express.js</span><span class="tag tag-green">Lightweight ✅</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">Minimum Code — Server Ready</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">server.js — வெறும் 5 lines! 🔥</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">"express"</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>()
+
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">res</span>.<span class="fn">send</span>(<span class="str">"Hello"</span>)
+})
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="num">5000</span>)</pre>
+    </div>
+
+    <div class="section-label">Express Fast ஆ இருக்க 3 காரணங்கள்</div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <span class="step-text"><strong>Minimal Framework</strong> — தேவையானது மட்டும் இருக்கும்</span>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <span class="step-text"><strong>Node.js Async</strong> — Non-blocking architecture → Fast</span>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <span class="step-text"><strong>Only Required Features</strong> — Extra load இல்லை</span>
+      </div>
+    </div>
+
+    <div class="section-label">Practical Point 📦</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">தேவையானது மட்டும் add பண்ணலாம்</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">cors</span> <span class="kw">from</span> <span class="str">"cors"</span>
+<span class="kw">import</span> <span class="var">mongoose</span> <span class="kw">from</span> <span class="str">"mongoose"</span>
+
+<span class="var">app</span>.<span class="fn">use</span>(<span class="fn">cors</span>())
+<span class="cm">// தேவையான packages மட்டும் → Application heavy ஆகாது → Fast ✅</span></pre>
+    </div>
+
+    <div class="section-label">Request Flow</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">Client Request</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">Express Server ← Lightweight, fast handle</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">Fast Response</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"Express.js is a fast and lightweight framework because it provides only minimal features and is built on top of Node.js which uses <em>non-blocking asynchronous architecture</em>. We can create a server with just a few lines of code and add only the packages we need, keeping the application light and fast."</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== TOPIC 06: DATABASE ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">06</span>
+      <h2 class="topic-title">Database Connection</h2>
+      <span class="topic-emoji">🗄️</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"Express applications connect with databases like MongoDB to perform CRUD operations such as create, read, update, and delete."</div>
+      <div class="definition-ta">User register பண்ணினா → name, email, password → Database ல save ஆகும் ✅</div>
+    </div>
+
+    <div class="section-label">Popular Databases</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Database</th><th>Connect பண்ண Package</th></tr></thead>
+        <tbody>
+          <tr><td>🍃 MongoDB</td><td><span class="tag tag-green">mongoose</span></td></tr>
+          <tr><td>🐬 MySQL</td><td><span class="tag tag-blue">mysql2</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Express + MongoDB Code</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">db.js</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">"express"</span>
+<span class="kw">import</span> <span class="var">mongoose</span> <span class="kw">from</span> <span class="str">"mongoose"</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>()
+
+<span class="cm">// Database Connect</span>
+<span class="var">mongoose</span>.<span class="fn">connect</span>(<span class="str">"mongodb://localhost:27017/mydb"</span>)
+  .<span class="fn">then</span>(() => <span class="var">console</span>.<span class="fn">log</span>(<span class="str">"Database connected"</span>)) <span class="cm">// ✅ Terminal ல தெரியும்</span>
+
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/users"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">res</span>.<span class="fn">send</span>(<span class="str">"Users fetched from database"</span>)
+})
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="num">5000</span>)</pre>
+    </div>
+
+    <div class="section-label">Parts Explained</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Part</th><th>என்ன பண்றது</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">mongoose.connect()</span></td><td>MongoDB connect பண்றது</td></tr>
+          <tr><td><span class="tag tag-green">.then()</span></td><td>Connect success confirm</td></tr>
+          <tr><td><span class="tag tag-blue">app.get("/users")</span></td><td>Data fetch route</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">CRUD Operations</div>
+    <div class="cards-grid">
+      <div class="card">
+        <span class="card-icon">➕</span>
+        <div class="card-title">Create</div>
+        <div class="card-desc">Data save — User register</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">📖</span>
+        <div class="card-title">Read</div>
+        <div class="card-desc">Data fetch — User list get</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">✏️</span>
+        <div class="card-title">Update</div>
+        <div class="card-desc">Data modify — Profile update</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🗑️</span>
+        <div class="card-title">Delete</div>
+        <div class="card-desc">Data remove — Account delete</div>
+      </div>
+    </div>
+
+    <div class="section-label">Real Project API Endpoints</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Endpoint</th><th>Method</th><th>CRUD</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-blue">/register</span></td><td><span class="tag">POST</span></td><td>Create</td></tr>
+          <tr><td><span class="tag tag-blue">/users</span></td><td><span class="tag tag-green">GET</span></td><td>Read</td></tr>
+          <tr><td><span class="tag tag-blue">/updateUser</span></td><td><span class="tag tag-yellow">PUT</span></td><td>Update</td></tr>
+          <tr><td><span class="tag tag-blue">/deleteUser</span></td><td><span class="tag tag-red">DELETE</span></td><td>Delete</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Full Flow Diagram</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">Frontend</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">Express Server ← Request handle பண்றது</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-yellow">Database ← Data save / fetch</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">Response</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"Express applications connect with databases like MongoDB using <em>Mongoose</em> to perform CRUD operations — <em>Create, Read, Update, and Delete</em>. The frontend sends a request, Express handles it, queries the database, and sends back the response."</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== TOPIC 07: REQUEST & RESPONSE ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">07</span>
+      <h2 class="topic-title">Request &amp; Response Objects</h2>
+      <span class="topic-emoji">📮</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"Request object contains data sent by the client, and the response object is used by the server to send data back to the client."</div>
+      <div class="definition-ta">Express uses request and response objects to handle client-server communication.</div>
+    </div>
+
+    <div class="section-label">req vs res</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Object</th><th>யாரு அனுப்புவாங்க</th><th>என்ன</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">req</span> (Request)</td><td>Client → Server</td><td>Form data, URL params, query data</td></tr>
+          <tr><td><span class="tag tag-green">res</span> (Response)</td><td>Server → Client</td><td>Reply / Result</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Real Life Example 📮</div>
+    <div class="comparison">
+      <div class="comparison-side real">
+        <div class="comparison-label">Real Life — Post Office</div>
+        <div class="comparison-item"><span>✉️ Letter send பண்றது</span><span class="tag">Request</span></div>
+        <div class="comparison-item"><span>📬 Reply letter வருவது</span><span class="tag tag-green">Response</span></div>
+      </div>
+      <div class="comparison-side web">
+        <div class="comparison-label">Web Flow</div>
+        <div class="comparison-item"><span>Person → Letter → Post Office → Reply</span></div>
+        <div class="comparison-item"><span>Client → Request → Server → Response ✅</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">Basic Code</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">reqres.js</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">"express"</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>()
+
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">res</span>.<span class="fn">send</span>(<span class="str">"Hello World"</span>)
+})
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="num">5000</span>)</pre>
+    </div>
+
+    <div class="section-label">Request Object (req) — 3 Types</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">req-types.js</span>
+      </div>
+      <pre><span class="cm">// 1️⃣ req.body → Form data</span>
+<span class="var">app</span>.<span class="fn">post</span>(<span class="str">"/register"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">console</span>.<span class="fn">log</span>(<span class="var">req</span>.body)       <span class="cm">// { name: "Gowtham", email: "..." }</span>
+})
+
+<span class="cm">// 2️⃣ req.params → URL parameter</span>
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/users/:id"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">console</span>.<span class="fn">log</span>(<span class="var">req</span>.params.id)  <span class="cm">// /users/5 → "5"</span>
+})
+
+<span class="cm">// 3️⃣ req.query → Query string</span>
+<span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/search"</span>, (<span class="var">req</span>, <span class="var">res</span>) => {
+  <span class="var">console</span>.<span class="fn">log</span>(<span class="var">req</span>.query.name) <span class="cm">// /search?name=Gowtham → "Gowtham"</span>
+})</pre>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Property</th><th>எப்போ use பண்றது</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">req.body</span></td><td>Form / POST data</td></tr>
+          <tr><td><span class="tag tag-green">req.params</span></td><td>URL ல <code>:id</code> மாதிரி data</td></tr>
+          <tr><td><span class="tag tag-blue">req.query</span></td><td>URL ல <code>?key=value</code> data</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Response Object (res) — 3 Methods</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">res-methods.js</span>
+      </div>
+      <pre><span class="var">res</span>.<span class="fn">send</span>(<span class="str">"Hello"</span>)              <span class="cm">// 📝 Text send</span>
+<span class="var">res</span>.<span class="fn">json</span>({ name: <span class="str">"Gowtham"</span> }) <span class="cm">// 📦 JSON send</span>
+<span class="var">res</span>.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">send</span>(<span class="str">"Not Found"</span>) <span class="cm">// 🔢 Status code + message</span></pre>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Method</th><th>என்ன அனுப்புது</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">res.send()</span></td><td>Plain text</td></tr>
+          <tr><td><span class="tag tag-green">res.json()</span></td><td>JSON data</td></tr>
+          <tr><td><span class="tag tag-blue">res.status()</span></td><td>HTTP status code</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Communication Flow</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">Client (Browser)</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box">Request (req) ← Client data அனுப்புது</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">Express Server ← Process பண்றது</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">Response (res) ← Server reply அனுப்புது</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-orange">Client (Browser)</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"In Express.js, the request object (<em>req</em>) contains data sent by the client such as <em>form data, URL parameters, and query strings</em>. The response object (<em>res</em>) is used by the server to send data back to the client using methods like <em>res.send(), res.json(), and res.status()</em>."</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== TOPIC 08: STATIC FILES ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">08</span>
+      <h2 class="topic-title">Static Files</h2>
+      <span class="topic-emoji">🖼️</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"Static files are files served directly to the client without server processing."</div>
+      <div class="definition-ta">Server side processing இல்லாம → Direct-ஆ browser கு send = <strong>Static Files</strong> ✅</div>
+    </div>
+
+    <div class="section-label">File Types</div>
+    <div class="cards-grid">
+      <div class="card">
+        <span class="card-icon">🖼️</span>
+        <div class="card-title">Images</div>
+        <div class="card-desc">image1.png, profile.png</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎨</span>
+        <div class="card-title">CSS</div>
+        <div class="card-desc">style.css</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">📜</span>
+        <div class="card-title">JavaScript</div>
+        <div class="card-desc">script.js</div>
+      </div>
+    </div>
+
+    <div class="section-label">Folder Structure</div>
+    <div class="folder">
+      <span class="dir">📁 project</span><br/>
+      <span class="tree"> ├── </span><span class="file">📄 server.js</span><br/>
+      <span class="tree"> └── </span><span class="dir">📁 uploads</span><br/>
+      <span class="tree">      ├── </span><span class="img">🖼️ image1.png</span><br/>
+      <span class="tree">      ├── </span><span class="css">🎨 style.css</span><br/>
+      <span class="tree">      └── </span><span class="js">📜 script.js</span>
+    </div>
+
+    <div class="section-label">Express Static Middleware Code</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">static.js</span>
+      </div>
+      <pre><span class="kw">import</span> <span class="var">express</span> <span class="kw">from</span> <span class="str">"express"</span>
+
+<span class="kw">const</span> <span class="var">app</span> = <span class="fn">express</span>()
+
+<span class="cm">// Static files serve பண்ண</span>
+<span class="var">app</span>.<span class="fn">use</span>(<span class="var">express</span>.<span class="fn">static</span>(<span class="str">"uploads"</span>))
+
+<span class="var">app</span>.<span class="fn">listen</span>(<span class="num">5000</span>)</pre>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Part</th><th>என்ன பண்றது</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">express.static()</span></td><td>Static files serve பண்ற middleware</td></tr>
+          <tr><td><span class="tag tag-yellow">"uploads"</span></td><td>Files இருக்கும் folder name</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Browser Access</div>
+    <div class="url-box">
+      <span class="url-icon">🌐</span>
+      http://localhost:5000/image1.png
+    </div>
+    <p style="font-family:'Noto Sans Tamil',sans-serif; font-size:0.88rem; color:var(--muted); margin-bottom:28px;">Browser direct-ஆ image show பண்ணும் — Server processing தேவையில்லை ✅</p>
+
+    <div class="section-label">Real Project Example</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">index.html — Frontend ல image use பண்ண</span>
+      </div>
+      <pre><span class="kw">&lt;img</span> <span class="fn">src</span>=<span class="str">"http://localhost:5000/profile.png"</span> <span class="kw">/&gt;</span></pre>
+    </div>
+
+    <div class="section-label">Request Flow</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">Browser</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box">Request static file (image1.png)</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">Express Server</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-yellow">uploads Folder ← File எடுக்கும்</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">Image Response ← Direct send பண்ணும்</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"Static files are files like images, CSS, and JavaScript that are served directly to the client without any server-side processing. In Express.js, we use the <em>express.static()</em> middleware and pass the folder name to serve these files. For example, <em>app.use(express.static('uploads'))</em> will serve all files inside the uploads folder."</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ==================== TOPIC 09: ERROR HANDLING ==================== -->
+  <section class="topic">
+    <div class="topic-header">
+      <span class="topic-number">09</span>
+      <h2 class="topic-title">Error Handling Middleware</h2>
+      <span class="topic-emoji">🏥</span>
+    </div>
+
+    <div class="definition">
+      <div class="definition-quote">"Express provides error-handling middleware to catch and manage application errors."</div>
+      <div class="definition-ta">Application ல error வந்தா → catch பண்ணி → proper response send பண்றது = <strong>Error Handling</strong> ✅</div>
+    </div>
+
+    <div class="section-label">Error Types</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Error Type</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Database error</td><td>MongoDB connect ஆகல</td></tr>
+          <tr><td>API error</td><td>Invalid request</td></tr>
+          <tr><td>Route error</td><td>Page not found</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Real Life Example 🏥</div>
+    <div class="comparison">
+      <div class="comparison-side real">
+        <div class="comparison-label">Real Life — Hospital</div>
+        <div class="comparison-item"><span>🤒 Patient Problem</span><span class="tag tag-red">Error</span></div>
+        <div class="comparison-item"><span>👨‍⚕️ Doctor</span><span class="tag tag-blue">Error Middleware</span></div>
+        <div class="comparison-item"><span>💊 Treatment</span><span class="tag tag-green">Response</span></div>
+      </div>
+      <div class="comparison-side web">
+        <div class="comparison-label">Web Flow</div>
+        <div class="comparison-item"><span>Problem → Doctor → Treatment</span></div>
+        <div class="comparison-item"><span>Error → Middleware → Response ✅</span></div>
+      </div>
+    </div>
+
+    <div class="section-label">Error Middleware Code ⚠️</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">error-middleware.js</span>
+      </div>
+      <pre><span class="var">app</span>.<span class="fn">use</span>((<span class="var">err</span>, <span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+  <span class="var">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">send</span>(<span class="str">"Server Error"</span>)
+})</pre>
+    </div>
+
+    <div class="warning">
+      <span class="warning-icon">⚠️</span>
+      <span class="warning-text">Error middleware ல <strong>exactly 4 parameters</strong> இருக்கணும் — இல்லன்னா Express error middleware-ஆ recognize பண்ணாது!</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Parameter</th><th>என்ன</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-red">err</span></td><td>Error object</td></tr>
+          <tr><td><span class="tag">req</span></td><td>Request</td></tr>
+          <tr><td><span class="tag tag-green">res</span></td><td>Response</td></tr>
+          <tr><td><span class="tag tag-blue">next</span></td><td>Next middleware</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-label">Route + Error Middleware Full Example</div>
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">full-error.js</span>
+      </div>
+      <pre><span class="var">app</span>.<span class="fn">get</span>(<span class="str">"/users"</span>, (<span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {
+  <span class="kw">try</span> {
+    <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">"Database error"</span>)   <span class="cm">// 1️⃣ Error வருது</span>
+  } <span class="kw">catch</span>(<span class="var">err</span>) {
+    <span class="fn">next</span>(<span class="var">err</span>)                           <span class="cm">// 2️⃣ Error middleware கு அனுப்புது</span>
+  }
+})
+
+<span class="var">app</span>.<span class="fn">use</span>((<span class="var">err</span>, <span class="var">req</span>, <span class="var">res</span>, <span class="var">next</span>) => {      <span class="cm">// 3️⃣ Error handle பண்றது</span>
+  <span class="var">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">send</span>(<span class="var">err</span>.message)
+})</pre>
+    </div>
+
+    <div class="steps">
+      <div class="step"><span class="step-num">1</span><span class="step-text">Route ல error வருது</span></div>
+      <div class="step"><span class="step-num">2</span><span class="step-text"><code>next(err)</code> call பண்றது — Error middleware கு அனுப்புது</span></div>
+      <div class="step"><span class="step-num">3</span><span class="step-text">Error middleware catch பண்றது — Response send பண்றது</span></div>
+    </div>
+
+    <div class="section-label">Common HTTP Error Codes</div>
+    <div class="error-grid">
+      <div class="error-card">
+        <div class="error-code" style="color:var(--accent5)">404</div>
+        <div class="error-desc">Page Not Found</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code" style="color:var(--accent1)">500</div>
+        <div class="error-desc">Server Error</div>
+      </div>
+      <div class="error-card">
+        <div class="error-code" style="color:var(--accent4)">400</div>
+        <div class="error-desc">Bad Request</div>
+      </div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-dot"></span><span class="code-dot"></span><span class="code-dot"></span>
+        <span class="code-filename">status-codes.js</span>
+      </div>
+      <pre><span class="var">res</span>.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">send</span>(<span class="str">"Page Not Found"</span>)  <span class="cm">// Route இல்லை</span>
+<span class="var">res</span>.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">send</span>(<span class="str">"Server Error"</span>)    <span class="cm">// Server problem</span>
+<span class="var">res</span>.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">send</span>(<span class="str">"Bad Request"</span>)     <span class="cm">// Invalid input</span></pre>
+    </div>
+
+    <div class="section-label">Error Flow</div>
+    <div class="flow">
+      <div class="flow-box highlight-orange">Client Request</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box">Route / Controller</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-red">Error Occurs ❌</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-purple">Error Middleware ← catch பண்றது</div>
+      <div class="flow-arrow"></div>
+      <div class="flow-box highlight-green">Response (err.message)</div>
+    </div>
+
+    <div class="interview-box">
+      <p>"Express provides error-handling middleware to catch and manage application errors. It takes <em>4 parameters — err, req, res, and next</em>. When an error occurs in a route, we call <em>next(err)</em> to pass it to the error middleware, which sends a proper response with the appropriate HTTP status code."</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <span>Express.js</span> Quick Revision · Interview Ready 🔥 · எல்லா topics-உம் complete ✅
+</footer>
+
+</body>
+</html>

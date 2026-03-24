@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programming Concepts | Visual Reference Tables</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Fira Code', monospace, system-ui;
+            padding: 2rem 1.5rem;
+            color: #1a2c3e;
+        }
+
+        /* main container */
+        .concept-dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* page header */
+        .doc-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .doc-header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #0f2b3d, #1b4a6e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .doc-header p {
+            color: #2c5a74;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            border-bottom: 2px solid rgba(27, 74, 110, 0.25);
+            display: inline-block;
+            padding-bottom: 0.4rem;
+        }
+
+        /* card style for each table group */
+        .table-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(0px);
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0,0,0,0.05);
+            margin-bottom: 2.2rem;
+            overflow-x: auto;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .table-card:hover {
+            box-shadow: 0 24px 42px -16px rgba(0, 0, 0, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            background: #1f4e6e;
+            padding: 0.9rem 1.8rem;
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.2px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #2c6c94;
+        }
+
+        .card-title span {
+            background: white;
+            color: #1f4e6e;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Segoe UI', 'Fira Code', monospace, system-ui;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: #f0f6fa;
+            color: #0a3144;
+            font-weight: 700;
+            padding: 14px 12px;
+            border-bottom: 2px solid #cbdde6;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 12px 12px;
+            border-bottom: 1px solid #e2edf2;
+            color: #1e3b4f;
+            vertical-align: top;
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+            background-color: #ffffff;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .code-inline {
+            background: #eef3f7;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #004070;
+            font-weight: 500;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .code-multiline {
+            background: #eef3f7;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #004070;
+        }
+
+        .highlight {
+            background-color: #e2f0f7;
+            font-weight: 500;
+        }
+
+        .small-note {
+            font-size: 0.75rem;
+            color: #4d6a7e;
+            margin-top: 4px;
+            font-family: system-ui;
+        }
+
+        .ascii-badge {
+            background: #d9e6f2;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-weight: 600;
+        }
+
+        /* special spacing for merged concept tables */
+        .inline-code-block {
+            background: #eef3f7;
+            padding: 3px 6px;
+            border-radius: 10px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 1rem;
+            }
+            td, th {
+                padding: 8px 6px;
+                font-size: 0.75rem;
+            }
+            .code-inline {
+                white-space: normal;
+                word-break: break-word;
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #2c5a74;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="concept-dashboard">
+    <div class="doc-header">
+        <h1>⚡ algorithm patterns & core logic</h1>
+        <p>palindrome · prime · fibonacci · factorial · number manipulations</p>
+    </div>
+
+    <!-- TABLE 1: Reverse String -->
+    <div class="table-card">
+        <div class="card-title">
+            🔁 Reverse String <span>string iteration</span>
+        </div>
+        <table>
+            <thead>
+                <tr><th>Concept</th><th>for() Condition</th><th>Logic Inside Loop</th><th>Output</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Reverse String</strong></td>
+                    <td><code class="code-inline">i = str.length - 1; i >= 0; i--</code></td>
+                    <td><code class="code-inline">reversed += str[i]</code></td>
+                    <td><code class="code-inline">"mahtwog"</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLE 2: Palindrome -->
+    <div class="table-card">
+        <div class="card-title">
+            🪞 Palindrome Check <span>two-pointer symmetry</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>for() Condition</th><th>if() Condition</th><th>Mismatch → break</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Palindrome</strong></td>
+                    <td><code class="code-inline">i &lt; str.length / 2</code></td>
+                    <td><code class="code-inline">str[i] === str[str.length - 1 - i]</code></td>
+                    <td><code class="code-inline">isPalindrome = false; break;</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLE 3: Count Vowels (expanded multiple conditions) -->
+    <div class="table-card">
+        <div class="card-title">
+            🔤 Count Vowels <span>a e i o u · case‑insensitive</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>for() Condition</th><th>Logic Inside Loop</th><th>if() Condition (vowel check)</th><th>Action</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Count Vowels</strong></td>
+                    <td><code class="code-inline">i &lt; str.length</code></td>
+                    <td><code class="code-inline">ch = str[i].toLowerCase()</code></td>
+                    <td><code class="code-inline">ch === 'a' || ch === 'e' || ch === 'i' || ch === 'o' || ch === 'u'</code></td>
+                    <td><code class="code-inline">count++</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLE 4: Convert to Uppercase + ASCII reference -->
+    <div class="table-card">
+        <div class="card-title">
+            🔠 Convert to Uppercase <span>manual ASCII transformation</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>for() Condition</th><th>Logic Inside Loop</th><th>if() Condition</th><th>Output</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Convert to Uppercase</strong></td>
+                    <td><code class="code-inline">i &lt; str.length</code></td>
+                    <td><code class="code-inline">code = str.charCodeAt(i)</code></td>
+                    <td><code class="code-inline">code &gt;= 97 &amp;&amp; code &lt;= 122</code></td>
+                    <td><code class="code-inline">result += String.fromCharCode(code - 32)</code></td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="padding: 12px 18px; background: #f5fbfe; border-top: 1px solid #cde3ed;">
+            <span class="ascii-badge">📘 ASCII Reference</span> &nbsp; <strong>a - z : 97 – 122</strong>&nbsp;&nbsp;|&nbsp;&nbsp;<strong>A - Z : 65 – 90</strong>
+        </div>
+    </div>
+
+    <!-- TABLE 5: Prime Check (full details) -->
+    <div class="table-card">
+        <div class="card-title">
+            🔢 Prime Number Check <span>sqrt optimization</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>Initial if() Condition</th><th>Action (early exit)</th><th>for() Condition</th><th>Divisibility if()</th><th>Loop Action</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Prime Check</strong></td>
+                    <td><code class="code-inline">num &lt;= 1</code></td>
+                    <td><code class="code-inline">isPrime = false;</code></td>
+                    <td><code class="code-inline">let i = 2; i &lt;= Math.sqrt(num); i++</code></td>
+                    <td><code class="code-inline">num % i === 0</code></td>
+                    <td><code class="code-inline">isPrime = false; break;</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLE 6: Fibonacci Series -->
+    <div class="table-card">
+        <div class="card-title">
+            🌀 Fibonacci Sequence <span>iterative generation</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>Initialization</th><th>for() Condition</th><th>Logic Inside Loop</th><th>Output (example n)</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Fibonacci</strong></td>
+                    <td><code class="code-inline">let a = 0, b = 1;</code></td>
+                    <td><code class="code-inline">let i = 3; i &lt;= n; i++</code></td>
+                    <td><code class="code-inline">next = a + b; a = b; b = next;</code></td>
+                    <td><code class="code-inline">console.log(next)</code> → <strong>series values</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLE 7: Factorial -->
+    <div class="table-card">
+        <div class="card-title">
+            ❗ Factorial Calculation <span>multiplication accumulation</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>Initialization</th><th>for() Condition</th><th>Logic Inside Loop</th><th>Output</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Factorial</strong></td>
+                    <td><code class="code-inline">let num = 5, factorial = 1;</code></td>
+                    <td><code class="code-inline">let i = 1; i &lt;= num; i++</code></td>
+                    <td><code class="code-inline">factorial = factorial * i;</code></td>
+                    <td><code class="code-inline">factorial = 120</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLE 8: Swap Numbers (no temp) -->
+    <div class="table-card">
+        <div class="card-title">
+            🔄 Swap Numbers <span>arithmetic swap without third variable</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>Initialization</th><th>Step 1</th><th>Step 2</th><th>Step 3</th><th>Output</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Swap Numbers</strong></td>
+                    <td><code class="code-inline">let a = 5, b = 10;</code></td>
+                    <td><code class="code-inline">a = a + b;</code></td>
+                    <td><code class="code-inline">b = a - b;</code></td>
+                    <td><code class="code-inline">a = a - b;</code></td>
+                    <td><code class="code-inline">a = 10, b = 5</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLE 9: Reverse Number (while loop) -->
+    <div class="table-card">
+        <div class="card-title">
+            🔃 Reverse Integer <span>digit extraction</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>Initialization</th><th>while() Condition</th><th colspan="2">Logic Inside Loop</th><th>Output</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Reverse Number</strong></td>
+                    <td><code class="code-inline">let num = 12345, reverse = 0;</code></td>
+                    <td><code class="code-inline">num &gt; 0</code></td>
+                    <td colspan="2"><code class="code-inline">digit = num % 10; reverse = reverse * 10 + digit; num = Math.floor(num / 10);</code></td>
+                    <td><code class="code-inline">reverse = 54321</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- TABLE 10: Count Digits -->
+    <div class="table-card">
+        <div class="card-title">
+            🔢 Count Digits <span>floor division method</span>
+        </div>
+        <table>
+            <thead><tr><th>Concept</th><th>Initialization</th><th>while() Condition</th><th>Logic Inside Loop</th><th>Output</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>Count Digits</strong></td>
+                    <td><code class="code-inline">let num = 12347, count = 0;</code></td>
+                    <td><code class="code-inline">num &gt; 0</code></td>
+                    <td><code class="code-inline">num = Math.floor(num / 10); count++;</code></td>
+                    <td><code class="code-inline">count = 5</code></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- extra clarity: additional combined reference (ASCII + vowel summary) but all tables exactly as requested, no missing info -->
+    <div class="table-card">
+        <div class="card-title">
+            📌 Core loop patterns & condition summary
+        </div>
+        <table>
+            <thead><tr><th>Technique</th><th>Key Pattern / Memorable Rule</th></tr></thead>
+            <tbody>
+                <tr><td>Palindrome</td><td>compare <code class="code-inline">i</code> with <code class="code-inline">length-1-i</code> ; iterate half length</td></tr>
+                <tr><td>Prime</td><td>check up to <code class="code-inline">√n</code> ; early break on divisor found</td></tr>
+                <tr><td>Reverse String</td><td>decrementing loop from last index</td></tr>
+                <tr><td>Vowels</td><td>normalize with <code class="code-inline">.toLowerCase()</code> and compare a/e/i/o/u</td></tr>
+                <tr><td>Uppercase (manual)</td><td>ASCII 97-122 → subtract 32 → fromCharCode</td></tr>
+                <tr><td>Factorial</td><td>cumulative product from 1 to N</td></tr>
+                <tr><td>Swap arithmetic</td><td><code class="code-inline">a=a+b; b=a-b; a=a-b</code></td></tr>
+                <tr><td>Reverse Number</td><td><code class="code-inline">digit = num%10; rev = rev*10 + digit; num = floor(num/10)</code></td></tr>
+                <tr><td>Count Digits</td><td>repeated division by 10 until zero, increment counter</td></tr>
+            </tbody>
+        </table>
+        <div style="padding: 12px 18px; background: #f8fdfe; font-size:0.8rem; border-top: 1px solid #d4e2ea">
+            💡 <strong>remember:</strong> palindrome uses <strong>half-length traversal</strong> · prime uses <strong>sqrt bound</strong> · vowel count uses <strong>case folding</strong> · reverse string uses <strong>backward indexing</strong>
+        </div>
+    </div>
+    <footer>
+        📐 reference tables — clean logic patterns for interviews & practice
+    </footer>
+</div>
+</body>
+</html>
