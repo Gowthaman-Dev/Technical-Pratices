@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript Array Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #7c6aff;
+    --accent2: #ff6a9b;
+    --accent3: #6affdc;
+    --accent4: #ffcc6a;
+    --text: #e8e6f0;
+    --muted: #7a7890;
+    --head-bg: #1e1c2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% -10%, rgba(124,106,255,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 30% at 90% 80%, rgba(255,106,155,0.08) 0%, transparent 50%);
+  }
+
+  h1.page-title {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    margin-bottom: 60px;
+    letter-spacing: 2px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 700px), 1fr));
+    gap: 28px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+  .card:hover::before { opacity: 1; }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 24px;
+    background: var(--head-bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-title .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    background: rgba(124,106,255,0.15);
+    border: 1px solid rgba(124,106,255,0.3);
+    border-radius: 6px;
+    padding: 3px 8px;
+    letter-spacing: 1px;
+  }
+
+  .card-title h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.3px;
+  }
+
+  .card-title .output-badge {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent3);
+    background: rgba(106,255,220,0.1);
+    border: 1px solid rgba(106,255,220,0.25);
+    border-radius: 6px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+
+  thead tr {
+    background: rgba(255,255,255,0.03);
+  }
+
+  thead th {
+    padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(124,106,255,0.05); }
+
+  tbody td {
+    padding: 11px 16px;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .label-col {
+    color: var(--accent2);
+    font-weight: 700;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    background: rgba(124,106,255,0.12);
+    color: #c5bcff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(124,106,255,0.2);
+  }
+
+  .col-init code   { color: #ffcc6a; background: rgba(255,204,106,0.1); border-color: rgba(255,204,106,0.2); }
+  .col-for code    { color: #6affdc; background: rgba(106,255,220,0.1); border-color: rgba(106,255,220,0.2); }
+  .col-if code     { color: #ff9e6a; background: rgba(255,158,106,0.1); border-color: rgba(255,158,106,0.2); }
+  .col-logic code  { color: #c5bcff; background: rgba(124,106,255,0.12); border-color: rgba(124,106,255,0.2); }
+  .col-out code    { color: #6affdc; font-weight: 700; }
+
+  .em-dash { color: var(--muted); }
+
+  .method-tag {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+
+  .method-tag.m1 { background: rgba(124,106,255,0.15); color: var(--accent); border: 1px solid rgba(124,106,255,0.3); }
+  .method-tag.m2 { background: rgba(106,255,220,0.1); color: var(--accent3); border: 1px solid rgba(106,255,220,0.25); }
+
+  .multi-row { display: flex; flex-direction: column; gap: 10px; }
+
+  .card.wide { grid-column: 1 / -1; }
+
+  @media (max-width: 600px) {
+    table { font-size: 0.74rem; }
+    thead th { padding: 8px 10px; font-size: 0.6rem; }
+    tbody td { padding: 9px 10px; }
+    .card-title { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">JavaScript Array Concepts</h1>
+<p class="subtitle">// CHEAT SHEET &nbsp;·&nbsp; ARRAY ALGORITHMS</p>
+
+<div class="grid">
+
+  <!-- 1. Largest Element -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">01</span>
+      <h2>Largest Element</h2>
+      <span class="output-badge">largest = 40</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let largest = arr[0];</code></td>
+        <td class="col-for"><code>let i = 1; i &lt; arr.length; i++</code></td>
+        <td class="col-if"><code>arr[i] &gt; largest</code></td>
+        <td class="col-logic"><code>largest = arr[i];</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 2. Smallest Element -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">02</span>
+      <h2>Smallest Element</h2>
+      <span class="output-badge">smallest = 5</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let smallest = arr[0];</code></td>
+        <td class="col-for"><code>let i = 1; i &lt; arr.length; i++</code></td>
+        <td class="col-if"><code>arr[i] &lt; smallest</code></td>
+        <td class="col-logic"><code>smallest = arr[i];</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 3. Second Largest -->
+  <div class="card wide">
+    <div class="card-title">
+      <span class="num">03</span>
+      <h2>Second Largest</h2>
+      <span class="output-badge">secondLargest = 25</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-init" rowspan="2"><code>let largest = -Infinity, secondLargest = -Infinity;</code></td>
+          <td class="col-for" rowspan="2"><code>let i = 0; i &lt; arr.length; i++</code></td>
+          <td class="col-if"><code>arr[i] &gt; largest</code></td>
+          <td class="col-logic"><code>secondLargest = largest; largest = arr[i];</code></td>
+        </tr>
+        <tr>
+          <td class="col-if"><code>arr[i] &gt; secondLargest &amp;&amp; arr[i] !== largest</code></td>
+          <td class="col-logic"><code>secondLargest = arr[i];</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 4. Sum of Array -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">04</span>
+      <h2>Sum of Array</h2>
+      <span class="output-badge">sum = 100</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let sum = 0;</code></td>
+        <td class="col-for"><code>let i = 0; i &lt; arr.length; i++</code></td>
+        <td class="col-logic"><code>sum = sum + arr[i];</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 5. Even & Odd Count -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">05</span>
+      <h2>Even &amp; Odd Count</h2>
+      <span class="output-badge">even = 3, odd = 2</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-init" rowspan="2"><code>let evenCount = 0, oddCount = 0;</code></td>
+          <td class="col-for" rowspan="2"><code>let i = 0; i &lt; arr.length; i++</code></td>
+          <td class="col-if"><code>arr[i] % 2 === 0</code></td>
+          <td class="col-logic"><code>evenCount++</code></td>
+        </tr>
+        <tr>
+          <td class="col-if"><code>else</code></td>
+          <td class="col-logic"><code>oddCount++</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 6. Reverse Array -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">06</span>
+      <h2>Reverse Array</h2>
+      <span class="output-badge">[40, 30, 20, 10]</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let reversed = [];</code></td>
+        <td class="col-for"><code>let i = arr.length - 1; i &gt;= 0; i--</code></td>
+        <td class="col-logic"><code>reversed[reversed.length] = arr[i];</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 7. Sorted Array Check -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">07</span>
+      <h2>Sorted Array Check</h2>
+      <span class="output-badge">true / false</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init em-dash">—</td>
+        <td class="col-for"><code>let i = 0; i &lt; arr.length - 1; i++</code></td>
+        <td class="col-if"><code>arr[i] &gt; arr[i + 1]</code></td>
+        <td class="col-logic"><code>isSorted = false; break;</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 8. Linear Search -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">08</span>
+      <h2>Linear Search</h2>
+      <span class="output-badge">index or not found</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let target = 40, found = false;</code></td>
+        <td class="col-for"><code>let i = 0; i &lt; arr.length; i++</code></td>
+        <td class="col-if"><code>arr[i] === target</code></td>
+        <td class="col-logic"><code>console.log(i); found = true; break;</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 9. Merge Arrays -->
+  <div class="card wide">
+    <div class="card-title">
+      <span class="num">09</span>
+      <h2>Merge Arrays</h2>
+      <span class="output-badge">[1,2,3,4,5,6]</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Method</th><th>Initialization</th><th>for() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="method-tag m1">METHOD 01</span></td>
+          <td class="col-init"><code>let merged = [];</code></td>
+          <td class="col-for"><code>i &lt; arr1.length</code> &amp; <code>i &lt; arr2.length</code></td>
+          <td class="col-logic"><code>merged.push(arr[i]);</code></td>
+        </tr>
+        <tr>
+          <td><span class="method-tag m2">METHOD 02</span></td>
+          <td class="col-init"><code>let merged = [...arr1, ...arr2];</code></td>
+          <td class="col-for em-dash">—</td>
+          <td class="col-logic em-dash">combine both arrays</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 10. Remove Duplicates -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">10</span>
+      <h2>Remove Duplicates</h2>
+      <span class="output-badge">[1,2,3,4,5]</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>Outer Loop</th><th>Inner Loop</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-init" rowspan="2"><code>let unique = []</code></td>
+          <td class="col-for" rowspan="2"><code>i &lt; arr.length</code></td>
+          <td class="col-for" rowspan="2"><code>j &lt; unique.length</code></td>
+          <td class="col-if"><code>arr[i] === unique[j]</code></td>
+          <td class="col-logic"><code>isDuplicate = true; break;</code></td>
+        </tr>
+        <tr>
+          <td class="col-if"><code>!isDuplicate</code></td>
+          <td class="col-logic"><code>unique.push(arr[i]);</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 11. Bubble Sort -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">11</span>
+      <h2>Bubble Sort</h2>
+      <span class="output-badge">[1,2,5,5,6,9]</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>Outer Loop</th><th>Inner Loop</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let arr = [...]</code></td>
+        <td class="col-for"><code>i &lt; arr.length - 1</code></td>
+        <td class="col-for"><code>j &lt; arr.length - 1 - i</code></td>
+        <td class="col-if"><code>arr[j] &gt; arr[j + 1]</code></td>
+        <td class="col-logic"><code>swap (temp, arr[j], arr[j+1])</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 12. Left Rotate by 1 -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">12</span>
+      <h2>Left Rotate by 1</h2>
+      <span class="output-badge">[2,3,4,5,1]</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>Logic Inside Loop</th><th>Final Step</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let first = arr[0];</code></td>
+        <td class="col-for"><code>let i = 0; i &lt; arr.length - 1; i++</code></td>
+        <td class="col-logic"><code>arr[i] = arr[i + 1];</code></td>
+        <td class="col-logic"><code>arr[arr.length - 1] = first;</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 13. Right Rotate by 1 -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">13</span>
+      <h2>Right Rotate by 1</h2>
+      <span class="output-badge">[5,1,2,3,4]</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>Logic Inside Loop</th><th>Final Step</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let last = arr[arr.length - 1];</code></td>
+        <td class="col-for"><code>let i = arr.length - 1; i &gt; 0; i--</code></td>
+        <td class="col-logic"><code>arr[i] = arr[i - 1];</code></td>
+        <td class="col-logic"><code>arr[0] = last;</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 14. Frequency Count -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">14</span>
+      <h2>Frequency Count</h2>
+      <span class="output-badge">{1:2, 2:2, 3:1, 4:1}</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-init" rowspan="2"><code>let freq = {};</code></td>
+          <td class="col-for" rowspan="2"><code>i &lt; arr.length</code></td>
+          <td class="col-if"><code>freq[element]</code></td>
+          <td class="col-logic"><code>freq[element]++</code></td>
+        </tr>
+        <tr>
+          <td class="col-if"><code>!freq[element]</code></td>
+          <td class="col-logic"><code>freq[element] = 1</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 15. Sum of Marks / Average / Count Above Average -->
+  <div class="card wide">
+    <div class="card-title">
+      <span class="num">15</span>
+      <h2>Sum of Marks · Average · Count Above Average</h2>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Concept</th><th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th><th>Output</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="label-col">Sum of Marks</td>
+          <td class="col-init"><code>let sum = 0;</code></td>
+          <td class="col-for"><code>i &lt; marks.length</code></td>
+          <td class="em-dash">—</td>
+          <td class="col-logic"><code>sum += marks[i];</code></td>
+          <td class="col-out"><code>sum = 350</code></td>
+        </tr>
+        <tr>
+          <td class="label-col">Average</td>
+          <td class="col-init"><code>let avg = sum / marks.length;</code></td>
+          <td class="em-dash">—</td>
+          <td class="em-dash">—</td>
+          <td class="em-dash">—</td>
+          <td class="col-out"><code>avg = 70</code></td>
+        </tr>
+        <tr>
+          <td class="label-col">Count Above Average</td>
+          <td class="col-init"><code>let count = 0;</code></td>
+          <td class="col-for"><code>i &lt; marks.length</code></td>
+          <td class="col-if"><code>marks[i] &gt; avg</code></td>
+          <td class="col-logic"><code>count++;</code></td>
+          <td class="col-out"><code>count = 2</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 16. Increase Salary -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">16</span>
+      <h2>Increase Salary</h2>
+      <span class="output-badge">[1100, 2200, 3300]</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let salaries = [1000, 2000, 3000];</code></td>
+        <td class="col-for"><code>i &lt; salaries.length</code></td>
+        <td class="col-logic"><code>salaries[i] = salaries[i] * 1.1;</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 17. Separate Pos & Neg -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">17</span>
+      <h2>Separate Pos &amp; Neg</h2>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th><th>Output</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="col-init" rowspan="2"><code>let positive = [], negative = [];</code></td>
+          <td class="col-for" rowspan="2"><code>i &lt; arr.length</code></td>
+          <td class="col-if"><code>arr[i] &gt;= 0</code></td>
+          <td class="col-logic"><code>positive.push(arr[i])</code></td>
+          <td class="col-out"><code>positive = [2,5,0,4]</code></td>
+        </tr>
+        <tr>
+          <td class="col-if"><code>arr[i] &lt; 0</code></td>
+          <td class="col-logic"><code>negative.push(arr[i])</code></td>
+          <td class="col-out"><code>negative = [-3,-1,-7]</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 18. Replace Even -->
+  <div class="card">
+    <div class="card-title">
+      <span class="num">18</span>
+      <h2>Replace Even</h2>
+      <span class="output-badge">[1,0,3,0,5,0]</span>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th>
+      </tr></thead>
+      <tbody><tr>
+        <td class="col-init"><code>let arr = [1,2,3,4,5,6];</code></td>
+        <td class="col-for"><code>i &lt; arr.length</code></td>
+        <td class="col-if"><code>arr[i] % 2 === 0</code></td>
+        <td class="col-logic"><code>arr[i] = 0;</code></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <!-- 19. Max & Min & Difference -->
+  <div class="card wide">
+    <div class="card-title">
+      <span class="num">19</span>
+      <h2>Max &amp; Min · Difference</h2>
+    </div>
+    <table>
+      <thead><tr>
+        <th>Concept</th><th>Initialization</th><th>for() Condition</th><th>if() Condition</th><th>Logic Inside Loop</th><th>Output</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td class="label-col">Max &amp; Min</td>
+          <td class="col-init"><code>let max = arr[0], min = arr[0];</code></td>
+          <td class="col-for"><code>i = 1; i &lt; arr.length; i++</code></td>
+          <td class="col-if"><code>arr[i] &gt; max</code></td>
+          <td class="col-logic"><code>max = arr[i];</code></td>
+          <td class="col-out"><code>max = 9</code></td>
+        </tr>
+        <tr>
+          <td class="label-col"></td>
+          <td></td>
+          <td></td>
+          <td class="col-if"><code>arr[i] &lt; min</code></td>
+          <td class="col-logic"><code>min = arr[i];</code></td>
+          <td class="col-out"><code>min = 2</code></td>
+        </tr>
+        <tr>
+          <td class="label-col">Difference</td>
+          <td class="col-init"><code>let diff = max - min;</code></td>
+          <td class="em-dash">—</td>
+          <td class="em-dash">—</td>
+          <td class="em-dash">—</td>
+          <td class="col-out"><code>diff = 7</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<script>
+
+
+    //11. Find the largest element in an array.
+
+    // let arr = [10, 25, 5, 40, 15];
+
+    // let largest = arr[0];
+
+    // for (let i = 1; i < arr.length; i++) {
+    //     if (arr[i] > largest) {
+    //         largest = arr[i];
+    //     }
+    // }
+
+    // console.log("Largest Element:", largest);
+
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //12. Find the smallest element in an array.
+
+    // let arr = [10, 25, 5, 40, 15];
+
+    // let smallest = arr[0];
+
+    // for (let i = 1; i < arr.length; i++) {
+    //     if (arr[i] < smallest) {
+    //         smallest = arr[i];
+    //     }
+    // }
+
+    // console.log("Smallest Element:", smallest);
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //13. Find the second largest element in an array.
+
+    // let arr = [10, 25, 5, 40, 15];
+
+    // let largest = -Infinity;
+    // let secondLargest = -Infinity;
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     if (arr[i] > largest) {
+    //         secondLargest = largest;
+    //         largest = arr[i];
+    //     }
+    //     else if (arr[i] > secondLargest && arr[i] !== largest) {
+    //         secondLargest = arr[i];
+    //     }
+    // }
+
+    // console.log("Second Largest Element:", secondLargest);
+
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------
+
+    //14. Find the sum of all elements in an array.
+
+    // let arr = [10, 20, 30, 40];
+
+    // let sum = 0;
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     sum = sum + arr[i];
+    // }
+
+    // console.log("Sum of Array:", sum);
+
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    // 15. Count even and odd numbers in an array.
+
+    // let arr = [10, 21, 32, 45, 50];
+
+    // let evenCount = 0;
+    // let oddCount = 0;
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     if (arr[i] % 2 === 0) {
+    //         evenCount++;
+    //     } else {
+    //         oddCount++;
+    //     }
+    // }
+
+    // console.log("Even Count:", evenCount);
+    // console.log("Odd Count:", oddCount);
+
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    //16. Reverse an array without using built-in methods.
+
+
+    // let arr = [10, 20, 30, 40];
+    // let reversed = [];
+
+    // for (let i = arr.length - 1; i >= 0; i--) {
+    //     reversed[reversed.length] = arr[i];
+    // }
+
+    // console.log("Reversed Array:", reversed);
+
+
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    //17. Check whether an array is sorted or not.
+
+    // let arr = [10, 20, 30, 40, 50];
+
+    // let isSorted = true;
+
+    // for (let i = 1; i < arr.length; i++) {
+    //     if (arr[i] < arr[i - 1]) {
+    //         isSorted = false;
+    //         break;
+    //     }
+    // }
+
+    // console.log(isSorted ? "Sorted" : "Not Sorted");
+
+    //--------------------------------------------------------------------------------------
+
+    //    18. Search an element in an array (linear search).
+
+    // let arr = [10, 25, 5, 40, 15];
+    // let target = 40;
+
+    // let found = false;
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     if (arr[i] === target) {
+    //         console.log("Found at index:", i);
+    //         found = true;
+    //         break;
+    //     }
+    // }
+
+    // if (!found) {
+    //     console.log("Element not found");
+    // }
+
+    //-----------------------------------------------------------------------------------------------------------------
+
+
+    //19. Merge two arrays into a single array.
+
+
+    //Method  01
+
+    // let arr1 = [1, 2, 3];
+    // let arr2 = [4, 5, 6];
+
+    // let merged = [];
+
+    // for (let i = 0; i < arr1.length; i++) {
+    //     merged.push(arr1[i]);
+    // }
+
+    // for (let i = 0; i < arr2.length; i++) {
+    //     merged.push(arr2[i]);
+    // }
+
+    // console.log(merged);
+
+
+    //Method 02
+
+    // let arr1 = [1, 2, 3];
+    // let arr2 = [4, 5, 6];
+
+    // let merged = [...arr1, ...arr2];
+
+    // console.log(merged);
+
+    //-----------------------------------------------------------------------------------------
+
+
+    //20. Remove duplicate elements from an array without using Set.
+
+    // let arr = [1, 2, 2, 3, 4, 3, 5];
+
+    // let unique = [];
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     let isDuplicate = false;
+
+    //     // check in unique array
+    //     for (let j = 0; j < unique.length; j++) {
+    //         if (arr[i] === unique[j]) {
+    //             isDuplicate = true;
+    //             break;
+    //         }
+    //     }
+
+    //     // if not duplicate → add
+    //     if (!isDuplicate) {
+    //         unique.push(arr[i]);
+    //     }
+    // }
+
+    // console.log(unique);
+
+
+    //------------------------------------------------------------------------------------------
+
+    //21. Sort an array in ascending order without using built-in methods.
+
+    // let arr = [5, 2, 9, 1, 5, 6];
+
+    // for (let i = 0; i < arr.length - 1; i++) {
+    //     for (let j = 0; j < arr.length - 1 - i; j++) {
+
+    //         if (arr[j] > arr[j + 1]) {
+    //             // swap
+    //             let temp = arr[j];
+    //             arr[j] = arr[j + 1];
+    //             arr[j + 1] = temp;
+    //         }
+    //     }
+    // }
+
+    // console.log(arr);
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    // // 22. Rotate an array to the left by one position.
+
+    // let arr = [1, 2, 3, 4, 5];
+
+    // // Step 1: store first element
+    // let first = arr[0];
+
+    // // Step 2: shift all elements left
+    // for (let i = 0; i < arr.length - 1; i++) {
+    //     arr[i] = arr[i + 1];
+    // }
+
+    // // Step 3: put first element at last
+    // arr[arr.length - 1] = first;
+
+    // console.log(arr);
+
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+
+    // //23. Rotate an array to the right by one position.
+
+
+    // let arr = [1, 2, 3, 4, 5];
+
+    // // Step 1: store last element
+    // let last = arr[arr.length - 1];
+
+    // // Step 2: shift elements right
+    // for (let i = arr.length - 1; i > 0; i--) {
+    //     arr[i] = arr[i - 1];
+    // }
+
+    // // Step 3: put last element at first
+    // arr[0] = last;
+
+    // console.log(arr);
+    //----------------------------------------------------------------------------------------------------------------------
+
+    // //24. Find the frequency of each element in an array.
+    // let arr = [1, 2, 2, 3, 1, 4];
+
+    // let freq = {};
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     let element = arr[i];
+
+    //     if (freq[element]) {
+    //         freq[element]++;  // already irundha increase
+    //     } else {
+    //         freq[element] = 1; // first time
+    //     }
+    // }
+
+    // console.log(freq);
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    // //25. Given an array of marks, find how many students scored above average.
+
+    // let marks = [50, 60, 70, 80, 90];
+
+    // // Step 1: find sum
+    // let sum = 0;
+    // for (let i = 0; i < marks.length; i++) {
+    //     sum += marks[i];
+    // }
+
+    // // Step 2: find average
+    // let avg = sum / marks.length;
+
+    // // Step 3: count above average
+    // let count = 0;
+    // for (let i = 0; i < marks.length; i++) {
+    //     if (marks[i] > avg) {
+    //         count++;
+    //     }
+    // }
+
+    // console.log("Average:", avg);
+    // console.log("Students above average:", count);
+
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    // //26. Given an array of salaries, increase each salary by 10%.
+
+    // let salaries = [1000, 2000, 3000];
+
+    // for (let i = 0; i < salaries.length; i++) {
+    //     salaries[i] = salaries[i] * 1.1;
+    // }
+
+    // console.log(salaries);
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    // //27. Separate positive and negative numbers from an array.
+
+    // let arr = [2, -3, 5, -1, 0, -7, 4];
+
+    // let positive = [];
+    // let negative = [];
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     if (arr[i] >= 0) {
+    //         positive.push(arr[i]);
+    //     } else {
+    //         negative.push(arr[i]);
+    //     }
+    // }
+
+    // console.log("Positive:", positive);
+    // console.log("Negative:", negative);
+
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    // //28. Replace all even numbers in an array with 0.
+
+    // let arr = [1, 2, 3, 4, 5, 6];
+
+    // for (let i = 0; i < arr.length; i++) {
+    //     if (arr[i] % 2 === 0) {
+    //         arr[i] = 0;
+    //     }
+    // }
+
+    // console.log(arr);
+
+
+    //----------------------------------------------------------------------------------------------------------------------
+
+    //29. Find the difference between maximum and minimum values in an array.
+
+    // let arr = [3, 7, 2, 9, 4];
+
+    // let max = arr[0];
+    // let min = arr[0];
+
+    // for (let i = 1; i < arr.length; i++) {
+    //     if (arr[i] > max) {
+    //         max = arr[i];
+    //     }
+    //     if (arr[i] < min) {
+    //         min = arr[i];
+    //     }
+    // }
+
+    // let diff = max - min;
+
+    // console.log("Max:", max);
+    // console.log("Min:", min);
+    // console.log("Difference:", diff);
+</script>

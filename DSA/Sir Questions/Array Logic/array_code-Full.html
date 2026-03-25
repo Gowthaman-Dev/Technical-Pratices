@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript Array Problems</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d14;
+    --surface: #13131c;
+    --card: #17171f;
+    --border: #252533;
+    --accent: #7c6aff;
+    --accent2: #ff6a9b;
+    --accent3: #6affdc;
+    --accent4: #ffcc6a;
+    --accent5: #ff9e6a;
+    --text: #e4e2f0;
+    --muted: #6a6880;
+    --comment: #4a4860;
+    --kw: #c792ea;
+    --fn: #82aaff;
+    --str: #c3e88d;
+    --num: #f78c6c;
+    --op: #89ddff;
+    --var: #ffcb6b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 48px 20px 100px;
+    background-image:
+      radial-gradient(ellipse 70% 35% at 50% -5%, rgba(124,106,255,0.13) 0%, transparent 60%),
+      radial-gradient(ellipse 35% 25% at 95% 85%, rgba(106,255,220,0.07) 0%, transparent 50%);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  h1.page-title {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .page-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 640px), 1fr));
+    gap: 24px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+    border-color: rgba(124,106,255,0.35);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: rgba(255,255,255,0.025);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .problem-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--accent);
+    background: rgba(124,106,255,0.12);
+    border: 1px solid rgba(124,106,255,0.25);
+    border-radius: 5px;
+    padding: 3px 9px;
+    flex-shrink: 0;
+  }
+
+  .card-header h2 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .method-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: var(--accent3);
+    background: rgba(106,255,220,0.08);
+    border: 1px solid rgba(106,255,220,0.2);
+  }
+
+  .code-block {
+    padding: 20px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    line-height: 1.75;
+    overflow-x: auto;
+    white-space: pre;
+    tab-size: 4;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 0 22px;
+  }
+
+  /* Syntax Colors */
+  .kw  { color: var(--kw); }
+  .fn  { color: var(--fn); }
+  .str { color: var(--str); }
+  .num { color: var(--num); }
+  .op  { color: var(--op); }
+  .vr  { color: var(--var); }
+  .cm  { color: var(--comment); font-style: italic; }
+  .pl  { color: var(--accent2); }
+
+  /* card accent line on left */
+  .card::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.25s;
+    border-radius: 14px 0 0 14px;
+  }
+  .card:hover::after { opacity: 1; }
+
+  @media (max-width: 500px) {
+    .code-block { font-size: 0.7rem; padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1 class="page-title">JavaScript Array Problems</h1>
+  <p class="page-sub">// Problems 11 – 29 &nbsp;·&nbsp; Array Algorithms</p>
+</div>
+
+<div class="grid">
+
+  <!-- 11 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#11</span>
+      <h2>Find the largest element in an array.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">10</span>, <span class="num">25</span>, <span class="num">5</span>, <span class="num">40</span>, <span class="num">15</span>];
+
+<span class="kw">let</span> <span class="vr">largest</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="num">0</span>];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">1</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">&gt;</span> <span class="vr">largest</span>) {
+        <span class="vr">largest</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Largest Element:"</span>, <span class="vr">largest</span>);</div>
+  </div>
+
+  <!-- 12 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#12</span>
+      <h2>Find the smallest element in an array.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">10</span>, <span class="num">25</span>, <span class="num">5</span>, <span class="num">40</span>, <span class="num">15</span>];
+
+<span class="kw">let</span> <span class="vr">smallest</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="num">0</span>];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">1</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">&lt;</span> <span class="vr">smallest</span>) {
+        <span class="vr">smallest</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Smallest Element:"</span>, <span class="vr">smallest</span>);</div>
+  </div>
+
+  <!-- 13 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#13</span>
+      <h2>Find the second largest element in an array.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">10</span>, <span class="num">25</span>, <span class="num">5</span>, <span class="num">40</span>, <span class="num">15</span>];
+
+<span class="kw">let</span> <span class="vr">largest</span> <span class="op">=</span> <span class="op">-</span><span class="fn">Infinity</span>;
+<span class="kw">let</span> <span class="vr">secondLargest</span> <span class="op">=</span> <span class="op">-</span><span class="fn">Infinity</span>;
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">&gt;</span> <span class="vr">largest</span>) {
+        <span class="vr">secondLargest</span> <span class="op">=</span> <span class="vr">largest</span>;
+        <span class="vr">largest</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+    }
+    <span class="kw">else if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">&gt;</span> <span class="vr">secondLargest</span> <span class="op">&amp;&amp;</span> <span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">!==</span> <span class="vr">largest</span>) {
+        <span class="vr">secondLargest</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Second Largest Element:"</span>, <span class="vr">secondLargest</span>);</div>
+  </div>
+
+  <!-- 14 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#14</span>
+      <h2>Find the sum of all elements in an array.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>];
+
+<span class="kw">let</span> <span class="vr">sum</span> <span class="op">=</span> <span class="num">0</span>;
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="vr">sum</span> <span class="op">=</span> <span class="vr">sum</span> <span class="op">+</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Sum of Array:"</span>, <span class="vr">sum</span>);</div>
+  </div>
+
+  <!-- 15 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#15</span>
+      <h2>Count even and odd numbers in an array.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">10</span>, <span class="num">21</span>, <span class="num">32</span>, <span class="num">45</span>, <span class="num">50</span>];
+
+<span class="kw">let</span> <span class="vr">evenCount</span> <span class="op">=</span> <span class="num">0</span>;
+<span class="kw">let</span> <span class="vr">oddCount</span> <span class="op">=</span> <span class="num">0</span>;
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>) {
+        <span class="vr">evenCount</span><span class="op">++</span>;
+    } <span class="kw">else</span> {
+        <span class="vr">oddCount</span><span class="op">++</span>;
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Even Count:"</span>, <span class="vr">evenCount</span>);
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Odd Count:"</span>, <span class="vr">oddCount</span>);</div>
+  </div>
+
+  <!-- 16 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#16</span>
+      <h2>Reverse an array without using built-in methods.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>];
+<span class="kw">let</span> <span class="vr">reversed</span> <span class="op">=</span> [];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="vr">arr</span>.<span class="fn">length</span> <span class="op">-</span> <span class="num">1</span>; <span class="vr">i</span> <span class="op">&gt;=</span> <span class="num">0</span>; <span class="vr">i</span><span class="op">--</span>) {
+    <span class="vr">reversed</span>[<span class="vr">reversed</span>.<span class="fn">length</span>] <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Reversed Array:"</span>, <span class="vr">reversed</span>);</div>
+  </div>
+
+  <!-- 17 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#17</span>
+      <h2>Check whether an array is sorted or not.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>];
+
+<span class="kw">let</span> <span class="vr">isSorted</span> <span class="op">=</span> <span class="kw">true</span>;
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">1</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">&lt;</span> <span class="vr">arr</span>[<span class="vr">i</span> <span class="op">-</span> <span class="num">1</span>]) {
+        <span class="vr">isSorted</span> <span class="op">=</span> <span class="kw">false</span>;
+        <span class="kw">break</span>;
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">isSorted</span> <span class="op">?</span> <span class="str">"Sorted"</span> <span class="op">:</span> <span class="str">"Not Sorted"</span>);</div>
+  </div>
+
+  <!-- 18 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#18</span>
+      <h2>Search an element in an array (linear search).</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">10</span>, <span class="num">25</span>, <span class="num">5</span>, <span class="num">40</span>, <span class="num">15</span>];
+<span class="kw">let</span> <span class="vr">target</span> <span class="op">=</span> <span class="num">40</span>;
+
+<span class="kw">let</span> <span class="vr">found</span> <span class="op">=</span> <span class="kw">false</span>;
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">===</span> <span class="vr">target</span>) {
+        <span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Found at index:"</span>, <span class="vr">i</span>);
+        <span class="vr">found</span> <span class="op">=</span> <span class="kw">true</span>;
+        <span class="kw">break</span>;
+    }
+}
+
+<span class="kw">if</span> (<span class="op">!</span><span class="vr">found</span>) {
+    <span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Element not found"</span>);
+}</div>
+  </div>
+
+  <!-- 19 Method 01 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#19</span>
+      <h2>Merge two arrays into a single array.</h2>
+      <span class="method-pill">Method 01</span>
+    </div>
+    <div class="code-block"><span class="cm">//Method  01</span>
+
+<span class="kw">let</span> <span class="vr">arr1</span> <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">let</span> <span class="vr">arr2</span> <span class="op">=</span> [<span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>];
+
+<span class="kw">let</span> <span class="vr">merged</span> <span class="op">=</span> [];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr1</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="vr">merged</span>.<span class="fn">push</span>(<span class="vr">arr1</span>[<span class="vr">i</span>]);
+}
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr2</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="vr">merged</span>.<span class="fn">push</span>(<span class="vr">arr2</span>[<span class="vr">i</span>]);
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">merged</span>);</div>
+    <hr class="divider">
+    <div class="card-header" style="border-bottom:none; border-top: 1px solid var(--border);">
+      <span style="flex:1"></span>
+      <span class="method-pill" style="color:var(--accent4); background:rgba(255,204,106,0.08); border-color:rgba(255,204,106,0.2);">Method 02</span>
+    </div>
+    <div class="code-block" style="padding-top:0"><span class="cm">//Method 02</span>
+
+<span class="kw">let</span> <span class="vr">arr1</span> <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">let</span> <span class="vr">arr2</span> <span class="op">=</span> [<span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>];
+
+<span class="kw">let</span> <span class="vr">merged</span> <span class="op">=</span> [<span class="op">...</span><span class="vr">arr1</span>, <span class="op">...</span><span class="vr">arr2</span>];
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">merged</span>);</div>
+  </div>
+
+  <!-- 20 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#20</span>
+      <h2>Remove duplicate elements from an array without using Set.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">3</span>, <span class="num">5</span>];
+
+<span class="kw">let</span> <span class="vr">unique</span> <span class="op">=</span> [];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">let</span> <span class="vr">isDuplicate</span> <span class="op">=</span> <span class="kw">false</span>;
+
+    <span class="cm">// check in unique array</span>
+    <span class="kw">for</span> (<span class="kw">let</span> <span class="vr">j</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">j</span> <span class="op">&lt;</span> <span class="vr">unique</span>.<span class="fn">length</span>; <span class="vr">j</span><span class="op">++</span>) {
+        <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">===</span> <span class="vr">unique</span>[<span class="vr">j</span>]) {
+            <span class="vr">isDuplicate</span> <span class="op">=</span> <span class="kw">true</span>;
+            <span class="kw">break</span>;
+        }
+    }
+
+    <span class="cm">// if not duplicate → add</span>
+    <span class="kw">if</span> (<span class="op">!</span><span class="vr">isDuplicate</span>) {
+        <span class="vr">unique</span>.<span class="fn">push</span>(<span class="vr">arr</span>[<span class="vr">i</span>]);
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">unique</span>);</div>
+  </div>
+
+  <!-- 21 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#21</span>
+      <h2>Sort an array in ascending order without using built-in methods.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">5</span>, <span class="num">2</span>, <span class="num">9</span>, <span class="num">1</span>, <span class="num">5</span>, <span class="num">6</span>];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span> <span class="op">-</span> <span class="num">1</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">for</span> (<span class="kw">let</span> <span class="vr">j</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">j</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span> <span class="op">-</span> <span class="num">1</span> <span class="op">-</span> <span class="vr">i</span>; <span class="vr">j</span><span class="op">++</span>) {
+
+        <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">j</span>] <span class="op">&gt;</span> <span class="vr">arr</span>[<span class="vr">j</span> <span class="op">+</span> <span class="num">1</span>]) {
+            <span class="cm">// swap</span>
+            <span class="kw">let</span> <span class="vr">temp</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">j</span>];
+            <span class="vr">arr</span>[<span class="vr">j</span>] <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">j</span> <span class="op">+</span> <span class="num">1</span>];
+            <span class="vr">arr</span>[<span class="vr">j</span> <span class="op">+</span> <span class="num">1</span>] <span class="op">=</span> <span class="vr">temp</span>;
+        }
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">arr</span>);</div>
+  </div>
+
+  <!-- 22 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#22</span>
+      <h2>Rotate an array to the left by one position.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+
+<span class="cm">// Step 1: store first element</span>
+<span class="kw">let</span> <span class="vr">first</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="num">0</span>];
+
+<span class="cm">// Step 2: shift all elements left</span>
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span> <span class="op">-</span> <span class="num">1</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span> <span class="op">+</span> <span class="num">1</span>];
+}
+
+<span class="cm">// Step 3: put first element at last</span>
+<span class="vr">arr</span>[<span class="vr">arr</span>.<span class="fn">length</span> <span class="op">-</span> <span class="num">1</span>] <span class="op">=</span> <span class="vr">first</span>;
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">arr</span>);</div>
+  </div>
+
+  <!-- 23 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#23</span>
+      <h2>Rotate an array to the right by one position.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>];
+
+<span class="cm">// Step 1: store last element</span>
+<span class="kw">let</span> <span class="vr">last</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">arr</span>.<span class="fn">length</span> <span class="op">-</span> <span class="num">1</span>];
+
+<span class="cm">// Step 2: shift elements right</span>
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="vr">arr</span>.<span class="fn">length</span> <span class="op">-</span> <span class="num">1</span>; <span class="vr">i</span> <span class="op">&gt;</span> <span class="num">0</span>; <span class="vr">i</span><span class="op">--</span>) {
+    <span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span> <span class="op">-</span> <span class="num">1</span>];
+}
+
+<span class="cm">// Step 3: put last element at first</span>
+<span class="vr">arr</span>[<span class="num">0</span>] <span class="op">=</span> <span class="vr">last</span>;
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">arr</span>);</div>
+  </div>
+
+  <!-- 24 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#24</span>
+      <h2>Find the frequency of each element in an array.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">1</span>, <span class="num">4</span>];
+
+<span class="kw">let</span> <span class="vr">freq</span> <span class="op">=</span> {};
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">let</span> <span class="vr">element</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+
+    <span class="kw">if</span> (<span class="vr">freq</span>[<span class="vr">element</span>]) {
+        <span class="vr">freq</span>[<span class="vr">element</span>]<span class="op">++</span>;  <span class="cm">// already irundha increase</span>
+    } <span class="kw">else</span> {
+        <span class="vr">freq</span>[<span class="vr">element</span>] <span class="op">=</span> <span class="num">1</span>; <span class="cm">// first time</span>
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">freq</span>);</div>
+  </div>
+
+  <!-- 25 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#25</span>
+      <h2>Given an array of marks, find how many students scored above average.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">marks</span> <span class="op">=</span> [<span class="num">50</span>, <span class="num">60</span>, <span class="num">70</span>, <span class="num">80</span>, <span class="num">90</span>];
+
+<span class="cm">// Step 1: find sum</span>
+<span class="kw">let</span> <span class="vr">sum</span> <span class="op">=</span> <span class="num">0</span>;
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">marks</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="vr">sum</span> <span class="op">+=</span> <span class="vr">marks</span>[<span class="vr">i</span>];
+}
+
+<span class="cm">// Step 2: find average</span>
+<span class="kw">let</span> <span class="vr">avg</span> <span class="op">=</span> <span class="vr">sum</span> <span class="op">/</span> <span class="vr">marks</span>.<span class="fn">length</span>;
+
+<span class="cm">// Step 3: count above average</span>
+<span class="kw">let</span> <span class="vr">count</span> <span class="op">=</span> <span class="num">0</span>;
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">marks</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">marks</span>[<span class="vr">i</span>] <span class="op">&gt;</span> <span class="vr">avg</span>) {
+        <span class="vr">count</span><span class="op">++</span>;
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Average:"</span>, <span class="vr">avg</span>);
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Students above average:"</span>, <span class="vr">count</span>);</div>
+  </div>
+
+  <!-- 26 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#26</span>
+      <h2>Given an array of salaries, increase each salary by 10%.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">salaries</span> <span class="op">=</span> [<span class="num">1000</span>, <span class="num">2000</span>, <span class="num">3000</span>];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">salaries</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="vr">salaries</span>[<span class="vr">i</span>] <span class="op">=</span> <span class="vr">salaries</span>[<span class="vr">i</span>] <span class="op">*</span> <span class="num">1.1</span>;
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">salaries</span>);</div>
+  </div>
+
+  <!-- 27 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#27</span>
+      <h2>Separate positive and negative numbers from an array.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">2</span>, <span class="op">-</span><span class="num">3</span>, <span class="num">5</span>, <span class="op">-</span><span class="num">1</span>, <span class="num">0</span>, <span class="op">-</span><span class="num">7</span>, <span class="num">4</span>];
+
+<span class="kw">let</span> <span class="vr">positive</span> <span class="op">=</span> [];
+<span class="kw">let</span> <span class="vr">negative</span> <span class="op">=</span> [];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">&gt;=</span> <span class="num">0</span>) {
+        <span class="vr">positive</span>.<span class="fn">push</span>(<span class="vr">arr</span>[<span class="vr">i</span>]);
+    } <span class="kw">else</span> {
+        <span class="vr">negative</span>.<span class="fn">push</span>(<span class="vr">arr</span>[<span class="vr">i</span>]);
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Positive:"</span>, <span class="vr">positive</span>);
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Negative:"</span>, <span class="vr">negative</span>);</div>
+  </div>
+
+  <!-- 28 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#28</span>
+      <h2>Replace all even numbers in an array with 0.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">0</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">%</span> <span class="num">2</span> <span class="op">===</span> <span class="num">0</span>) {
+        <span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">=</span> <span class="num">0</span>;
+    }
+}
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="vr">arr</span>);</div>
+  </div>
+
+  <!-- 29 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="problem-num">#29</span>
+      <h2>Find the difference between maximum and minimum values in an array.</h2>
+    </div>
+    <div class="code-block"><span class="kw">let</span> <span class="vr">arr</span> <span class="op">=</span> [<span class="num">3</span>, <span class="num">7</span>, <span class="num">2</span>, <span class="num">9</span>, <span class="num">4</span>];
+
+<span class="kw">let</span> <span class="vr">max</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="num">0</span>];
+<span class="kw">let</span> <span class="vr">min</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="num">0</span>];
+
+<span class="kw">for</span> (<span class="kw">let</span> <span class="vr">i</span> <span class="op">=</span> <span class="num">1</span>; <span class="vr">i</span> <span class="op">&lt;</span> <span class="vr">arr</span>.<span class="fn">length</span>; <span class="vr">i</span><span class="op">++</span>) {
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">&gt;</span> <span class="vr">max</span>) {
+        <span class="vr">max</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+    }
+    <span class="kw">if</span> (<span class="vr">arr</span>[<span class="vr">i</span>] <span class="op">&lt;</span> <span class="vr">min</span>) {
+        <span class="vr">min</span> <span class="op">=</span> <span class="vr">arr</span>[<span class="vr">i</span>];
+    }
+}
+
+<span class="kw">let</span> <span class="vr">diff</span> <span class="op">=</span> <span class="vr">max</span> <span class="op">-</span> <span class="vr">min</span>;
+
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Max:"</span>, <span class="vr">max</span>);
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Min:"</span>, <span class="vr">min</span>);
+<span class="vr">console</span>.<span class="fn">log</span>(<span class="str">"Difference:"</span>, <span class="vr">diff</span>);</div>
+  </div>
+
+</div>
+</body>
+</html>

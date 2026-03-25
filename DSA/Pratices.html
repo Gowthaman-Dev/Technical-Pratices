@@ -1,4 +1,573 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Array Concepts Reference</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --border: #334155;
+            --highlight: #2dd4bf;
+        }
 
- 
-</script>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .table-section {
+            margin-bottom: 50px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        .method-label {
+            background: var(--accent);
+            color: var(--bg-color);
+            padding: 5px 15px;
+            font-weight: bold;
+            display: inline-block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 800px;
+        }
+
+        th {
+            background-color: #0f172a;
+            color: var(--accent);
+            padding: 15px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            vertical-align: top;
+        }
+
+        tr:hover {
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        code {
+            color: var(--highlight);
+            background: rgba(45, 212, 191, 0.1);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .concept-name {
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .output-cell {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Array Logic Reference Guide</h1>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="concept-name">Largest Element</td>
+                        <td><code>let largest = arr[0];</code></td>
+                        <td><code>let i = 1; i < arr.length; i++</code></td>
+                        <td><code>arr[i] > largest</code></td>
+                        <td><code>largest = arr[i];</code></td>
+                        <td class="output-cell">largest = 40</td>
+                    </tr>
+                    <tr>
+                        <td class="concept-name">Smallest Element</td>
+                        <td><code>let smallest = arr[0];</code></td>
+                        <td><code>let i = 1; i < arr.length; i++</code></td>
+                        <td><code>arr[i] < smallest</code></td>
+                        <td><code>smallest = arr[i];</code></td>
+                        <td class="output-cell">smallest = 5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" class="concept-name">Second Largest</td>
+                        <td rowspan="2"><code>let largest = -Infinity, secondLargest = -Infinity;</code></td>
+                        <td rowspan="2"><code>let i = 0; i < arr.length; i++</code></td>
+                        <td><code>arr[i] > largest</code></td>
+                        <td><code>secondLargest = largest; largest = arr[i];</code></td>
+                        <td class="output-cell">secondLargest = 25</td>
+                    </tr>
+                    <tr>
+                        <td><code>arr[i] > secondLargest && arr[i] !== largest</code></td>
+                        <td><code>secondLargest = arr[i];</code></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="concept-name">Sum of Array</td>
+                        <td><code>let sum = 0;</code></td>
+                        <td><code>let i = 0; i < arr.length; i++</code></td>
+                        <td>—</td>
+                        <td><code>sum = sum + arr[i];</code></td>
+                        <td class="output-cell">sum = 100</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2" class="concept-name">Even & Odd Count</td>
+                        <td rowspan="2"><code>let evenCount = 0, oddCount = 0;</code></td>
+                        <td rowspan="2"><code>let i = 0; i < arr.length; i++</code></td>
+                        <td><code>arr[i] % 2 === 0</code></td>
+                        <td><code>evenCount++</code></td>
+                        <td class="output-cell">even = 3, odd = 2</td>
+                    </tr>
+                    <tr>
+                        <td><code>else</code></td>
+                        <td><code>oddCount++</code></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="concept-name">Reverse Array</td>
+                        <td><code>let reversed = [];</code></td>
+                        <td><code>let i = arr.length - 1; i >= 0; i--</code></td>
+                        <td>—</td>
+                        <td><code>reversed[reversed.length] = arr[i];</code></td>
+                        <td class="output-cell">[40, 30, 20, 10]</td>
+                    </tr>
+                    <tr>
+                        <td class="concept-name">Sorted Array Check</td>
+                        <td>—</td>
+                        <td><code>let i = 0; i < arr.length - 1; i++</code></td>
+                        <td><code>arr[i] > arr[i + 1]</code></td>
+                        <td><code>isSorted = false; break;</code></td>
+                        <td class="output-cell">true / false</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() / Logic</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="concept-name">Linear Search</td>
+                        <td><code>let target = 40, found = false;</code></td>
+                        <td><code>let i = 0; i < arr.length; i++</code></td>
+                        <td><code>arr[i] === target</code></td>
+                        <td><code>console.log(i); found = true; break;</code></td>
+                        <td class="output-cell">index or not found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="method-label">method 01</div>
+        <div class="table-container">
+            <table>
+                <tbody>
+                    <tr>
+                        <td width="20%" class="concept-name">Merge Arrays (Loop)</td>
+                        <td width="20%"><code>let merged = [];</code></td>
+                        <td width="20%"><code>i < arr1.length</code> & <code>i < arr2.length</code></td>
+                        <td width="20%">—</td>
+                        <td width="20%"><code>merged.push(arr[i]);</code></td>
+                        <td class="output-cell">[1,2,3,4,5,6]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="method-label">method 02</div>
+        <div class="table-container">
+            <table>
+                <tbody>
+                    <tr>
+                        <td width="20%" class="concept-name">Merge Arrays (Spread)</td>
+                        <td width="20%"><code>let merged = [...arr1, ...arr2];</code></td>
+                        <td colspan="3">combine both arrays</td>
+                        <td class="output-cell">[1,2,3,4,5,6]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>Outer Loop</th>
+                        <th>Inner Loop</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" class="concept-name">Remove Duplicates</td>
+                        <td rowspan="2"><code>let unique = []</code></td>
+                        <td rowspan="2"><code>i < arr.length</code></td>
+                        <td rowspan="2"><code>j < unique.length</code></td>
+                        <td><code>arr[i] === unique[j]</code></td>
+                        <td><code>isDuplicate = true; break;</code></td>
+                        <td class="output-cell">[1,2,3,4,5]</td>
+                    </tr>
+                    <tr>
+                        <td><code>!isDuplicate</code></td>
+                        <td><code>unique.push(arr[i]);</code></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="concept-name">Bubble Sort</td>
+                        <td><code>let arr = [...]</code></td>
+                        <td><code>i < arr.length - 1</code></td>
+                        <td><code>j < arr.length - 1 - i</code></td>
+                        <td><code>arr[j] > arr[j + 1]</code></td>
+                        <td><code>swap (temp, arr[j], arr[j+1])</code></td>
+                        <td class="output-cell">[1,2,5,5,6,9]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Final Step</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="concept-name">Left Rotate by 1</td>
+                        <td><code>let first = arr[0];</code></td>
+                        <td><code>let i = 0; i < arr.length - 1; i++</code></td>
+                        <td><code>arr[i] = arr[i + 1];</code></td>
+                        <td><code>arr[arr.length - 1] = first;</code></td>
+                        <td class="output-cell">[2,3,4,5,1]</td>
+                    </tr>
+                    <tr>
+                        <td class="concept-name">Right Rotate by 1</td>
+                        <td><code>let last = arr[arr.length - 1];</code></td>
+                        <td><code>let i = arr.length - 1; i > 0; i--</code></td>
+                        <td><code>arr[i] = arr[i - 1];</code></td>
+                        <td><code>arr[0] = last;</code></td>
+                        <td class="output-cell">[5,1,2,3,4]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" class="concept-name">Frequency Count</td>
+                        <td rowspan="2"><code>let freq = {};</code></td>
+                        <td rowspan="2"><code>i < arr.length</code></td>
+                        <td><code>freq[element]</code></td>
+                        <td><code>freq[element]++</code></td>
+                        <td class="output-cell">{1:2, 2:2, 3:1, 4:1}</td>
+                    </tr>
+                    <tr>
+                        <td><code>!freq[element]</code></td>
+                        <td><code>freq[element] = 1</code></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="concept-name">Sum of Marks</td>
+                        <td><code>let sum = 0;</code></td>
+                        <td><code>i < marks.length</code></td>
+                        <td>—</td>
+                        <td><code>sum += marks[i];</code></td>
+                        <td class="output-cell">sum = 350</td>
+                    </tr>
+                    <tr>
+                        <td class="concept-name">Average</td>
+                        <td><code>let avg = sum / marks.length;</code></td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td class="output-cell">avg = 70</td>
+                    </tr>
+                    <tr>
+                        <td class="concept-name">Count Above Average</td>
+                        <td><code>let count = 0;</code></td>
+                        <td><code>i < marks.length</code></td>
+                        <td><code>marks[i] > avg</code></td>
+                        <td><code>count++;</code></td>
+                        <td class="output-cell">count = 2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="concept-name">Increase Salary</td>
+                        <td><code>let salaries = [1000, 2000, 3000];</code></td>
+                        <td><code>i < salaries.length</code></td>
+                        <td>—</td>
+                        <td><code>salaries[i] = salaries[i] * 1.1;</code></td>
+                        <td class="output-cell">[1100, 2200, 3300]</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2" class="concept-name">Separate Pos & Neg</td>
+                        <td rowspan="2"><code>let positive = [], negative = [];</code></td>
+                        <td rowspan="2"><code>i < arr.length</code></td>
+                        <td><code>arr[i] >= 0</code></td>
+                        <td><code>positive.push(arr[i])</code></td>
+                        <td class="output-cell">pos = [2,5,0,4]</td>
+                    </tr>
+                    <tr>
+                        <td><code>arr[i] < 0</code></td>
+                        <td><code>negative.push(arr[i])</code></td>
+                        <td class="output-cell">neg = [-3,-1,-7]</td>
+                    </tr>
+                    <tr>
+                        <td class="concept-name">Replace Even</td>
+                        <td><code>let arr = [1,2,3,4,5,6];</code></td>
+                        <td><code>i < arr.length</code></td>
+                        <td><code>arr[i] % 2 === 0</code></td>
+                        <td><code>arr[i] = 0;</code></td>
+                        <td class="output-cell">[1,0,3,0,5,0]</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Initialization</th>
+                        <th>for() Condition</th>
+                        <th>if() Condition</th>
+                        <th>Logic Inside Loop</th>
+                        <th>Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" class="concept-name">Max & Min</td>
+                        <td rowspan="2"><code>let max = arr[0], min = arr[0];</code></td>
+                        <td rowspan="2"><code>i = 1; i < arr.length; i++</code></td>
+                        <td><code>arr[i] > max</code></td>
+                        <td><code>max = arr[i];</code></td>
+                        <td class="output-cell">max = 9</td>
+                    </tr>
+                    <tr>
+                        <td><code>arr[i] < min</code></td>
+                        <td><code>min = arr[i];</code></td>
+                        <td class="output-cell">min = 2</td>
+                    </tr>
+                    <tr>
+                        <td class="concept-name">Difference</td>
+                        <td><code>let diff = max - min;</code></td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td class="output-cell">diff = 7</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
