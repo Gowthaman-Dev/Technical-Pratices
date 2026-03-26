@@ -5,14 +5,14 @@
 </head>
 <body>
 
-    <input type="text" id="myInput" placeholder="Enter something">
+    <input type="text" id="inputBox" placeholder="Enter something">
     <button onclick="showText()">Show</button>
 
     <p id="output"></p>
 
     <script>
         function showText() {
-            let value = document.getElementById("myInput").value;
+            let value = document.getElementById("inputBox").value;
             document.getElementById("output").innerText = value;
         }
     </script>

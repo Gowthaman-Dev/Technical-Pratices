@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+
+    <button onclick="gowtham()">Click Me</button>
+    <p id="timer">10</p>
+
+    <script>
+        let time = 10
+        function gowtham() {
+            let interval = setInterval(() => {
+                document.getElementById('timer').innerHTML = time
+                time--
+                if (0 > time) {
+                    clearInterval(interval)
+                    document.getElementById('timer').innerHTML = "Time's Up"
+                }
+            }, 1000)
+
+        }
+    </script>
+
+</body>
+
+</html>

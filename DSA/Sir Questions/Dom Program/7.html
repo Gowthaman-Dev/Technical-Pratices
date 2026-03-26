@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hover Color</title>
+</head>
+<body>
+
+    <p id="text" onmouseover="changeColor()" onmouseout="resetColor()">
+        Hover over me
+    </p>
+
+    <script>
+        function changeColor() {
+            document.getElementById("text").style.color = "red";
+        }
+
+        function resetColor() {
+            document.getElementById("text").style.color = "black";
+        }
+    </script>
+
+</body>
+</html>

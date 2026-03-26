@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Length</title>
+</head>
+<body>
+
+    <input type="text" id="inputBox" oninput="showLength()" placeholder="Type here">
+
+    <p id="length">Length: 0</p>
+
+    <script>
+        function showLength() {
+            let value = document.getElementById("inputBox").value;
+            document.getElementById("length").innerText = "Length: " + value.length;
+        }
+    </script>
+
+</body>
+</html>

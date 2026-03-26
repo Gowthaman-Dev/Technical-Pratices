@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sum Array</title>
+</head>
+<body>
+
+    <input type="text" id="input" placeholder="Enter numbers (e.g. 1,2,3)">
+    <button onclick="calculateSum()">Sum</button>
+
+    <p id="result"></p>
+
+    <script>
+        function calculateSum() {
+            let input = document.getElementById("input").value;
+
+            let arr = input.split(","); // convert string → array
+            let sum = 0;
+
+            for (let i = 0; i < arr.length; i++) {
+                sum += Number(arr[i]); // add each element
+            }
+
+            document.getElementById("result").innerText = "Sum: " + sum;
+        }
+    </script>
+
+</body>
+</html>

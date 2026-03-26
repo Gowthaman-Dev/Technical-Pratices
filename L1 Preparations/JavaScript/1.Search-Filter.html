@@ -1,0 +1,36 @@
+<input type="text" placeholder="Enter the Values" id="search">
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>City</th>
+    </tr>
+    <tr>
+        <td>Gowtham</td>
+        <td>Thanjavur</td>
+    </tr>
+    <tr>
+        <td>Moni</td>
+        <td>Rameswaram</td>
+    </tr>
+</table>
+
+<script>
+    let search = document.getElementById('search');
+
+    search.addEventListener("keyup", function () {
+        let filter = search.value.toLowerCase();
+        let rows = document.querySelectorAll('table tr');
+
+        rows.forEach((row, index) => {
+            if (index === 0) return; // skip header
+
+            let text = row.textContent.toLowerCase()
+            if (text.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+</script>

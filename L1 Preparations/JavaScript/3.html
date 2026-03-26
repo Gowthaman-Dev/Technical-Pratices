@@ -1,0 +1,20 @@
+<script>
+
+function custommap(arr,callback){
+    let result = []
+    for(let i = 0 ; i<arr.length ; i++){
+        result.push(callback(arr[i],i,arr))
+    }
+    return result
+}
+
+let num = [1,2,3,4,5,6]
+
+let dub = custommap(num,function(nums){
+    return nums * 2 
+})
+
+console.log(dub);
+
+
+</script>
