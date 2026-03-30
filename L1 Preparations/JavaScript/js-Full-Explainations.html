@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --surface: #111118;
+            --card: #16161f;
+            --border: #2a2a3a;
+            --accent1: #f7c948;
+            --accent2: #e05c5c;
+            --accent3: #5ce0b8;
+            --accent4: #7c5ce0;
+            --text: #e8e8f0;
+            --muted: #6b6b80;
+            --code-bg: #0d0d14;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 0%, #1a1a2e 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, #1a0e2e 0%, transparent 60%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.25;
+        }
+
+        .hero-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            color: var(--accent3);
+            text-transform: uppercase;
+            border: 1px solid var(--accent3);
+            padding: 0.4rem 1.2rem;
+            margin-bottom: 2rem;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.7s 0.1s ease both;
+        }
+
+        .hero h1 span {
+            color: var(--accent1);
+            display: block;
+        }
+
+        .hero-sub {
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 500px;
+            animation: fadeUp 0.7s 0.2s ease both;
+        }
+
+        .topic-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 3rem;
+            animation: fadeUp 0.7s 0.3s ease both;
+        }
+
+        .pill {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.4rem 1rem;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            letter-spacing: 0.1em;
+        }
+
+        .pill.y { border-color: var(--accent1); color: var(--accent1); }
+        .pill.r { border-color: var(--accent2); color: var(--accent2); }
+        .pill.g { border-color: var(--accent3); color: var(--accent3); }
+        .pill.p { border-color: var(--accent4); color: var(--accent4); }
+
+        /* SECTIONS */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+
+        .section {
+            padding: 6rem 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .section-num {
+            font-family: 'Space Mono', monospace;
+            font-size: 5rem;
+            font-weight: 700;
+            line-height: 1;
+            opacity: 0.08;
+            flex-shrink: 0;
+        }
+
+        .section-title-block { flex: 1; }
+
+        .section-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .s1 .section-label { color: var(--accent1); }
+        .s2 .section-label { color: var(--accent2); }
+        .s3 .section-label { color: var(--accent3); }
+        .s4 .section-label { color: var(--accent4); }
+        .s5 .section-label { color: var(--accent1); }
+
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .section-question {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-left: 3px solid var(--border);
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .s1 .card-title { color: var(--accent1); }
+        .s2 .card-title { color: var(--accent2); }
+        .s3 .card-title { color: var(--accent3); }
+        .s4 .card-title { color: var(--accent4); }
+        .s5 .card-title { color: var(--accent1); }
+
+        .card p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .card p strong {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        /* CODE BLOCKS */
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        pre::before {
+            content: 'JS';
+            position: absolute;
+            top: 0.75rem;
+            right: 1rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+        }
+
+        code {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.9;
+            color: #c0c0d8;
+        }
+
+        .cm { color: var(--muted); }
+        .ck { color: var(--accent4); }
+        .cs { color: var(--accent3); }
+        .cn { color: var(--accent1); }
+        .cf { color: var(--accent2); }
+
+        /* TABLES */
+        .table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        thead tr {
+            background: var(--code-bg);
+        }
+
+        th {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 0.9rem 1.2rem;
+            text-align: left;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        td {
+            padding: 0.85rem 1.2rem;
+            border: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: top;
+        }
+
+        td code {
+            font-size: 0.78rem;
+        }
+
+        tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+        .yes { color: var(--accent3); }
+        .no  { color: var(--accent2); }
+
+        /* FLOW VISUAL */
+        .flow-box {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.78rem;
+            line-height: 2;
+            color: #a0a0c0;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        /* MEANING BOX */
+        .meaning-box {
+            border-left: 4px solid var(--accent1);
+            background: rgba(247,201,72,0.05);
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .s2 .meaning-box { border-color: var(--accent2); background: rgba(224,92,92,0.05); }
+        .s3 .meaning-box { border-color: var(--accent3); background: rgba(92,224,184,0.05); }
+        .s4 .meaning-box { border-color: var(--accent4); background: rgba(124,92,224,0.05); }
+        .s5 .meaning-box { border-color: var(--accent1); background: rgba(247,201,72,0.05); }
+
+        .meaning-box p { color: var(--text); }
+
+        /* GRID */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        /* STEP BLOCKS */
+        .steps { display: flex; flex-direction: column; gap: 0; }
+
+        .step {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .step:last-child { border-bottom: none; }
+
+        .step-num {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            flex-shrink: 0;
+            padding-top: 0.2rem;
+            width: 60px;
+        }
+
+        .s1 .step-num { color: var(--accent1); }
+        .s2 .step-num { color: var(--accent2); }
+        .s3 .step-num { color: var(--accent3); }
+        .s4 .step-num { color: var(--accent4); }
+        .s5 .step-num { color: var(--accent1); }
+
+        .step-content h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .step-content p strong { color: var(--text); }
+
+        /* INLINE CODE */
+        p code, li code, td code {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            padding: 0.1em 0.4em;
+            font-size: 0.82em;
+            color: var(--accent3);
+        }
+
+        /* LIST */
+        ul.styled {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        ul.styled li {
+            font-size: 0.9rem;
+            color: var(--muted);
+            padding-left: 1.25rem;
+            position: relative;
+        }
+
+        ul.styled li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+        }
+
+        .s1 ul.styled li::before { color: var(--accent1); }
+        .s2 ul.styled li::before { color: var(--accent2); }
+        .s3 ul.styled li::before { color: var(--accent3); }
+        .s4 ul.styled li::before { color: var(--accent4); }
+        .s5 ul.styled li::before { color: var(--accent1); }
+
+        ul.styled li strong { color: var(--text); }
+
+        /* DIVIDER */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 2rem 0;
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        footer p {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(10,10,15,0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: var(--accent1);
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        @media (max-width: 600px) {
+            .nav-links { display: none; }
+            .section-num { display: none; }
+            .flow-box { font-size: 0.65rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <span class="nav-logo">JS Notes</span>
+    <ul class="nav-links">
+        <li><a href="#timer">Timer</a></li>
+        <li><a href="#bubbling">Bubbling</a></li>
+        <li><a href="#map">Map</a></li>
+        <li><a href="#flatten">Flatten</a></li>
+        <li><a href="#search">Search</a></li>
+    </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-tag">JavaScript Concepts</div>
+    <h1>JS<span>Notes</span></h1>
+    <p class="hero-sub">Line-by-line explanations. Flow visuals. Every word. Nothing missed.</p>
+    <div class="topic-pills">
+        <span class="pill y">Countdown Timer</span>
+        <span class="pill r">Event Bubbling</span>
+        <span class="pill g">Custom map()</span>
+        <span class="pill p">Flatten Array</span>
+        <span class="pill y">Search Filter</span>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1: COUNTDOWN TIMER -->
+<!-- ============================================================ -->
+<section class="section s1" id="timer">
+<div class="container">
+
+    <div class="section-header">
+        <div class="section-num">01</div>
+        <div class="section-title-block">
+            <div class="section-label">Countdown Timer</div>
+            <h2 class="section-title">Create a countdown timer<br>that updates every second</h2>
+            <p class="section-question">// Question Meaning என்ன?</p>
+        </div>
+    </div>
+
+    <div class="meaning-box">
+        <p>10 இல் start ஆகி → 9, 8, 7... என்று கணக்கிட்டு → 0 ஆனதும் <strong>"Time's Up"</strong> காட்டு. ஒவ்வொரு second-லயும் number மாறணும்.</p>
+    </div>
+
+    <div class="steps">
+
+        <div class="step">
+            <div class="step-num">STEP 01</div>
+            <div class="step-content">
+                <h4>HTML Body ஏன்?</h4>
+                <pre><code><span class="cm">&lt;button onclick="gowtham()"&gt;</span>Click Me<span class="cm">&lt;/button&gt;</span>
+<span class="cm">&lt;p id="timer"&gt;</span>10<span class="cm">&lt;/p&gt;</span></code></pre>
+                <p><strong>Button</strong> → User click செய்தால் <code>gowtham()</code> function ஓடும். <code>&lt;p id="timer"&gt;10</code> → Screen-ல number காட்ட ஒரு இடம் வேணும் — அதுதான் இந்த <code>p</code> tag. <code>id="timer"</code> வச்சிருக்கோம் — JavaScript அதை பிடிக்க.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 02</div>
+            <div class="step-content">
+                <h4>Variable ஏன்?</h4>
+                <pre><code><span class="ck">let</span> time = <span class="cn">10</span></code></pre>
+                <p>Timer எங்கிருந்து start ஆகணும்? <strong>10இல்</strong> — அதை store பண்ண ஒரு variable வேணும்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 03</div>
+            <div class="step-content">
+                <h4>Function ஏன்?</h4>
+                <pre><code><span class="ck">function</span> <span class="cf">gowtham</span>() {</code></pre>
+                <p>Button click ஆனதும் மட்டும் timer ஓடணும் — அதனால function-ல வச்சிருக்கோம். Click இல்லன்னா ஓடாது.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 04</div>
+            <div class="step-content">
+                <h4>setInterval ஏன்?</h4>
+                <pre><code><span class="ck">let</span> interval = <span class="cf">setInterval</span>(() => {
+    ...
+}, <span class="cn">1000</span>)</code></pre>
+                <p><code>setInterval</code> → ஒவ்வொரு <strong>1000ms (1 second)</strong>-லயும் உள்ளே இருக்க code-ஐ திரும்ப திரும்ப run பண்ணும். <code>interval</code> variable-ல save பண்றோம் — <strong>பிறகு நிறுத்த</strong> வேண்டி இருக்கும்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 05</div>
+            <div class="step-content">
+                <h4>innerHTML ஏன்?</h4>
+                <pre><code>document.<span class="cf">getElementById</span>(<span class="cs">'timer'</span>).innerHTML = time</code></pre>
+                <p>Screen-ல காட்டணும் — <code>id="timer"</code> இருக்க <code>p</code> tag-ஐ பிடிச்சு அதுல <code>time</code> value போடுறோம்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 06</div>
+            <div class="step-content">
+                <h4>time-- ஏன்?</h4>
+                <pre><code>time--</code></pre>
+                <p>ஒவ்வொரு second-லயும் number <strong>ஒன்று குறைய</strong> வேண்டும் — 10→9→8... <code>time--</code> என்பது <code>time = time - 1</code> மாதிரிதான்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 07</div>
+            <div class="step-content">
+                <h4>if Condition ஏன்?</h4>
+                <pre><code><span class="ck">if</span> (<span class="cn">0</span> > time) {
+    <span class="cf">clearInterval</span>(interval)
+    document.<span class="cf">getElementById</span>(<span class="cs">'timer'</span>).innerHTML = <span class="cs">"Time's Up"</span>
+}</code></pre>
+                <p><code>time</code> 0-க்கும் கீழே போனதும்: <code>clearInterval(interval)</code> → Timer-ஐ <strong>நிறுத்து</strong> (இல்லன்னா -1, -2 போகும்). <code>"Time's Up"</code> → Screen-ல காட்டு.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:2rem;">
+        <div class="card-title">Full Flow Visual</div>
+        <div class="flow-box">Click Button
+     ↓
+gowtham() runs
+     ↓
+setInterval starts (every 1 second)
+     ↓
+Show time → time-- → check if time &lt; 0?
+     ↓                        ↓
+   NO → repeat           YES → Stop + "Time's Up"</div>
+    </div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: EVENT BUBBLING -->
+<!-- ============================================================ -->
+<section class="section s2" id="bubbling">
+<div class="container">
+
+    <div class="section-header">
+        <div class="section-num">02</div>
+        <div class="section-title-block">
+            <div class="section-label">Event Bubbling</div>
+            <h2 class="section-title">Explain and demonstrate<br>Event Bubbling</h2>
+            <p class="section-question">// Event Bubbling என்னன்னா?</p>
+        </div>
+    </div>
+
+    <div class="meaning-box">
+        <p>ஒரு element-ஐ click செய்தால், அந்த event <strong>கீழிருந்து மேலே</strong> போகும் — child → parent → document. நீ கல்லை தண்ணீரில் போட்டால் bubble மேலே வரும் — அதுதான் Event Bubbling!</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">உன் Code Flow — Button click செய்தால்...</div>
+        <div class="flow-box">    button#child
+         ↓  bubble
+    div#paradiv  
+         ↓  bubble
+      document</div>
+        <div class="divider"></div>
+        <p style="font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--muted);">Console Output:</p>
+        <pre><code><span class="cs">Child Element</span>        <span class="cm">← முதலில்</span>
+<span class="cs">ParaDiv Clicked</span>      <span class="cm">← இரண்டாவது</span>
+<span class="cs">body Element Clicked</span> <span class="cm">← மூன்றாவது</span></code></pre>
+    </div>
+
+    <div class="steps">
+
+        <div class="step">
+            <div class="step-num">HTML</div>
+            <div class="step-content">
+                <h4>HTML Structure ஏன் இப்படி?</h4>
+                <pre><code><span class="cm">&lt;div id="paradiv"&gt;</span>        <span class="cm">&lt;!-- Parent --&gt;</span>
+    <span class="cm">&lt;button id="child"&gt;</span>   <span class="cm">&lt;!-- Child --&gt;</span>
+        Click Me
+    <span class="cm">&lt;/button&gt;</span>
+<span class="cm">&lt;/div&gt;</span></code></pre>
+                <p>Button, div-க்கு <strong>உள்ளே</strong> இருக்கு — அதனால button click = div-உம் technically click ஆச்சு.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">LISTENERS</div>
+            <div class="step-content">
+                <h4>3 Event Listeners ஏன்?</h4>
+                <pre><code><span class="cm">// 1. Button-ல listener</span>
+document.<span class="cf">getElementById</span>(<span class="cs">'child'</span>).<span class="cf">addEventListener</span>(<span class="cs">"click"</span>, <span class="ck">function</span>() {
+    console.<span class="cf">log</span>(<span class="cs">'Child Element'</span>);
+})
+
+<span class="cm">// 2. Div-ல listener</span>
+document.<span class="cf">getElementById</span>(<span class="cs">'paradiv'</span>).<span class="cf">addEventListener</span>(<span class="cs">"click"</span>, <span class="ck">function</span>() {
+    console.<span class="cf">log</span>(<span class="cs">'ParaDiv Clicked'</span>);
+})
+
+<span class="cm">// 3. Document-ல listener</span>
+document.<span class="cf">addEventListener</span>(<span class="cs">"click"</span>, <span class="ck">function</span>() {
+    console.<span class="cf">log</span>(<span class="cs">'body Element Clicked'</span>);
+})</code></pre>
+                <p>மூன்று levels-லயும் வச்சிருக்கோம் — <strong>bubble எப்படி ஏறுதுன்னு பார்க்க.</strong></p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STOP</div>
+            <div class="step-content">
+                <h4>Bubbling-ஐ நிறுத்த — stopPropagation()</h4>
+                <pre><code>document.<span class="cf">getElementById</span>(<span class="cs">'child'</span>).<span class="cf">addEventListener</span>(<span class="cs">"click"</span>, <span class="ck">function</span>(e) {
+    console.<span class="cf">log</span>(<span class="cs">'Child Element'</span>);
+    e.<span class="cf">stopPropagation</span>()  <span class="cm">// ← இங்கே நிற்கும், மேலே போகாது</span>
+})</code></pre>
+                <p>Console Output இப்போ: <code>Child Element</code> ← இது மட்டும் வரும்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">USE CASE</div>
+            <div class="step-content">
+                <h4>Real Life Use Case</h4>
+                <pre><code><span class="cm">// ஒவ்வொரு button-க்கும் தனி listener வேண்டாம்</span>
+<span class="cm">// Parent-ல ஒரே ஒரு listener போதும்!</span>
+
+document.<span class="cf">getElementById</span>(<span class="cs">'paradiv'</span>).<span class="cf">addEventListener</span>(<span class="cs">"click"</span>, <span class="ck">function</span>(e) {
+    <span class="ck">if</span> (e.target.id === <span class="cs">'child'</span>) {
+        console.<span class="cf">log</span>(<span class="cs">'Button clicked!'</span>)
+    }
+    <span class="cm">// e.target → யாரை click செய்தோம் அது</span>
+})</code></pre>
+                <p>இதுதான் <strong>Event Delegation</strong> — Bubbling-ஐ smart-ஆ use பண்றது.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:2rem;">
+        <div class="card-title">Full Visual Flow</div>
+        <div class="flow-box">👆 Button Click
+      ↓
+ [button#child]   → "Child Element"
+      ↓ bubble
+ [div#paradiv]    → "ParaDiv Clicked"  
+      ↓ bubble
+  [document]      → "body Element Clicked"
+
+stopPropagation() போட்டால்:
+ [button#child]   → "Child Element"
+      ✋ STOP — மேலே போகாது</div>
+    </div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: CUSTOM MAP -->
+<!-- ============================================================ -->
+<section class="section s3" id="map">
+<div class="container">
+
+    <div class="section-header">
+        <div class="section-num">03</div>
+        <div class="section-title-block">
+            <div class="section-label">Custom map()</div>
+            <h2 class="section-title">Implement a custom map()<br>without using built-in map</h2>
+            <p class="section-question">// Question Meaning என்ன?</p>
+        </div>
+    </div>
+
+    <div class="meaning-box">
+        <p>JavaScript-ல <code>array.map()</code> already இருக்கு — ஆனா அதை use பண்ணாம <strong>நாமே உருவாக்கணும்.</strong> அதாவது map() உள்ளே என்ன நடக்குதுன்னு புரிஞ்சுக்க!</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Built-in map() என்ன செய்யும்?</div>
+        <pre><code><span class="ck">let</span> num = [<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>, <span class="cn">5</span>, <span class="cn">6</span>]
+<span class="ck">let</span> result = num.<span class="cf">map</span>(<span class="ck">function</span>(n) {
+    <span class="ck">return</span> n * <span class="cn">2</span>
+})
+<span class="cm">// result = [2, 4, 6, 8, 10, 12]</span></code></pre>
+        <ul class="styled">
+            <li>Array-ஐ எடுக்கும்</li>
+            <li>ஒவ்வொரு element-க்கும் function run பண்ணும்</li>
+            <li><strong>புதிய array return பண்ணும்</strong></li>
+        </ul>
+    </div>
+
+    <div class="steps">
+
+        <div class="step">
+            <div class="step-num">STEP 01</div>
+            <div class="step-content">
+                <h4>Function Definition</h4>
+                <pre><code><span class="ck">function</span> <span class="cf">custommap</span>(arr, callback) {</code></pre>
+                <p><code>arr</code> → நாம் pass பண்ற array <code>[1,2,3,4,5,6]</code>. <code>callback</code> → ஒவ்வொரு element-க்கும் என்ன செய்யணும்னு சொல்ற function.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 02</div>
+            <div class="step-content">
+                <h4>Empty Result Array</h4>
+                <pre><code><span class="ck">let</span> result = []</code></pre>
+                <p>Original array-ஐ மாத்தக்கூடாது — <strong>புதிய array-ல</strong> save பண்ணோம்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 03</div>
+            <div class="step-content">
+                <h4>Loop</h4>
+                <pre><code><span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i &lt; arr.length; i++) {</code></pre>
+                <p>Array-ல இருக்க <strong>ஒவ்வொரு element-யும்</strong> ஒரு முறை தொடு.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 04</div>
+            <div class="step-content">
+                <h4>callback() Call — Core Logic!</h4>
+                <pre><code>result.<span class="cf">push</span>(<span class="cf">callback</span>(arr[i], i, arr))</code></pre>
+                <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Parameter</th><th>Value</th><th>என்னன்னா</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>arr[i]</code></td><td>1, 2, 3...</td><td>Current element</td></tr>
+                        <tr><td><code>i</code></td><td>0, 1, 2...</td><td>Index number</td></tr>
+                        <tr><td><code>arr</code></td><td>[1,2,3,4,5,6]</td><td>Full array</td></tr>
+                    </tbody>
+                </table>
+                </div>
+                <p><code>callback()</code> run ஆகும் → return value-ஐ <code>result</code>-ல push பண்ணும்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 05</div>
+            <div class="step-content">
+                <h4>Return</h4>
+                <pre><code><span class="ck">return</span> result</code></pre>
+                <p>எல்லா elements-உம் process ஆனதும் <strong>புதிய array return.</strong></p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 06</div>
+            <div class="step-content">
+                <h4>Usage</h4>
+                <pre><code><span class="ck">let</span> num = [<span class="cn">1</span>, <span class="cn">2</span>, <span class="cn">3</span>, <span class="cn">4</span>, <span class="cn">5</span>, <span class="cn">6</span>]
+
+<span class="ck">let</span> dub = <span class="cf">custommap</span>(num, <span class="ck">function</span>(nums) {
+    <span class="ck">return</span> nums * <span class="cn">2</span>
+})
+
+console.<span class="cf">log</span>(dub) <span class="cm">// [2, 4, 6, 8, 10, 12]</span></code></pre>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:2rem;">
+        <div class="card-title">Full Flow Visual</div>
+        <div class="flow-box">num = [1, 2, 3, 4, 5, 6]
+         ↓
+custommap() starts → result = []
+         ↓
+i=0 → callback(1) → 1×2=2  → result = [2]
+i=1 → callback(2) → 2×2=4  → result = [2,4]
+i=2 → callback(3) → 3×2=6  → result = [2,4,6]
+i=3 → callback(4) → 4×2=8  → result = [2,4,6,8]
+i=4 → callback(5) → 5×2=10 → result = [2,4,6,8,10]
+i=5 → callback(6) → 6×2=12 → result = [2,4,6,8,10,12]
+         ↓
+return [2, 4, 6, 8, 10, 12]</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Same Function — Different Uses</div>
+        <pre><code><span class="cm">// Double</span>
+<span class="cf">custommap</span>(num, <span class="ck">function</span>(n) { <span class="ck">return</span> n * <span class="cn">2</span> })
+<span class="cm">// [2, 4, 6, 8, 10, 12]</span>
+
+<span class="cm">// Square</span>
+<span class="cf">custommap</span>(num, <span class="ck">function</span>(n) { <span class="ck">return</span> n * n })
+<span class="cm">// [1, 4, 9, 16, 25, 36]</span>
+
+<span class="cm">// Add index</span>
+<span class="cf">custommap</span>(num, <span class="ck">function</span>(n, i) { <span class="ck">return</span> n + i })
+<span class="cm">// [1, 3, 5, 7, 9, 11]</span></code></pre>
+        <p style="margin-top:1rem;font-size:0.9rem;color:var(--muted);"><strong style="color:var(--text);">Same custommap()</strong> — callback மாத்தினா result மாறும்!</p>
+    </div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: FLATTEN ARRAY -->
+<!-- ============================================================ -->
+<section class="section s4" id="flatten">
+<div class="container">
+
+    <div class="section-header">
+        <div class="section-num">04</div>
+        <div class="section-title-block">
+            <div class="section-label">Flatten Array</div>
+            <h2 class="section-title">Flatten a nested array<br>without using flat()</h2>
+            <p class="section-question">// Question Meaning என்ன?</p>
+        </div>
+    </div>
+
+    <div class="meaning-box">
+        <p>Array-க்கு உள்ளே array இருக்கு — எல்லாத்தையும் <strong>ஒரே level-ல</strong> கொண்டு வா.</p>
+    </div>
+
+    <pre><code><span class="cm">// Input  → [1, [2, 3], [4, [5, 6]]]</span>
+<span class="cm">// Output → [1, 2, 3, 4, 5, 6]</span></code></pre>
+
+    <div class="steps">
+
+        <div class="step">
+            <div class="step-num">STEP 01</div>
+            <div class="step-content">
+                <h4>Input Array</h4>
+                <pre><code><span class="ck">let</span> arr = [<span class="cn">1</span>, [<span class="cn">2</span>, <span class="cn">3</span>], [<span class="cn">4</span>, [<span class="cn">5</span>, <span class="cn">6</span>]]]</code></pre>
+                <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Index</th><th>Value</th><th>Type</th></tr></thead>
+                    <tbody>
+                        <tr><td>0</td><td><code>1</code></td><td>Number</td></tr>
+                        <tr><td>1</td><td><code>[2, 3]</code></td><td>Array inside Array</td></tr>
+                        <tr><td>2</td><td><code>[4, [5, 6]]</code></td><td>Array inside Array inside Array</td></tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 02</div>
+            <div class="step-content">
+                <h4>Result Array</h4>
+                <pre><code><span class="ck">let</span> result = []</code></pre>
+                <p>எல்லா numbers-யும் இங்கே collect பண்ணோம் — <strong>outside வச்சிருக்கோம்</strong> ஏன்னா function திரும்ப திரும்ப call ஆகும், அப்போவும் data தொலையாம இருக்கணும்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 03</div>
+            <div class="step-content">
+                <h4>Function + Loop</h4>
+                <pre><code><span class="ck">function</span> <span class="cf">arrs</span>(nums) {
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i &lt; nums.length; i++) {</code></pre>
+                <p>Pass ஆன array-ல <strong>ஒவ்வொரு element-யும்</strong> check பண்ணு.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 04</div>
+            <div class="step-content">
+                <h4>The Key Logic — Brain of the program!</h4>
+                <pre><code><span class="ck">if</span> (Array.<span class="cf">isArray</span>(nums[i])) {
+    <span class="cf">arrs</span>(nums[i])         <span class="cm">// ← Recursion!</span>
+} <span class="ck">else</span> {
+    result.<span class="cf">push</span>(nums[i])  <span class="cm">// ← Number இருந்தா save பண்ணு</span>
+}</code></pre>
+                <ul class="styled">
+                    <li>Element <strong>Array-ஆ?</strong> → அதை மீண்டும் <code>arrs()</code>-ல போடு <em>(Recursion)</em></li>
+                    <li>Element <strong>Number-ஆ?</strong> → <code>result</code>-ல push பண்ணு</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:2rem;">
+        <div class="card-title">Recursion என்னன்னா?</div>
+        <p style="margin-bottom:1rem;">Function தன்னையே திரும்ப call பண்றது.</p>
+        <pre><code><span class="cm">// arrs([1,[2,3],[4,[5,6]]])  call பண்றோம்</span>
+<span class="cm">//   └─ [2,3] கண்டால் → arrs([2,3]) call பண்றோம்</span>
+<span class="cm">//        └─ [5,6] கண்டால் → arrs([5,6]) call பண்றோம்</span></code></pre>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Full Flow Visual</div>
+        <div class="flow-box">arrs([1, [2,3], [4,[5,6]]])
+ │
+ ├── i=0 → 1          → Number!  → result = [1]
+ │
+ ├── i=1 → [2,3]      → Array!   → arrs([2,3])
+ │              │
+ │              ├── i=0 → 2  → result = [1,2]
+ │              └── i=1 → 3  → result = [1,2,3]
+ │
+ └── i=2 → [4,[5,6]]  → Array!   → arrs([4,[5,6]])
+                │
+                ├── i=0 → 4      → result = [1,2,3,4]
+                │
+                └── i=1 → [5,6]  → Array! → arrs([5,6])
+                              │
+                              ├── i=0 → 5  → result = [1,2,3,4,5]
+                              └── i=1 → 6  → result = [1,2,3,4,5,6]
+
+Final → [1, 2, 3, 4, 5, 6] ✅</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Why Recursion? — Simple Comparison</div>
+        <pre><code><span class="cm">// ❌ Normal loop — இது work ஆகாது deeply nested-க்கு</span>
+<span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i &lt; arr.length; i++) {
+    result.<span class="cf">push</span>(arr[i])  <span class="cm">// [2,3] push ஆகும், உள்ளே போகாது</span>
+}
+
+<span class="cm">// ✅ Recursion — எத்தனை level இருந்தாலும் உள்ளே போகும்</span>
+<span class="ck">function</span> <span class="cf">arrs</span>(nums) {
+    <span class="ck">for</span> (...) {
+        <span class="ck">if</span> (Array.<span class="cf">isArray</span>(nums[i])) <span class="cf">arrs</span>(nums[i]) <span class="cm">// Level எத்தனையானாலும்!</span>
+        <span class="ck">else</span> result.<span class="cf">push</span>(nums[i])
+    }
+}</code></pre>
+    </div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: SEARCH FILTER -->
+<!-- ============================================================ -->
+<section class="section s5" id="search">
+<div class="container">
+
+    <div class="section-header">
+        <div class="section-num">05</div>
+        <div class="section-title-block">
+            <div class="section-label">Search Filter</div>
+            <h2 class="section-title">Search filter that dynamically<br>filters table data while typing</h2>
+            <p class="section-question">// Question Meaning என்ன?</p>
+        </div>
+    </div>
+
+    <div class="meaning-box">
+        <p>Type பண்ண பண்ண — <strong>real time-ல</strong> table filter ஆகணும்.</p>
+    </div>
+
+    <pre><code>User types <span class="cs">"go"</span>  → Gowtham row மட்டும் காட்டு
+User types <span class="cs">"mo"</span>  → Moni row மட்டும் காட்டு
+User types <span class="cs">""</span>    → எல்லாரும் காட்டு</code></pre>
+
+    <div class="steps">
+
+        <div class="step">
+            <div class="step-num">STEP 01</div>
+            <div class="step-content">
+                <h4>HTML Structure</h4>
+                <pre><code><span class="cm">&lt;input type="text" placeholder="Enter the Values" id="search"&gt;</span></code></pre>
+                <p>User type பண்ண ஒரு box வேணும் — <code>id="search"</code> வச்சிருக்கோம் JavaScript பிடிக்க.</p>
+                <pre style="margin-top:1rem;"><code><span class="cm">&lt;table border="1"&gt;</span>
+    <span class="cm">&lt;tr&gt;</span>
+        <span class="cm">&lt;th&gt;</span>Name<span class="cm">&lt;/th&gt;</span>     ← Header Row (index 0)
+        <span class="cm">&lt;th&gt;</span>City<span class="cm">&lt;/th&gt;</span>
+    <span class="cm">&lt;/tr&gt;</span>
+    <span class="cm">&lt;tr&gt;</span>
+        <span class="cm">&lt;td&gt;</span>Gowtham<span class="cm">&lt;/td&gt;</span>  ← Data Row (index 1)
+        <span class="cm">&lt;td&gt;</span>Thanjavur<span class="cm">&lt;/td&gt;</span>
+    <span class="cm">&lt;/tr&gt;</span>
+    <span class="cm">&lt;tr&gt;</span>
+        <span class="cm">&lt;td&gt;</span>Moni<span class="cm">&lt;/td&gt;</span>     ← Data Row (index 2)
+        <span class="cm">&lt;td&gt;</span>Rameswaram<span class="cm">&lt;/td&gt;</span>
+    <span class="cm">&lt;/tr&gt;</span>
+<span class="cm">&lt;/table&gt;</span></code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 02</div>
+            <div class="step-content">
+                <h4>Element Grab</h4>
+                <pre><code><span class="ck">let</span> search = document.<span class="cf">getElementById</span>(<span class="cs">'search'</span>)</code></pre>
+                <p>Input box-ஐ JavaScript-ல பிடிச்சு <code>search</code> variable-ல வச்சோம்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 03</div>
+            <div class="step-content">
+                <h4>keyup Event ஏன்?</h4>
+                <pre><code>search.<span class="cf">addEventListener</span>(<span class="cs">"keyup"</span>, <span class="ck">function</span> () {</code></pre>
+                <p><code>keyup</code> → User <strong>ஒவ்வொரு key விட்ட உடனே</strong> function run ஆகும்.</p>
+                <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Event</th><th>எப்போ run ஆகும்</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>keydown</code></td><td>Key press ஆகும் போது</td></tr>
+                        <tr><td><code>keyup</code></td><td>Key விட்ட உடனே <span class="yes">✅</span></td></tr>
+                        <tr><td><code>keypress</code></td><td>Deprecated</td></tr>
+                    </tbody>
+                </table>
+                </div>
+                <p><code>keyup</code> use பண்றோம் — ஏன்னா key விட்ட உடனே input value ready ஆகும்.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 04</div>
+            <div class="step-content">
+                <h4>toLowerCase() ஏன்?</h4>
+                <pre><code><span class="ck">let</span> filter = search.value.<span class="cf">toLowerCase</span>()</code></pre>
+                <p>User <code>"GO"</code> type பண்ணாலும் <code>"go"</code> type பண்ணாலும் same result வரணும். <code>toLowerCase()</code> → எல்லாத்தையும் small letter-ல compare பண்ணு.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 05</div>
+            <div class="step-content">
+                <h4>All Rows Grab</h4>
+                <pre><code><span class="ck">let</span> rows = document.<span class="cf">querySelectorAll</span>(<span class="cs">'table tr'</span>)</code></pre>
+                <p>Table-ல இருக்க <strong>எல்லா rows-யும்</strong> ஒரே தடவையில் எடு.</p>
+                <pre><code>rows[<span class="cn">0</span>] → &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;City&lt;/th&gt;&lt;/tr&gt;   <span class="cm">← Header</span>
+rows[<span class="cn">1</span>] → &lt;tr&gt;&lt;td&gt;Gowtham&lt;/td&gt;&lt;td&gt;Thanjavur&lt;/td&gt;&lt;/tr&gt;
+rows[<span class="cn">2</span>] → &lt;tr&gt;&lt;td&gt;Moni&lt;/td&gt;&lt;td&gt;Rameswaram&lt;/td&gt;&lt;/tr&gt;</code></pre>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 06</div>
+            <div class="step-content">
+                <h4>Header Skip ஏன்?</h4>
+                <pre><code>rows.<span class="cf">forEach</span>((row, index) => {
+    <span class="ck">if</span> (index === <span class="cn">0</span>) <span class="ck">return</span></code></pre>
+                <p><code>index === 0</code> → அது Header row — Name, City hide ஆகக்கூடாது — <strong>skip பண்றோம்.</strong></p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 07</div>
+            <div class="step-content">
+                <h4>textContent ஏன்?</h4>
+                <pre><code><span class="ck">let</span> text = row.textContent.<span class="cf">toLowerCase</span>()</code></pre>
+                <p><code>row.textContent</code> → அந்த row-ல இருக்க <strong>எல்லா text-யும்</strong> எடு.</p>
+                <pre><code>row[<span class="cn">1</span>].textContent → <span class="cs">"Gowtham  Thanjavur"</span>
+row[<span class="cn">2</span>].textContent → <span class="cs">"Moni  Rameswaram"</span></code></pre>
+                <p><code>.toLowerCase()</code> → compare-க்கு small letter-ல மாத்து.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">STEP 08</div>
+            <div class="step-content">
+                <h4>includes() + Show/Hide</h4>
+                <pre><code><span class="ck">if</span> (text.<span class="cf">includes</span>(filter)) {
+    row.style.display = <span class="cs">""</span>      <span class="cm">// ← காட்டு</span>
+} <span class="ck">else</span> {
+    row.style.display = <span class="cs">"none"</span>  <span class="cm">// ← மறை</span>
+}</code></pre>
+                <p><code>includes(filter)</code> → row-ல user type பண்ணது இருக்கா?</p>
+                <div class="table-wrap">
+                <table>
+                    <thead><tr><th>User types</th><th>filter</th><th>text</th><th>includes?</th><th>Result</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>"go"</code></td><td><code>"go"</code></td><td><code>"gowtham thanjavur"</code></td><td><span class="yes">✅ Yes</span></td><td>Show</td></tr>
+                        <tr><td><code>"go"</code></td><td><code>"go"</code></td><td><code>"moni rameswaram"</code></td><td><span class="no">❌ No</span></td><td>Hide</td></tr>
+                        <tr><td><code>"ram"</code></td><td><code>"ram"</code></td><td><code>"moni rameswaram"</code></td><td><span class="yes">✅ Yes</span></td><td>Show</td></tr>
+                    </tbody>
+                </table>
+                </div>
+                <p><code>display = ""</code> → Browser default-ஐ use பண்ணு (table row visible). <code>display = "none"</code> → Hide பண்ணு.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card" style="margin-top:2rem;">
+        <div class="card-title">Full Flow Visual</div>
+        <div class="flow-box">User types "go"
+      ↓
+keyup fires
+      ↓
+filter = "go"
+      ↓
+rows = [header, gowtham-row, moni-row]
+      ↓
+index=0 → Header → SKIP
+      ↓
+index=1 → "gowtham thanjavur".includes("go") → ✅ → display = ""
+      ↓
+index=2 → "moni rameswaram".includes("go")   → ❌ → display = "none"
+      ↓
+Table shows Gowtham only ✅</div>
+    </div>
+
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>JavaScript Notes &nbsp;·&nbsp; 5 Concepts &nbsp;·&nbsp; Every word. Nothing missed.</p>
+</footer>
+
+</body>
+</html>

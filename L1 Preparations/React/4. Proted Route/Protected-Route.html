@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔐 Protected Routes After Login Authentication</title>
+  <style>
+    /* ═══════════════════════════════════════════════ */
+    /* GOOGLE FONTS                                    */
+    /* ═══════════════════════════════════════════════ */
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap');
+
+    /* ═══════════════════════════════════════════════ */
+    /* CSS VARIABLES                                    */
+    /* ═══════════════════════════════════════════════ */
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1a2332;
+      --bg-card: #151f2e;
+      --bg-code: #0d1117;
+      --bg-code-header: #161b22;
+      --bg-inline-code: #1a2332;
+      --bg-table-header: #1a2332;
+      --bg-table-row: #111827;
+      --bg-table-row-alt: #151f2e;
+
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --text-heading: #ffffff;
+
+      --accent-blue: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-red: #f85149;
+      --accent-orange: #d29922;
+      --accent-purple: #bc8cff;
+      --accent-cyan: #39d2c0;
+      --accent-pink: #f778ba;
+      --accent-yellow: #e3b341;
+
+      --border-primary: #21262d;
+      --border-secondary: #30363d;
+      --border-accent: #1a3a5c;
+
+      --gradient-blue: linear-gradient(135deg, #1a3a5c, #0d2240);
+      --gradient-green: linear-gradient(135deg, #1a3c2a, #0d2218);
+      --gradient-purple: linear-gradient(135deg, #2a1a3c, #1a0d28);
+      --gradient-orange: linear-gradient(135deg, #3c2a1a, #281a0d);
+      --gradient-red: linear-gradient(135deg, #3c1a1a, #280d0d);
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+      --shadow-glow-blue: 0 0 20px rgba(88, 166, 255, 0.15);
+      --shadow-glow-green: 0 0 20px rgba(63, 185, 80, 0.15);
+      --shadow-glow-purple: 0 0 20px rgba(188, 140, 255, 0.15);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+
+      --font-code: 'Fira Code', monospace;
+      --font-body: 'Inter', sans-serif;
+      --font-tamil: 'Noto Sans Tamil', 'Inter', sans-serif;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* RESET & BASE                                    */
+    /* ═══════════════════════════════════════════════ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: #30363d #0a0e17;
+    }
+
+    html::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    html::-webkit-scrollbar-track {
+      background: #0a0e17;
+    }
+
+    html::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 4px;
+    }
+
+    html::-webkit-scrollbar-thumb:hover {
+      background: #484f58;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      font-size: 16px;
+      min-height: 100vh;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* BACKGROUND ANIMATION                            */
+    /* ═══════════════════════════════════════════════ */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(88, 166, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(188, 140, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(63, 185, 80, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* MAIN CONTAINER                                  */
+    /* ═══════════════════════════════════════════════ */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* MAIN TITLE                                      */
+    /* ═══════════════════════════════════════════════ */
+    .main-title {
+      text-align: center;
+      margin-bottom: 12px;
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: var(--text-heading);
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 40px rgba(88, 166, 255, 0.3);
+    }
+
+    .main-title .emoji {
+      font-size: 2.2rem;
+    }
+
+    .main-subtitle {
+      text-align: center;
+      font-size: 1.15rem;
+      color: var(--accent-cyan);
+      font-weight: 600;
+      margin-bottom: 50px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* SECTION STYLES                                  */
+    /* ═══════════════════════════════════════════════ */
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-secondary);
+    }
+
+    .section-header .icon {
+      font-size: 1.6rem;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+    }
+
+    .section-header .icon.blue { background: var(--gradient-blue); }
+    .section-header .icon.green { background: var(--gradient-green); }
+    .section-header .icon.purple { background: var(--gradient-purple); }
+    .section-header .icon.orange { background: var(--gradient-orange); }
+    .section-header .icon.red { background: var(--gradient-red); }
+
+    .section-header h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text-heading);
+      letter-spacing: -0.3px;
+    }
+
+    .section-header h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-heading);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* EXPLANATION CARDS                                */
+    /* ═══════════════════════════════════════════════ */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-secondary);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card.blue-glow {
+      border-color: var(--border-accent);
+      box-shadow: var(--shadow-glow-blue);
+    }
+
+    .card.green-glow {
+      border-color: #1a3c2a;
+      box-shadow: var(--shadow-glow-green);
+    }
+
+    .card.purple-glow {
+      border-color: #2a1a3c;
+      box-shadow: var(--shadow-glow-purple);
+    }
+
+    .card h4 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+    }
+
+    .card h5 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent-green);
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: var(--text-primary);
+      line-height: 1.8;
+      margin-bottom: 10px;
+    }
+
+    .card .tamil {
+      font-family: var(--font-tamil);
+      color: var(--accent-orange);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* BLOCKQUOTE                                      */
+    /* ═══════════════════════════════════════════════ */
+    .blockquote {
+      background: var(--bg-tertiary);
+      border-left: 4px solid var(--accent-blue);
+      padding: 16px 20px;
+      margin: 16px 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+    }
+
+    .blockquote.green {
+      border-left-color: var(--accent-green);
+    }
+
+    .blockquote.orange {
+      border-left-color: var(--accent-orange);
+    }
+
+    .blockquote strong {
+      color: var(--text-heading);
+      font-style: normal;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* CODE BLOCKS                                     */
+    /* ═══════════════════════════════════════════════ */
+    .code-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-secondary);
+      border-radius: var(--radius-md);
+      margin: 16px 0;
+      overflow: hidden;
+    }
+
+    .code-header {
+      background: var(--bg-code-header);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-secondary);
+    }
+
+    .code-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .code-dots span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .code-dots span:nth-child(1) { background: var(--accent-red); }
+    .code-dots span:nth-child(2) { background: var(--accent-orange); }
+    .code-dots span:nth-child(3) { background: var(--accent-green); }
+
+    .code-filename {
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .code-content {
+      padding: 20px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #30363d #0d1117;
+    }
+
+    .code-content::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .code-content::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+
+    .code-content::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 3px;
+    }
+
+    .code-content pre {
+      font-family: var(--font-code);
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: var(--text-primary);
+      white-space: pre;
+      margin: 0;
+    }
+
+    /* Syntax highlighting colors */
+    .keyword { color: #ff7b72; font-weight: 500; }
+    .string { color: #a5d6ff; }
+    .comment { color: #6e7681; font-style: italic; }
+    .comment-tamil { color: #d29922; font-style: italic; font-family: var(--font-tamil), var(--font-code); }
+    .function { color: #d2a8ff; }
+    .variable { color: #ffa657; }
+    .number { color: #79c0ff; }
+    .tag { color: #7ee787; }
+    .attr { color: #79c0ff; }
+    .operator { color: #ff7b72; }
+    .class-name { color: #ffa657; }
+    .import { color: #ff7b72; }
+    .from { color: #ff7b72; }
+    .const-var { color: #ff7b72; }
+    .jsx-tag { color: #7ee787; }
+    .jsx-attr { color: #79c0ff; }
+    .jsx-string { color: #a5d6ff; }
+    .bracket { color: #8b949e; }
+    .method { color: #d2a8ff; }
+    .property { color: #79c0ff; }
+    .parameter { color: #ffa657; }
+    .type { color: #ff7b72; }
+    .builtin { color: #ffa657; }
+    .arrow { color: #ff7b72; }
+    .template-literal { color: #a5d6ff; }
+    .regex { color: #7ee787; }
+
+    /* Inline code */
+    .inline-code {
+      font-family: var(--font-code);
+      background: var(--bg-inline-code);
+      color: var(--accent-cyan);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      border: 1px solid var(--border-secondary);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* FLOW / DIAGRAM BLOCKS                           */
+    /* ═══════════════════════════════════════════════ */
+    .diagram-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-secondary);
+      border-radius: var(--radius-md);
+      margin: 16px 0;
+      overflow: hidden;
+    }
+
+    .diagram-header {
+      background: var(--bg-code-header);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diagram-header .label {
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      color: var(--accent-purple);
+      font-weight: 600;
+    }
+
+    .diagram-content {
+      padding: 20px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #30363d #0d1117;
+    }
+
+    .diagram-content::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .diagram-content::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+
+    .diagram-content::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 3px;
+    }
+
+    .diagram-content pre {
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-primary);
+      white-space: pre;
+      margin: 0;
+    }
+
+    .diagram-content .flow-title {
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .diagram-content .flow-box {
+      color: var(--accent-green);
+    }
+
+    .diagram-content .flow-arrow {
+      color: var(--accent-orange);
+    }
+
+    .diagram-content .flow-yes {
+      color: var(--accent-green);
+    }
+
+    .diagram-content .flow-no {
+      color: var(--accent-red);
+    }
+
+    .diagram-content .flow-label {
+      color: var(--accent-blue);
+    }
+
+    .diagram-content .flow-highlight {
+      color: var(--accent-purple);
+    }
+
+    .diagram-content .flow-comment {
+      color: var(--accent-orange);
+      font-family: var(--font-tamil), var(--font-code);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* TABLE STYLES                                    */
+    /* ═══════════════════════════════════════════════ */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 16px 0;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-secondary);
+      scrollbar-width: thin;
+      scrollbar-color: #30363d #111827;
+    }
+
+    .table-wrapper::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+      background: #111827;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 3px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    thead {
+      background: var(--bg-table-header);
+    }
+
+    thead th {
+      padding: 14px 18px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--accent-blue);
+      border-bottom: 2px solid var(--border-secondary);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      background: var(--bg-table-row);
+      transition: background 0.15s ease;
+    }
+
+    tbody tr:nth-child(even) {
+      background: var(--bg-table-row-alt);
+    }
+
+    tbody tr:hover {
+      background: var(--bg-tertiary);
+    }
+
+    tbody td {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-primary);
+      color: var(--text-primary);
+      vertical-align: top;
+    }
+
+    tbody td:first-child {
+      font-family: var(--font-code);
+      color: var(--accent-cyan);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    tbody td .tamil-text {
+      font-family: var(--font-tamil);
+      color: var(--accent-orange);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* NUMBERED SECTION HEADERS                        */
+    /* ═══════════════════════════════════════════════ */
+    .numbered-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+      margin-top: 40px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-secondary);
+    }
+
+    .numbered-header .num-badge {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .numbered-header h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-heading);
+    }
+
+    .numbered-header .file-badge {
+      font-family: var(--font-code);
+      background: var(--bg-tertiary);
+      color: var(--accent-green);
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      border: 1px solid var(--border-secondary);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* ALERT / NOTE BOXES                              */
+    /* ═══════════════════════════════════════════════ */
+    .alert {
+      padding: 18px 22px;
+      border-radius: var(--radius-md);
+      margin: 20px 0;
+      border: 1px solid;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .alert .alert-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .alert.info {
+      background: rgba(88, 166, 255, 0.08);
+      border-color: rgba(88, 166, 255, 0.3);
+    }
+
+    .alert.info .alert-icon { color: var(--accent-blue); }
+
+    .alert.warning {
+      background: rgba(210, 153, 34, 0.08);
+      border-color: rgba(210, 153, 34, 0.3);
+    }
+
+    .alert.warning .alert-icon { color: var(--accent-orange); }
+
+    .alert.success {
+      background: rgba(63, 185, 80, 0.08);
+      border-color: rgba(63, 185, 80, 0.3);
+    }
+
+    .alert.success .alert-icon { color: var(--accent-green); }
+
+    .alert.danger {
+      background: rgba(248, 81, 73, 0.08);
+      border-color: rgba(248, 81, 73, 0.3);
+    }
+
+    .alert.danger .alert-icon { color: var(--accent-red); }
+
+    .alert p {
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .alert strong {
+      color: var(--text-heading);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* SUMMARY BOX                                     */
+    /* ═══════════════════════════════════════════════ */
+    .summary-box {
+      background: var(--bg-code);
+      border: 2px solid var(--accent-blue);
+      border-radius: var(--radius-lg);
+      padding: 0;
+      margin: 30px 0;
+      overflow: hidden;
+      box-shadow: var(--shadow-glow-blue);
+    }
+
+    .summary-header {
+      background: linear-gradient(135deg, rgba(88, 166, 255, 0.15), rgba(188, 140, 255, 0.1));
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-secondary);
+    }
+
+    .summary-header h3 {
+      color: var(--accent-blue);
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .summary-body {
+      padding: 24px;
+    }
+
+    .summary-body pre {
+      font-family: var(--font-code);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      white-space: pre;
+      margin: 0;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* HORIZONTAL DIVIDER                              */
+    /* ═══════════════════════════════════════════════ */
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--border-secondary), var(--accent-blue), var(--border-secondary), transparent);
+      margin: 50px 0;
+      border: none;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* PROJECT STRUCTURE TREE                           */
+    /* ═══════════════════════════════════════════════ */
+    .tree-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-secondary);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .tree-header {
+      background: var(--bg-code-header);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-secondary);
+    }
+
+    .tree-header .label {
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+
+    .tree-content {
+      padding: 20px;
+      overflow-x: auto;
+    }
+
+    .tree-content pre {
+      font-family: var(--font-code);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      white-space: pre;
+      margin: 0;
+    }
+
+    .tree-content .folder { color: var(--accent-blue); font-weight: 600; }
+    .tree-content .file { color: var(--accent-green); }
+    .tree-content .desc { color: var(--text-secondary); }
+    .tree-content .emoji-tree { font-size: 1rem; }
+
+    /* ═══════════════════════════════════════════════ */
+    /* WHY USED TABLE SPECIAL                          */
+    /* ═══════════════════════════════════════════════ */
+    .why-table tbody td:first-child {
+      color: var(--accent-purple);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* SECURITY LAYERS VISUAL                          */
+    /* ═══════════════════════════════════════════════ */
+    .layer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-secondary);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin: 12px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .layer-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+    }
+
+    .layer-card.layer-1::before { background: var(--accent-orange); }
+    .layer-card.layer-2::before { background: var(--accent-blue); }
+    .layer-card.layer-3::before { background: var(--accent-green); }
+
+    .layer-card .layer-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .layer-card.layer-1 .layer-title { color: var(--accent-orange); }
+    .layer-card.layer-2 .layer-title { color: var(--accent-blue); }
+    .layer-card.layer-3 .layer-title { color: var(--accent-green); }
+
+    .layer-card .layer-desc {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .layer-card .layer-warning {
+      color: var(--accent-red);
+      font-size: 0.85rem;
+      font-style: italic;
+      margin-top: 6px;
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* ENV / CONFIG BLOCKS                             */
+    /* ═══════════════════════════════════════════════ */
+    .config-block {
+      background: var(--bg-code);
+      border: 1px solid var(--border-secondary);
+      border-radius: var(--radius-md);
+      margin: 12px 0;
+      overflow: hidden;
+    }
+
+    .config-header {
+      background: var(--bg-code-header);
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border-secondary);
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .config-body {
+      padding: 16px;
+    }
+
+    .config-body pre {
+      font-family: var(--font-code);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      white-space: pre;
+      margin: 0;
+    }
+
+    .config-body .env-key { color: var(--accent-cyan); }
+    .config-body .env-value { color: var(--accent-green); }
+    .config-body .json-key { color: var(--accent-blue); }
+    .config-body .json-value { color: var(--accent-green); }
+
+    /* ═══════════════════════════════════════════════ */
+    /* RESPONSIVE                                      */
+    /* ═══════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 16px 60px;
+      }
+
+      .main-title {
+        font-size: 1.6rem;
+      }
+
+      .main-subtitle {
+        font-size: 1rem;
+      }
+
+      .section-header h2 {
+        font-size: 1.3rem;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .code-content pre,
+      .diagram-content pre,
+      .tree-content pre,
+      .config-body pre,
+      .summary-body pre {
+        font-size: 0.78rem;
+      }
+
+      table {
+        font-size: 0.82rem;
+      }
+
+      thead th,
+      tbody td {
+        padding: 10px 12px;
+      }
+
+      .numbered-header {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* STEP NUMBER BADGES                              */
+    /* ═══════════════════════════════════════════════ */
+    .step-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin: 16px 0;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      position: relative;
+    }
+
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 48px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border-secondary);
+    }
+
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      border: 2px solid;
+    }
+
+    .step-num.blue {
+      background: rgba(88, 166, 255, 0.1);
+      color: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .step-num.green {
+      background: rgba(63, 185, 80, 0.1);
+      color: var(--accent-green);
+      border-color: var(--accent-green);
+    }
+
+    .step-num.purple {
+      background: rgba(188, 140, 255, 0.1);
+      color: var(--accent-purple);
+      border-color: var(--accent-purple);
+    }
+
+    .step-num.orange {
+      background: rgba(210, 153, 34, 0.1);
+      color: var(--accent-orange);
+      border-color: var(--accent-orange);
+    }
+
+    .step-num.red {
+      background: rgba(248, 81, 73, 0.1);
+      color: var(--accent-red);
+      border-color: var(--accent-red);
+    }
+
+    .step-content {
+      flex: 1;
+      padding-top: 8px;
+    }
+
+    .step-content strong {
+      color: var(--text-heading);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* VISUALIZATION CARDS                             */
+    /* ═══════════════════════════════════════════════ */
+    .vis-card {
+      background: var(--bg-code);
+      border: 1px solid var(--border-secondary);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+
+    .vis-card pre {
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text-primary);
+      white-space: pre;
+      margin: 0;
+    }
+
+    .vis-label {
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    .vis-value {
+      color: var(--accent-green);
+    }
+
+    .vis-key {
+      color: var(--accent-orange);
+    }
+
+    .vis-comment {
+      color: var(--text-muted);
+    }
+
+    /* ═══════════════════════════════════════════════ */
+    /* FOOTER NOTE                                     */
+    /* ═══════════════════════════════════════════════ */
+    .footer-note {
+      background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(188, 140, 255, 0.08));
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .footer-note p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+    }
+
+    .footer-note .highlight {
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .footer-note .tamil-note {
+      font-family: var(--font-tamil);
+      color: var(--accent-orange);
+    }
+
+    .footer-note .emoji-lock {
+      font-size: 1.4rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MAIN TITLE                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <h1 class="main-title">
+      <span class="emoji">🔐</span> Protected Routes After Login Authentication
+    </h1>
+    <p class="main-subtitle">Complete Beginner-Friendly Explanation</p>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Question Meaning                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon blue">📌</div>
+        <h2>Question Meaning (English + Tamil)</h2>
+      </div>
+
+      <div class="card blue-glow">
+        <h4>English:</h4>
+        <div class="blockquote">
+          <p><strong>"Implement protected routes after login authentication"</strong></p>
+          <p>This means: Create a system where <strong>some pages (like Dashboard) can only be accessed if the user is logged in</strong>. If the user is NOT logged in, they should be <strong>redirected to the login page</strong>.</p>
+        </div>
+
+        <h4>Tamil:</h4>
+        <div class="blockquote orange">
+          <p><strong class="tamil">"Login authentication-க்கு அப்புறம் protected routes implement பண்ணுங்கள்"</strong></p>
+          <p class="tamil">இதன் அர்த்தம்: சில pages-ஐ (உதா: Dashboard) <strong>login பண்ணினா மட்டுமே பார்க்க முடியும்</strong> என்று ஒரு system உருவாக்கணும். Login பண்ணலன்னா, <strong>login page-க்கு redirect ஆகணும்</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Real-Life Example                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon green">🏠</div>
+        <h2>Real-Life Example (நிஜ உலக உதாரணம்)</h2>
+      </div>
+
+      <div class="diagram-block">
+        <div class="diagram-header">
+          <span class="label">🏦 Bank Analogy (வங்கி உதாரணம்)</span>
+        </div>
+        <div class="diagram-content">
+<pre>
+1. நீங்க bank-க்கு போறீங்க (Website visit)
+2. Account open பண்றீங்க (Register)
+3. ATM card + PIN வாங்குறீங்க (Login → Token receive)
+4. ATM card insert பண்ணி PIN போடுறீங்க (Token send to server)
+5. PIN correct-ஆ இருந்தா → பணம் எடுக்கலாம் (Dashboard access)
+6. PIN wrong-ஆ இருந்தா → "Invalid" message (Redirect to login)
+7. Card இல்லாம ATM use பண்ண முடியாது (No token = No access)
+</pre>
+        </div>
+      </div>
+
+      <div class="diagram-block">
+        <div class="diagram-header">
+          <span class="label">🔑 Key Card Analogy</span>
+        </div>
+        <div class="diagram-content">
+<pre>
+Office Building = Your Website
+Key Card       = Token (JWT)
+Reception      = Login Page
+Your Office    = Dashboard (Protected Route)
+Security Guard = PrivateRoute Component + verifyToken Middleware
+
+Without key card → Security guard won't let you in!
+Key card இல்லன்னா → Security guard உள்ள விடமாட்டார்!
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Full Flow Visualization             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon purple">🔄</div>
+        <h2>Full Flow Visualization</h2>
+      </div>
+
+      <!-- COMPLETE APPLICATION FLOW -->
+      <div class="diagram-block">
+        <div class="diagram-header">
+          <span class="label">COMPLETE APPLICATION FLOW</span>
+        </div>
+        <div class="diagram-content">
+<pre>
+                    ┌─────────────────┐
+                    │   User Opens    │
+                    │    Website      │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │  App.jsx Loads  │
+                    │  BrowserRouter  │
+                    │   + AppRoutes   │
+                    └────────┬────────┘
+                             │
+                ┌────────────┼────────────┐
+                ▼            ▼            ▼
+         ┌──────────┐ ┌──────────┐ ┌──────────────┐
+         │ Route: / │ │  Route:  │ │    Route:    │
+         │ Register │ │  /login  │ │  /dashboard  │
+         └──────────┘ └──────────┘ └──────┬───────┘
+                                          │
+                                          ▼
+                                   ┌──────────────┐
+                                   │ PrivateRoute │
+                                   │ (Guard/காவலர்)│
+                                   └──────┬───────┘
+                                          │
+                                ┌─────────┴─────────┐
+                                │  Token இருக்கா?    │
+                                │  (Key card check)  │
+                                └─────────┬─────────┘
+                                          │
+                               ┌──────────┴──────────┐
+                               ▼                      ▼
+                        ┌─────────────┐       ┌──────────────┐
+                        │  YES ✅     │       │   NO ❌      │
+                        │  Token உள்ளது│       │  Token இல்லை │
+                        │  Dashboard  │       │  Redirect to │
+                        │  காட்டு     │       │  /login      │
+                        └─────────────┘       └──────────────┘
+</pre>
+        </div>
+      </div>
+
+      <!-- REGISTER FLOW -->
+      <div class="diagram-block">
+        <div class="diagram-header">
+          <span class="label">REGISTER FLOW (பதிவு)</span>
+        </div>
+        <div class="diagram-content">
+<pre>
+  User                    Frontend (React)              Backend (Node.js)           MongoDB
+   │                           │                              │                       │
+   │  1. Fill name,email,pwd   │                              │                       │
+   │ ────────────────────────► │                              │                       │
+   │                           │  2. POST /api/auth/register  │                       │
+   │                           │ ────────────────────────────►│                       │
+   │                           │                              │ 3. Email already       │
+   │                           │                              │    exists check?       │
+   │                           │                              │ ───────────────────►   │
+   │                           │                              │ ◄───────────────────   │
+   │                           │                              │ 4. Hash password       │
+   │                           │                              │    bcrypt.hash()       │
+   │                           │                              │ 5. Save to DB          │
+   │                           │                              │ ───────────────────►   │
+   │                           │                              │ ◄───────────────────   │
+   │                           │  6. {msg: "Registered"}      │                       │
+   │                           │ ◄────────────────────────────│                       │
+   │  7. Navigate to /login    │                              │                       │
+   │ ◄──────────────────────── │                              │                       │
+</pre>
+        </div>
+      </div>
+
+      <!-- LOGIN FLOW -->
+      <div class="diagram-block">
+        <div class="diagram-header">
+          <span class="label">LOGIN FLOW (உள்நுழைவு)</span>
+        </div>
+        <div class="diagram-content">
+<pre>
+  User                    Frontend (React)              Backend (Node.js)           MongoDB
+   │                           │                              │                       │
+   │  1. Enter email + pwd     │                              │                       │
+   │ ────────────────────────► │                              │                       │
+   │                           │  2. POST /api/auth/login     │                       │
+   │                           │ ────────────────────────────►│                       │
+   │                           │                              │ 3. Find user by email  │
+   │                           │                              │ ───────────────────►   │
+   │                           │                              │ ◄───────────────────   │
+   │                           │                              │ 4. Compare password    │
+   │                           │                              │    bcrypt.compare()    │
+   │                           │                              │ 5. Generate JWT token  │
+   │                           │                              │    jwt.sign()          │
+   │                           │  6. {msg, token: "abc123"}   │                       │
+   │                           │ ◄────────────────────────────│                       │
+   │                           │  7. Save token to            │                       │
+   │                           │     localStorage             │                       │
+   │  8. Navigate to           │                              │                       │
+   │     /dashboard            │                              │                       │
+   │ ◄──────────────────────── │                              │                       │
+</pre>
+        </div>
+      </div>
+
+      <!-- DASHBOARD ACCESS FLOW -->
+      <div class="diagram-block">
+        <div class="diagram-header">
+          <span class="label">DASHBOARD ACCESS FLOW (Protected)</span>
+        </div>
+        <div class="diagram-content">
+<pre>
+  User                  PrivateRoute          Dashboard            Backend          MongoDB
+   │                        │                     │                   │                │
+   │  1. Go to /dashboard   │                     │                   │                │
+   │ ──────────────────────►│                     │                   │                │
+   │                        │ 2. Check token      │                   │                │
+   │                        │    in localStorage  │                   │                │
+   │                        │                     │                   │                │
+   │            ┌───────────┴───────────┐         │                   │                │
+   │            │  Token found? ✅      │         │                   │                │
+   │            └───────────┬───────────┘         │                   │                │
+   │                        │ 3. Render Dashboard │                   │                │
+   │                        │ ───────────────────►│                   │                │
+   │                        │                     │ 4. GET /dashboard │                │
+   │                        │                     │   + Bearer token  │                │
+   │                        │                     │ ─────────────────►│                │
+   │                        │                     │                   │ 5. verifyToken │
+   │                        │                     │                   │    middleware  │
+   │                        │                     │                   │ 6. jwt.verify()│
+   │                        │                     │                   │ 7. Get users   │
+   │                        │                     │                   │ ──────────────►│
+   │                        │                     │                   │ ◄──────────────│
+   │                        │                     │ 8. {users, user}  │                │
+   │                        │                     │ ◄─────────────────│                │
+   │  9. Show Dashboard     │                     │                   │                │
+   │     with user data     │                     │                   │                │
+   │ ◄───────────────────────────────────────────│                   │                │
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Project Structure                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon green">📁</div>
+        <h2>Project Structure (கோப்பு அமைப்பு)</h2>
+      </div>
+
+      <div class="tree-block">
+        <div class="tree-header">
+          <span class="label">📁 Project Root</span>
+        </div>
+        <div class="tree-content">
+<pre>
+<span class="folder">📁 Project Root</span>
+│
+├── <span class="folder">📁 frontend (React App)</span>
+│   ├── <span class="folder">📁 src</span>
+│   │   ├── <span class="folder">📁 components</span>
+│   │   │   └── <span class="file">📄 PrivateRoute.jsx</span>    <span class="desc">← 🛡️ Guard component (காவலர்)</span>
+│   │   ├── <span class="folder">📁 pages</span>
+│   │   │   ├── <span class="file">📄 Register.jsx</span>        <span class="desc">← 📝 Registration page (பதிவு)</span>
+│   │   │   ├── <span class="file">📄 Login.jsx</span>           <span class="desc">← 🔑 Login page (உள்நுழைவு)</span>
+│   │   │   └── <span class="file">📄 Dashboard.jsx</span>       <span class="desc">← 🏠 Protected page (பாதுகாப்பான பக்கம்)</span>
+│   │   ├── <span class="folder">📁 routes</span>
+│   │   │   └── <span class="file">📄 AppRoutes.jsx</span>       <span class="desc">← 🗺️ All routes defined here</span>
+│   │   └── <span class="file">📄 App.jsx</span>                 <span class="desc">← 🚀 Main entry point</span>
+│   │
+│   └── <span class="file">📄 package.json</span>
+│
+├── <span class="folder">📁 backend (Node.js + Express)</span>
+│   ├── <span class="folder">📁 config</span>
+│   │   └── <span class="file">📄 db.js</span>                   <span class="desc">← 🗄️ MongoDB connection</span>
+│   ├── <span class="folder">📁 controllers</span>
+│   │   └── <span class="file">📄 authController.js</span>       <span class="desc">← 🧠 Business logic (register, login, dashboard)</span>
+│   ├── <span class="folder">📁 middleware</span>
+│   │   └── <span class="file">📄 authMiddleware.js</span>       <span class="desc">← 🛡️ Token verification (சரிபார்ப்பு)</span>
+│   ├── <span class="folder">📁 models</span>
+│   │   └── <span class="file">📄 userModel.js</span>            <span class="desc">← 📋 User schema (தரவு வடிவம்)</span>
+│   ├── <span class="folder">📁 routes</span>
+│   │   └── <span class="file">📄 authRoutes.js</span>           <span class="desc">← 🛤️ API endpoints</span>
+│   ├── <span class="file">📄 server.js</span>                   <span class="desc">← 🖥️ Server entry point</span>
+│   └── <span class="file">📄 .env</span>                        <span class="desc">← 🔒 Secret variables</span>
+│
+└── <span class="file">📄 README.md</span>
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Line-by-Line Code Explanation       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon blue">📝</div>
+        <h2>Line-by-Line Code Explanation</h2>
+      </div>
+
+      <!-- 1️⃣ server.js -->
+      <div class="numbered-header">
+        <span class="num-badge">1️⃣</span>
+        <h3>server.js - Server Entry Point (சர்வர் தொடக்கப் புள்ளி)</h3>
+        <span class="file-badge">server.js</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">server.js</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// Express framework-ஐ import பண்றோம்</span>
+<span class="comment">// Express = Node.js-ல server உருவாக்க உதவும் library</span>
+<span class="keyword">import</span> <span class="variable">express</span> <span class="keyword">from</span> <span class="string">'express'</span>
+
+<span class="comment">// CORS = Cross Origin Resource Sharing</span>
+<span class="comment">// Frontend (port 3000) → Backend (port 5000) request அனுப்ப அனுமதிக்கும்</span>
+<span class="comment">// இது இல்லன்னா browser block பண்ணிடும்!</span>
+<span class="keyword">import</span> <span class="variable">cors</span> <span class="keyword">from</span> <span class="string">'cors'</span>
+
+<span class="comment">// dotenv = .env file-ல இருக்கற secret values-ஐ படிக்க உதவும்</span>
+<span class="comment">// .env file-ல: MONGODB_URL, JWT_SECRET, PORT போன்றவை இருக்கும்</span>
+<span class="keyword">import</span> <span class="variable">dotenv</span> <span class="keyword">from</span> <span class="string">'dotenv'</span>
+
+<span class="comment">// MongoDB database-ஐ connect பண்ற function</span>
+<span class="keyword">import</span> <span class="variable">connectdb</span> <span class="keyword">from</span> <span class="string">'./config/db.js'</span>
+
+<span class="comment">// நம்ம authentication routes (register, login, dashboard)</span>
+<span class="keyword">import</span> <span class="variable">router</span> <span class="keyword">from</span> <span class="string">'./routes/authRoutes.js'</span>
+
+<span class="comment">// .env file-ல இருக்கற values-ஐ process.env-ல load பண்ணு</span>
+<span class="comment">// இதை முதல்ல call பண்ணணும், இல்லன்னா process.env.MONGODB_URL = undefined ஆகும்</span>
+<span class="variable">dotenv</span>.<span class="method">config</span>()
+
+<span class="comment">// MongoDB-க்கு connect பண்ணு</span>
+<span class="comment">// இது async function, server start ஆவதற்கு முன்னாடி DB connect ஆகும்</span>
+<span class="function">connectdb</span>()
+
+<span class="comment">// Express application உருவாக்கு</span>
+<span class="comment">// app = நம்ம server object, இதுல routes, middleware எல்லாம் add பண்ணுவோம்</span>
+<span class="keyword">const</span> <span class="variable">app</span> = <span class="function">express</span>()
+
+<span class="comment">// CORS middleware enable பண்ணு</span>
+<span class="comment">// Real-life example: உங்க வீட்டுக்கு வேற ஊர்காரர் வர அனுமதி கொடுப்பது போல</span>
+<span class="variable">app</span>.<span class="method">use</span>(<span class="function">cors</span>())
+
+<span class="comment">// JSON body parser enable பண்ணு</span>
+<span class="comment">// Frontend-ல இருந்து வர்ற JSON data-ஐ படிக்க இது வேணும்</span>
+<span class="comment">// இது இல்லன்னா req.body = undefined ஆகும்!</span>
+<span class="variable">app</span>.<span class="method">use</span>(<span class="variable">express</span>.<span class="method">json</span>())
+
+<span class="comment">// "/api/auth" path-க்கு வர்ற எல்லா requests-ஐயும் router handle பண்ணும்</span>
+<span class="comment">// /api/auth/register, /api/auth/login, /api/auth/dashboard</span>
+<span class="variable">app</span>.<span class="method">use</span>(<span class="string">"/api/auth"</span>, <span class="variable">router</span>)
+
+<span class="comment">// PORT number - .env file-ல இருந்தா அதை எடு, இல்லன்னா 3000 use பண்ணு</span>
+<span class="keyword">const</span> <span class="variable">PORT</span> = <span class="variable">process</span>.<span class="property">env</span>.<span class="property">PORT</span> || <span class="number">3000</span>
+
+<span class="comment">// Server-ஐ start பண்ணு, குறிப்பிட்ட PORT-ல listen பண்ணு</span>
+<span class="variable">app</span>.<span class="method">listen</span>(<span class="variable">PORT</span>, () =&gt; {
+  <span class="variable">console</span>.<span class="method">log</span>(<span class="template-literal">`Server Is Connected http://localhost:${PORT}`</span>);
+})</pre>
+        </div>
+      </div>
+
+      <!-- Why each thing is used table -->
+      <p><strong>Why each thing is used:</strong></p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Concept</th>
+              <th>Why? (ஏன்?)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>express</td><td><span class="tamil-text">Server உருவாக்க (To create server)</span></td></tr>
+            <tr><td>cors</td><td><span class="tamil-text">Frontend↔Backend communication அனுமதிக்க</span></td></tr>
+            <tr><td>dotenv</td><td><span class="tamil-text">Secret values-ஐ safe-ஆ store பண்ண</span></td></tr>
+            <tr><td>express.json()</td><td><span class="tamil-text">JSON data படிக்க (Parse JSON body)</span></td></tr>
+            <tr><td>app.use(router)</td><td><span class="tamil-text">Routes-ஐ connect பண்ண</span></td></tr>
+            <tr><td>app.listen()</td><td><span class="tamil-text">Server-ஐ start பண்ண</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 2️⃣ db.js -->
+      <div class="numbered-header">
+        <span class="num-badge">2️⃣</span>
+        <h3>db.js - Database Connection (தரவுத்தள இணைப்பு)</h3>
+        <span class="file-badge">db.js</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">config/db.js</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// Mongoose = MongoDB-ஐ Node.js-ல எளிதாக use பண்ண உதவும் library</span>
+<span class="comment">// SQL-ல MySQL library use பண்றது போல, NoSQL-ல Mongoose use பண்றோம்</span>
+<span class="keyword">import</span> <span class="variable">mongoose</span> <span class="keyword">from</span> <span class="string">"mongoose"</span>;
+
+<span class="comment">// Database connect பண்ற async function</span>
+<span class="comment">// async ஏன்? → DB connect ஆக சில நேரம் ஆகும், wait பண்ணணும்</span>
+<span class="keyword">const</span> <span class="variable">connectdb</span> = <span class="keyword">async</span> () =&gt; {
+  <span class="keyword">try</span> {
+    <span class="comment">// mongoose.connect() → MongoDB-க்கு connection establish பண்ணும்</span>
+    <span class="comment">// process.env.MONGODB_URL → .env file-ல இருக்கற MongoDB URL</span>
+    <span class="comment">// Example: mongodb://localhost:27017/mydb</span>
+    <span class="keyword">const</span> <span class="variable">conn</span> = <span class="keyword">await</span> <span class="variable">mongoose</span>.<span class="method">connect</span>(<span class="variable">process</span>.<span class="property">env</span>.<span class="property">MONGODB_URL</span>)
+
+    <span class="comment">// Connection successful-ஆ இருந்தா host name print பண்ணு</span>
+    <span class="variable">console</span>.<span class="method">log</span>(<span class="template-literal">`MongoDb Is Connected ${conn.connection.host}`</span>);
+  } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+    <span class="comment">// Connection fail-ஆனா error print பண்ணி, process-ஐ stop பண்ணு</span>
+    <span class="variable">console</span>.<span class="method">log</span>(<span class="template-literal">`MongoDb Failed To Connect ${error}`</span>);
+
+    <span class="comment">// process.exit(1) → App-ஐ நிறுத்து (1 = error code)</span>
+    <span class="comment">// DB இல்லாம app run ஆக முடியாது, அதனால stop பண்றோம்</span>
+    <span class="variable">process</span>.<span class="method">exit</span>(<span class="number">1</span>)
+  }
+}
+
+<span class="keyword">export default</span> <span class="variable">connectdb</span></pre>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 3️⃣ userModel.js -->
+      <div class="numbered-header">
+        <span class="num-badge">3️⃣</span>
+        <h3>userModel.js - User Schema (பயனர் தரவு வடிவம்)</h3>
+        <span class="file-badge">userModel.js</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">models/userModel.js</span>
+        </div>
+        <div class="code-content">
+<pre><span class="keyword">import</span> <span class="variable">mongoose</span> <span class="keyword">from</span> <span class="string">"mongoose"</span>;
+
+<span class="comment">// Schema = Data-வின் structure/format define பண்றது</span>
+<span class="comment">// Real-life: ஒரு form-ல என்னென்ன fields இருக்கணும்னு decide பண்றது போல</span>
+<span class="keyword">const</span> <span class="variable">userSchema</span> = <span class="keyword">new</span> <span class="variable">mongoose</span>.<span class="method">Schema</span>({
+  <span class="comment">// name field - String type (பெயர்)</span>
+  <span class="property">name</span>: { <span class="property">type</span>: <span class="class-name">String</span> },
+
+  <span class="comment">// email field - String type (மின்னஞ்சல்)</span>
+  <span class="property">email</span>: { <span class="property">type</span>: <span class="class-name">String</span> },
+
+  <span class="comment">// password field - String type (கடவுச்சொல்)</span>
+  <span class="comment">// Note: இங்க hashed password store ஆகும், actual password இல்ல!</span>
+  <span class="property">password</span>: { <span class="property">type</span>: <span class="class-name">String</span> },
+}, {
+  <span class="comment">// timestamps: true → createdAt, updatedAt fields auto-ஆ add ஆகும்</span>
+  <span class="comment">// எப்போ user create ஆனார், எப்போ update ஆனார் என்று track பண்ண</span>
+  <span class="property">timestamps</span>: <span class="number">true</span>
+});
+
+<span class="comment">// Model உருவாக்கு - "protectedpractice" = MongoDB collection name</span>
+<span class="comment">// Collection = Table (SQL-ல) போன்றது</span>
+<span class="keyword">const</span> <span class="variable">UserModel</span> = <span class="variable">mongoose</span>.<span class="method">model</span>(<span class="string">"protectedpractice"</span>, <span class="variable">userSchema</span>);
+
+<span class="keyword">export default</span> <span class="variable">UserModel</span>;</pre>
+        </div>
+      </div>
+
+      <p><strong>Schema visualization:</strong></p>
+      <div class="vis-card">
+<pre>
+┌─────────────────────────────────────┐
+│     MongoDB Collection:             │
+│     "protectedpractices"            │
+├─────────────────────────────────────┤
+│ {                                   │
+│   <span class="vis-key">_id</span>: <span class="vis-value">"64abc123..."</span>,  <span class="vis-comment">(auto)</span>       │
+│   <span class="vis-key">name</span>: <span class="vis-value">"Ravi"</span>,                     │
+│   <span class="vis-key">email</span>: <span class="vis-value">"ravi@gmail.com"</span>,          │
+│   <span class="vis-key">password</span>: <span class="vis-value">"$2b$10$xyz..."</span>, <span class="vis-comment">(hash)</span> │
+│   <span class="vis-key">createdAt</span>: <span class="vis-value">"2024-01-01"</span>,  <span class="vis-comment">(auto)</span>  │
+│   <span class="vis-key">updatedAt</span>: <span class="vis-value">"2024-01-01"</span>,  <span class="vis-comment">(auto)</span>  │
+│ }                                   │
+└─────────────────────────────────────┘
+</pre>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 4️⃣ authRoutes.js -->
+      <div class="numbered-header">
+        <span class="num-badge">4️⃣</span>
+        <h3>authRoutes.js - API Routes (API வழிகள்)</h3>
+        <span class="file-badge">authRoutes.js</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">routes/authRoutes.js</span>
+        </div>
+        <div class="code-content">
+<pre><span class="keyword">import</span> <span class="variable">express</span> <span class="keyword">from</span> <span class="string">'express'</span>
+
+<span class="comment">// Controller functions - actual logic இங்கதான் இருக்கும்</span>
+<span class="keyword">import</span> { <span class="variable">dashboard</span>, <span class="variable">login</span>, <span class="variable">register</span> } <span class="keyword">from</span> <span class="string">'../controllers/authController.js'</span>
+
+<span class="comment">// Middleware - token verify பண்ற function</span>
+<span class="keyword">import</span> { <span class="variable">verifyToken</span> } <span class="keyword">from</span> <span class="string">"../middleware/authMiddleware.js"</span>
+
+<span class="comment">// Router object உருவாக்கு - routes define பண்ண</span>
+<span class="keyword">const</span> <span class="variable">router</span> = <span class="variable">express</span>.<span class="method">Router</span>()
+
+<span class="comment">// POST /api/auth/register → Register function-ஐ call பண்ணு</span>
+<span class="comment">// POST ஏன்? → sensitive data (password) body-ல அனுப்பறோம்</span>
+<span class="variable">router</span>.<span class="method">post</span>(<span class="string">"/register"</span>, <span class="variable">register</span>)
+
+<span class="comment">// POST /api/auth/login → Login function-ஐ call பண்ணு</span>
+<span class="variable">router</span>.<span class="method">post</span>(<span class="string">"/login"</span>, <span class="variable">login</span>)
+
+<span class="comment">// GET /api/auth/dashboard → முதல்ல verifyToken check பண்ணும்,</span>
+<span class="comment">// அப்புறம் dashboard function call ஆகும்</span>
+<span class="comment">// verifyToken = Security guard, dashboard = Office room</span>
+<span class="variable">router</span>.<span class="method">get</span>(<span class="string">"/dashboard"</span>, <span class="variable">verifyToken</span>, <span class="variable">dashboard</span>)
+
+<span class="keyword">export default</span> <span class="variable">router</span></pre>
+        </div>
+      </div>
+
+      <p><strong>Route flow:</strong></p>
+      <div class="vis-card">
+<pre>
+Request வருது → Route match ஆகுதா? → Middleware (if any) → Controller
+
+<span class="vis-label">POST /api/auth/register</span>  →  <span class="vis-value">register()</span>
+<span class="vis-label">POST /api/auth/login</span>     →  <span class="vis-value">login()</span>
+<span class="vis-label">GET  /api/auth/dashboard</span> →  <span class="vis-key">verifyToken()</span> → <span class="vis-value">dashboard()</span>
+                              ↑
+                     <span class="vis-comment">இது முதல் check பண்ணும்</span>
+                     <span class="vis-comment">Token valid-ஆ இருந்தா மட்டுமே</span>
+                     <span class="vis-comment">dashboard() call ஆகும்</span>
+</pre>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 5️⃣ authMiddleware.js -->
+      <div class="numbered-header">
+        <span class="num-badge">5️⃣</span>
+        <h3>authMiddleware.js - Token Verification (டோக்கன் சரிபார்ப்பு)</h3>
+        <span class="file-badge">authMiddleware.js</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">middleware/authMiddleware.js</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// JWT = JSON Web Token library</span>
+<span class="comment">// Token create பண்ணவும், verify பண்ணவும் use பண்றோம்</span>
+<span class="keyword">import</span> <span class="variable">jwt</span> <span class="keyword">from</span> <span class="string">"jsonwebtoken"</span>;
+
+<span class="comment">// Middleware function → request-க்கும் response-க்கும் நடுவுல run ஆகும்</span>
+<span class="comment">// Real-life: Hotel-ல room key check பண்ற security guard</span>
+<span class="keyword">export const</span> <span class="variable">verifyToken</span> = (<span class="parameter">req</span>, <span class="parameter">res</span>, <span class="parameter">next</span>) =&gt; {
+  <span class="keyword">try</span> {
+    <span class="comment">// Request header-ல இருந்து Authorization value எடு</span>
+    <span class="comment">// Header format: "Bearer eyJhbGciOiJIUzI1NiIsInR..."</span>
+    <span class="keyword">const</span> <span class="variable">header</span> = <span class="variable">req</span>.<span class="property">headers</span>.<span class="property">authorization</span>;
+
+    <span class="comment">// Header இல்லன்னா → token அனுப்பவே இல்ல → reject</span>
+    <span class="keyword">if</span> (!<span class="variable">header</span>) {
+      <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">401</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"No token provided"</span> });
+    }
+
+    <span class="comment">// "Bearer eyJhbGci..." → split(" ") → ["Bearer", "eyJhbGci..."]</span>
+    <span class="comment">// [1] → "eyJhbGci..." (actual token மட்டும் எடுக்கறோம்)</span>
+    <span class="keyword">const</span> <span class="variable">token</span> = <span class="variable">header</span>.<span class="method">split</span>(<span class="string">" "</span>)[<span class="number">1</span>];
+
+    <span class="comment">// jwt.verify() → Token-ஐ decrypt பண்ணி verify பண்ணும்</span>
+    <span class="comment">// JWT_SECRET = token create பண்ணும்போது use பண்ண same secret key</span>
+    <span class="comment">// Token valid-ஆ இருந்தா → decoded = {id: "...", name: "...", iat: ..., exp: ...}</span>
+    <span class="comment">// Token invalid/expired-ஆ இருந்தா → error throw ஆகும்</span>
+    <span class="keyword">const</span> <span class="variable">decoded</span> = <span class="variable">jwt</span>.<span class="method">verify</span>(<span class="variable">token</span>, <span class="variable">process</span>.<span class="property">env</span>.<span class="property">JWT_SECRET</span>);
+
+    <span class="comment">// Decoded user info-ஐ req.user-ல store பண்ணு</span>
+    <span class="comment">// அடுத்த middleware/controller-ல req.user use பண்ணலாம்</span>
+    <span class="variable">req</span>.<span class="property">user</span> = <span class="variable">decoded</span>;
+
+    <span class="comment">// next() → "OK, pass! அடுத்த function-க்கு போ"</span>
+    <span class="comment">// next() call பண்ணலன்னா request இங்கேயே நிக்கும், response போகாது</span>
+    <span class="function">next</span>();
+
+  } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+    <span class="comment">// Token invalid or expired → 401 Unauthorized</span>
+    <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">401</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Invalid or expired token"</span> });
+  }
+};</pre>
+        </div>
+      </div>
+
+      <p><strong>Why Middleware?</strong></p>
+      <div class="vis-card">
+<pre>
+Without Middleware:
+  Request → Controller (யாரு வேணா access பண்ணலாம் 😱)
+
+With Middleware:
+  Request → verifyToken() → Controller (token இருந்தா மட்டுமே 🛡️)
+
+Real-life analogy:
+  ┌──────────┐    ┌────────────┐    ┌───────────┐
+  │  Person  │───►│  Security  │───►│   Office  │
+  │  (User)  │    │   Guard    │    │  (Route)  │
+  │          │    │(Middleware)│    │           │
+  └──────────┘    └────────────┘    └───────────┘
+                   "ID card காட்டு!"
+</pre>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 6️⃣ authController.js -->
+      <div class="numbered-header">
+        <span class="num-badge">6️⃣</span>
+        <h3>authController.js - Business Logic (வணிக தர்க்கம்)</h3>
+        <span class="file-badge">authController.js</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">controllers/authController.js</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// bcrypt = Password hashing library</span>
+<span class="comment">// Plain password-ஐ encrypted format-ல மாற்றும்</span>
+<span class="keyword">import</span> <span class="variable">bcrypt</span> <span class="keyword">from</span> <span class="string">"bcrypt"</span>;
+
+<span class="comment">// jwt = Token create + verify பண்ண</span>
+<span class="keyword">import</span> <span class="variable">jwt</span> <span class="keyword">from</span> <span class="string">"jsonwebtoken"</span>;
+
+<span class="comment">// User model - database operations பண்ண</span>
+<span class="keyword">import</span> <span class="variable">UserModel</span> <span class="keyword">from</span> <span class="string">"../modles/userModel.js"</span>;
+
+<span class="comment">// ═══════════════════════════════════════════════</span>
+<span class="comment">// REGISTER FUNCTION (பதிவு செய்தல்)</span>
+<span class="comment">// ═══════════════════════════════════════════════</span>
+<span class="keyword">export const</span> <span class="variable">register</span> = <span class="keyword">async</span> (<span class="parameter">req</span>, <span class="parameter">res</span>) =&gt; {
+  <span class="keyword">try</span> {
+    <span class="comment">// req.body-ல இருந்து name, email, password எடு</span>
+    <span class="comment">// Frontend form-ல user type பண்ணது இங்க வரும்</span>
+    <span class="keyword">const</span> { <span class="variable">name</span>, <span class="variable">email</span>, <span class="variable">password</span> } = <span class="variable">req</span>.<span class="property">body</span>;
+
+    <span class="comment">// இந்த email already database-ல இருக்கா? check பண்ணு</span>
+    <span class="comment">// findOne() → ஒரு document தேடும், இருந்தா return பண்ணும், இல்லன்னா null</span>
+    <span class="keyword">const</span> <span class="variable">existingUser</span> = <span class="keyword">await</span> <span class="variable">UserModel</span>.<span class="method">findOne</span>({ <span class="variable">email</span> });
+
+    <span class="comment">// Email already இருந்தா → error message அனுப்பு</span>
+    <span class="keyword">if</span> (<span class="variable">existingUser</span>) {
+      <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">400</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Email already exists"</span> });
+    }
+
+    <span class="comment">// Password-ஐ hash பண்ணு (encrypt)</span>
+    <span class="comment">// 10 = salt rounds (எவ்வளவு கடினமா encrypt பண்ணணும்)</span>
+    <span class="comment">// "password123" → "$2b$10$abc123xyz789..."</span>
+    <span class="comment">// ஏன்? → Database hack ஆனாலும் actual password தெரியாது!</span>
+    <span class="keyword">const</span> <span class="variable">hashedPassword</span> = <span class="keyword">await</span> <span class="variable">bcrypt</span>.<span class="method">hash</span>(<span class="variable">password</span>, <span class="number">10</span>);
+
+    <span class="comment">// New user-ஐ database-ல save பண்ணு</span>
+    <span class="comment">// Hashed password-தான் save ஆகும், actual password இல்ல!</span>
+    <span class="keyword">await</span> <span class="variable">UserModel</span>.<span class="method">create</span>({ <span class="variable">name</span>, <span class="variable">email</span>, <span class="property">password</span>: <span class="variable">hashedPassword</span> });
+
+    <span class="comment">// Success response அனுப்பு</span>
+    <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">200</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Registered successfully"</span> });
+
+  } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+    <span class="comment">// ஏதாவது error வந்தா → 500 Internal Server Error</span>
+    <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">500</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Server error"</span> });
+  }
+};
+
+<span class="comment">// ═══════════════════════════════════════════════</span>
+<span class="comment">// LOGIN FUNCTION (உள்நுழைதல்)</span>
+<span class="comment">// ═══════════════════════════════════════════════</span>
+<span class="keyword">export const</span> <span class="variable">login</span> = <span class="keyword">async</span> (<span class="parameter">req</span>, <span class="parameter">res</span>) =&gt; {
+  <span class="keyword">try</span> {
+    <span class="comment">// Form data-ல இருந்து email, password எடு</span>
+    <span class="keyword">const</span> { <span class="variable">email</span>, <span class="variable">password</span> } = <span class="variable">req</span>.<span class="property">body</span>;
+
+    <span class="comment">// Email-ஐ வைத்து user-ஐ database-ல தேடு</span>
+    <span class="keyword">const</span> <span class="variable">user</span> = <span class="keyword">await</span> <span class="variable">UserModel</span>.<span class="method">findOne</span>({ <span class="variable">email</span> });
+
+    <span class="comment">// User இல்லன்னா → invalid email</span>
+    <span class="keyword">if</span> (!<span class="variable">user</span>) {
+      <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">400</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Invalid email"</span> });
+    }
+
+    <span class="comment">// bcrypt.compare() → User கொடுத்த password vs DB-ல இருக்கற hashed password</span>
+    <span class="comment">// "password123" vs "$2b$10$abc123..." → true/false</span>
+    <span class="comment">// bcrypt internally hash பண்ணி compare பண்ணும்</span>
+    <span class="keyword">const</span> <span class="variable">isMatch</span> = <span class="keyword">await</span> <span class="variable">bcrypt</span>.<span class="method">compare</span>(<span class="variable">password</span>, <span class="variable">user</span>.<span class="property">password</span>);
+
+    <span class="comment">// Password match ஆகலன்னா → invalid password</span>
+    <span class="keyword">if</span> (!<span class="variable">isMatch</span>) {
+      <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">400</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Invalid password"</span> });
+    }
+
+    <span class="comment">// ✅ Email + Password correct → JWT Token உருவாக்கு</span>
+    <span class="comment">// jwt.sign(payload, secret, options)</span>
+    <span class="comment">// payload = token-ல என்ன data store பண்ணணும் (user id, name)</span>
+    <span class="comment">// secret = encryption key (.env file-ல)</span>
+    <span class="comment">// expiresIn = token எவ்வளவு நேரம் valid (1 hour)</span>
+    <span class="keyword">const</span> <span class="variable">token</span> = <span class="variable">jwt</span>.<span class="method">sign</span>(
+      { <span class="property">id</span>: <span class="variable">user</span>.<span class="property">_id</span>, <span class="property">name</span>: <span class="variable">user</span>.<span class="property">name</span> },  <span class="comment">// Token-ல store ஆகும் data</span>
+      <span class="variable">process</span>.<span class="property">env</span>.<span class="property">JWT_SECRET</span>,              <span class="comment">// Secret key</span>
+      { <span class="property">expiresIn</span>: <span class="string">"1h"</span> }                  <span class="comment">// 1 மணி நேரம் valid</span>
+    );
+
+    <span class="comment">// Token-ஐ frontend-க்கு அனுப்பு</span>
+    <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">200</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Login successful"</span>, <span class="variable">token</span> });
+
+  } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+    <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">500</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Server error"</span> });
+  }
+};
+
+<span class="comment">// ═══════════════════════════════════════════════</span>
+<span class="comment">// DASHBOARD FUNCTION - PROTECTED (பாதுகாக்கப்பட்ட)</span>
+<span class="comment">// ═══════════════════════════════════════════════</span>
+<span class="keyword">export const</span> <span class="variable">dashboard</span> = <span class="keyword">async</span> (<span class="parameter">req</span>, <span class="parameter">res</span>) =&gt; {
+  <span class="keyword">try</span> {
+    <span class="comment">// req.user → verifyToken middleware-ல set பண்ணின data</span>
+    <span class="comment">// {id: "...", name: "..."} → decoded token data</span>
+    <span class="comment">// இங்க வரும்போதே token verify ஆகியிருக்கும் (middleware passed)</span>
+
+    <span class="comment">// எல்லா users-ஐயும் database-ல இருந்து எடு</span>
+    <span class="keyword">const</span> <span class="variable">users</span> = <span class="keyword">await</span> <span class="variable">UserModel</span>.<span class="method">find</span>();
+
+    <span class="comment">// Dashboard data + current user info அனுப்பு</span>
+    <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">200</span>).<span class="method">json</span>({
+      <span class="property">msg</span>: <span class="string">"Welcome to dashboard"</span>,
+      <span class="variable">users</span>,                    <span class="comment">// எல்லா users list</span>
+      <span class="property">currentUser</span>: <span class="variable">req</span>.<span class="property">user</span>     <span class="comment">// இப்போ login பண்ணிருக்கற user</span>
+    });
+  } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+    <span class="keyword">return</span> <span class="variable">res</span>.<span class="method">status</span>(<span class="number">500</span>).<span class="method">json</span>({ <span class="property">msg</span>: <span class="string">"Server error"</span> });
+  }
+};</pre>
+        </div>
+      </div>
+
+      <p><strong>Password Hashing Visualization:</strong></p>
+      <div class="vis-card">
+<pre>
+Registration:
+  <span class="vis-value">"mypassword123"</span> ──► <span class="vis-label">bcrypt.hash()</span> ──► <span class="vis-key">"$2b$10$xYz..."</span> (stored in DB)
+                        │
+                     salt rounds = 10
+
+Login:
+  <span class="vis-value">"mypassword123"</span> ──► <span class="vis-label">bcrypt.compare("mypassword123", "$2b$10$xYz...")</span>
+                                         │
+                                    <span style="color: #3fb950;">true ✅ (match!)</span>
+
+  <span class="vis-value">"wrongpassword"</span> ──► <span class="vis-label">bcrypt.compare("wrongpassword", "$2b$10$xYz...")</span>
+                                         │
+                                    <span style="color: #f85149;">false ❌ (no match!)</span>
+</pre>
+      </div>
+
+      <p><strong>JWT Token Visualization:</strong></p>
+      <div class="vis-card">
+<pre>
+<span class="vis-label">jwt.sign</span>({id: "abc", name: "Ravi"}, "mysecret", {expiresIn: "1h"})
+                │                        │              │
+                ▼                        ▼              ▼
+           <span class="vis-key">Payload</span>                   <span class="vis-key">Secret Key</span>      <span class="vis-key">Options</span>
+
+Generated Token:
+  <span class="vis-value">"eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImFiYyIsIm5hbWUiOiJSYXZpIn0.xyz123"</span>
+   \_______<span class="vis-key">Header</span>_______/ \____________<span class="vis-key">Payload</span>_______________/ \_<span class="vis-key">Sig</span>_/
+
+<span class="vis-label">jwt.verify</span>(token, "mysecret") → {id: "abc", name: "Ravi", iat: ..., exp: ...}
+</pre>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 7️⃣ App.jsx -->
+      <div class="numbered-header">
+        <span class="num-badge">7️⃣</span>
+        <h3>App.jsx - Main React Component</h3>
+        <span class="file-badge">App.jsx</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">src/App.jsx</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// BrowserRouter = URL-based routing enable பண்ணும்</span>
+<span class="comment">// இது இல்லன்னா useNavigate, Link, Route எதுவும் work ஆகாது</span>
+<span class="keyword">import</span> { <span class="variable">BrowserRouter</span> } <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;
+
+<span class="comment">// நம்ம routes component</span>
+<span class="keyword">import</span> <span class="variable">AppRoutes</span> <span class="keyword">from</span> <span class="string">"./routes/AppRoutes"</span>;
+
+<span class="keyword">const</span> <span class="variable">App</span> = () =&gt; {
+  <span class="keyword">return</span> (
+    <span class="comment">// BrowserRouter → எல்லா routing features-க்கும் wrapper</span>
+    <span class="comment">// Real-life: GPS system enable பண்றது போல - navigate பண்ண GPS வேணும்</span>
+    &lt;<span class="jsx-tag">BrowserRouter</span>&gt;
+      &lt;<span class="jsx-tag">AppRoutes</span> /&gt;
+    &lt;/<span class="jsx-tag">BrowserRouter</span>&gt;
+  );
+};
+
+<span class="keyword">export default</span> <span class="variable">App</span>;</pre>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 8️⃣ AppRoutes.jsx -->
+      <div class="numbered-header">
+        <span class="num-badge">8️⃣</span>
+        <h3>AppRoutes.jsx - Route Definitions (வழி வரையறைகள்)</h3>
+        <span class="file-badge">AppRoutes.jsx</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">src/routes/AppRoutes.jsx</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// Routes, Route → URL-க்கு component match பண்ண</span>
+<span class="keyword">import</span> { <span class="variable">Routes</span>, <span class="variable">Route</span> } <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;
+
+<span class="comment">// Page components</span>
+<span class="keyword">import</span> <span class="variable">Register</span> <span class="keyword">from</span> <span class="string">"../pages/Register"</span>;
+<span class="keyword">import</span> <span class="variable">Login</span> <span class="keyword">from</span> <span class="string">"../pages/Login"</span>;
+<span class="keyword">import</span> <span class="variable">Dashboard</span> <span class="keyword">from</span> <span class="string">"../pages/Dashboard"</span>;
+
+<span class="comment">// 🛡️ Protected route wrapper</span>
+<span class="keyword">import</span> <span class="variable">PrivateRoute</span> <span class="keyword">from</span> <span class="string">"../components/PrivateRoute"</span>;
+
+<span class="keyword">const</span> <span class="variable">AppRoutes</span> = () =&gt; {
+  <span class="keyword">return</span> (
+    <span class="comment">// Routes → எல்லா Route-களையும் wrap பண்ணும், ஒரு நேரத்தில் ஒரே Route match ஆகும்</span>
+    &lt;<span class="jsx-tag">Routes</span>&gt;
+      <span class="comment">{/* "/" path → Register page காட்டு (default page) */}</span>
+      &lt;<span class="jsx-tag">Route</span> <span class="jsx-attr">path</span>=<span class="jsx-string">"/"</span> <span class="jsx-attr">element</span>={&lt;<span class="jsx-tag">Register</span> /&gt;} /&gt;
+
+      <span class="comment">{/* "/login" path → Login page காட்டு */}</span>
+      &lt;<span class="jsx-tag">Route</span> <span class="jsx-attr">path</span>=<span class="jsx-string">"/login"</span> <span class="jsx-attr">element</span>={&lt;<span class="jsx-tag">Login</span> /&gt;} /&gt;
+
+      <span class="comment">{/* "/dashboard" path → PrivateRoute-ல wrap பண்ணிருக்கோம்</span>
+<span class="comment">          Token இருந்தா → Dashboard காட்டும்</span>
+<span class="comment">          Token இல்லன்னா → /login-க்கு redirect ஆகும் */}</span>
+      &lt;<span class="jsx-tag">Route</span>
+        <span class="jsx-attr">path</span>=<span class="jsx-string">"/dashboard"</span>
+        <span class="jsx-attr">element</span>={
+          &lt;<span class="jsx-tag">PrivateRoute</span>&gt;       <span class="comment">{/* 🛡️ Guard/காவலர் */}</span>
+            &lt;<span class="jsx-tag">Dashboard</span> /&gt;      <span class="comment">{/* 🏠 Protected page */}</span>
+          &lt;/<span class="jsx-tag">PrivateRoute</span>&gt;
+        }
+      /&gt;
+    &lt;/<span class="jsx-tag">Routes</span>&gt;
+  );
+};
+
+<span class="keyword">export default</span> <span class="variable">AppRoutes</span>;</pre>
+        </div>
+      </div>
+
+      <p><strong>Route matching visualization:</strong></p>
+      <div class="vis-card">
+<pre>
+URL: <span class="vis-value">"/"</span>           → &lt;Register /&gt;        <span style="color: #3fb950;">✅ Public (யாரும் access பண்ணலாம்)</span>
+URL: <span class="vis-value">"/login"</span>      → &lt;Login /&gt;           <span style="color: #3fb950;">✅ Public</span>
+URL: <span class="vis-value">"/dashboard"</span>  → &lt;PrivateRoute&gt;      <span style="color: #f85149;">🔒 Protected (token வேணும்!)</span>
+                        &lt;Dashboard /&gt;
+                     &lt;/PrivateRoute&gt;
+</pre>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 9️⃣ PrivateRoute.jsx -->
+      <div class="numbered-header">
+        <span class="num-badge">9️⃣</span>
+        <h3>PrivateRoute.jsx - The Guard Component (🛡️ காவலர்)</h3>
+        <span class="file-badge">PrivateRoute.jsx</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">src/components/PrivateRoute.jsx</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// Navigate → Programmatically redirect பண்ண (component-ஆ)</span>
+<span class="keyword">import</span> { <span class="variable">Navigate</span> } <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;
+
+<span class="comment">// children → PrivateRoute-க்குள்ள இருக்கற component (Dashboard)</span>
+<span class="comment">// &lt;PrivateRoute&gt;&lt;Dashboard /&gt;&lt;/PrivateRoute&gt;</span>
+<span class="comment">// இங்க children = &lt;Dashboard /&gt;</span>
+<span class="keyword">const</span> <span class="variable">PrivateRoute</span> = ({ <span class="variable">children</span> }) =&gt; {
+
+  <span class="comment">// localStorage-ல "token" key-ல value இருக்கா? check பண்ணு</span>
+  <span class="comment">// Login success-ஆனப்போ token save பண்ணியிருப்போம்</span>
+  <span class="keyword">const</span> <span class="variable">token</span> = <span class="variable">localStorage</span>.<span class="method">getItem</span>(<span class="string">"token"</span>);
+
+  <span class="comment">// Ternary operator:</span>
+  <span class="comment">// token இருந்தா (truthy) → children-ஐ render பண்ணு (Dashboard காட்டு)</span>
+  <span class="comment">// token இல்லன்னா (falsy) → /login page-க்கு redirect பண்ணு</span>
+  <span class="keyword">return</span> <span class="variable">token</span> ? <span class="variable">children</span> : &lt;<span class="jsx-tag">Navigate</span> <span class="jsx-attr">to</span>=<span class="jsx-string">"/login"</span> /&gt;;
+};
+
+<span class="keyword">export default</span> <span class="variable">PrivateRoute</span>;</pre>
+        </div>
+      </div>
+
+      <p><strong>Why PrivateRoute?</strong></p>
+      <div class="vis-card">
+<pre>
+Without PrivateRoute:
+  URL: /dashboard → Dashboard shows (even without login! 😱)
+
+With PrivateRoute:
+  URL: /dashboard → Token check → Token உள்ளது? → Dashboard shows ✅
+                                → Token இல்லை?  → Redirect to /login 🔒
+
+Real-life:
+  ┌──────────┐      ┌──────────────┐      ┌───────────┐
+  │  Person  │─────►│ Private Route│─────►│ Dashboard │
+  │          │      │  (Security)  │      │           │
+  └──────────┘      └──────┬───────┘      └───────────┘
+                           │
+                    Token இல்ல?
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │  Login Page  │
+                    │  (Go back!)  │
+                    └──────────────┘
+</pre>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 🔟 Register.jsx -->
+      <div class="numbered-header">
+        <span class="num-badge">🔟</span>
+        <h3>Register.jsx - Registration Page (பதிவு பக்கம்)</h3>
+        <span class="file-badge">Register.jsx</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">src/pages/Register.jsx</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// useState → Component-ல data store + update பண்ண</span>
+<span class="keyword">import</span> { <span class="variable">useState</span> } <span class="keyword">from</span> <span class="string">"react"</span>;
+
+<span class="comment">// axios → HTTP requests அனுப்ப (fetch-க்கு alternative, more features)</span>
+<span class="keyword">import</span> <span class="variable">axios</span> <span class="keyword">from</span> <span class="string">"axios"</span>;
+
+<span class="comment">// useNavigate → Page redirect/navigate பண்ண (programmatically)</span>
+<span class="keyword">import</span> { <span class="variable">useNavigate</span> } <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;
+
+<span class="keyword">const</span> <span class="variable">Register</span> = () =&gt; {
+
+  <span class="comment">// navigate function → வேற page-க்கு போக use பண்றோம்</span>
+  <span class="comment">// navigate("/login") → login page-க்கு போகும்</span>
+  <span class="keyword">const</span> <span class="variable">navigate</span> = <span class="function">useNavigate</span>();
+
+  <span class="comment">// form state → name, email, password values store பண்ண</span>
+  <span class="comment">// Initial value: எல்லாமே empty string</span>
+  <span class="keyword">const</span> [<span class="variable">form</span>, <span class="variable">setForm</span>] = <span class="function">useState</span>({ <span class="property">name</span>: <span class="string">""</span>, <span class="property">email</span>: <span class="string">""</span>, <span class="property">password</span>: <span class="string">""</span> });
+
+  <span class="comment">// msg state → success/error message காட்ட</span>
+  <span class="keyword">const</span> [<span class="variable">msg</span>, <span class="variable">setMsg</span>] = <span class="function">useState</span>(<span class="string">""</span>);
+
+  <span class="comment">// Input field மாறும்போது (type பண்ணும்போது) call ஆகும்</span>
+  <span class="keyword">const</span> <span class="variable">handleChange</span> = (<span class="parameter">e</span>) =&gt; {
+    <span class="comment">// e.target.name → input field-ன் name attribute (name/email/password)</span>
+    <span class="comment">// e.target.value → user type பண்ண value</span>
+
+    <span class="comment">// Spread operator (...form) → existing values-ஐ copy பண்ணு</span>
+    <span class="comment">// [e.target.name]: e.target.value → மாறின field-ஐ மட்டும் update பண்ணு</span>
+
+    <span class="comment">// Example: email field-ல "ravi@gmail.com" type பண்ணா:</span>
+    <span class="comment">// setForm({ name: "Ravi", email: "ravi@gmail.com", password: "123" })</span>
+    <span class="comment">//                          ↑ இது மட்டும் மாறும்</span>
+    <span class="function">setForm</span>({ ...<span class="variable">form</span>, [<span class="variable">e</span>.<span class="property">target</span>.<span class="property">name</span>]: <span class="variable">e</span>.<span class="property">target</span>.<span class="property">value</span> });
+  };
+
+  <span class="comment">// Form submit பண்ணும்போது call ஆகும்</span>
+  <span class="keyword">const</span> <span class="variable">handleSubmit</span> = <span class="keyword">async</span> (<span class="parameter">e</span>) =&gt; {
+    <span class="comment">// Default form submission-ஐ தடு (page refresh ஆகாது)</span>
+    <span class="comment">// இது இல்லன்னா page refresh ஆகி data போயிடும்!</span>
+    <span class="variable">e</span>.<span class="method">preventDefault</span>();
+
+    <span class="keyword">try</span> {
+      <span class="comment">// Backend-க்கு POST request அனுப்பு with form data</span>
+      <span class="comment">// axios.post(URL, data) → URL-க்கு data-ஐ POST method-ல அனுப்பும்</span>
+      <span class="keyword">const</span> <span class="variable">res</span> = <span class="keyword">await</span> <span class="variable">axios</span>.<span class="method">post</span>(
+        <span class="string">"http://localhost:5000/api/auth/register"</span>,
+        <span class="variable">form</span>  <span class="comment">// {name: "Ravi", email: "ravi@gmail.com", password: "123"}</span>
+      );
+
+      <span class="comment">// Backend response-ல வர்ற message-ஐ காட்டு</span>
+      <span class="function">setMsg</span>(<span class="variable">res</span>.<span class="property">data</span>.<span class="property">msg</span>);
+
+      <span class="comment">// Register success → Login page-க்கு redirect</span>
+      <span class="function">navigate</span>(<span class="string">"/login"</span>);
+
+    } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+      <span class="comment">// Error வந்தா → backend error message காட்டு</span>
+      <span class="comment">// Example: "Email already exists"</span>
+      <span class="function">setMsg</span>(<span class="variable">error</span>.<span class="property">response</span>.<span class="property">data</span>.<span class="property">msg</span>);
+    }
+  };
+
+  <span class="keyword">return</span> (
+    &lt;<span class="jsx-tag">div</span>&gt;
+      &lt;<span class="jsx-tag">h2</span>&gt;Register&lt;/<span class="jsx-tag">h2</span>&gt;
+
+      <span class="comment">{/* onSubmit → form submit ஆகும்போது handleSubmit call ஆகும் */}</span>
+      &lt;<span class="jsx-tag">form</span> <span class="jsx-attr">onSubmit</span>={<span class="variable">handleSubmit</span>}&gt;
+
+        <span class="comment">{/* name="name" → handleChange-ல e.target.name = "name" */}</span>
+        <span class="comment">{/* onChange → ஒவ்வொரு key press-க்கும் handleChange call ஆகும் */}</span>
+        &lt;<span class="jsx-tag">input</span> <span class="jsx-attr">type</span>=<span class="jsx-string">"text"</span> <span class="jsx-attr">name</span>=<span class="jsx-string">"name"</span> <span class="jsx-attr">placeholder</span>=<span class="jsx-string">"Name"</span>
+               <span class="jsx-attr">onChange</span>={<span class="variable">handleChange</span>} /&gt;&lt;<span class="jsx-tag">br</span> /&gt;
+
+        &lt;<span class="jsx-tag">input</span> <span class="jsx-attr">type</span>=<span class="jsx-string">"email"</span> <span class="jsx-attr">name</span>=<span class="jsx-string">"email"</span> <span class="jsx-attr">placeholder</span>=<span class="jsx-string">"Email"</span>
+               <span class="jsx-attr">onChange</span>={<span class="variable">handleChange</span>} /&gt;&lt;<span class="jsx-tag">br</span> /&gt;
+
+        &lt;<span class="jsx-tag">input</span> <span class="jsx-attr">type</span>=<span class="jsx-string">"password"</span> <span class="jsx-attr">name</span>=<span class="jsx-string">"password"</span> <span class="jsx-attr">placeholder</span>=<span class="jsx-string">"Password"</span>
+               <span class="jsx-attr">onChange</span>={<span class="variable">handleChange</span>} /&gt;&lt;<span class="jsx-tag">br</span> /&gt;
+
+        <span class="comment">{/* type="submit" → form submit trigger பண்ணும் */}</span>
+        &lt;<span class="jsx-tag">button</span> <span class="jsx-attr">type</span>=<span class="jsx-string">"submit"</span>&gt;Register&lt;/<span class="jsx-tag">button</span>&gt;
+      &lt;/<span class="jsx-tag">form</span>&gt;
+
+      <span class="comment">{/* Error/Success message display */}</span>
+      &lt;<span class="jsx-tag">p</span>&gt;{<span class="variable">msg</span>}&lt;/<span class="jsx-tag">p</span>&gt;
+
+      <span class="comment">{/* Login page-க்கு navigate பண்ற button */}</span>
+      &lt;<span class="jsx-tag">button</span> <span class="jsx-attr">onClick</span>={() =&gt; <span class="function">navigate</span>(<span class="string">"/login"</span>)}&gt;Go to Login&lt;/<span class="jsx-tag">button</span>&gt;
+    &lt;/<span class="jsx-tag">div</span>&gt;
+  );
+};
+
+<span class="keyword">export default</span> <span class="variable">Register</span>;</pre>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 1️⃣1️⃣ Login.jsx -->
+      <div class="numbered-header">
+        <span class="num-badge">1️⃣1️⃣</span>
+        <h3>Login.jsx - Login Page (உள்நுழைவு பக்கம்)</h3>
+        <span class="file-badge">Login.jsx</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">src/pages/Login.jsx</span>
+        </div>
+        <div class="code-content">
+<pre><span class="keyword">import</span> { <span class="variable">useState</span> } <span class="keyword">from</span> <span class="string">"react"</span>;
+<span class="keyword">import</span> <span class="variable">axios</span> <span class="keyword">from</span> <span class="string">"axios"</span>;
+<span class="keyword">import</span> { <span class="variable">useNavigate</span> } <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;
+
+<span class="keyword">const</span> <span class="variable">Login</span> = () =&gt; {
+  <span class="keyword">const</span> <span class="variable">navigate</span> = <span class="function">useNavigate</span>();
+
+  <span class="comment">// Login-க்கு email + password மட்டும் போதும் (name வேண்டாம்)</span>
+  <span class="keyword">const</span> [<span class="variable">form</span>, <span class="variable">setForm</span>] = <span class="function">useState</span>({ <span class="property">email</span>: <span class="string">""</span>, <span class="property">password</span>: <span class="string">""</span> });
+  <span class="keyword">const</span> [<span class="variable">msg</span>, <span class="variable">setMsg</span>] = <span class="function">useState</span>(<span class="string">""</span>);
+
+  <span class="comment">// Same handleChange as Register</span>
+  <span class="keyword">const</span> <span class="variable">handleChange</span> = (<span class="parameter">e</span>) =&gt; {
+    <span class="function">setForm</span>({ ...<span class="variable">form</span>, [<span class="variable">e</span>.<span class="property">target</span>.<span class="property">name</span>]: <span class="variable">e</span>.<span class="property">target</span>.<span class="property">value</span> });
+  };
+
+  <span class="keyword">const</span> <span class="variable">handleSubmit</span> = <span class="keyword">async</span> (<span class="parameter">e</span>) =&gt; {
+    <span class="variable">e</span>.<span class="method">preventDefault</span>();
+
+    <span class="keyword">try</span> {
+      <span class="comment">// Login API-க்கு email + password அனுப்பு</span>
+      <span class="keyword">const</span> <span class="variable">res</span> = <span class="keyword">await</span> <span class="variable">axios</span>.<span class="method">post</span>(
+        <span class="string">"http://localhost:5000/api/auth/login"</span>,
+        <span class="variable">form</span>
+      );
+
+      <span class="comment">// ⭐ IMPORTANT: Token-ஐ localStorage-ல save பண்ணு!</span>
+      <span class="comment">// இது தான் "logged in" state maintain பண்றது</span>
+      <span class="comment">// Browser close பண்ணினாலும் token இருக்கும் (until removed)</span>
+      <span class="comment">// Real-life: ATM card-ஐ wallet-ல வைக்கிறது போல</span>
+      <span class="variable">localStorage</span>.<span class="method">setItem</span>(<span class="string">"token"</span>, <span class="variable">res</span>.<span class="property">data</span>.<span class="property">token</span>);
+
+      <span class="comment">// Success message alert</span>
+      <span class="function">alert</span>(<span class="variable">res</span>.<span class="property">data</span>.<span class="property">msg</span>);
+
+      <span class="comment">// Dashboard page-க்கு redirect</span>
+      <span class="function">navigate</span>(<span class="string">"/dashboard"</span>);
+
+    } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+      <span class="comment">// Wrong email/password → error message காட்டு</span>
+      <span class="function">setMsg</span>(<span class="variable">error</span>.<span class="property">response</span>.<span class="property">data</span>.<span class="property">msg</span>);
+    }
+  };
+
+  <span class="keyword">return</span> (
+    &lt;<span class="jsx-tag">div</span>&gt;
+      &lt;<span class="jsx-tag">h2</span>&gt;Login&lt;/<span class="jsx-tag">h2</span>&gt;
+      &lt;<span class="jsx-tag">form</span> <span class="jsx-attr">onSubmit</span>={<span class="variable">handleSubmit</span>}&gt;
+        &lt;<span class="jsx-tag">input</span> <span class="jsx-attr">type</span>=<span class="jsx-string">"email"</span> <span class="jsx-attr">name</span>=<span class="jsx-string">"email"</span> <span class="jsx-attr">placeholder</span>=<span class="jsx-string">"Email"</span>
+               <span class="jsx-attr">onChange</span>={<span class="variable">handleChange</span>} /&gt;&lt;<span class="jsx-tag">br</span> /&gt;
+        &lt;<span class="jsx-tag">input</span> <span class="jsx-attr">type</span>=<span class="jsx-string">"password"</span> <span class="jsx-attr">name</span>=<span class="jsx-string">"password"</span> <span class="jsx-attr">placeholder</span>=<span class="jsx-string">"Password"</span>
+               <span class="jsx-attr">onChange</span>={<span class="variable">handleChange</span>} /&gt;&lt;<span class="jsx-tag">br</span> /&gt;
+        &lt;<span class="jsx-tag">button</span> <span class="jsx-attr">type</span>=<span class="jsx-string">"submit"</span>&gt;Login&lt;/<span class="jsx-tag">button</span>&gt;
+      &lt;/<span class="jsx-tag">form</span>&gt;
+      &lt;<span class="jsx-tag">p</span>&gt;{<span class="variable">msg</span>}&lt;/<span class="jsx-tag">p</span>&gt;
+    &lt;/<span class="jsx-tag">div</span>&gt;
+  );
+};
+
+<span class="keyword">export default</span> <span class="variable">Login</span>;</pre>
+        </div>
+      </div>
+
+      <p><strong>Why localStorage?</strong></p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>localStorage</th>
+              <th>sessionStorage</th>
+              <th>cookies</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-family: var(--font-tamil); color: var(--accent-green);">Browser close பண்ணாலும் இருக்கும்</td>
+              <td style="font-family: var(--font-tamil); color: var(--accent-orange);">Tab close பண்ணா போயிடும்</td>
+              <td style="font-family: var(--font-tamil); color: var(--accent-blue);">Expiry date set பண்ணலாம்</td>
+            </tr>
+            <tr>
+              <td style="color: var(--accent-green);">✅ Used here</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="vis-card">
+<pre>
+<span class="vis-label">localStorage.setItem</span>(<span class="vis-value">"token"</span>, <span class="vis-value">"abc123"</span>)  → <span class="vis-comment">Save</span>
+<span class="vis-label">localStorage.getItem</span>(<span class="vis-value">"token"</span>)            → <span class="vis-comment">Read</span> → <span class="vis-value">"abc123"</span>
+<span class="vis-label">localStorage.removeItem</span>(<span class="vis-value">"token"</span>)         → <span class="vis-comment">Delete</span>
+</pre>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 1️⃣2️⃣ Dashboard.jsx -->
+      <div class="numbered-header">
+        <span class="num-badge">1️⃣2️⃣</span>
+        <h3>Dashboard.jsx - Protected Dashboard (பாதுகாப்பான Dashboard)</h3>
+        <span class="file-badge">Dashboard.jsx</span>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-filename">src/pages/Dashboard.jsx</span>
+        </div>
+        <div class="code-content">
+<pre><span class="comment">// useEffect → Component load ஆகும்போது ஒரு தடவை run ஆகும்</span>
+<span class="comment">// useState → Data store பண்ண</span>
+<span class="keyword">import</span> { <span class="variable">useEffect</span>, <span class="variable">useState</span> } <span class="keyword">from</span> <span class="string">"react"</span>;
+<span class="keyword">import</span> <span class="variable">axios</span> <span class="keyword">from</span> <span class="string">"axios"</span>;
+<span class="keyword">import</span> { <span class="variable">useNavigate</span> } <span class="keyword">from</span> <span class="string">"react-router-dom"</span>;
+
+<span class="keyword">const</span> <span class="variable">Dashboard</span> = () =&gt; {
+  <span class="keyword">const</span> <span class="variable">navigate</span> = <span class="function">useNavigate</span>();
+
+  <span class="comment">// Dashboard data store பண்ண (null = இன்னும் load ஆகல)</span>
+  <span class="keyword">const</span> [<span class="variable">data</span>, <span class="variable">setData</span>] = <span class="function">useState</span>(<span class="number">null</span>);
+
+  <span class="comment">// useEffect → Component mount ஆகும்போது (first render) run ஆகும்</span>
+  <span class="comment">// [] (empty dependency array) → ஒரே ஒரு தடவை மட்டும் run ஆகும்</span>
+  <span class="function">useEffect</span>(() =&gt; {
+
+    <span class="comment">// localStorage-ல இருந்து token எடு</span>
+    <span class="keyword">const</span> <span class="variable">token</span> = <span class="variable">localStorage</span>.<span class="method">getItem</span>(<span class="string">"token"</span>);
+
+    <span class="comment">// Token இல்லன்னா → login page-க்கு redirect</span>
+    <span class="comment">// Double protection: PrivateRoute check + இந்த check</span>
+    <span class="keyword">if</span> (!<span class="variable">token</span>) {
+      <span class="function">navigate</span>(<span class="string">"/login"</span>);
+      <span class="keyword">return</span>; <span class="comment">// function-ஐ இங்கேயே நிறுத்து</span>
+    }
+
+    <span class="comment">// API call பண்ற async function</span>
+    <span class="keyword">const</span> <span class="variable">fetchData</span> = <span class="keyword">async</span> () =&gt; {
+      <span class="keyword">try</span> {
+        <span class="comment">// Dashboard API-க்கு GET request + token header-ல அனுப்பு</span>
+        <span class="keyword">const</span> <span class="variable">res</span> = <span class="keyword">await</span> <span class="variable">axios</span>.<span class="method">get</span>(
+          <span class="string">"http://localhost:5000/api/auth/dashboard"</span>,
+          {
+            <span class="property">headers</span>: {
+              <span class="comment">// Bearer token format → standard authentication header</span>
+              <span class="comment">// Backend-ல verifyToken middleware இதை read பண்ணும்</span>
+              <span class="property">Authorization</span>: <span class="template-literal">`Bearer ${token}`</span>,
+            },
+          }
+        );
+
+        <span class="comment">// API response data-ஐ state-ல store பண்ணு</span>
+        <span class="function">setData</span>(<span class="variable">res</span>.<span class="property">data</span>);
+
+      } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+        <span class="comment">// Token invalid/expired → remove token + redirect to login</span>
+        <span class="comment">// Real-life: ATM card expire ஆனா → new card வாங்கணும்</span>
+        <span class="variable">localStorage</span>.<span class="method">removeItem</span>(<span class="string">"token"</span>);
+        <span class="function">navigate</span>(<span class="string">"/login"</span>);
+      }
+    };
+
+    <span class="comment">// Function-ஐ call பண்ணு</span>
+    <span class="function">fetchData</span>();
+
+  }, []); <span class="comment">// [] → only once when component mounts</span>
+
+  <span class="comment">// Logout function</span>
+  <span class="keyword">const</span> <span class="variable">handleLogout</span> = () =&gt; {
+    <span class="comment">// Token-ஐ remove பண்ணு (logged out state)</span>
+    <span class="comment">// Real-life: ATM card-ஐ return பண்றது போல</span>
+    <span class="variable">localStorage</span>.<span class="method">removeItem</span>(<span class="string">"token"</span>);
+
+    <span class="comment">// Login page-க்கு redirect</span>
+    <span class="function">navigate</span>(<span class="string">"/login"</span>);
+  };
+
+  <span class="keyword">return</span> (
+    &lt;<span class="jsx-tag">div</span>&gt;
+      &lt;<span class="jsx-tag">h2</span>&gt;Dashboard&lt;/<span class="jsx-tag">h2</span>&gt;
+
+      <span class="comment">{/* data load ஆனா மட்டும் welcome message காட்டு */}</span>
+      <span class="comment">{/* data = null → இந்த line skip ஆகும் (conditional rendering) */}</span>
+      {<span class="variable">data</span> &amp;&amp; &lt;<span class="jsx-tag">p</span>&gt;Welcome, {<span class="variable">data</span>.<span class="property">currentUser</span>.<span class="property">name</span>}!&lt;/<span class="jsx-tag">p</span>&gt;}
+
+      <span class="comment">{/* data load ஆனா → users list-ஐ loop பண்ணி காட்டு */}</span>
+      <span class="comment">{/* .map() → array-ல ஒவ்வொரு item-க்கும் JSX return பண்ணும் */}</span>
+      <span class="comment">{/* key={u._id} → React-க்கு unique identifier (performance optimization) */}</span>
+      {<span class="variable">data</span> &amp;&amp; <span class="variable">data</span>.<span class="property">users</span>.<span class="method">map</span>((<span class="parameter">u</span>) =&gt; (
+        &lt;<span class="jsx-tag">div</span> <span class="jsx-attr">key</span>={<span class="variable">u</span>.<span class="property">_id</span>}&gt;{<span class="variable">u</span>.<span class="property">name</span>} - {<span class="variable">u</span>.<span class="property">email</span>}&lt;/<span class="jsx-tag">div</span>&gt;
+      ))}
+
+      <span class="comment">{/* Logout button */}</span>
+      &lt;<span class="jsx-tag">button</span> <span class="jsx-attr">onClick</span>={<span class="variable">handleLogout</span>}&gt;Logout&lt;/<span class="jsx-tag">button</span>&gt;
+    &lt;/<span class="jsx-tag">div</span>&gt;
+  );
+};
+
+<span class="keyword">export default</span> <span class="variable">Dashboard</span>;</pre>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Why Each Concept Is Used            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon purple">🧠</div>
+        <h2>Why Each Concept Is Used</h2>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="why-table">
+          <thead>
+            <tr>
+              <th>Concept</th>
+              <th>Why? (ஏன் use பண்றோம்?)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>React Router</td><td>Single Page App-ல multiple pages நிர்வகிக்க (Page refresh இல்லாம navigate பண்ண)</td></tr>
+            <tr><td>PrivateRoute</td><td>Login இல்லாம protected pages access பண்ண முடியாது என்று ensure பண்ண</td></tr>
+            <tr><td>localStorage</td><td>Token-ஐ browser-ல store பண்ண, refresh பண்ணாலும் login state maintain ஆகும்</td></tr>
+            <tr><td>JWT (JSON Web Token)</td><td>Stateless authentication - Server-ல session store பண்ண வேண்டாம், token-லேயே info இருக்கும்</td></tr>
+            <tr><td>bcrypt</td><td>Password-ஐ hash பண்ண - DB hack ஆனாலும் actual password தெரியாது</td></tr>
+            <tr><td>Middleware (verifyToken)</td><td>Route-க்கு போகுமுன் token valid-ஆ check பண்ண Security guard போல</td></tr>
+            <tr><td>useEffect</td><td>Component load ஆனவுடன் API call பண்ண (data fetch பண்ற side effect)</td></tr>
+            <tr><td>useState</td><td>Component-ல dynamic data manage பண்ண (form data, API response, messages)</td></tr>
+            <tr><td>useNavigate</td><td>Button click, form submit போன்ற events-ல programmatically page redirect பண்ண</td></tr>
+            <tr><td>axios</td><td>HTTP requests (GET, POST) அனுப்ப fetch-ஐ விட simple, auto JSON parse</td></tr>
+            <tr><td>e.preventDefault()</td><td>Form submit-ல page refresh தடுக்க React SPA-ல refresh ஆகக்கூடாது</td></tr>
+            <tr><td>Spread operator (...)</td><td>Object copy + specific field update பண்ண Immutable state update (React requirement)</td></tr>
+            <tr><td>Bearer Token</td><td>Standard HTTP authentication format "Bearer &lt;token&gt;" → server recognize பண்ணும்</td></tr>
+            <tr><td>cors</td><td>Frontend (3000) → Backend (5000) cross-origin requests அனுமதிக்க</td></tr>
+            <tr><td>dotenv</td><td>Sensitive data (.env file) safely store பண்ண DB URL, JWT Secret போன்றவை</td></tr>
+            <tr><td>mongoose</td><td>MongoDB-ஐ Node.js-ல easily manage பண்ண Schema, Model, CRUD operations</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Security Layers                     -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon red">🔒</div>
+        <h2>Security Layers Visualization (பாதுகாப்பு அடுக்குகள்)</h2>
+      </div>
+
+      <div class="card">
+        <h4>THREE LAYERS OF PROTECTION</h4>
+
+        <div class="layer-card layer-1">
+          <div class="layer-title">Layer 1: FRONTEND - PrivateRoute (React)</div>
+          <div class="layer-desc">localStorage-ல token இருக்கா? Quick check. இல்லன்னா → /login redirect</div>
+          <div class="layer-warning">⚠️ But this can be bypassed by hackers!</div>
+        </div>
+
+        <div class="layer-card layer-2">
+          <div class="layer-title">Layer 2: FRONTEND - Dashboard useEffect</div>
+          <div class="layer-desc">Token இல்லன்னா → /login redirect. API call fail-ஆனா → token remove + redirect. Double check on frontend</div>
+        </div>
+
+        <div class="layer-card layer-3">
+          <div class="layer-title">Layer 3: BACKEND - verifyToken Middleware</div>
+          <div class="layer-desc">JWT token-ஐ verify பண்ணு (most secure! 🔒). Token invalid/expired → 401 Unauthorized. This is the REAL protection!</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Complete Working Code (Clean)       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon green">🏃</div>
+        <h2>Complete Working Code (Clean Version)</h2>
+      </div>
+
+      <p><strong>Backend .env file:</strong></p>
+      <div class="config-block">
+        <div class="config-header">.env</div>
+        <div class="config-body">
+<pre><span class="env-key">MONGODB_URL</span>=<span class="env-value">mongodb://localhost:27017/protectedRouteDB</span>
+<span class="env-key">JWT_SECRET</span>=<span class="env-value">mySuperSecretKey123</span>
+<span class="env-key">PORT</span>=<span class="env-value">5000</span></pre>
+        </div>
+      </div>
+
+      <p><strong>Backend package.json dependencies:</strong></p>
+      <div class="config-block">
+        <div class="config-header">package.json</div>
+        <div class="config-body">
+<pre>{
+  <span class="json-key">"dependencies"</span>: {
+    <span class="json-key">"express"</span>: <span class="json-value">"^4.18.2"</span>,
+    <span class="json-key">"mongoose"</span>: <span class="json-value">"^7.0.0"</span>,
+    <span class="json-key">"bcrypt"</span>: <span class="json-value">"^5.1.0"</span>,
+    <span class="json-key">"jsonwebtoken"</span>: <span class="json-value">"^9.0.0"</span>,
+    <span class="json-key">"cors"</span>: <span class="json-value">"^2.8.5"</span>,
+    <span class="json-key">"dotenv"</span>: <span class="json-value">"^16.0.3"</span>
+  }
+}</pre>
+        </div>
+      </div>
+
+      <p><strong>Frontend package.json dependencies:</strong></p>
+      <div class="config-block">
+        <div class="config-header">package.json</div>
+        <div class="config-body">
+<pre>{
+  <span class="json-key">"dependencies"</span>: {
+    <span class="json-key">"react"</span>: <span class="json-value">"^18.2.0"</span>,
+    <span class="json-key">"react-dom"</span>: <span class="json-value">"^18.2.0"</span>,
+    <span class="json-key">"react-router-dom"</span>: <span class="json-value">"^6.0.0"</span>,
+    <span class="json-key">"axios"</span>: <span class="json-value">"^1.4.0"</span>
+  }
+}</pre>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SECTION: Summary                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon blue">🎯</div>
+        <h2>Summary (சுருக்கம்)</h2>
+      </div>
+
+      <div class="summary-box">
+        <div class="summary-header">
+          <h3>PROTECTED ROUTES - COMPLETE SUMMARY</h3>
+        </div>
+        <div class="summary-body">
+<pre>
+1. User REGISTERS → Data saved in MongoDB (password hashed)
+2. User LOGS IN → Server creates JWT token → sent to user
+3. Token SAVED in localStorage (browser storage)
+4. User visits /dashboard:
+   a. PrivateRoute checks → token exists? ✅
+   b. Dashboard loads → sends token to backend
+   c. Backend verifyToken → token valid? ✅
+   d. Dashboard data returned → displayed to user
+5. User LOGS OUT → token removed → redirected to login
+6. Token EXPIRED → backend rejects → redirect to login
+
+🔑 Key Idea: Token = Your digital key to access pages!
+🛡️ PrivateRoute = Frontend security guard
+🔒 verifyToken = Backend security guard (real protection!)
+</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- FOOTER NOTE                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="footer-note">
+      <p>
+        <span class="emoji-lock">💡</span>
+        <strong class="highlight">முக்கிய குறிப்பு:</strong>
+        <span class="tamil-note">Frontend protection (PrivateRoute) மட்டும் போதாது! Backend-லும் verifyToken middleware வைக்கணும். ஏன்னா, hacker Postman/curl use பண்ணி directly backend API-ஐ hit பண்ணலாம். Backend protection தான் real security!</span>
+        <span class="emoji-lock">🔐</span>
+      </p>
+    </div>
+
+  </div>
+
+</body>
+</html>
