@@ -1,21 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Display Input</title>
-</head>
-<body>
+<script>
 
-    <input type="text" id="myInput" placeholder="Enter something">
-    <button onclick="showText()">Show</button>
+    const reverse = [10,20,30,40,50];
 
-    <p id="output"></p>
+    for(let i = reverse - 1 ; i>=0 ; i --){
+        console.log(reverse[i]);
+        
+    }
 
-    <script>
-        function showText() {
-            let value = document.getElementById("myInput").value;
-            document.getElementById("output").innerText = value;
-        }
-    </script>
-
-</body>
-</html>
+</script>

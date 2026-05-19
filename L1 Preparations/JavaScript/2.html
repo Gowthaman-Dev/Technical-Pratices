@@ -10,24 +10,24 @@
 <body>
 
     <script>
-       let arr = [1,[2,3],[4,[5,6]]]
-       let result = []
+        let arr = [1, [2, 3], [4, [5, 6]]]
+        let result = []
 
-       function arrs(nums){
+        function gowtham(nums) {
 
-       for(let i = 0 ; i <nums.length ; i ++){
-        if (Array.isArray(nums[i])) {
-            arrs(nums[i])
-        }else{
-            result.push(nums[i])
+            for (let i = 0; i < nums.length; i++) {
+                if (Array.isArray(nums[i])) {
+                    gowtham(nums[i])
+                } else {
+                    result.push(nums[i])
+                }
+            }
         }
-       }
-       }
 
-       arrs(arr)
+        gowtham(arr)
 
-       console.log(result);
-       
+        console.log(result);
+
     </script>
 
 </body>

@@ -17,5 +17,5 @@ app.use("/api/auth",router)
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT,()=>{
-  console.log(`Server Is Connected http://localhost:${PORT}`);
+  console.log(`Server Is Connected http://localhost:${PORT}`)
 })
