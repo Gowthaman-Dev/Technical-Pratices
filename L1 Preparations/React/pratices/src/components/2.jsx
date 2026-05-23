@@ -1,119 +1,66 @@
 import React, { useState } from "react";
 
 const App = () => {
-
-  // எல்லா items-யும் store பண்ணும் state
   const [data, setData] = useState([]);
-
-  // input box value store பண்ணும்
   const [input, setInput] = useState("");
-
-  // எந்த item edit ஆகுது nu store பண்ணும்
-  // null means edit mode இல்ல
   const [editIndex, setEditIndex] = useState(null);
 
-
-
-  // ADD + UPDATE function
+  // ADD + UPDATE
   const handleSubmit = () => {
-
-    // input emptyனா function stop ஆகும்
-    // இல்லனா empty item add ஆகிடும்
     if (input === "") return;
 
-
-    // edit mode check
-    // editIndex value இருந்தா update run ஆகும்
     if (editIndex !== null) {
-
-      // selected item மட்டும் update பண்ணும்
       const updatedData = data.map((item, index) =>
-
-        // edit ஆகுற indexனா new input வை
-        // இல்லனா old item same வை
         index === editIndex ? input : item
       );
 
-      // updated array stateக்கு set பண்ணும்
-      // UI update ஆகும்
       setData(updatedData);
-
-      // edit mode close
-      // இல்லனா always update modeல இருக்கும்
       setEditIndex(null);
-
     } else {
-
-      // new item add பண்ணும்
-      // ...data old items copy பண்ணும்
       setData([...data, input]);
     }
 
-    // input clear பண்ணும்
     setInput("");
   };
 
-
-
-  // DELETE function
+  // DELETE
   const deleteItem = (index) => {
-
-    // clicked item remove பண்ணும்
     const newData = data.filter((_, i) => i !== index);
-
-    // delete ஆன data save பண்ணும்
     setData(newData);
   };
 
-
-
-  // EDIT function
-  const   editItem = (index) => {
-
-    // selected item input boxல show ஆகும்
-    setInput(data[index])
-
-    // எந்த item edit ஆகுது nu save பண்ணும்
+  // EDIT
+  const editItem = (index) => {
+    setInput(data[index]);
     setEditIndex(index);
   };
 
-
-
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h2>CRUD App</h2>
 
       <input
+        type="text"
+        placeholder="Enter value"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Enter value"
       />
 
-      {/* edit modeனா Update text வரும் */}
-      {/* இல்லனா Add வரும் */}
       <button onClick={handleSubmit}>
         {editIndex !== null ? "Update" : "Add"}
       </button>
 
-
-
-      {/* READ operation */}
       {data.map((item, index) => (
-        <div key={index}>
-
-          {/* item display */}
+        <div key={index} style={{ marginTop: "10px" }}>
           <span>{item}</span>
 
-          {/* edit button */}
           <button onClick={() => editItem(index)}>
             Edit
           </button>
 
-          {/* delete button */}
           <button onClick={() => deleteItem(index)}>
             Delete
           </button>
-
         </div>
       ))}
     </div>

@@ -97,3 +97,116 @@ const App = () => {
 }
 
 export default App
+
+// 1️⃣ 3 state dhaan main
+// const [form, setForm]
+
+// 👉 input values store
+
+// const [data, setData]
+
+// 👉 full users store
+
+// const [editId, setEditId]
+
+// 👉 which user editing nu remember
+
+// 2️⃣ First useEffect
+// localStorage la iruka data load pannum
+
+  // JSON.parse(localStorage.getItem("users"))
+
+// 👉 app open aagumbothu old data varum
+
+// Memory line:
+
+// 👉 "open app → load localStorage"
+
+// 3️⃣ Second useEffect
+// localStorage.setItem()
+
+// 👉 data change aana save pannum
+
+// Memory line:
+
+// 👉 "data change → auto save"
+
+// 4️⃣ handlechange
+// setForm({ ...form, [name]: value })
+
+// 👉 typing pannumbothu form update
+
+// Memory line:
+
+// 👉 "input type → form update"
+
+// 5️⃣ Edit mode check
+// if(editId !== null)
+
+// 👉 edit modeனா update
+
+// 👉 இல்லனா create
+
+// Memory line:
+
+// 👉 "id இருந்தா update"
+
+// 6️⃣ Create logic
+// setData([...data, newuser])
+
+// 👉 old users + new user add
+
+// Memory line:
+
+// 👉 "spread old data, add new user"
+
+// 7️⃣ Update logic
+// data.map()
+
+// 👉 matching id item replace
+
+// item.id === editId ? updated : item
+
+// Memory line:
+
+// 👉 "same idனா replace"
+
+// 8️⃣ Update complete
+// setEditId(null)
+
+// 👉 edit mode off
+
+// Memory line:
+
+// 👉 "null means add mode"
+
+// 9️⃣ Delete logic
+// data.filter()
+
+// 👉 selected item remove
+
+// Memory line:
+
+// 👉 "filter remove pannum"
+
+// 🔟 Edit button work
+// setForm(...)
+
+// 👉 clicked item input box la fill aagum
+
+// setEditId(item.id)
+
+// 👉 which item editing save aagum
+
+// Memory line:
+
+// 👉 "edit click → form fill + id save"
+
+// 1️⃣1️⃣ Form clear
+// setForm({ name:"", email:"", age:"" })
+
+// 👉 submit/update aprm input empty
+
+// Memory line:
+
+// 👉 "submit mudincha clear form"  

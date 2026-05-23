@@ -1,10 +1,20 @@
 <script>
 
-    const reverse = [10,20,30,40,50];
+    let arr =  [10, 25, 5, 40, 15];
 
-    for(let i = reverse - 1 ; i>=0 ; i --){
-        console.log(reverse[i]);
-        
+    let lar = -Infinity
+    let seclar = -Infinity
+
+    for(let i =0 ; i<arr.length ; i++){
+        if (arr[i]>lar) {
+            seclar = lar 
+            lar = arr[i]
+        }else if(arr[i] > seclar && arr[i] !== lar){
+            seclar = arr[i]
+        }
     }
+    
+    console.log(lar);
+    
 
 </script>

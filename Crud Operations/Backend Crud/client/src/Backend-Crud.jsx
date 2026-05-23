@@ -92,3 +92,124 @@ const App = () => {
 }
 
 export default App
+
+
+// Mind la vachika vendiya main points
+
+// 1️⃣ 3 state dhaan main
+// const [form, setForm]
+
+// 👉 input values store
+
+// const [data, setData]
+
+// 👉 backend la iruka full data
+
+// const [editid, setEditId]
+
+// 👉 which item editing nu remember
+
+// 2️⃣ handlechange
+// setForm({ ...form, [name]: value })
+
+// 👉 typing pannumbothu form update
+
+// Memory line:
+
+// 👉 "input type → form update"
+
+// 3️⃣ handlesubmit
+// e.preventDefault()
+
+// 👉 form reload stop
+
+// 4️⃣ Edit mode check
+// if(editid)
+
+// 👉 id irundha update
+
+// 👉 இல்லனா create
+
+// Memory line:
+
+// 👉 "id இருந்தா update"
+
+// 5️⃣ CREATE API
+// axios.post()
+
+// 👉 new user backend ku send pannum
+
+// Memory line:
+
+// 👉 "post means add"
+
+// 6️⃣ UPDATE API
+// axios.put()
+
+// 👉 existing user update pannum
+
+// Memory line:
+
+// 👉 "put means update"
+
+// 7️⃣ fetchdata()
+// axios.get()
+
+// 👉 backend la iruka data edukkum
+
+// setData(res.data)
+
+// 👉 frontend la store pannum
+
+// Memory line:
+
+// 👉 "get means fetch data"
+
+// 8️⃣ useEffect
+// useEffect(() => {
+//   fetchdata()
+// }, [])
+
+// 👉 app open aagumbothu data load
+
+// Memory line:
+
+// 👉 "open app → fetch data"
+
+// 9️⃣ handleedit
+// setForm(...)
+
+// 👉 clicked item input la fill aagum
+
+// setEditId(item._id)
+
+// 👉 edit mode on
+
+// Memory line:
+
+// 👉 "edit click → form fill + id save"
+
+// 🔟 DELETE API
+// axios.delete()
+
+// 👉 selected item delete pannum
+
+// Memory line:
+
+// 👉 "delete means remove"
+
+// 1️⃣1️⃣ fetchdata() after create/update/delete
+
+// 👉 latest data again load pannum
+// Memory line:
+
+// 👉 "after change → fetch again"
+
+// 1️⃣2️⃣ Form clear
+// setForm({ name:"", email:"", age:"" })
+
+// 👉 submit/update aprm input empty
+
+// Memory line:
+
+// 👉 "submit mudincha clear form"

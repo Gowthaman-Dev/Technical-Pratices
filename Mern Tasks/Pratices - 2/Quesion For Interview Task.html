@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MERN Stack Interview Tasks</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background:#f4f4f4;
+      padding:40px;
+      color:#222;
+      line-height:1.8;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:auto;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:20px;
+      color:#111;
+      font-size:40px;
+    }
+
+    .main-text{
+      text-align:center;
+      margin-bottom:40px;
+      font-size:18px;
+    }
+
+    .section{
+      background:white;
+      padding:25px;
+      margin-bottom:30px;
+      border-radius:10px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2{
+      margin-bottom:20px;
+      color:#0d6efd;
+      border-bottom:2px solid #0d6efd;
+      padding-bottom:10px;
+    }
+
+    .task{
+      margin-bottom:30px;
+      padding:20px;
+      background:#fafafa;
+      border-left:5px solid #0d6efd;
+      border-radius:8px;
+    }
+
+    h3{
+      margin-bottom:10px;
+      color:#333;
+    }
+
+    p{
+      margin-bottom:10px;
+    }
+
+    ul{
+      margin-left:25px;
+      margin-top:10px;
+    }
+
+    li{
+      margin-bottom:8px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
+    }
+
+    table th,
+    table td{
+      border:1px solid #ccc;
+      padding:12px;
+      text-align:left;
+    }
+
+    table th{
+      background:#0d6efd;
+      color:white;
+    }
+
+    .footer{
+      text-align:center;
+      margin-top:40px;
+      font-size:20px;
+      font-weight:bold;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>MERN Stack Interview ல கண்டிப்பா தெரிஞ்சிருக்க வேண்டிய Tasks 🔥</h1>
+
+    <p class="main-text">
+      இவை fresher + junior MERN developer interview ல ரொம்ப common.
+    </p>
+
+    <div class="section">
+
+      <h2>Frontend (React) Tasks</h2>
+
+      <div class="task">
+        <h3>1. CRUD Operation ✅ MOST IMPORTANT</h3>
+
+        <p>Create Read Update Delete</p>
+
+        <p>Example:</p>
+
+        <ul>
+          <li>Todo App</li>
+          <li>User Management</li>
+          <li>Student List</li>
+        </ul>
+
+        <p>Concepts:</p>
+
+        <ul>
+          <li>useState</li>
+          <li>map</li>
+          <li>form handling</li>
+          <li>API calls</li>
+          <li>edit mode</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>2. API Fetching</h3>
+
+        <p>Example:</p>
+
+        <p>GET API using axios/fetch</p>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>useEffect</li>
+          <li>loading state</li>
+          <li>error handling</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>3. Form Handling</h3>
+
+        <p>Example:</p>
+
+        <p>Login Form Register Form Contact Form</p>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>Controlled Components</li>
+          <li>onChange</li>
+          <li>validation</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>4. Authentication System 🔥</h3>
+
+        <p>VERY IMPORTANT</p>
+
+        <p>Example:</p>
+
+        <p>Login Register Logout JWT Token</p>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>JWT</li>
+          <li>bcrypt</li>
+          <li>localStorage</li>
+          <li>protected routes</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>5. Protected Routes</h3>
+
+        <p>Example:</p>
+
+        <p>Only logged-in users can access dashboard</p>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>React Router</li>
+          <li>Navigate</li>
+          <li>token check</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>6. React Router DOM</h3>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>BrowserRouter</li>
+          <li>Routes</li>
+          <li>Route</li>
+          <li>Link</li>
+          <li>useNavigate</li>
+          <li>params</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>7. State Management</h3>
+
+        <p>Must know atleast basics:</p>
+
+        <ul>
+          <li>Context API</li>
+          <li>Redux Toolkit</li>
+        </ul>
+
+        <p>Example:</p>
+
+        <p>Global user data Theme management Cart management</p>
+      </div>
+
+      <div class="task">
+        <h3>8. Search Filter</h3>
+
+        <p>Example:</p>
+
+        <p>Search users by name</p>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>filter()</li>
+          <li>includes()</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>9. Pagination</h3>
+
+        <p>Example:</p>
+
+        <p>Show 10 users per page</p>
+      </div>
+
+      <div class="task">
+        <h3>10. File Upload</h3>
+
+        <p>VERY COMMON 🔥</p>
+
+        <p>Example:</p>
+
+        <p>Profile Image Upload</p>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>Multer</li>
+          <li>FormData</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <h2>Backend (Node + Express) Tasks</h2>
+
+      <div class="task">
+        <h3>11. REST API Creation</h3>
+
+        <p>Must know:</p>
+
+        <p>GET POST PUT DELETE</p>
+      </div>
+
+      <div class="task">
+        <h3>12. MongoDB Connection</h3>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>Mongoose</li>
+          <li>Schema</li>
+          <li>Model</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>13. User Authentication API</h3>
+
+        <p>Must know:</p>
+
+        <ul>
+          <li>Register API</li>
+          <li>Login API</li>
+          <li>password hashing</li>
+        </ul>
+      </div>
+
+      <div class="task">
+        <h3>14. Middleware</h3>
+
+        <p>Example:</p>
+
+        <p>Auth middleware Logger middleware</p>
+      </div>
+
+      <div class="task">
+        <h3>15. Error Handling</h3>
+
+        <p>Example:</p>
+
+        <p>try catch status codes</p>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <h2>Database Tasks</h2>
+
+      <div class="task">
+        <h3>16. Schema Design</h3>
+
+        <p>Example:</p>
+
+        <p>name email password createdAt</p>
+      </div>
+
+      <div class="task">
+        <h3>17. Relationships</h3>
+
+        <p>Basic idea atleast:</p>
+
+        <p>User -> Posts</p>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <h2>Full Stack Tasks</h2>
+
+      <div class="task">
+        <h3>18. MERN CRUD App 🔥🔥🔥</h3>
+
+        <p>MOST ASKED PROJECT</p>
+
+        <p>Frontend + Backend + Database connect.</p>
+      </div>
+
+      <div class="task">
+        <h3>19. Login/Register Full Flow</h3>
+
+        <p>Frontend Form ↓ API ↓ MongoDB ↓ JWT ↓ Protected Dashboard</p>
+      </div>
+
+      <div class="task">
+        <h3>20. Dashboard Project</h3>
+
+        <p>Example:</p>
+
+        <ul>
+          <li>Admin Panel</li>
+          <li>Employee Management</li>
+          <li>Task Manager</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="section">
+
+      <h2>Extra Important Concepts</h2>
+
+      <table>
+        <tr>
+          <th>Topic</th>
+          <th>Priority</th>
+        </tr>
+
+        <tr>
+          <td>useState</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>useEffect</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>Props</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>Conditional Rendering</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>Form Handling</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>Axios</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>CRUD</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>JWT Auth</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>React Router</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>MongoDB CRUD</td>
+          <td>⭐⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>Redux Toolkit</td>
+          <td>⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>Context API</td>
+          <td>⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>Tailwind CSS</td>
+          <td>⭐⭐⭐⭐</td>
+        </tr>
+
+        <tr>
+          <td>File Upload</td>
+          <td>⭐⭐⭐⭐</td>
+        </tr>
+
+      </table>
+
+    </div>
+
+    <div class="section">
+
+      <h2>Interview ல அதிகமா குடுக்கும் Mini Projects</h2>
+
+      <table>
+
+        <tr>
+          <th>Project</th>
+          <th>Common</th>
+        </tr>
+
+        <tr>
+          <td>Todo App</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>Notes App</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>User Management</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>Employee CRUD</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>Auth System</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>Blog App</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>E-commerce Cart</td>
+          <td>✅</td>
+        </tr>
+
+        <tr>
+          <td>Weather App</td>
+          <td>✅</td>
+        </tr>
+
+      </table>
+
+    </div>
+
+    <div class="section">
+
+      <h2>Fresher கு கண்டிப்பா தெரிஞ்சிருக்க வேண்டிய TOP 10 🔥</h2>
+
+      <ol style="margin-left:25px;">
+
+        <li>CRUD</li>
+        <li>API Fetching</li>
+        <li>useState</li>
+        <li>useEffect</li>
+        <li>Form Handling</li>
+        <li>React Router</li>
+        <li>Login/Register</li>
+        <li>JWT Authentication</li>
+        <li>MongoDB CRUD</li>
+        <li>Protected Routes</li>
+
+      </ol>
+
+    </div>
+
+    <div class="footer">
+      இவை strong ஆ இருந்தா junior MERN interview clear பண்ண chances ரொம்ப அதிகம் 👍
+    </div>
+
+  </div>
+
+</body>
+</html>
