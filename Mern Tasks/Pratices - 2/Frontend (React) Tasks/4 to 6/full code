@@ -1,0 +1,478 @@
+import axios from "axios"
+
+const API = axios.create({
+    baseURL:"http://localhost:5000/api/jobprotal"
+})
+
+export default API
+
+import React, {
+  useState,
+  useEffect
+} from 'react'
+
+import API from "../api/api"
+import NavBar from './NavBar'
+const DashBoard = () => {
+  const [showdata, setShowData] =
+    useState([])
+  const token =
+    localStorage.getItem("jwttoken")
+
+  useEffect(() => {
+
+    const fetchdata = async () => {
+
+      try {
+
+        const ress =
+          await API.get(
+            "/dashboardjob",
+            {
+              headers: {
+                Authorization: token
+              }
+            }
+          )
+
+        setShowData(
+          ress.data.getdatas
+        )
+
+      } catch (error) {
+
+        console.log(error)
+      }
+    }
+
+    fetchdata()
+
+  }, [])
+
+  return (
+    <>
+      <NavBar />
+
+      <div>
+
+        {showdata.map((e) => (
+
+          <div key={e._id}>
+
+            <h3>{e.name}</h3>
+
+            <p>{e.email}</p>
+
+            <p>{e.number}</p>
+
+          </div>
+
+        ))}
+
+      </div>
+    </>
+  )
+}
+
+export default DashBoard
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+
+import API from "../api/api"
+
+const Login = () => {
+
+  const navigate = useNavigate()
+
+  const [loginform, setLoginForm] =
+    useState({
+      email: "",
+      password: ""
+    })
+
+  // HANDLE CHANGE
+  const handlechange = (e) => {
+
+    const { name, value } = e.target
+
+    setLoginForm({
+      ...loginform,
+      [name]: value
+    })
+  }
+
+  // HANDLE SUBMIT
+  const handlesubmit = async (e) => {
+
+    e.preventDefault()
+
+    // VALIDATION
+    if (
+      !loginform.email ||
+      !loginform.password
+    ) {
+      return alert(
+        "All Fields Required"
+      )
+    }
+
+    try {
+
+      const fetchdata =await API.post("/login",loginform)
+      localStorage.setItem("jwttoken",fetchdata.data.token)
+
+      alert(fetchdata.data.msg)
+
+      navigate("/dashboard")
+
+    } catch (error) {
+
+      alert(error.response.data.msg)
+    }
+  }
+
+  return (
+    <>
+      <form onSubmit={handlesubmit}>
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter Email"
+          onChange={handlechange}
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter Password"
+          onChange={handlechange}
+        />
+
+        <input
+          type="submit"
+          value="Login"
+        />
+
+      </form>
+
+      <button
+        onClick={() => {
+          navigate("/register")
+        }}
+      >
+        Register
+      </button>
+    </>
+  )
+}
+
+export default Loginimport {
+  Link,
+  useNavigate
+} from 'react-router-dom'
+
+const NavBar = () => {
+
+  const navigate = useNavigate()
+
+  const handleclick = () => {
+
+    localStorage.removeItem(
+      "jwttoken"
+    )
+
+    navigate("/")
+  }
+
+  return (
+    <>
+      <div>
+
+        <h1>LOGO</h1>
+
+        <Link to="/">
+          Login
+        </Link>
+
+        <Link to="/register">
+          Register
+        </Link>
+
+        <Link to="/dashboard">
+          Dashboard
+        </Link>
+
+        <button onClick={handleclick}>
+          Logout
+        </button>
+
+      </div>
+    </>
+  )
+}
+
+export default NavBarimport { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import API from '../api/api'
+
+const Register = () => {
+
+  const navigate = useNavigate()
+
+  const [form, setForm] =
+    useState({
+      name: "",
+      email: "",
+      number: "",
+      password: ""
+    })
+
+  // HANDLE CHANGE
+  const handlechange = (e) => {
+
+    const { name, value } = e.target
+
+    setForm({
+      ...form,
+      [name]: value
+    })
+  }
+
+  // HANDLE SUBMIT
+  const handlesubmit = async (e) => {
+
+    e.preventDefault()
+
+    // VALIDATION
+    if (
+      !form.name ||
+      !form.email ||
+      !form.number ||
+      !form.password
+    ) {
+      return alert(
+        "All Fields Required"
+      )
+    }
+
+    try {
+
+      const fetchdata =
+        await API.post(
+          "/register",
+          form
+        )
+
+      alert(fetchdata.data.msg)
+
+      navigate("/")
+
+    } catch (error) {
+
+      alert(error.response.data.msg)
+    }
+  }
+
+  return (
+    <>
+      <form onSubmit={handlesubmit}>
+
+        <input
+          type="text"
+          name='name'
+          value={form.name}
+          placeholder='Enter Name'
+          onChange={handlechange}
+        />
+
+        <input
+          type="email"
+          name='email'
+          value={form.email}
+          placeholder='Enter Email'
+          onChange={handlechange}
+        />
+
+        <input
+          type="text"
+          name='number'
+          value={form.number}
+          placeholder='Enter Number'
+          onChange={handlechange}
+        />
+
+        <input
+          type="password"
+          name='password'
+          value={form.password}
+          placeholder='Enter Password'
+          onChange={handlechange}
+        />
+
+        <input
+          type="submit"
+          value="Register"
+        />
+
+      </form>
+    </>
+  )
+}
+
+export default Registerimport DashBoard from "../Components/DashBoard"
+import Login from "../Components/Login"
+import Register from "../Components/Register"
+import { Routes, Route, Navigate } from "react-router-dom"
+
+const AppRoutes = () => {
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="/dashboard" element={<ProtectedRoute><DashBoard /></ProtectedRoute>} />
+      </Routes>
+    </>
+  )
+}
+
+export default AppRoutes
+
+export const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem("jwttoken")
+  return token ? children : <Navigate to="/" />
+}
+import AppRoutes from './routes/AppRoutes'
+
+const App = () => {
+  return (
+    <>
+    <AppRoutes/>
+    </>
+  )
+}
+
+export default App
+
+
+--------------------
+
+import mongoose from "mongoose";
+
+const connectdb = async()=>{
+    try {
+        const conn = await mongoose.connect(process.env.MONGOOSE_URL)
+        console.log(`MongoDb Connected Successfully ${conn.connection.host}`);
+    } catch (error) {
+        console.log(`error Mongoodb la`,error);
+        process.exit(1)
+    }
+}
+
+export default connectdb
+import jwt from 'jsonwebtoken'
+import modlejob from "../modle/jobModle.js";
+import bcrypt from 'bcrypt'
+
+export const jobregister = async (req, res) => {
+    try {
+        const { name, email, password, number } = req.body
+        console.log(email);
+        const checkemail = await modlejob.findOne({ email })
+        if (checkemail) {
+            return res.status(404).json({ msg: "This Email Already Used" })
+        }
+        const hasspass = await bcrypt.hash(password,10)
+        const registerinfo = await modlejob.create({ name, email, password:hasspass, number })
+        res.status(200).json({ msg: "Successfully Register", registerinfo })
+    } catch (error) {
+        res.status(200).json({ msg: "Give me a New Email"})
+
+    }
+}
+
+export const joblogin = async(req,res)=>{
+    try {
+        const {email,password} = req.body
+        const checkemail = await modlejob.findOne({email})
+        if(!checkemail){
+            return res.status(404).json({msg:'Invaild Email'})
+        }
+        const compass = await bcrypt.compare(password,checkemail.password)
+        if(!compass){
+            return res.status(400).json({msg:"Incorrect Password"})
+        }
+        const tokengen = await jwt.sign({name:checkemail.name,email:checkemail.email},process.env.JWT_SCR,{expiresIn:'2h'})
+        res.status(200).json({msg:"SuccessFully Token Created",token:tokengen})
+    } catch (error) {
+        res.status(404).json({msg:"Something Error"})
+    }
+}
+
+export const getdashboard = async(req,res)=>{
+    try {
+        const getdata = await modlejob.find()
+        res.status(200).json({msg:"Message Getting Successfully",getdatas:getdata})
+    } catch (error) {
+        return res.status(400).json({msg:"Something Error On My DashBoard"})
+    }
+}import jwt from "jsonwebtoken"
+export const verifyUserData = async(req,res,next)=>{
+     const token = req.headers.authorization
+     if(!token){
+        return res.status(400).json({msg:"No Token You Have"})
+     }
+    try {
+      const decode = await jwt.verify(token,process.env.JWT_SCR)
+      req.jwtuser = decode
+      next()
+    } catch (error) {
+        return res.status(404).json({msg:"Something Error"})
+    }
+}import mongoose from "mongoose";
+
+const jobSchema = new mongoose.Schema({
+    name:String,
+    email:String,
+    number:String,
+    password:String
+},{timestamps:true})
+
+const modlejob  = mongoose.model("jobPortal-User-Register",jobSchema)
+
+export default modlejobimport express from 'express'
+import { jobregister , joblogin, getdashboard} from '../controller/jobController.js'
+import { verifyUserData } from '../middleware/authMiddleWare.js'
+
+const route = express.Router()
+
+route.post("/register",jobregister)
+route.post("/login",joblogin)
+route.get('/dashboardjob',verifyUserData,getdashboard)
+
+export default route
+
+//http://localhost:5000/api/jobprotal/registerimport express from "express"
+import dotenv from 'dotenv'
+import cors from 'cors'
+import route from "./route/jobRoute.js"
+import connectdb from "./congif/db.js"
+
+dotenv.config()
+connectdb()
+const app = express()
+
+app.use(cors())
+app.use(express.json())
+
+app.use("/api/jobprotal",route)
+
+const PORT = process.env.PORT || 3000
+
+app.listen(PORT,()=>{
+    console.log(`Server Connceted Successfully http://localhost:${PORT}`);
+    
+})
+

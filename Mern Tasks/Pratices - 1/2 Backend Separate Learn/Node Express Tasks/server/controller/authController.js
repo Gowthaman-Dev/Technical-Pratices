@@ -13,13 +13,9 @@ export const loginUser = (req, res) => {
 
     // CREATE TOKEN
     const token = jwt.sign(
-      {
-        email: email
-      },
+      { email: email},
       process.env.JWT_SECRET,
-      {
-        expiresIn: "1h"
-      }
+      {expiresIn: "1h"  }
     );
 
     return res.status(200).json({

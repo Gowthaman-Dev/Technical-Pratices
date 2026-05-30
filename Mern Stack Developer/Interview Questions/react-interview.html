@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Interview Answers</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent1: #6c63ff;
+    --accent2: #00e5c0;
+    --accent3: #ff6b6b;
+    --accent4: #ffa94d;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --label: #444466;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 50%, rgba(108,99,255,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 50%, rgba(0,229,192,0.08) 0%, transparent 70%);
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent2);
+    border: 1px solid rgba(0,229,192,0.3);
+    padding: 5px 14px;
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  .hero h1 span { color: var(--accent1); }
+  .hero p {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ── NAV PILLS ── */
+  .nav-strip {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 2rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--card);
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .nav-pill:hover { border-color: var(--accent1); color: var(--accent1); }
+
+  /* ── MAIN LAYOUT ── */
+  .wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3.5rem 0 1.5rem;
+  }
+  .section-header:first-child { margin-top: 0; }
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 0.1em;
+    border: 1px solid rgba(0,229,192,0.25);
+    padding: 3px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: background 0.2s;
+  }
+  .card:hover { background: #1c1c28; }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .card-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .card-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .qa-block { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .qa-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+    display: inline-block;
+    width: fit-content;
+  }
+  .qa-label.what {
+    background: rgba(108,99,255,0.15);
+    color: #a89fff;
+    border: 1px solid rgba(108,99,255,0.3);
+  }
+  .qa-label.why {
+    background: rgba(0,229,192,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(0,229,192,0.2);
+  }
+
+  .qa-text {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+  .qa-text strong { color: var(--text); font-weight: 600; }
+
+  .divider { height: 1px; background: var(--border); }
+
+  /* ── DOT COLORS ── */
+  .dot-purple { background: var(--accent1); }
+  .dot-teal   { background: var(--accent2); }
+  .dot-red    { background: var(--accent3); }
+  .dot-amber  { background: var(--accent4); }
+  .dot-pink   { background: #e879f9; }
+
+  /* ── HOOKS SECTION SPECIAL STYLE ── */
+  .hooks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  /* ── LIFECYCLE: 3-phase row ── */
+  .lifecycle-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1px;
+  }
+  .lifecycle-phase {
+    background: var(--card);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .lifecycle-phase:hover { background: #1c1c28; }
+  .phase-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 2px;
+    width: fit-content;
+  }
+  .phase-mount  { background: rgba(0,229,192,0.12); color: var(--accent2); border: 1px solid rgba(0,229,192,0.3); }
+  .phase-update { background: rgba(255,169,77,0.12); color: var(--accent4); border: 1px solid rgba(255,169,77,0.3); }
+  .phase-unmount{ background: rgba(255,107,107,0.12); color: var(--accent3); border: 1px solid rgba(255,107,107,0.3); }
+
+  /* lifecycle full-width card */
+  .lifecycle-wide {
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .lifecycle-wide .card {
+    border-radius: 0;
+    border: none;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--label);
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 640px) {
+    .lifecycle-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-tag">INTERVIEW ANSWER</div>
+  <h1>React <span>Interview</span><br>Answers</h1>
+  <p>Core concepts · Hooks · Lifecycle</p>
+</header>
+
+<!-- NAV -->
+<nav class="nav-strip">
+  <a class="nav-pill" href="#core">Core Concepts</a>
+  <a class="nav-pill" href="#ui">UI Features</a>
+  <a class="nav-pill" href="#hooks">Hooks</a>
+  <a class="nav-pill" href="#lifecycle">Lifecycle</a>
+</nav>
+
+<main class="wrapper">
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 1 — CORE CONCEPTS
+  ═══════════════════════════════════════════ -->
+  <div class="section-header" id="core">
+    <div class="section-num">01</div>
+    <h2 class="section-title">Core Concepts</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- React -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-purple"></div>
+        <div class="card-name">React</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is React?</div>
+        <div class="qa-text">React is a JavaScript library used for building user interfaces (UI). It helps developers create reusable components and build Single Page Applications (SPA).</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why React?</div>
+        <div class="qa-text">React is used because it provides reusable components, better code maintainability, fast rendering through Virtual DOM, and an efficient way to build modern web applications.</div>
+      </div>
+    </div>
+
+    <!-- JSX -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-teal"></div>
+        <div class="card-name">JSX</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is JSX?</div>
+        <div class="qa-text">JSX (JavaScript XML) is a syntax extension for JavaScript that allows us to write HTML-like code inside JavaScript. It is used in React to describe the UI.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use JSX?</div>
+        <div class="qa-text">We use JSX because it makes React code easier to write, read, and understand. It allows developers to create UI elements in a simpler and more readable way.</div>
+      </div>
+    </div>
+
+    <!-- Virtual DOM -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-amber"></div>
+        <div class="card-name">Virtual DOM</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Virtual DOM?</div>
+        <div class="qa-text">Virtual DOM is a lightweight copy of the Real DOM maintained by React.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Virtual DOM?</div>
+        <div class="qa-text">We use Virtual DOM to improve performance. Instead of updating the entire Real DOM, React first updates the Virtual DOM, compares the changes, and updates only the necessary parts in the Real DOM.</div>
+      </div>
+    </div>
+
+    <!-- Component -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-red"></div>
+        <div class="card-name">Component</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is a Component?</div>
+        <div class="qa-text">A Component is a reusable and independent piece of UI in React. It helps divide the application into smaller parts.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Components?</div>
+        <div class="qa-text">We use Components to make code reusable, maintainable, and easier to manage. Instead of writing the same UI multiple times, we can create one component and reuse it wherever needed.</div>
+      </div>
+    </div>
+
+    <!-- Props -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-pink"></div>
+        <div class="card-name">Props</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Props?</div>
+        <div class="qa-text">Props (Properties) are used to pass data from a parent component to a child component in React.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Props?</div>
+        <div class="qa-text">We use Props to share data between components and make components reusable with different values.</div>
+      </div>
+    </div>
+
+    <!-- State -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-teal"></div>
+        <div class="card-name">State</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is State?</div>
+        <div class="qa-text">State is used to store and manage data inside a React component.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use State?</div>
+        <div class="qa-text">We use State because when the data changes, React automatically updates the UI without refreshing the page.</div>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 2 — UI FEATURES
+  ═══════════════════════════════════════════ -->
+  <div class="section-header" id="ui">
+    <div class="section-num">02</div>
+    <h2 class="section-title">UI Features</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Event Handling -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-purple"></div>
+        <div class="card-name">Event Handling</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Event Handling?</div>
+        <div class="qa-text">Event Handling is used to handle user interactions like clicks, inputs, and form submissions in React.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Event Handling?</div>
+        <div class="qa-text">We use it to perform actions based on user events and make the application interactive.</div>
+      </div>
+    </div>
+
+    <!-- Conditional Rendering -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-amber"></div>
+        <div class="card-name">Conditional Rendering</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Conditional Rendering?</div>
+        <div class="qa-text">Conditional Rendering is used to display different UI elements based on a condition in React.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Conditional Rendering?</div>
+        <div class="qa-text">We use Conditional Rendering to show or hide content based on specific conditions or user actions.</div>
+      </div>
+    </div>
+
+    <!-- Lists and Keys -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-teal"></div>
+        <div class="card-name">Lists and Keys</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What are Lists and Keys?</div>
+        <div class="qa-text">Lists are used to display multiple items dynamically in React, and Keys are unique identifiers used to identify each item in the list.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Lists and Keys?</div>
+        <div class="qa-text">We use Lists to render multiple items efficiently and Keys to help React identify and update list items correctly.</div>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-red"></div>
+        <div class="card-name">List</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is List?</div>
+        <div class="qa-text">A List is used to display multiple items dynamically in React.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use List?</div>
+        <div class="qa-text">We use Lists to render and display a collection of data efficiently in the UI.</div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-pink"></div>
+        <div class="card-name">Form</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Form?</div>
+        <div class="qa-text">A Form is used to collect user input such as name, email, password, and other details in a React application.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Form?</div>
+        <div class="qa-text">We use Forms to collect, validate, and submit user data to the application or server.</div>
+      </div>
+    </div>
+
+    <!-- Fragment -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-purple"></div>
+        <div class="card-name">Fragment</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Fragment?</div>
+        <div class="qa-text">A Fragment is a React component that allows us to group multiple elements without adding an extra DOM element.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Fragment?</div>
+        <div class="qa-text">We use Fragments to avoid unnecessary wrapper elements and keep the DOM structure clean.</div>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 3 — HOOKS
+  ═══════════════════════════════════════════ -->
+  <div class="section-header" id="hooks">
+    <div class="section-num">03</div>
+    <h2 class="section-title">Hooks</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="hooks-grid">
+
+    <!-- Hook -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-purple"></div>
+        <div class="card-name">Hook</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Hook?</div>
+        <div class="qa-text">A Hook is a special function in React that allows functional components to use React features such as state and lifecycle methods.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Hooks?</div>
+        <div class="qa-text">We use Hooks to manage state, handle side effects, and add React functionality to functional components without using class components.</div>
+      </div>
+    </div>
+
+    <!-- useState -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-teal"></div>
+        <div class="card-name">useState</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is useState?</div>
+        <div class="qa-text">useState is a React Hook used to store and manage state in a functional component.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use useState?</div>
+        <div class="qa-text">We use useState to handle dynamic data and update the UI whenever the state changes.</div>
+      </div>
+    </div>
+
+    <!-- useEffect -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-amber"></div>
+        <div class="card-name">useEffect</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is useEffect?</div>
+        <div class="qa-text">useEffect is a React Hook used to perform side effects in a functional component.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use useEffect?</div>
+        <div class="qa-text">We use useEffect to handle operations such as API calls, data fetching, timers, and updating the DOM after the component renders.</div>
+      </div>
+    </div>
+
+    <!-- useContext -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-red"></div>
+        <div class="card-name">useContext</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is useContext?</div>
+        <div class="qa-text">useContext is a React Hook used to access and share data across multiple components without passing props manually at every level.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use useContext?</div>
+        <div class="qa-text">We use useContext to avoid prop drilling and make shared data available to multiple components easily.</div>
+      </div>
+    </div>
+
+    <!-- useRef -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-pink"></div>
+        <div class="card-name">useRef</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is useRef?</div>
+        <div class="qa-text">useRef is a React Hook used to create a reference to a DOM element or store a mutable value without causing a re-render.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use useRef?</div>
+        <div class="qa-text">We use useRef to access DOM elements directly and store values that do not need to trigger a UI update.</div>
+      </div>
+    </div>
+
+    <!-- useMemo -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-purple"></div>
+        <div class="card-name">useMemo</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is useMemo?</div>
+        <div class="qa-text">useMemo is a React Hook used to memoize and cache the result of an expensive calculation.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use useMemo?</div>
+        <div class="qa-text">We use useMemo to improve performance by preventing unnecessary recalculations during re-renders.</div>
+      </div>
+    </div>
+
+    <!-- useCallback -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-teal"></div>
+        <div class="card-name">useCallback</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is useCallback?</div>
+        <div class="qa-text">useCallback is a React Hook used to memoize a function and prevent it from being recreated on every render.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use useCallback?</div>
+        <div class="qa-text">We use useCallback to improve performance by avoiding unnecessary function recreations and re-renders of child components.</div>
+      </div>
+    </div>
+
+    <!-- Custom Hook -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-amber"></div>
+        <div class="card-name">Custom Hook</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is a Custom Hook?</div>
+        <div class="qa-text">A Custom Hook is a user-defined React Hook that allows us to reuse stateful logic across multiple components.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Custom Hooks?</div>
+        <div class="qa-text">We use Custom Hooks to reuse common logic, reduce code duplication, and make the code more maintainable.</div>
+      </div>
+    </div>
+
+  </div><!-- /hooks-grid -->
+
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 4 — COMPONENT LIFECYCLE
+  ═══════════════════════════════════════════ -->
+  <div class="section-header" id="lifecycle">
+    <div class="section-num">04</div>
+    <h2 class="section-title">Component Lifecycle</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- Lifecycle overview card -->
+  <div class="lifecycle-wide" style="margin-bottom:1px;">
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-purple"></div>
+        <div class="card-name">Component Lifecycle</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Component Lifecycle?</div>
+        <div class="qa-text">Component Lifecycle refers to the different stages a React component goes through from creation to updating and finally removal.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Component Lifecycle?</div>
+        <div class="qa-text">We use Component Lifecycle to perform actions at specific stages of a component, such as fetching data, updating the UI, and cleaning up resources.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 phases -->
+  <div class="lifecycle-row">
+
+    <div class="lifecycle-phase">
+      <div class="phase-badge phase-mount">Mounting</div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Mounting?</div>
+        <div class="qa-text">Mounting is the process of creating and inserting a React component into the DOM for the first time.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Mounting?</div>
+        <div class="qa-text">We use the mounting phase to perform initial tasks such as fetching data, setting up state, or initializing the component.</div>
+      </div>
+    </div>
+
+    <div class="lifecycle-phase">
+      <div class="phase-badge phase-update">Updating</div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Updating?</div>
+        <div class="qa-text">Updating is the process that occurs when a component's state or props change, causing the component to re-render.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Updating?</div>
+        <div class="qa-text">We use updating to reflect the latest data and changes in the UI.</div>
+      </div>
+    </div>
+
+    <div class="lifecycle-phase">
+      <div class="phase-badge phase-unmount">Unmounting</div>
+      <div class="qa-block">
+        <div class="qa-label what">What is Unmounting?</div>
+        <div class="qa-text">Unmounting is the process of removing a React component from the DOM.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use Unmounting?</div>
+        <div class="qa-text">We use unmounting to clean up resources such as timers, event listeners, and subscriptions before the component is removed.</div>
+      </div>
+    </div>
+
+  </div><!-- /lifecycle-row -->
+
+  <!-- useEffect Lifecycle Equivalent -->
+  <div class="lifecycle-wide" style="margin-top:1px;">
+    <div class="card">
+      <div class="card-top">
+        <div class="card-dot dot-teal"></div>
+        <div class="card-name">useEffect Lifecycle Equivalent</div>
+      </div>
+      <div class="qa-block">
+        <div class="qa-label what">What is useEffect Lifecycle Equivalent?</div>
+        <div class="qa-text">useEffect is a React Hook that can be used to handle component lifecycle events such as Mounting, Updating, and Unmounting in functional components.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="qa-block">
+        <div class="qa-label why">Why do we use useEffect for Lifecycle?</div>
+        <div class="qa-text">We use useEffect to perform actions during different lifecycle stages without using class components.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  React Interview Answers &nbsp;·&nbsp; Core · JSX · Virtual DOM · Components · Props · State · Hooks · Lifecycle
+</footer>
+
+</body>
+</html>
