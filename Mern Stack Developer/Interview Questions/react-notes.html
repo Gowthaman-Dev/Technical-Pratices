@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2eb;
+    --ink: #1a1712;
+    --ink2: #4a4640;
+    --ink3: #8a847c;
+    --line: #d8d2c8;
+    --accent-purple: #5a3fcf;
+    --accent-teal: #0d7a5f;
+    --accent-coral: #c94a2a;
+    --accent-blue: #1a5eb8;
+    --accent-amber: #b06b10;
+    --accent-green: #3a6e1a;
+    --accent-pink: #9b2e5a;
+    --fill-purple: #eeebfc;
+    --fill-teal: #e0f3ec;
+    --fill-coral: #faeae5;
+    --fill-blue: #e5eef9;
+    --fill-amber: #faeedd;
+    --fill-green: #eaf3de;
+    --fill-pink: #fbeaf0;
+    --fill-gray: #f0ede6;
+    --r: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  .site-header {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 18px,
+      rgba(255,255,255,0.03) 18px,
+      rgba(255,255,255,0.03) 19px
+    );
+  }
+  .site-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    position: relative;
+  }
+  .site-header h1 em {
+    font-style: italic;
+    color: #a89cf5;
+  }
+  .site-header p {
+    margin-top: 0.6rem;
+    font-size: 0.88rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    position: relative;
+  }
+
+  /* ─── PAGE ─── */
+  .page { max-width: 980px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+
+  /* ─── CHAPTER LABEL ─── */
+  .chapter { margin-bottom: 3rem; }
+  .chapter-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+    width: 100%;
+  }
+  .chapter-label span {
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* ─── GRID ─── */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+
+  /* ─── CARD ─── */
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .card.c-purple::before { background: var(--accent-purple); }
+  .card.c-teal::before   { background: var(--accent-teal); }
+  .card.c-blue::before   { background: var(--accent-blue); }
+  .card.c-coral::before  { background: var(--accent-coral); }
+  .card.c-amber::before  { background: var(--accent-amber); }
+  .card.c-green::before  { background: var(--accent-green); }
+  .card.c-pink::before   { background: var(--accent-pink); }
+
+  /* card number badge */
+  .card-num {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--ink3);
+    opacity: 0.4;
+  }
+
+  /* ─── Q TITLE ─── */
+  .q-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0.5rem 0 0.8rem;
+    line-height: 1.3;
+  }
+
+  /* ─── SECTIONS ─── */
+  .section { margin-bottom: 0.9rem; }
+  .section-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .card.c-purple .section-label { color: var(--accent-purple); }
+  .card.c-teal   .section-label { color: var(--accent-teal); }
+  .card.c-blue   .section-label { color: var(--accent-blue); }
+  .card.c-coral  .section-label { color: var(--accent-coral); }
+  .card.c-amber  .section-label { color: var(--accent-amber); }
+  .card.c-green  .section-label { color: var(--accent-green); }
+  .card.c-pink   .section-label { color: var(--accent-pink); }
+
+  .def-box {
+    background: var(--fill-gray);
+    border-radius: 6px;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.83rem;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+  .card.c-purple .def-box { background: var(--fill-purple); }
+  .card.c-teal   .def-box { background: var(--fill-teal); }
+  .card.c-blue   .def-box { background: var(--fill-blue); }
+  .card.c-coral  .def-box { background: var(--fill-coral); }
+  .card.c-amber  .def-box { background: var(--fill-amber); }
+  .card.c-green  .def-box { background: var(--fill-green); }
+  .card.c-pink   .def-box { background: var(--fill-pink); }
+
+  .why-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink2);
+    margin-bottom: 0.25rem;
+  }
+  .why-text {
+    font-size: 0.81rem;
+    line-height: 1.62;
+    color: var(--ink2);
+  }
+
+  .sep { height: 1px; background: var(--line); margin: 0.85rem 0; }
+
+  /* ─── SIMPLE ENGLISH ─── */
+  .simple-text {
+    font-size: 0.81rem;
+    line-height: 1.65;
+    color: var(--ink2);
+  }
+
+  /* ─── POINTS ─── */
+  .points-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+  }
+  .points-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .points-list li::before {
+    content: '✅';
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    margin-top: 1px;
+  }
+
+  /* ─── MONO code inline ─── */
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78em;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* ─── FOOTER ─── */
+  .site-footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.75rem;
+    color: var(--ink3);
+    border-top: 1px solid var(--line);
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 540px) {
+    .grid { grid-template-columns: 1fr; }
+    .site-header h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>React — <em>Complete Notes</em></h1>
+  <p>Definition &nbsp;·&nbsp; Simple English &nbsp;·&nbsp; Important Points</p>
+</header>
+
+<main class="page">
+
+  <!-- ═══════════════════════════════════════════
+       CHAPTER 1 — CORE CONCEPTS
+  ═══════════════════════════════════════════ -->
+  <section class="chapter">
+    <div class="chapter-label"><span>01</span> Core Concepts</div>
+    <div class="grid">
+
+      <!-- REACT -->
+      <div class="card c-purple">
+        <span class="card-num">01</span>
+        <h2 class="q-title">What is React?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">React is a JavaScript library used for building user interfaces (UI). It helps developers create reusable components and build Single Page Applications (SPA).</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use React?</div>
+          <div class="why-text">React is used because it provides reusable components, better code maintainability, fast rendering through Virtual DOM, and an efficient way to build modern web applications.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">React is a JavaScript library used to build user interfaces. React uses reusable components to create UI. It helps developers write clean and maintainable code. React uses Virtual DOM for better performance and is commonly used to build Single Page Applications (SPA).</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>React = JavaScript Library</li>
+            <li>Used to Build User Interfaces (UI)</li>
+            <li>Reusable Components</li>
+            <li>Single Page Application (SPA)</li>
+            <li>Virtual DOM</li>
+            <li>Better Performance</li>
+            <li>Easy Maintenance</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- JSX -->
+      <div class="card c-teal">
+        <span class="card-num">02</span>
+        <h2 class="q-title">What is JSX?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">JSX (JavaScript XML) is a syntax extension for JavaScript that allows us to write HTML-like code inside JavaScript. It is used in React to describe the UI.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use JSX?</div>
+          <div class="why-text">We use JSX because it makes React code easier to write, read, and understand. It allows developers to create UI elements in a simpler and more readable way.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">JSX stands for JavaScript XML. React uses JSX to write HTML-like code inside JavaScript. It makes the code easier to read and write. JSX helps developers create UI in a simple and readable way. That's why JSX is commonly used in React applications.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>JSX = JavaScript XML</li>
+            <li>HTML-like Code Inside JavaScript</li>
+            <li>Used to Create UI</li>
+            <li>Easy to Read and Write</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- VIRTUAL DOM -->
+      <div class="card c-blue">
+        <span class="card-num">03</span>
+        <h2 class="q-title">What is Virtual DOM?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Virtual DOM is a lightweight copy of the Real DOM maintained by React.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Virtual DOM?</div>
+          <div class="why-text">We use Virtual DOM to improve performance. Instead of updating the entire Real DOM, React first updates the Virtual DOM, compares the changes, and updates only the necessary parts in the Real DOM.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Virtual DOM is a lightweight copy of the Real DOM. React uses Virtual DOM for better performance. When state or props change, React creates a new Virtual DOM and compares it with the old Virtual DOM. This is called Diffing. Then React updates only the changed parts in the Real DOM. This process is called Reconciliation. That's why React is fast.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">Virtual DOM — Important Points</div>
+          <ul class="points-list">
+            <li>Virtual DOM = Lightweight Copy of Real DOM</li>
+            <li>Diffing = Comparing old and new Virtual DOM</li>
+            <li>Reconciliation = Updating only changed parts in Real DOM</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- COMPONENT -->
+      <div class="card c-coral">
+        <span class="card-num">04</span>
+        <h2 class="q-title">What is a Component?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">A Component is a reusable and independent piece of UI in React. It helps divide the application into smaller parts.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Components?</div>
+          <div class="why-text">We use Components to make code reusable, maintainable, and easier to manage. Instead of writing the same UI multiple times, we can create one component and reuse it wherever needed.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">A Component is a reusable piece of UI in React. React uses Components to divide the application into smaller parts. Components make the code easy to manage and reuse. Instead of writing the same code again and again, we can create one Component and use it multiple times. That's why Components are important in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Component = Reusable Piece of UI</li>
+            <li>Independent and Reusable</li>
+            <li>Divides Application into Smaller Parts</li>
+            <li>Code Reusability</li>
+            <li>Easy Maintenance</li>
+            <li>Easy to Manage</li>
+            <li>Use Multiple Times</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PROPS -->
+      <div class="card c-amber">
+        <span class="card-num">05</span>
+        <h2 class="q-title">What is Props?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Props (Properties) are used to pass data from a parent component to a child component in React.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Props?</div>
+          <div class="why-text">We use Props to share data between components and make components reusable with different values.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Props stands for Properties. React uses Props to pass data from a parent component to a child component. Props help components receive different values and make them reusable. That's why Props are used for sharing data between components.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Props = Properties</li>
+            <li>Pass Data Between Components</li>
+            <li>Parent to Child Communication</li>
+            <li>Makes Components Reusable</li>
+            <li>Receive Different Values</li>
+            <li>Read-Only Data</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- STATE -->
+      <div class="card c-green">
+        <span class="card-num">06</span>
+        <h2 class="q-title">What is State?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">State is used to store and manage data inside a React component.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use State?</div>
+          <div class="why-text">We use State because when the data changes, React automatically updates the UI without refreshing the page.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">State is a built-in object in React used to store data inside a component. When the state changes, React automatically re-renders the component and updates the UI without page refresh. That's why State is used to manage dynamic data in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>State = Data Storage inside Component</li>
+            <li>Used to Manage Dynamic Data</li>
+            <li>Changes Over Time</li>
+            <li>Triggers Re-render</li>
+            <li>Automatic UI Update</li>
+            <li>No Page Refresh Needed</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CHAPTER 2 — UI FEATURES
+  ═══════════════════════════════════════════ -->
+  <section class="chapter">
+    <div class="chapter-label"><span>02</span> UI Features</div>
+    <div class="grid">
+
+      <!-- EVENT HANDLING -->
+      <div class="card c-pink">
+        <span class="card-num">07</span>
+        <h2 class="q-title">What is Event Handling?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Event Handling is used to handle user interactions like clicks, inputs, and form submissions in React.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Event Handling?</div>
+          <div class="why-text">We use Event Handling to perform actions based on user events and make the application interactive.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Event Handling in React is used to handle user actions like click, input, submit, and change events. React uses Event Handling to make the application interactive and perform actions based on user input. That's why Event Handling is important in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>User Interaction Handling</li>
+            <li>Click Event</li>
+            <li>Input Event</li>
+            <li>Form Submission</li>
+            <li>Makes App Interactive</li>
+            <li>Performs Actions Based on User Events</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- CONDITIONAL RENDERING -->
+      <div class="card c-teal">
+        <span class="card-num">08</span>
+        <h2 class="q-title">What is Conditional Rendering?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Conditional Rendering is used to display different UI elements based on a condition in React.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Conditional Rendering?</div>
+          <div class="why-text">We use Conditional Rendering to show or hide content based on specific conditions or user actions.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Conditional Rendering in React is used to show different UI based on conditions. React decides what to display depending on the state or props value. That's why Conditional Rendering is used to show or hide elements in the UI.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Based on Condition</li>
+            <li>Show or Hide UI</li>
+            <li>State or Props Dependent</li>
+            <li>Dynamic UI Rendering</li>
+            <li>User Action Based Display</li>
+            <li>Different UI for Different Conditions</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- LISTS AND KEYS -->
+      <div class="card c-blue">
+        <span class="card-num">09</span>
+        <h2 class="q-title">What are Lists and Keys?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Lists are used to display multiple items dynamically in React, and Keys are unique identifiers used to identify each item in the list.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Lists and Keys?</div>
+          <div class="why-text">We use Lists to render multiple items efficiently and Keys to help React identify and update list items correctly.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Lists in React are used to render multiple items from an array. Keys are unique identifiers for each item in the list. React uses Keys to identify which items are changed, added, or removed. That's why Lists and Keys are important for efficient rendering.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Lists = Multiple Items Display</li>
+            <li>Array Based Rendering</li>
+            <li>Keys = Unique Identifier</li>
+            <li>Helps React Identify Items</li>
+            <li>Efficient Updates</li>
+            <li>Better Performance</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- LIST -->
+      <div class="card c-purple">
+        <span class="card-num">10</span>
+        <h2 class="q-title">What is List?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">A List is used to display multiple items dynamically in React.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use List?</div>
+          <div class="why-text">We use Lists to render and display a collection of data efficiently in the UI.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">A List in React is used to display multiple items from an array. React uses Lists to render data dynamically in the UI. That's why Lists are used to show multiple data efficiently.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>List = Multiple Items</li>
+            <li>Array Data Rendering</li>
+            <li>Dynamic UI Display</li>
+            <li>Efficient Rendering</li>
+            <li>Used to Show Collection of Data</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div class="card c-amber">
+        <span class="card-num">11</span>
+        <h2 class="q-title">What is Form?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">A Form is used to collect user input such as name, email, password, and other details in a React application.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Form?</div>
+          <div class="why-text">We use Forms to collect, validate, and submit user data to the application or server.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">A Form in React is used to take input from users like name, email, and password. React uses Forms to collect and manage user data. Forms help to validate and submit data to the server. That's why Forms are important in web applications.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Collect User Input</li>
+            <li>Name, Email, Password</li>
+            <li>Data Collection</li>
+            <li>Validation</li>
+            <li>Submit Data</li>
+            <li>Send to Server</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- FRAGMENT -->
+      <div class="card c-coral">
+        <span class="card-num">12</span>
+        <h2 class="q-title">What is Fragment?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">A Fragment is a React feature that allows us to group multiple elements without adding an extra DOM element.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Fragment?</div>
+          <div class="why-text">We use Fragments to avoid unnecessary wrapper elements and keep the DOM structure clean.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">React Fragment is used to group multiple elements without adding extra nodes to the DOM. It helps to keep the DOM structure clean and avoid unnecessary wrapper elements like div. That's why Fragment is used in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Group Multiple Elements</li>
+            <li>No Extra DOM Element</li>
+            <li>Clean DOM Structure</li>
+            <li>Avoid Extra div Wrapper</li>
+            <li>Improves Code Structure</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CHAPTER 3 — HOOKS
+  ═══════════════════════════════════════════ -->
+  <section class="chapter">
+    <div class="chapter-label"><span>03</span> Hooks</div>
+    <div class="grid">
+
+      <!-- HOOK -->
+      <div class="card c-purple">
+        <span class="card-num">13</span>
+        <h2 class="q-title">What is Hook?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">A Hook is a special function in React that allows functional components to use React features such as state and lifecycle methods.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Hooks?</div>
+          <div class="why-text">We use Hooks to manage state, handle side effects, and add React functionality to functional components without using class components.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">A Hook is a special function in React. React uses Hooks to add features like state and lifecycle to functional components. Hooks help to manage state and handle side effects without using class components. That's why Hooks are used in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Hook = Special Function</li>
+            <li>Used in Functional Components</li>
+            <li>State Management</li>
+            <li>Lifecycle Features</li>
+            <li>No Class Components Needed</li>
+            <li>Side Effects Handling</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- USESTATE -->
+      <div class="card c-teal">
+        <span class="card-num">14</span>
+        <h2 class="q-title">What is useState?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">useState is a React Hook used to store and manage state in a functional component.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use useState?</div>
+          <div class="why-text">We use useState to handle dynamic data and update the UI whenever the state changes.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">useState is a React Hook used to manage state in functional components. It allows us to store dynamic data and update the UI when the state changes. That's why useState is used for handling data in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>useState = React Hook</li>
+            <li>Stores Data in Component</li>
+            <li>Used in Functional Components</li>
+            <li>Manages Dynamic Data</li>
+            <li>Triggers Re-render</li>
+            <li>Updates UI Automatically</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- USEEFFECT -->
+      <div class="card c-blue">
+        <span class="card-num">15</span>
+        <h2 class="q-title">What is useEffect?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">useEffect is a React Hook used to perform side effects in a functional component.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use useEffect?</div>
+          <div class="why-text">We use useEffect to handle operations such as API calls, data fetching, timers, and updating the DOM after the component renders.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">useEffect is a React Hook used to handle side effects in functional components. React uses useEffect to perform tasks like API calls, data fetching, timers, and DOM updates after rendering. That's why useEffect is used for handling side effects in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Side Effects Handling</li>
+            <li>API Calls</li>
+            <li>Data Fetching</li>
+            <li>Timers (setTimeout, setInterval)</li>
+            <li>Runs After Render</li>
+            <li>DOM Updates</li>
+            <li>Dependency Array Controls Execution</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- USECONTEXT -->
+      <div class="card c-coral">
+        <span class="card-num">16</span>
+        <h2 class="q-title">What is useContext?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">useContext is a React Hook used to access and share data across multiple components without passing props manually at every level.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use useContext?</div>
+          <div class="why-text">We use useContext to avoid prop drilling and make shared data available to multiple components easily.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">useContext is a React Hook used to share data between components without prop drilling. React uses useContext to access global or shared data easily in multiple components. That's why useContext is used to manage shared state in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Avoid Prop Drilling</li>
+            <li>Share Data Between Components</li>
+            <li>Global State Access</li>
+            <li>No Need to Pass Props Manually</li>
+            <li>Easy Data Management</li>
+            <li>Used with Context API</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- USEREF -->
+      <div class="card c-amber">
+        <span class="card-num">17</span>
+        <h2 class="q-title">What is useRef?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">useRef is a React Hook used to create a reference to a DOM element or store a mutable value without causing a re-render.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use useRef?</div>
+          <div class="why-text">We use useRef to access DOM elements directly and store values that do not trigger a UI update.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">useRef is a React Hook used to access DOM elements directly and store mutable values. React uses useRef to keep values that do not cause re-render when changed. That's why useRef is used for DOM manipulation and persistent values.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>DOM Access</li>
+            <li>Mutable Value Storage</li>
+            <li>No Re-render Trigger</li>
+            <li>Direct Element Reference</li>
+            <li>Used for Input Focus / Timer / Previous Value</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- USEMEMO -->
+      <div class="card c-green">
+        <span class="card-num">18</span>
+        <h2 class="q-title">What is useMemo?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">useMemo is a React Hook used to memoize and cache the result of an expensive calculation.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use useMemo?</div>
+          <div class="why-text">We use useMemo to improve performance by preventing unnecessary recalculations during re-renders.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">useMemo is a React Hook used to store (cache) the result of expensive calculations. React uses useMemo to avoid re-calculating values on every render. That's why useMemo is used for performance optimization.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Memoization</li>
+            <li>Cache Result</li>
+            <li>Expensive Calculations</li>
+            <li>Performance Optimization</li>
+            <li>Avoid Re-calculation</li>
+            <li>Prevents Unnecessary Re-renders impact</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- USECALLBACK -->
+      <div class="card c-pink">
+        <span class="card-num">19</span>
+        <h2 class="q-title">What is useCallback?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">useCallback is a React Hook used to memoize a function and prevent it from being recreated on every render.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use useCallback?</div>
+          <div class="why-text">We use useCallback to improve performance by avoiding unnecessary function recreations and re-renders of child components.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">useCallback is a React Hook used to memoize functions. React uses useCallback to prevent function recreation on every render. That's why useCallback is used for performance optimization and to avoid unnecessary re-renders in child components.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Memoize Function</li>
+            <li>Prevent Function Recreation</li>
+            <li>Performance Optimization</li>
+            <li>Avoid Unnecessary Re-renders</li>
+            <li>Used with Child Components</li>
+            <li>Works with React.memo</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- CUSTOM HOOK -->
+      <div class="card c-purple">
+        <span class="card-num">20</span>
+        <h2 class="q-title">What is a Custom Hook?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">A Custom Hook is a user-defined React Hook that allows us to reuse stateful logic across multiple components.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Custom Hooks?</div>
+          <div class="why-text">We use Custom Hooks to reuse common logic, reduce code duplication, and make the code more maintainable.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">A Custom Hook is a user-defined function in React that starts with "use". React uses Custom Hooks to reuse logic between multiple components. That's why Custom Hooks are used to avoid code duplication and improve maintainability.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>User-defined Hook</li>
+            <li>Starts with "use"</li>
+            <li>Reusable Logic</li>
+            <li>Avoid Code Duplication</li>
+            <li>Improves Maintainability</li>
+            <li>Used Across Multiple Components</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CHAPTER 4 — COMPONENT LIFECYCLE
+  ═══════════════════════════════════════════ -->
+  <section class="chapter">
+    <div class="chapter-label"><span>04</span> Component Lifecycle</div>
+    <div class="grid">
+
+      <!-- COMPONENT LIFECYCLE -->
+      <div class="card c-blue">
+        <span class="card-num">21</span>
+        <h2 class="q-title">What is Component Lifecycle?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Component Lifecycle refers to the different stages a React component goes through from creation to updating and finally removal.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Component Lifecycle?</div>
+          <div class="why-text">We use Component Lifecycle to perform actions at specific stages of a component, such as fetching data, updating the UI, and cleaning up resources.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Component Lifecycle means the different phases of a React component from start to end. React uses lifecycle to handle actions during mounting, updating, and unmounting. That's why lifecycle is used to manage component behavior.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Mounting (Component Creation)</li>
+            <li>Updating (State/Props Change)</li>
+            <li>Unmounting (Component Removal)</li>
+            <li>Used for API Calls</li>
+            <li>UI Updates</li>
+            <li>Cleanup Operations (Timers, subscriptions)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- MOUNTING -->
+      <div class="card c-green">
+        <span class="card-num">22</span>
+        <h2 class="q-title">What is Mounting?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Mounting is the process of creating and inserting a React component into the DOM for the first time.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Mounting?</div>
+          <div class="why-text">We use the mounting phase to perform initial tasks such as fetching data, setting up state, or initializing the component.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Mounting is the first phase of a React component lifecycle. React uses mounting when a component is created and added to the DOM for the first time. This is where initial setup like API calls, state initialization, and setup work is done. That's why mounting is important in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>First Phase of Lifecycle</li>
+            <li>Component Creation</li>
+            <li>Inserted into DOM</li>
+            <li>Initial Render</li>
+            <li>API Calls</li>
+            <li>State Initialization</li>
+            <li>Setup Operations (useEffect with empty dependency [])</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- UPDATING -->
+      <div class="card c-amber">
+        <span class="card-num">23</span>
+        <h2 class="q-title">What is Updating?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Updating is the process that occurs when a component's state or props change, causing the component to re-render.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Updating?</div>
+          <div class="why-text">We use updating to reflect the latest data and changes in the UI.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Updating is the phase in React lifecycle where a component re-renders when state or props change. React uses updating to show the latest data in the UI. That's why updating is important to keep the UI in sync with data.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Triggered by State Change</li>
+            <li>Triggered by Props Change</li>
+            <li>Re-render Component</li>
+            <li>UI Update</li>
+            <li>Shows Latest Data</li>
+            <li>Keeps UI in Sync with Data</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- UNMOUNTING -->
+      <div class="card c-coral">
+        <span class="card-num">24</span>
+        <h2 class="q-title">What is Unmounting?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">Unmounting is the process of removing a React component from the DOM.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use Unmounting?</div>
+          <div class="why-text">We use unmounting to clean up resources such as timers, event listeners, and subscriptions before the component is removed.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">Unmounting is the final phase of React component lifecycle. React uses unmounting when a component is removed from the DOM. It is used to clean up resources like timers, event listeners, and subscriptions to avoid memory leaks. That's why unmounting is important in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Final Phase of Lifecycle</li>
+            <li>Component Removal from DOM</li>
+            <li>Cleanup Process</li>
+            <li>Remove Timers (setInterval, setTimeout)</li>
+            <li>Remove Event Listeners</li>
+            <li>Avoid Memory Leaks</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- USEEFFECT LIFECYCLE EQUIVALENT -->
+      <div class="card c-purple">
+        <span class="card-num">25</span>
+        <h2 class="q-title">What is useEffect Lifecycle Equivalent?</h2>
+
+        <div class="section">
+          <div class="section-label">1. Definition Answer (Notes Format)</div>
+          <div class="def-box">useEffect is a React Hook that can be used to handle component lifecycle events such as Mounting, Updating, and Unmounting in functional components.</div>
+        </div>
+
+        <div class="section">
+          <div class="why-label">Why do we use useEffect for Lifecycle?</div>
+          <div class="why-text">We use useEffect to perform actions during different lifecycle stages without using class components.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">2. Simple English + Important Words</div>
+          <div class="simple-text">useEffect is a React Hook used to handle lifecycle events in functional components. React uses useEffect to perform actions like API calls on mount, updates on state change, and cleanup on unmount. That's why useEffect is used as a lifecycle equivalent in React.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="section">
+          <div class="section-label">3. Important Points</div>
+          <ul class="points-list">
+            <li>Handles Lifecycle in Functional Components</li>
+            <li>Mounting → useEffect(() => {}, [])</li>
+            <li>Updating → useEffect(() => {}, [state/props])</li>
+            <li>Unmounting → Cleanup function inside useEffect</li>
+            <li>API Calls, Timers, Event Listeners</li>
+            <li>No Class Components Needed</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  React Complete Notes &nbsp;·&nbsp; 25 Topics &nbsp;·&nbsp; 4 Chapters
+</footer>
+
+</body>
+</html>
