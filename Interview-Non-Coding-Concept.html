@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Stack Security Guide</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            /* Lite Theme Palette */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --primary: #0f172a;       /* Dark Navy for text */
+            --accent: #3b82f6;        /* Bright Blue for interaction */
+            --accent-soft: #dbeafe;   /* Soft Blue background */
+            --text-body: #475569;     /* Slate Gray */
+            --text-light: #64748b;    /* Light Gray */
+            --border: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-body);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* HEADER */
+        header {
+            text-align: center;
+            padding: 60px 0;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* SECTION LAYOUT */
+        .topic-section {
+            margin-bottom: 100px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .section-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--border);
+            line-height: 1;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* BENTO GRID */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        /* CARD COMPONENT */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .full-width { grid-column: 1 / -1; }
+
+        /* CARD CONTENT STYLES */
+        .card-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        p { margin-bottom: 16px; color: var(--text-body); }
+
+        ul { margin-left: 20px; margin-bottom: 16px; color: var(--text-body); }
+        li { margin-bottom: 6px; }
+
+        /* SIMPLE BOX */
+        .simple-box {
+            background: var(--accent-soft);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .simple-box strong {
+            display: block;
+            color: var(--primary);
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* INTERVIEW BLOCK */
+        .interview-box {
+            background: var(--primary);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interview-box p { color: #e2e8f0; margin-bottom: 0; }
+
+        .interview-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            opacity: 0.2;
+            font-size: 4rem;
+        }
+
+        /* CODE BLOCKS */
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        .code-keyword { color: #c678dd; }
+        .code-string { color: #98c379; }
+        .code-func { color: #61afef; }
+
+        /* TABLE STYLING (COMPARISON) */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .comparison-table th {
+            background: var(--bg-subtle);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* AUDIT TABLE */
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .audit-table th { text-align: left; color: var(--text-light); font-weight: 500; padding-bottom: 8px;}
+        .audit-table td { padding: 8px 0; border-bottom: 1px solid var(--border); }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .bento-grid { grid-template-columns: 1fr; }
+            .section-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Security & Compliance</h1>
+            <div class="subtitle">Full Stack Development Essentials</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. PRIVACY POLICY -->
+        <section class="topic-section">
+            <div class="section-header">
+                <div class="section-number">01</div>
+                <div class="section-title">Privacy Policy</div>
+            </div>
+            <div class="bento-grid">
+                
+                <article class="card full-width">
+                    <span class="card-label">Definition</span>
+                    <div class="card-title">Privacy Policy என்றால் என்ன?</div>
+                    <p>Privacy Policy என்பது ஒரு website அல்லது application பயனர்களின் (users) தகவல்களை எப்படி சேகரிக்கிறது, பயன்படுத்துகிறது, சேமிக்கிறது, பாதுகாக்கிறது என்பதைக் கூறும் legal document.</p>
+                    
+                    <span class="card-label" style="margin-top:20px;">Example</span>
+                    <p>நீ ஒரு website-ல் register பண்ணும்போது Name, Email, Phone Number கொடுக்கிறாய். அப்போது Privacy Policy-ல்:</p>
+                    <ul style="background: var(--bg-subtle); padding: 15px 15px 15px 35px; border-radius: 8px;">
+                        <li>என்ன data collect பண்ணுறோம்?</li>
+                        <li>ஏன் collect பண்ணுறோம்?</li>
+                        <li>யாருடன் share பண்ணுவோம்?</li>
+                        <li>எவ்வளவு நாள் store பண்ணுவோம்?</li>
+                        <li>எப்படி protect பண்ணுவோம்?</li>
+                    </ul>
+                    <p>என்பதை விளக்கி இருக்கும்.</p>
+                </article>
+
+                <article class="card interview-box">
+                    <div class="interview-icon">🎤</div>
+                    <span class="card-label" style="color:white; opacity: 0.8;">Interview Answer</span>
+                    <p>"Privacy Policy is a document that explains how an application collects, uses, stores, and protects user data. It helps users understand what happens to their personal information and builds trust between the user and the company."</p>
+                </article>
+
+                <article class="card">
+                    <span class="card-label">Simple English</span>
+                    <p>"Privacy Policy tells users what data we collect and how we use and protect it."</p>
+                    
+                    <div class="simple-box">
+                        <strong>MERN Project Example</strong>
+                        நீ ஒரு Login/Register project செய்தால் Privacy Policy-ல்:<br>
+                        • We collect user name and email.<br>
+                        • We do not share user data with third parties.<br>
+                        • Passwords are encrypted before storing.<br>
+                        • User data is protected and stored securely.
+                    </div>
+                </article>
+
+                <article class="card">
+                    <span class="card-label">Why Interviewers Like It?</span>
+                    <p>பல freshers JWT, bcrypt, CORS மட்டும் சொல்வார்கள். ஆனால் நீ:</p>
+                    <div class="simple-box">
+                        "To secure an application, I use JWT, password hashing, input validation, and also provide a Privacy Policy so users know how their data is handled."
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- 2. TERMS & CONDITIONS -->
+        <section class="topic-section">
+            <div class="section-header">
+                <div class="section-number">02</div>
+                <div class="section-title">Terms & Conditions</div>
+            </div>
+            <div class="bento-grid">
+
+                <article class="card full-width">
+                    <span class="card-label">Definition</span>
+                    <div class="card-title">Terms and Conditions (T&C) என்றால் என்ன?</div>
+                    <p>Terms and Conditions என்பது ஒரு website அல்லது application-ஐ பயன்படுத்தும் போது user பின்பற்ற வேண்டிய rules மற்றும் conditions-ஐ கூறும் document.</p>
+                    
+                    <div class="simple-box">
+                        <strong>Easy Example</strong>
+                        Instagram account create பண்ணும்போது:<br>
+                        ✔️ Fake account create பண்ணக்கூடாது<br>
+                        ✔️ Illegal content post பண்ணக்கூடாது<br>
+                        ✔️ Other users-ஐ abuse பண்ணக்கூடாது
+                        <br>இவை எல்லாம் Terms and Conditions-ல் இருக்கும்.
+                    </div>
+                </article>
+
+                <article class="card full-width">
+                    <div class="card-title">Privacy Policy vs Terms & Conditions</div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Privacy Policy</th>
+                                <th>Terms & Conditions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>User data பற்றி பேசும்</td>
+                                <td>App usage rules பற்றி பேசும்</td>
+                            </tr>
+                            <tr>
+                                <td>Data எப்படி collect & protect பண்ணுறோம்</td>
+                                <td>User என்ன செய்யலாம், என்ன செய்யக்கூடாது</td>
+                            </tr>
+                            <tr>
+                                <td>Privacy focus</td>
+                                <td>Rules focus</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </article>
+
+                <article class="card interview-box">
+                    <span class="card-label" style="color:white; opacity: 0.8;">Interview Answer</span>
+                    <p>"Terms and Conditions define the rules and responsibilities for users when using an application. They explain what users are allowed to do, what is prohibited, and the responsibilities of both the user and the company."</p>
+                </article>
+
+                <article class="card">
+                    <span class="card-label">Simple English</span>
+                    <p>"Terms and Conditions are the rules that users must follow while using an application or website."</p>
+                </article>
+
+                <article class="card">
+                    <span class="card-label">MERN Project Example</span>
+                    <p>Suppose you build a Job Portal:</p>
+                    <ul style="margin-top:10px; font-size: 0.9rem;">
+                        <li>Users must provide correct information.</li>
+                        <li>Users should not create fake accounts.</li>
+                        <li>Users should not post illegal content.</li>
+                        <li>The company can suspend accounts that violate the rules.</li>
+                    </ul>
+                </article>
+                
+                <article class="card">
+                    <span class="card-label">Interview Impression</span>
+                    <p><strong>Q:</strong> "How do you make your application professional and secure?"</p>
+                    <div class="simple-box">
+                        "I use JWT authentication, password hashing, input validation, Privacy Policy for user data transparency, and Terms & Conditions to define user responsibilities and platform rules."
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- 3. AUDIT LOGS -->
+        <section class="topic-section">
+            <div class="section-header">
+                <div class="section-number">03</div>
+                <div class="section-title">Audit Logs</div>
+            </div>
+            <div class="bento-grid">
+
+                <article class="card">
+                    <span class="card-label">Definition</span>
+                    <div class="card-title">Audit Logs என்றால் என்ன?</div>
+                    <p>Audit Log என்பது application-ல் யார் என்ன action செய்தார்கள் என்பதை record செய்து வைத்திருக்கும் history.</p>
+                    <div class="simple-box">
+                        <strong>எளிமையாக சொன்னால்:</strong><br>
+                        "User or Admin என்ன செய்தார், எப்போது செய்தார் என்பதை track செய்து வைத்திருக்கும் log."
+                    </div>
+                </article>
+
+                <article class="card full-width">
+                    <div class="card-title">Example (Job Portal)</div>
+                    <table class="audit-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Rocky</td>
+                                <td>Login</td>
+                                <td>10:00 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Rocky</td>
+                                <td>Applied for Job</td>
+                                <td>10:05 AM</td>
+                            </tr>
+                            <tr>
+                                <td>Admin</td>
+                                <td>Deleted Job Post</td>
+                                <td>10:10 AM</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top:10px; font-size:0.9rem; color: var(--text-light);">இந்த records எல்லாம் Audit Logs.</p>
+                </article>
+
+                <article class="card full-width">
+                    <div class="card-title">Why is it Important?</div>
+                    <p>Suppose: A user says "I didn't delete my account." An admin says "I didn't remove that job post."</p>
+                    <p>Audit Logs பார்த்து:</p>
+                    <ul>
+                        <li>Who did it?</li>
+                        <li>When did it happen?</li>
+                        <li>From which account?</li>
+                    </ul>
+                    <p>என்பதை கண்டுபிடிக்கலாம்.</p>
+                </article>
+
+                <article class="card interview-box">
+                    <span class="card-label" style="color:white; opacity: 0.8;">Interview Answer</span>
+                    <p>"Audit Logs are records of important actions performed by users or administrators in an application. They help track activities, improve security, and make it easier to investigate issues."</p>
+                </article>
+
+                <article class="card full-width">
+                    <div class="card-title">MERN Example (JSON Structure)</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                        <div>
+                            <span class="card-label">User Login</span>
+                            <pre>{
+  <span class="code-keyword">"userId"</span>: <span class="code-string">"123"</span>,
+  <span class="code-keyword">"action"</span>: <span class="code-string">"LOGIN"</span>,
+  <span class="code-keyword">"time"</span>: <span class="code-string">"2026-06-02 10:00 AM"</span>
+}</pre>
+                        </div>
+                        <div>
+                            <span class="card-label">Admin Delete User</span>
+                            <pre>{
+  <span class="code-keyword">"adminId"</span>: <span class="code-string">"456"</span>,
+  <span class="code-keyword">"action"</span>: <span class="code-string">"DELETE_USER"</span>,
+  <span class="code-keyword">"targetUser"</span>: <span class="code-string">"123"</span>,
+  <span class="code-keyword">"time"</span>: <span class="code-string">"2026-06-02 10:30 AM"</span>
+}</pre>
+                        </div>
+                    </div>
+                </article>
+                
+                <article class="card">
+                    <span class="card-label">Real Companies Use</span>
+                    <ul>
+                        <li>Banking apps</li>
+                        <li>E-commerce websites</li>
+                        <li>Hospital systems</li>
+                        <li>Admin dashboards</li>
+                        <li>Government portals</li>
+                    </ul>
+                </article>
+
+                <article class="card">
+                    <span class="card-label">Interview Impress</span>
+                    <p>"Besides authentication and authorization, I also consider Audit Logs important because they help monitor user activities and improve security and accountability."</p>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- 4. SECURITY HEADERS -->
+        <section class="topic-section">
+            <div class="section-header">
+                <div class="section-number">04</div>
+                <div class="section-title">Security Headers</div>
+            </div>
+            <div class="bento-grid">
+
+                <article class="card">
+                    <span class="card-label">Definition</span>
+                    <div class="card-title">Security Headers என்றால் என்ன?</div>
+                    <p>Security Headers என்பது browser-க்கு server அனுப்பும் special HTTP headers. இவை application-ஐ common attacks-லிருந்து பாதுகாக்க உதவும்.</p>
+                    <div class="simple-box">
+                        <strong>எளிமையாக:</strong><br>
+                        "Browser-க்கு security rules சொல்லும் HTTP headers."
+                    </div>
+                </article>
+
+                <article class="card full-width">
+                    <span class="card-label">Example Headers</span>
+                    <p>User website open பண்ணும்போது:</p>
+                    <pre>Content-Security-Policy: default-src 'self'
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=31536000</pre>
+                    <p>இந்த headers browser-க்கு: எந்த content load பண்ணலாம், website iframe-ல் open ஆகக்கூடாதா, HTTPS மட்டும் use பண்ணணுமா என்று rules கொடுக்கும்.</p>
+                </article>
+
+                <article class="card">
+                    <div class="card-title">1. Content-Security-Policy (CSP)</div>
+                    <p>XSS attacks-ஐ குறைக்க உதவும்.</p>
+                    <pre>Content-Security-Policy: default-src 'self'</pre>
+                    <p><strong>Meaning:</strong> நம்ம website content மட்டும் load ஆகும்.</p>
+                </article>
+
+                <article class="card">
+                    <div class="card-title">2. X-Frame-Options</div>
+                    <p>Clickjacking attack-ஐ தடுக்கிறது.</p>
+                    <pre>X-Frame-Options: DENY</pre>
+                    <p><strong>Meaning:</strong> வேறு website iframe-ல் நம்ம site-ஐ embed பண்ண முடியாது.</p>
+                </article>
+
+                <article class="card">
+                    <div class="card-title">3. Strict-Transport-Security</div>
+                    <p>HTTPS மட்டும் use செய்ய browser-ஐ force பண்ணும்.</p>
+                    <pre>Strict-Transport-Security: max-age=31536000</pre>
+                </article>
+
+                <article class="card">
+                    <div class="card-title">4. X-Content-Type-Options</div>
+                    <p>Browser file type guessing பண்ணாமல் தடுக்கிறது.</p>
+                    <pre>X-Content-Type-Options: nosniff</pre>
+                </article>
+
+                <article class="card full-width">
+                    <div class="card-title">MERN Project-ல் எப்படி?</div>
+                    <p>Express.js-ல் பொதுவாக Helmet.js package use பண்ணுவார்கள்.</p>
+                    <pre>npm install helmet
+<span class="code-keyword">import</span> helmet <span class="code-keyword">from</span> <span class="code-string">"helmet"</span>;
+
+app.<span class="code-func">use</span>(helmet());</pre>
+                    <p>Helmet automatically many security headers add பண்ணும்.</p>
+                </article>
+
+                <article class="card interview-box">
+                    <span class="card-label" style="color:white; opacity: 0.8;">Interview Answer</span>
+                    <p>"Security Headers are HTTP response headers that help protect web applications from attacks such as XSS, clickjacking, and insecure connections. In Express applications, I can use Helmet.js to configure these headers easily."</p>
+                </article>
+
+                <article class="card">
+                    <span class="card-label">Simple English</span>
+                    <p>"Security Headers add extra protection to a web application by telling the browser how to handle security-related rules."</p>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- 5. RATE LIMITING -->
+        <section class="topic-section">
+            <div class="section-header">
+                <div class="section-number">05</div>
+                <div class="section-title">Rate Limiting</div>
+            </div>
+            <div class="bento-grid">
+
+                <article class="card">
+                    <span class="card-label">Definition</span>
+                    <div class="card-title">Rate Limiting என்றால் என்ன?</div>
+                    <p>Rate Limiting என்பது ஒரு user அல்லது IP address ஒரு குறிப்பிட்ட நேரத்தில் எத்தனை requests அனுப்பலாம் என்று limit வைப்பது.</p>
+                    <div class="simple-box">
+                        <strong>எளிமையாக:</strong><br>
+                        "ஒரே user அதிக requests அனுப்புவதை கட்டுப்படுத்துவது."
+                    </div>
+                </article>
+
+                <article class="card full-width">
+                    <div class="card-title">Example: Login API</div>
+                    <div style="display: flex; gap: 20px; margin-top: 10px;">
+                        <div style="flex:1; padding: 15px; background: #fee2e2; border-radius: 8px; border: 1px solid #fca5a5;">
+                            <strong>❌ Without Rate Limiting</strong>
+                            <p>Hacker 1 second-ல் 1000 passwords try பண்ணலாம்.</p>
+                        </div>
+                        <div style="flex:1; padding: 15px; background: #dcfce7; border-radius: 8px; border: 1px solid #86efac;">
+                            <strong>✅ With Rate Limiting</strong>
+                            <p>1 minute-க்கு 5 login attempts மட்டும்.<br>5 attempts முடிந்தால் temporary block.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="card-title">Real-Life Example</div>
+                    <p><strong>ATM PIN:</strong> 3 தடவை wrong PIN போட்டால் card block ஆகும்.</p>
+                    <p>அதே concept தான் Rate Limiting.</p>
+                </article>
+
+                <article class="card">
+                    <div class="card-title">Why Use Rate Limiting?</div>
+                    <ul>
+                        <li>✅ Prevent Brute Force Attacks</li>
+                        <li>✅ Prevent Spam Requests</li>
+                        <li>✅ Protect Server Resources</li>
+                        <li>✅ Avoid API Abuse</li>
+                        <li>✅ Improve Application Security</li>
+                    </ul>
+                </article>
+
+                <article class="card full-width">
+                    <div class="card-title">MERN Example (Express.js)</div>
+                    <pre>npm install express-rate-limit
+<span class="code-keyword">import</span> rateLimit <span class="code-keyword">from</span> <span class="code-string">"express-rate-limit"</span>;
+
+<span class="code-keyword">const</span> limiter = <span class="code-func">rateLimit</span>({
+  windowMs: 15 * 60 * 1000, <span class="code-string">// 15 minutes</span>
+  max: 100
+});
+
+app.<span class="code-func">use</span>(limiter);</pre>
+                    <p><strong>Meaning:</strong> 15 minutes-க்கு 100 requests மட்டும். அதற்கு மேல் வந்தால் block.</p>
+                </article>
+
+                <article class="card interview-box">
+                    <span class="card-label" style="color:white; opacity: 0.8;">Interview Answer</span>
+                    <p>"Rate Limiting is a security technique that restricts the number of requests a user can make within a specific time period. It helps prevent brute-force attacks, spam, and server overload."</p>
+                </article>
+
+                <article class="card">
+                    <span class="card-label">Simple English</span>
+                    <p>"Rate Limiting controls how many requests a user can send to the server in a given time."</p>
+                </article>
+
+                <article class="card full-width" style="border-color: var(--primary); background: #f8fafc;">
+                    <div class="card-title">Interview Impress Answer</div>
+                    <p><strong>Q:</strong> "How do you secure a MERN application?"</p>
+                    <div class="simple-box" style="background: white;">
+                        "I use JWT authentication, bcrypt for password hashing, input validation, role-based access control, security headers with Helmet.js, rate limiting to prevent abuse, audit logs for tracking activities, and Privacy Policy and Terms & Conditions for compliance and user transparency."
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+    </div>
+
+    <footer style="text-align: center; padding: 40px; color: var(--text-light); font-size: 0.9rem; border-top: 1px solid var(--border);">
+        <p>Full Stack Security Concepts Guide</p>
+    </footer>
+
+</body>
+</html>

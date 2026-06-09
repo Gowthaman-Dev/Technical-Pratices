@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 const App = () => {
-
   const [search, setSearch] = useState("");
 
   const users = [
@@ -12,53 +11,28 @@ const App = () => {
     "Arun"
   ];
 
-  // FILTER USERS
   const filteredUsers = users.filter((user) =>
     user.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+    <div>
+      <h1>Search Filter</h1>
 
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md text-center">
+      <input
+        type="text"
+        placeholder="Search Name"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-        <h1 className="text-3xl font-bold mb-6">
-          Search Filter
-        </h1>
-
-        <input
-          type="text"
-          placeholder="Search Name"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-
-        <div className="mt-6 space-y-3">
-
-          {filteredUsers.length > 0 ? (
-
-            filteredUsers.map((user, index) => (
-              <div
-                key={index}
-                className="bg-gray-100 py-3 rounded-lg shadow-sm text-lg font-medium"
-              >
-                {user}
-              </div>
-            ))
-
-          ) : (
-
-            <p className="text-red-500 font-medium">
-              No Users Found
-            </p>
-
-          )}
-
-        </div>
-
-      </div>
-
+      {filteredUsers.length > 0 ? (
+        filteredUsers.map((user, index) => (
+          <p key={index}>{user}</p>
+        ))
+      ) : (
+        <p>No Users Found</p>
+      )}
     </div>
   );
 };

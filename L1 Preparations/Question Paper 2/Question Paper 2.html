@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developer Dashboard</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+    color:#222;
+}
+
+/* Dark Mode Toggle */
+#theme-toggle{
+    display:none;
+}
+
+.wrapper{
+    min-height:100vh;
+}
+
+.header{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:white;
+    padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.1);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.toggle-btn{
+    background:#2563eb;
+    color:white;
+    padding:10px 18px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.layout{
+    display:flex;
+}
+
+.sidebar-toggle{
+    display:none;
+}
+
+.sidebar-btn{
+    display:none;
+}
+
+.sidebar{
+    width:260px;
+    min-height:100vh;
+    background:#111827;
+    color:white;
+    padding:20px;
+    position:sticky;
+    top:70px;
+}
+
+.sidebar h2{
+    margin-bottom:20px;
+}
+
+.sidebar ul{
+    list-style:none;
+}
+
+.sidebar li{
+    padding:12px 0;
+    border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+.main{
+    flex:1;
+    padding:25px;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card h2{
+    margin-bottom:15px;
+    color:#2563eb;
+}
+
+.card ol{
+    padding-left:20px;
+}
+
+.card li{
+    margin-bottom:12px;
+    line-height:1.5;
+}
+
+/* Profile Card */
+.profile-card{
+    text-align:center;
+    overflow:hidden;
+}
+
+.profile-banner{
+    height:90px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    border-radius:15px;
+}
+
+.profile-image{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    border:5px solid white;
+    margin:-50px auto 10px;
+    background:#ddd;
+}
+
+.profile-card h3{
+    margin-top:10px;
+}
+
+/* Dark Mode */
+#theme-toggle:checked ~ .wrapper{
+    background:#111827;
+    color:white;
+}
+
+#theme-toggle:checked ~ .wrapper .header{
+    background:#1f2937;
+    color:white;
+}
+
+#theme-toggle:checked ~ .wrapper .card{
+    background:#1f2937;
+    color:white;
+}
+
+#theme-toggle:checked ~ .wrapper .sidebar{
+    background:#000;
+}
+
+/* Responsive Sidebar */
+@media(max-width:768px){
+
+.sidebar{
+    position:fixed;
+    left:-280px;
+    top:0;
+    height:100%;
+    z-index:999;
+    transition:.4s;
+}
+
+.sidebar-btn{
+    display:block;
+    background:#2563eb;
+    color:white;
+    padding:10px 15px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.sidebar-toggle:checked ~ .layout .sidebar{
+    left:0;
+}
+
+}
+</style>
+</head>
+<body>
+
+<input type="checkbox" id="theme-toggle">
+
+<div class="wrapper">
+
+<header class="header">
+    <h1>Developer Dashboard</h1>
+
+    <div>
+        <label for="theme-toggle" class="toggle-btn">
+            Dark / Light Mode
+        </label>
+    </div>
+</header>
+
+<input type="checkbox" id="menu-toggle" class="sidebar-toggle">
+
+<div class="layout">
+
+    <aside class="sidebar">
+        <h2>Dashboard Menu</h2>
+        <ul>
+            <li>HTML/CSS</li>
+            <li>JavaScript</li>
+            <li>React</li>
+            <li>MongoDb</li>
+        </ul>
+    </aside>
+
+    <main class="main">
+
+        <label for="menu-toggle" class="sidebar-btn">
+            Toggle Sidebar
+        </label>
+
+        <div class="dashboard-grid">
+
+            <div class="card">
+                <h2>HTML/CSS</h2>
+                <ol>
+                    <li>Design a responsive dashboard with collapsible sidebar</li>
+                    <li>Create a product grid with dynamic columns using CSSGrod</li>
+                    <li>Implement dark/light mode using only CSS.</li>
+                    <li>Build a sticky header and sidebar layout</li>
+                    <li>Create a profile card with overlapping image and resetve desten</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h2>JavaScript</h2>
+                <ol>
+                    <li>Implement custom map() without built-in methods.</li>
+                    <li>Flatten a nested array of any depth</li>
+                    <li>Create debounce and throttle functions.</li>
+                    <li>Implement a countdown timer with pause and resume</li>
+                    <li>Demonstrate event delegation with dynamic elements</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h2>React</h2>
+                <ol>
+                    <li>Burd CRID operations using Context APL</li>
+                    <li>Implement protected routes using authentication</li>
+                    <li>Create a custom useDebounce hook.</li>
+                    <li>Optimize rendering for large datasets.</li>
+                    <li>Build a multi-step form with validation.MongoDB</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h2>MongoDb</h2>
+                <ol>
+                    <li>Insert bulk order documents.</li>
+                    <li>Find total sales grouped by customer.</li>
+                    <li>Retrieve orders from the last 7 days.</li>
+                    <li>Find top 3 highest order amounts using aggregation</li>
+                    <li>Update pending orders to completed status.</li>
+                </ol>
+            </div>
+
+            <div class="card profile-card">
+                <div class="profile-banner"></div>
+                <div class="profile-image"></div>
+                <h3>Developer Profile</h3>
+                <p>Responsive dashboard layout using only HTML and CSS.</p>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</div>
+
+</body>
+</html>
